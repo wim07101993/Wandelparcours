@@ -7,7 +7,7 @@ using WebService.Helpers;
 
 namespace WebService.Models
 {
-    public class Inhabitant
+    public class Resident
     {
         [BsonId]
         [JsonConverter(typeof(ObjectIdConverter))]
