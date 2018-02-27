@@ -6,3 +6,7 @@ header {
 .row{
     margin-bottom: 0px !important;
 }
+
+#hamburger {
+    color: #fff;
+}

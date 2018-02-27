@@ -1,5 +1,5 @@
 <ul id="slide-out" class="side-nav teal darken-2">
-    <li><a href="#!"><i class="material-icons">people</i> Bewoners </a></li>
-    <li><a href="#!"><i class="material-icons">verified_user</i> Gebruikers </a></li>
-    <li><a href="#!"><i class="material-icons">track_changes</i> Tracking </a></li>
+    <li [routerLinkActive]="['link-active']"><a [routerLink]="['/resident']"><i class="material-icons">people</i> Bewoners </a></li>
+    <li [routerLinkActive]="['link-active']"><a [routerLink]="['/counter']"><i class="material-icons">verified_user</i> Gebruikers </a></li>
+    <li [routerLinkActive]="['link-active']"><a href="#!"><i class="material-icons">track_changes</i> Tracking </a></li>
 </ul>

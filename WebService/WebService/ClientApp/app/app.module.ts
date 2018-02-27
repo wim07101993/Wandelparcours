@@ -29,11 +29,12 @@ import { SidenavComponent } from './components/sidenav/sidenav.component';
         HttpModule,
         FormsModule,
         RouterModule.forRoot([
-            { path: '', redirectTo: 'home', pathMatch: 'full' },
+            { path: '', redirectTo: 'resident', pathMatch: 'full' },
             { path: 'home', component: HomeComponent },
+            { path: 'resident', component: ResidentComponent },
             { path: 'counter', component: CounterComponent },
             { path: 'fetch-data', component: FetchDataComponent },
-            { path: '**', redirectTo: 'home' }
+            { path: '**', redirectTo: 'resident' }
         ])
     ]
 })
