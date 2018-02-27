@@ -9,9 +9,9 @@ import { NavMenuComponent } from './components/navmenu/navmenu.component';
 import { HomeComponent } from './components/home/home.component';
 import { FetchDataComponent } from './components/fetchdata/fetchdata.component';
 import { CounterComponent } from './components/counter/counter.component';
-import { TestingComponent } from './components/testing/testing.component';
 import { HeaderComponent } from './components/header/header.component';
 import { ResidentComponent } from './components/resident/resident.component';
+import { SidenavComponent } from './components/sidenav/sidenav.component';
 
 @NgModule({
     declarations: [
@@ -20,9 +20,9 @@ import { ResidentComponent } from './components/resident/resident.component';
         CounterComponent,
         FetchDataComponent,
         HomeComponent,
-        TestingComponent,
         HeaderComponent,
-        ResidentComponent
+        ResidentComponent,
+        SidenavComponent
     ],
     imports: [
         CommonModule,

@@ -7,9 +7,12 @@ import { Component, OnInit } from '@angular/core';
 })
 export class HeaderComponent implements OnInit {
 
-  constructor() { }
+    gebruiker = 'Beheerder';
+    pageTitle = 'Pagina Titel'
 
-  ngOnInit() {
+    constructor() { }
+
+    ngOnInit() {
   }
 
 }
