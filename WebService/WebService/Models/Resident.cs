@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 using Newtonsoft.Json;
@@ -20,6 +21,15 @@ namespace WebService.Models
 
         [BsonElement("picture")]
         public byte[] Picture { get; set; }
+
+        [BsonElement("room")]
+        public string Room { get; set; }
+
+        [BsonElement("birthday")]
+        public DateTime Birthday { get; set; }
+
+        [BsonElement("doctor")]
+        public Doctor Doctor { get; set; }
 
         [BsonElement("tags")]
         public IEnumerable<int> Tags { get; set; }
