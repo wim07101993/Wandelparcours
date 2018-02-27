@@ -10,6 +10,7 @@ import { HomeComponent } from './components/home/home.component';
 import { FetchDataComponent } from './components/fetchdata/fetchdata.component';
 import { CounterComponent } from './components/counter/counter.component';
 import { TestingComponent } from './components/testing/testing.component';
+import { StationmanagementComponent } from './components/stationmanagement/stationmanagement.component';
 
 @NgModule({
     declarations: [
@@ -18,7 +19,8 @@ import { TestingComponent } from './components/testing/testing.component';
         CounterComponent,
         FetchDataComponent,
         HomeComponent,
-        TestingComponent
+        TestingComponent,
+        StationmanagementComponent
     ],
     imports: [
         CommonModule,
@@ -29,6 +31,7 @@ import { TestingComponent } from './components/testing/testing.component';
             { path: 'home', component: HomeComponent },
             { path: 'counter', component: CounterComponent },
             { path: 'fetch-data', component: FetchDataComponent },
+            { path: 'stationmanagement', component: StationmanagementComponent },
             { path: '**', redirectTo: 'home' }
         ])
     ]
