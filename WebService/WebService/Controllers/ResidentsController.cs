@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Net;
 using Microsoft.AspNetCore.Mvc;
@@ -16,8 +15,6 @@ namespace WebService.Controllers
     {
         #region FIELDS
 
-        private const string CollectionName = "inhabitants";
-
         private readonly ILogger _logger;
         private readonly IMongoCollection<Resident> _collection;
 
@@ -29,9 +26,10 @@ namespace WebService.Controllers
         public ResidentsController(IConfiguration config, ILogger logger)
         {
             _logger = logger;
+            
             _collection = new MongoClient(config["Database:ConnectionString"])
                 .GetDatabase(config["Database:DatabaseName"])
-                .GetCollection<Resident>(CollectionName);
+                .GetCollection<Resident>(config["Database:ResidentsCollectionName"]);
         }
 
         #endregion CONSTRUCTORS
@@ -51,6 +49,7 @@ namespace WebService.Controllers
                     .Include(x => x.Room)
                     .Include(x => x.Birthday)
                     .Include(x => x.Doctor);
+                
                 return Ok(_collection
                     .Find(FilterDefinition<Resident>.Empty)
                     .Project<Resident>(selector)
