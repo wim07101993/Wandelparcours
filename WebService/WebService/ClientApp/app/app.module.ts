@@ -10,6 +10,7 @@ import { HomeComponent } from './components/home/home.component';
 import { FetchDataComponent } from './components/fetchdata/fetchdata.component';
 import { CounterComponent } from './components/counter/counter.component';
 import { TestingComponent } from './components/testing/testing.component';
+import { HeaderComponent } from './components/header/header.component';
 
 @NgModule({
     declarations: [
@@ -18,7 +19,8 @@ import { TestingComponent } from './components/testing/testing.component';
         CounterComponent,
         FetchDataComponent,
         HomeComponent,
-        TestingComponent
+        TestingComponent,
+        HeaderComponent
     ],
     imports: [
         CommonModule,
