@@ -1,3 +1,12 @@
-<img id="img" style="display: none" src="/images/blueprint.jpg"/>
+<div id="mapButtonHolder">
+    <a id="addPiButton" class="btn-floating  waves-effect waves-light red"><i class="material-icons">add</i></a>
+    <br>
+    <a id="zoomInMap" class="btn-floating waves-effect waves-light green" (click)="zoomIn()"><i class="material-icons">zoom_in</i></a>
+    <br>
+    <a id="zoomOutMap" class="btn-floating waves-effect waves-light orange " (click)="zoomOut()"><i class="material-icons">zoom_out</i></a>
+</div>
+
+
+<img  #myImage id="img" style="display: none" src="/images/blueprint.jpg"/>
 <canvas #myCanvas id="map">
 </canvas>
