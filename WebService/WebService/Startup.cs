@@ -19,8 +19,10 @@ namespace WebService
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddSingleton(typeof(ILogger), new LoggerCollection {new ConsoleLogger(), new FileLogger()});
+            services.AddCors();
 
+            services.AddSingleton(typeof(ILogger), new LoggerCollection {new ConsoleLogger(), new FileLogger()});
+            
             services.AddMvc();
         }
 
@@ -41,6 +43,8 @@ namespace WebService
             }
 
             app.UseStaticFiles();
+
+            app.UseCors(builder => builder.WithOrigins("http://localhost:5000"));
 
             app.UseMvc(routes =>
             {
