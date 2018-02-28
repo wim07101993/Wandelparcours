@@ -11,3 +11,6 @@ li:first-child {
     letter-spacing: 1.5px;
 }
 
+.sidenav{
+    width: 240px !important;
+}

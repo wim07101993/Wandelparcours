@@ -3721,7 +3721,7 @@ if (Vel) {
   var methods = {
     init: function (options) {
       var defaults = {
-        menuWidth: 300,
+        menuWidth: 240,
         edge: 'left',
         closeOnClick: false,
         draggable: true,

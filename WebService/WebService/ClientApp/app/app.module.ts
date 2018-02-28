@@ -9,8 +9,10 @@ import { NavMenuComponent } from './components/navmenu/navmenu.component';
 import { HomeComponent } from './components/home/home.component';
 import { FetchDataComponent } from './components/fetchdata/fetchdata.component';
 import { CounterComponent } from './components/counter/counter.component';
-import { TestingComponent } from './components/testing/testing.component';
 import { StationmanagementComponent } from './components/stationmanagement/stationmanagement.component';
+import { HeaderComponent } from './components/header/header.component';
+import { SidenavComponent } from './components/sidenav/sidenav.component';
+import { ResidentComponent } from './components/resident/resident.component';
 
 @NgModule({
     declarations: [
@@ -18,8 +20,10 @@ import { StationmanagementComponent } from './components/stationmanagement/stati
         NavMenuComponent,
         CounterComponent,
         FetchDataComponent,
+        SidenavComponent,
         HomeComponent,
-        TestingComponent,
+        HeaderComponent,
+        ResidentComponent,
         StationmanagementComponent
     ],
     imports: [
@@ -27,12 +31,12 @@ import { StationmanagementComponent } from './components/stationmanagement/stati
         HttpModule,
         FormsModule,
         RouterModule.forRoot([
-            { path: '', redirectTo: 'home', pathMatch: 'full' },
-            { path: 'home', component: HomeComponent },
+            { path: '', redirectTo: 'resident', pathMatch: 'full' },
+            { path: 'resident', component: ResidentComponent },
             { path: 'counter', component: CounterComponent },
             { path: 'fetch-data', component: FetchDataComponent },
             { path: 'stationmanagement', component: StationmanagementComponent },
-            { path: '**', redirectTo: 'home' }
+            { path: '**', redirectTo: 'resident' }
         ])
     ]
 })
