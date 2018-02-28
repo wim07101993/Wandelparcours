@@ -81,15 +81,22 @@ namespace WebService.Services.Logging
             if (logLevel == ELogLevel.Debug)
                 return;
 #endif
-            // if the filePath doesn't exists, create it
-            if (!File.Exists(FilePath))
-                File.Create(FilePath);
+            try
+            {
+                // if the filePath doesn't exists, create it
+                if (!File.Exists(FilePath))
+                    File.Create(FilePath);
 
-            // create the log message using the message of the exception
-            var log = _logBuilder.BuildLogEntry(typeof(T).Name, logLevel, exception.Message);
+                // create the log message using the message of the exception
+                var log = _logBuilder.BuildLogEntry(typeof(T).Name, logLevel, exception.Message);
 
-            // add the log-message to the file
-            File.AppendAllLines(FilePath, new[] {log});
+                // add the log-message to the file
+                File.AppendAllLines(FilePath, new[] {log});
+            }
+            catch (IOException)
+            {
+                // IGNORED
+            }
         }
 
         /// <inheritdoc cref="ILogger.Log{T}(T,ELogLevel,string)"/>
@@ -109,15 +116,22 @@ namespace WebService.Services.Logging
             if (logLevel == ELogLevel.Debug)
                 return;
 #endif
-            // if the filePath doesn't exists, create it
-            if (!File.Exists(FilePath))
-                File.Create(FilePath);
+            try
+            {
+                // if the filePath doesn't exists, create it
+                if (!File.Exists(FilePath))
+                    File.Create(FilePath);
 
-            // create the log message
-            var log = _logBuilder.BuildLogEntry(typeof(T).Name, logLevel, message);
+                // create the log message
+                var log = _logBuilder.BuildLogEntry(typeof(T).Name, logLevel, message);
 
-            // add the log-message to the file
-            File.AppendAllLines(FilePath, new[] {log});
+                // add the log-message to the file
+                File.AppendAllLines(FilePath, new[] {log});
+            }
+            catch (IOException)
+            {
+                // IGNORED
+            }
         }
 
         #endregion METHODS

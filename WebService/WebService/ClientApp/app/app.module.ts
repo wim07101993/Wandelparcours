@@ -37,6 +37,8 @@ import { ResidentComponent } from './components/resident/resident.component';
             { path: 'fetch-data', component: FetchDataComponent },
             { path: 'stationmanagement', component: StationmanagementComponent },
             { path: '**', redirectTo: 'resident' }
+            { path: 'resident', component: ResidentComponent},
+            { path: '**', redirectTo: 'home' }
         ])
     ]
 })
