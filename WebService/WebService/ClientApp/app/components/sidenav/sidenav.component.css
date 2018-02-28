@@ -1,0 +1,13 @@
+.side-nav li > a, .side-nav li > a > i.material-icons {
+    color: #fff;
+}
+
+li:first-child {
+    margin-top: 79px;
+}
+
+.side-nav li > a {
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+}
+
