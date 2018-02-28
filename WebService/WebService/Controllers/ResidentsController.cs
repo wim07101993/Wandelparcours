@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq.Expressions;
 using System.Net;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
-using MongoDB.Bson;
 using WebService.Services.Logging;
-using MongoDB.Driver;
 using WebService.Models;
+using WebService.Services.Data;
 
 namespace WebService.Controllers
 {
@@ -16,21 +16,18 @@ namespace WebService.Controllers
     {
         #region FIELDS
 
+        private readonly IDataService _dataService;
         private readonly ILogger _logger;
-        private readonly IMongoCollection<Resident> _collection;
 
         #endregion FIELDS
 
 
         #region CONSTRUCTORS
 
-        public ResidentsController(IConfiguration config, ILogger logger)
+        public ResidentsController(IConfiguration config, IDataService dataService, ILogger logger)
         {
+            _dataService = dataService;
             _logger = logger;
-
-            _collection = new MongoClient(config["Database:ConnectionString"])
-                .GetDatabase(config["Database:DatabaseName"])
-                .GetCollection<Resident>(config["Database:ResidentsCollectionName"]);
         }
 
         #endregion CONSTRUCTORS
@@ -43,18 +40,14 @@ namespace WebService.Controllers
         {
             try
             {
-                var selector = Builders<Resident>
-                    .Projection
-                    .Include(x => x.FirstName)
-                    .Include(x => x.LastName)
-                    .Include(x => x.Room)
-                    .Include(x => x.Birthday)
-                    .Include(x => x.Doctor);
-
-                return Ok(_collection
-                    .Find(FilterDefinition<Resident>.Empty)
-                    .Project<Resident>(selector)
-                    .ToList());
+                return Ok(_dataService.GetResidents(new Expression<Func<Resident, object>>[]
+                {
+                    x => x.FirstName,
+                    x => x.LastName,
+                    x => x.Room,
+                    x => x.Birthday,
+                    x => x.Doctor,
+                }));
             }
             catch (Exception e)
             {
@@ -68,9 +61,9 @@ namespace WebService.Controllers
         {
             try
             {
-                resident.ID = ObjectId.GenerateNewId();
-                _collection.InsertOne(resident);
-                return StatusCode((int) HttpStatusCode.Created);
+                return _dataService.CreateResident(resident)
+                    ? StatusCode((int) HttpStatusCode.Created)
+                    : StatusCode((int) HttpStatusCode.NotModified);
             }
             catch (Exception e)
             {
