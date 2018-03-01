@@ -4,6 +4,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using MongoDB.Bson;
+using WebService.Helpers;
 using WebService.Models;
 
 namespace WebService.Services.Data
@@ -103,7 +104,9 @@ namespace WebService.Services.Data
         /// <returns>An <see cref="IEnumerable{T}"/> filled with all the residents in the mock list.</returns>
         public IEnumerable<Resident> GetResidents(
             IEnumerable<Expression<Func<Resident, object>>> propertiesToInclude = null)
-            => propertiesToInclude == null
+        {
+            var propertiesToIncludeList = propertiesToInclude?.ToList();
+            return EnumerableExtensions.IsNullOrEmpty(propertiesToIncludeList)
                 // if the properties to include are null, return the complete list
                 ? MockData
                 // else return a list with only the asked properties filled
@@ -112,18 +115,25 @@ namespace WebService.Services.Data
                     // create new resident to return with the ide filled in
                     var residentToReturn = new Resident {ID = mockResident.ID};
 
+                    // ReSharper disable once PossibleNullReferenceException
                     // go over each property selector that should be included
-                    foreach (var selector in propertiesToInclude)
+                    foreach (var selector in propertiesToIncludeList)
                     {
-                        // get the property
-                        var prop = (PropertyInfo) ((MemberExpression) selector.Body).Member;
+                        // get property
+                        var prop = selector.Body is MemberExpression expression
+                            // via member expression
+                            ? expression.Member as PropertyInfo
+                            // via unary expression
+                            : ((MemberExpression) ((UnaryExpression) selector.Body).Operand).Member as PropertyInfo;
+
                         // set the value of the property with the value of the mockResident
-                        prop.SetValue(residentToReturn, prop.GetValue(mockResident));
+                        prop?.SetValue(residentToReturn, prop.GetValue(mockResident));
                     }
 
                     // return the resident
                     return residentToReturn;
                 });
+        }
 
         /// <inheritdoc cref="IDataService.CreateResident" />
         /// <summary>
@@ -138,7 +148,7 @@ namespace WebService.Services.Data
         /// </returns>
         public string CreateResident(Resident resident)
         {
-             // create a new ide for the resident
+            // create a new ide for the resident
             resident.ID = new ObjectId();
             // add the new resident to the list
             MockData.Add(resident);

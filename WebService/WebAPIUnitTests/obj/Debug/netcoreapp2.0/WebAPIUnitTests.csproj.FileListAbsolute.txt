@@ -12,3 +12,5 @@ D:\Dev\src\github.com\sanlihakan\Wandelparcours\WebService\WebAPIUnitTests\obj\D
 D:\Dev\src\github.com\sanlihakan\Wandelparcours\WebService\WebAPIUnitTests\obj\Debug\netcoreapp2.0\WebAPIUnitTests.AssemblyInfo.cs
 D:\Dev\src\github.com\sanlihakan\Wandelparcours\WebService\WebAPIUnitTests\obj\Debug\netcoreapp2.0\WebAPIUnitTests.dll
 D:\Dev\src\github.com\sanlihakan\Wandelparcours\WebService\WebAPIUnitTests\obj\Debug\netcoreapp2.0\WebAPIUnitTests.pdb
+D:\Dev\src\github.com\sanlihakan\Wandelparcours\WebService\WebAPIUnitTests\bin\Debug\netcoreapp2.0\WebService.dll
+D:\Dev\src\github.com\sanlihakan\Wandelparcours\WebService\WebAPIUnitTests\bin\Debug\netcoreapp2.0\WebService.pdb
