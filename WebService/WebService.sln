@@ -5,7 +5,7 @@ VisualStudioVersion = 15.0.27130.2036
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebService", "WebService\WebService.csproj", "{DF0970FA-BE20-40E0-89BE-F9F48941A690}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebAPIUnitTests", "..\..\Wandelparcours - kopie\WebService\WebAPIUnitTests\WebAPIUnitTests.csproj", "{DA593FDF-9F59-4FFD-B5F9-FC25DD042145}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebAPIUnitTests", "WebAPIUnitTests\WebAPIUnitTests.csproj", "{20311534-6A04-41C4-9AF6-F0B523816FF4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -17,10 +17,10 @@ Global
 		{DF0970FA-BE20-40E0-89BE-F9F48941A690}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DF0970FA-BE20-40E0-89BE-F9F48941A690}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DF0970FA-BE20-40E0-89BE-F9F48941A690}.Release|Any CPU.Build.0 = Release|Any CPU
-		{DA593FDF-9F59-4FFD-B5F9-FC25DD042145}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{DA593FDF-9F59-4FFD-B5F9-FC25DD042145}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{DA593FDF-9F59-4FFD-B5F9-FC25DD042145}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{DA593FDF-9F59-4FFD-B5F9-FC25DD042145}.Release|Any CPU.Build.0 = Release|Any CPU
+		{20311534-6A04-41C4-9AF6-F0B523816FF4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{20311534-6A04-41C4-9AF6-F0B523816FF4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{20311534-6A04-41C4-9AF6-F0B523816FF4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{20311534-6A04-41C4-9AF6-F0B523816FF4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

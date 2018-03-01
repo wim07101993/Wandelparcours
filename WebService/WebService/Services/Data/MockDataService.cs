@@ -161,16 +161,16 @@ namespace WebService.Services.Data
                 : null;
         }
 
-        /// <inheritdoc cref="IDataService.Remove" />
+        /// <inheritdoc cref="IDataService.RemoveResident" />
         /// <summary>
-        /// RemoveResident removes the <see cref="Resident"/> with the given id from the database.
+        /// RemoveResident removes the <see cref="Resident"/> with the given id from the list.
         /// </summary>
-        /// <param name="id">is the id of the <see cref="Resident"/> to remove in the database</param>
+        /// <param name="id">is the id of the <see cref="Resident"/> to remove in the list</param>
         /// <returns>
-        /// - true if the <see cref="Resident"/> was removed from the database
+        /// - true if the <see cref="Resident"/> was removed from the list
         /// - false if the resident was not removed
         /// </returns>
-        public bool Remove(ObjectId id)
+        public bool RemoveResident(ObjectId id)
         {
             // get the index of the resident with the given id
             var index = MockData.FindIndex(x => x.ID == id);

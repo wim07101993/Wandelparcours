@@ -52,6 +52,24 @@ namespace WebService.Controllers
         #endregion CONSTRUCTORS
 
 
+        #region PROPERTIES
+
+        /// <summary>
+        /// SmallDataProperties is a collection of expressions to select the properties that
+        /// consume the least space (FirstName, LastName, Room Birthday and Doctor).
+        /// </summary>
+        public static Expression<Func<Resident, object>>[] SmallDataProperties { get; } =
+        {
+            // specify the fields that need to be returned
+            x => x.FirstName,
+            x => x.LastName,
+            x => x.Room,
+            x => x.Birthday,
+            x => x.Doctor,
+        };
+
+        #endregion PROPERTIES
+
         #region METHODS
 
         /// <summary>
@@ -76,15 +94,7 @@ namespace WebService.Controllers
             try
             {
                 // return the values that come from the data service wrapped in a 200 response 
-                return Ok(_dataService.GetResidents(new Expression<Func<Resident, object>>[]
-                {
-                    // specify the fields that need to be returned
-                    x => x.FirstName,
-                    x => x.LastName,
-                    x => x.Room,
-                    x => x.Birthday,
-                    x => x.Doctor,
-                }));
+                return Ok(_dataService.GetResidents(SmallDataProperties));
             }
             catch (Exception e)
             {
@@ -143,7 +153,7 @@ namespace WebService.Controllers
             try
             {
                 // use the data service to remove the resident
-                return _dataService.Remove(new ObjectId(id))
+                return _dataService.RemoveResident(new ObjectId(id))
                     // if the resident was deleted return status ok
                     ? StatusCode((int) HttpStatusCode.OK)
                     // if the resident was not deleted return status no content
@@ -156,6 +166,11 @@ namespace WebService.Controllers
                 // return a 500 internal server error code
                 return StatusCode((int) HttpStatusCode.InternalServerError);
             }
+        }
+
+        public IActionResult Update(Resident resident)
+        {
+            return NotFound();
         }
 
         #endregion METHDOS

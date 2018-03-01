@@ -33,7 +33,6 @@ namespace WebService.Services.Data
         /// </returns>
         string CreateResident(Resident resident);
 
-        /// <inheritdoc cref="IDataService.Remove" />
         /// <summary>
         /// RemoveResident is supposed to remove the <see cref="Resident"/> with the given id from the database.
         /// </summary>
@@ -42,6 +41,6 @@ namespace WebService.Services.Data
         /// - true if the <see cref="Resident"/> was removed from the database
         /// - false if the resident was not removed
         /// </returns>
-        bool Remove(ObjectId id);
+        bool RemoveResident(ObjectId id);
     }
 }
