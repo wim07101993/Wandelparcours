@@ -21,10 +21,13 @@
                     Voornaam: {{resident.lastName}}
                 </p>
                 <p>
+                    Kamer: {{resident.room}}
+                </p>
+                <p>
                     Geboortedatum: {{resident.birthday | date:'dd-MM-yyyy'}}
                 </p>
                 <p>
-                    Dokter: {{resident.doctor.name}} <br /> Tel: {{resident.doctor.phoneNumber}}
+                    Huisarts: {{resident.doctor.name}} <br /> Tel: {{resident.doctor.phoneNumber}}
                 </p>
             </div>
             <div class="card-action center">
@@ -44,7 +47,8 @@
                 <th>Voornaam</th>
                 <th>Naam</th>
                 <th>Geboortedatum</th>
-                <th>Dokter</th>
+                <th>Kamer</th>
+                <th>Huisarts</th>
                 <th>Tel:</th>
                 <th class="center">Wijzig</th>
                 <th class="center">Verwijder</th>
@@ -56,6 +60,7 @@
                 <td>{{resident.firstName}}</td>
                 <td>{{resident.lastName}}</td>
                 <td>{{resident.birthday | date:'dd-MM-yyyy'}}</td>
+                <td>{{resident.room}}</td>
                 <td>{{resident.doctor.name}}</td>
                 <td>{{resident.doctor.phoneNumber}}</td>
                 <td class="center"><i class="material-icons blue-text" (click)="openEditModal(resident.id)">edit</i></td>
@@ -94,23 +99,27 @@
                     </div>
                     <div class="row">
                         <div class="input-field col s6">
-                            <input placeholder="{{resident.birthday | date:'dd-MM-yyyy'}}" id="birthDay" type="text" class="validate">
-                            <label for="birthday" class="active">Voornaam</label>
+                            <input placeholder="{{resident.room}}" id="room" type="text" class="validate">
+                            <label for="room" class="active">Kamer</label>
+                        </div>
+                        <div class="input-field col s6">
+                            <input placeholder="{{resident.birthday | date:'dd-MM-yyyy'}}" id="birthDay" type="text" class="validate datepicker">
+                            <label for="birthDay" class="active">Geboortedatum</label>
                         </div>
                     </div>
                     <div class="row">
                         <div class="input-field col s6">
                             <input placeholder="{{resident.doctor.name}}" id="doctor_name" type="text" class="validate">
-                            <label for="doctor_name" class="active">Dokter</label>
+                            <label for="doctor_name" class="active">Huisarts</label>
                         </div>
                         <div class="input-field col s6">
                             <input placeholder="{{resident.doctor.phoneNumber}}" id="doctor_number" type="text" class="validate">
                             <label for="doctor_number" class="active">Tel:</label>
                         </div>
                     </div>
-                    <div>
-                        <a class="modal-action modal-close waves-effect waves-red btn-flat blue lighten-1 white-text" (click)="closeModal()">Opslaan</a>
-                        <a class="modal-action modal-close waves-effect waves-green btn-flat green lighten-1 white-text" (click)="closeModal()">Annuleer</a>
+                    <div class="right">
+                        <a class="modal-action modal-close waves-effect waves-red btn-flat green lighten-1 white-text" (click)="closeModal()">Opslaan</a>
+                        <a class="modal-action modal-close waves-effect waves-green btn-flat red lighten-1 white-text" (click)="closeModal()">Annuleer</a>
                     </div>
 
 
