@@ -7,7 +7,8 @@ import {letProto} from "rxjs/operator/let";
 import {Observable} from "rxjs/Observable";
 import {ThrowStmt} from "@angular/compiler";
 import {MouseEvents, Point} from "./MouseEvents"
-
+import {RenderBuffer,bufferelement} from "./RenderBuffer"
+declare var $: any
 @Component({
   selector: 'app-stationmanagement',
   templateUrl: './stationmanagement.component.html',
@@ -15,34 +16,60 @@ import {MouseEvents, Point} from "./MouseEvents"
 })
 
 
+
 export class StationmanagementComponent implements OnInit {
     @ViewChild('myCanvas') canvasRef: ElementRef;
     canvas:HTMLCanvasElement;
     context: CanvasRenderingContext2D;
     image:HTMLImageElement;
+    marker:HTMLImageElement;
     position: Point;
+    renderBuffer:RenderBuffer;
     zoomFactor:number = 1;
     mouseEvents:MouseEvents;
-    framerate=60;
+    framerate=5;
+    imageUrl="";
+    markerUrl="";
+    
     constructor(private http: Http) {}
     async ngOnInit() {
+        
       try{
-        this.canvas=(<HTMLCanvasElement>this.canvasRef.nativeElement);
-        this.context=<CanvasRenderingContext2D> this.canvas.getContext("2d");
-        console.log(this.context);
-        let test =this.canvas.getContext("2d");
-        await this.loadImage();
-        this.mouseEvents= new MouseEvents(this);
-        this.position={x:0,y:0};
-        console.log(this.position);
-        //setInterval(()=>{this.tick()},1000/this.framerate);
-        this.tick();
+            //put the rendering canvas in a variable to draw
+            this.canvas=(<HTMLCanvasElement>this.canvasRef.nativeElement);
+            this.context=<CanvasRenderingContext2D> this.canvas.getContext("2d");
+            //set the imageurl
+            this.imageUrl= getBaseUrl()+"images/blueprint.jpg";
+            this.markerUrl=getBaseUrl()+"images/station.png";
+            //create class mouseevent(this class is responsible for all mouse events in the render canvas)
+            this.mouseEvents= new MouseEvents(this);
+            //create render buffer
+            this.renderBuffer=new RenderBuffer(this);
+            //load the blueprint of the building
+            await this.loadMap();
+            //load marker
+            await this.loadMarker();
+            //set the position of the map on the canvas
+            this.position={x:0,y:0};
+            $("#markerModel").modal();
+            //set a auto render of 5 fps
+            setInterval(()=>{this.tick()},1000/this.framerate);
+            
       }catch (ex){
           console.log("error");
       }
     
     
     }
+    async addMarker(){
+        $("#markerModel").modal("open");
+    }
+    
+    async closeModal(){
+        $("#markerModel").modal("close");
+    }
+    
+    //this function is needed to zoomin
     async zoomIn(){
             
             this.zoomFactor*=2;
@@ -51,28 +78,35 @@ export class StationmanagementComponent implements OnInit {
             
             this.tick();
     }
+    //this function is needed to zoomout
     async zoomOut(){
 
         this.zoomFactor/=2;
         
         this.tick();
     }
+    //tick does the needed calculatations for the render, and draws the rendering on the canvas
     async tick(){
-        this.context.clearRect(0,0,this.canvas.width,this.canvas.height);
         
-        this.drawMap();
+        try{
+            await this.renderBuffer.clear();
+            this.drawMap();
+            await this.renderBuffer.render();
+        }catch (ex){console.log(ex);}
     }     
   
-  
-  async loadImage(){
+  //this function loads the image of the building
+  async loadMap(){
         return new Promise(resolve => {
                 let image =new Image();
                 let parent = this;
                 image.onload=function () {
                     parent.image=image;
+                    //return the promise
                     resolve();
                 };
-                image.src=getBaseUrl()+"images/blueprint.jpg";
+                //trigger onload for the imagurl
+                image.src=this.imageUrl;
                 
 
 
@@ -81,13 +115,46 @@ export class StationmanagementComponent implements OnInit {
       
     
   }
-  
+  async loadMarker(){
+      return new Promise(resolve => {
+              let image =new Image();
+              let parent = this;
+              image.onload=function () {
+                  parent.marker=image;
+                  //return the promise
+                  resolve();
+              };
+              //trigger onload for the imagurl
+              image.src=this.markerUrl;
+
+
+
+          }
+      );
+  }
   async drawMap(){
         try{
-            this.canvas.height=this.image.height/this.zoomFactor;
-            this.canvas.width=this.image.width/this.zoomFactor;
             
-            this.context.drawImage(this.image,this.mouseEvents.position.x,this.mouseEvents.position.y);
+            //calculate the width/height of the content in the canvas
+            let width=0;
+            let height=0;
+            this.canvas.height=window.innerHeight;
+            this.canvas.width=window.innerWidth;
+            if(window.innerHeight>window.innerWidth){
+                height=window.innerHeight;
+                width = height/this.image.height*this.image.width;
+            }else{
+                width = window.innerWidth;
+                height= width/ this.image.width*this.image.height;
+            }
+            //calculate zoom
+            height=height*this.zoomFactor;
+            width=width*this.zoomFactor;
+            //render
+            this.renderBuffer.add(this.image,this.mouseEvents.position.x, this.mouseEvents.position.y,width,height,"map","map");
+            //add the map location/size to the mouseevents for relative location calculation
+            this.mouseEvents.mapPos={x:this.mouseEvents.position.x,y:this.mouseEvents.position.y, width:width,height:height};
+            
         }catch (ex){
             console.log(ex);
         }

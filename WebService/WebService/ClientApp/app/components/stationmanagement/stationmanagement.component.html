@@ -1,12 +1,33 @@
+
+
 <div id="mapButtonHolder">
-    <a id="addPiButton" class="btn-floating  waves-effect waves-light red"><i class="material-icons">add</i></a>
+    <a id="addPiButton" class="btn-floating  waves-effect waves-light red" (click)="addMarker()"><i class="material-icons">add</i></a>
     <br>
     <a id="zoomInMap" class="btn-floating waves-effect waves-light green" (click)="zoomIn()"><i class="material-icons">zoom_in</i></a>
     <br>
     <a id="zoomOutMap" class="btn-floating waves-effect waves-light orange " (click)="zoomOut()"><i class="material-icons">zoom_out</i></a>
 </div>
 
-
-<img  #myImage id="img" style="display: none" src="/images/blueprint.jpg"/>
-<canvas #myCanvas id="map">
+<canvas #myCanvas id="map" >
 </canvas>
+
+
+
+
+<div id="markerModel" class="modal">
+    <div class="modal-content">
+        <h4>Station toevoegen</h4>
+        <div class="row">
+            <div class="input-field col s12">
+                <input id="mac" type="text" pattern="^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$" class="validate">
+                <label for="mac"  data-error="wrong" data-success="right">Station Adress</label>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <a (click)="closeModal()" class="modal-action modal-close waves-effect waves-green btn-flat">Agree</a>
+    </div>
+</div>
+
+
+
