@@ -42,5 +42,16 @@ namespace WebService.Services.Data
         /// - false if the resident was not removed
         /// </returns>
         bool RemoveResident(ObjectId id);
+
+        /// <summary>
+        /// UpdateResident is supposed to update the <see cref="Resident"/> with the id of the given <see cref="Resident"/>.
+        /// <para/>
+        /// The updated properties are defined in the <see cref="propertiesToUpdate"/> parameter.
+        /// If the <see cref="propertiesToUpdate"/> parameter is null or empty (which it is by default), all properties are updated.
+        /// </summary>
+        /// <param name="resident">is the <see cref="Resident"/> to update</param>
+        /// <param name="propertiesToUpdate">are the properties that need to be updated</param>
+        /// <returns>The updated resident</returns>
+        Resident UpdateResident(Resident resident, IEnumerable<Expression<Func<Resident, object>>> propertiesToUpdate = null);
     }
 }

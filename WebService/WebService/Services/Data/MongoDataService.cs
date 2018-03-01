@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
 using Microsoft.Extensions.Configuration;
 using MongoDB.Bson;
 using MongoDB.Driver;
@@ -133,6 +134,76 @@ namespace WebService.Services.Data
             var result = _collection.DeleteOne(x => x.ID == id);
             // return true if something acutaly happened
             return result.IsAcknowledged && result.DeletedCount > 0;
+        }
+
+        /// <inheritdoc cref="IDataService.UpdateResident" />
+        /// <summary>
+        /// UpdateResident updates the <see cref="T:WebService.Models.Resident" /> with the id of the given <see cref="T:WebService.Models.Resident" />.
+        /// <para />
+        /// The updated properties are defined in the <see cref="!:propertiesToUpdate" /> parameter.
+        /// If the <see cref="!:propertiesToUpdate" /> parameter is null or empty (which it is by default), all properties are updated.
+        /// </summary>
+        /// <param name="resident">is the <see cref="T:WebService.Models.Resident" /> to update</param>
+        /// <param name="propertiesToUpdate">are the properties that need to be updated</param>
+        /// <returns>The updated resident</returns>
+        public Resident UpdateResident(Resident resident,
+            IEnumerable<Expression<Func<Resident, object>>> propertiesToUpdate = null)
+        {
+            // create list of the enumerable to prevent multiple enumerations of enumerable
+            var propertiesToUpdateList = propertiesToUpdate?.ToList();
+
+            // check if thereare properties to update.
+            if (EnumerableExtensions.IsNullOrEmpty(propertiesToUpdateList))
+            {
+                // if there are no properties in the liest, replace the document
+                var replaceOneResult = _collection.ReplaceOne(x => x.ID == resident.ID, resident);
+                // check if something was replaced
+                return replaceOneResult.IsAcknowledged && replaceOneResult.ModifiedCount > 0
+                    // if something was replaced, return the new resident
+                    ? _collection
+                        .Find(x => x.ID == resident.ID)
+                        .ToList()
+                        .FirstOrDefault()
+                    // else return null
+                    : null;
+            }
+
+            // create a filter that filters on id
+            var filter = Builders<Resident>.Filter.Eq(x => x.ID, resident.ID);
+
+            // create an update definition.
+            // since there needs to be an updateDefinition to start from, update the id, that is the same for the old an new object
+            var update = Builders<Resident>.Update.Set(x => x.ID, resident.ID);
+
+            // ReSharper disable once PossibleNullReferenceException
+            // iterate over all the properties that need to be updated
+            foreach (var selector in propertiesToUpdateList)
+            {
+                // get the property
+                var prop = selector.Body is MemberExpression expression
+                    // via member expression
+                    ? expression.Member as PropertyInfo
+                    // if that failse, unary expression
+                    : ((MemberExpression) ((UnaryExpression) selector.Body).Operand).Member as PropertyInfo;
+
+                // check if the property exists
+                if (prop != null)
+                    // if it does, add the selector and value to the updateDefinition
+                    update = update.Set(selector, prop.GetValue(resident));
+            }
+
+            // update the document
+            var updateResult = _collection.UpdateOne(filter, update);
+
+            // check if something was updated
+            return updateResult.IsAcknowledged && updateResult.ModifiedCount > 0
+                // if something was updated, return the new resident
+                ? _collection
+                    .Find(x => x.ID == resident.ID)
+                    .ToList()
+                    .FirstOrDefault()
+                // else return null;
+                : null;
         }
     }
 }
