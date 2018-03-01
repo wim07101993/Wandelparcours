@@ -1,8 +1,11 @@
 ﻿<Properties StartupConfiguration="{DF0970FA-BE20-40E0-89BE-F9F48941A690}|Default">
-  <MonoDevelop.Ide.Workbench ActiveDocument="WebService/WebService.csproj">
+  <MonoDevelop.Ide.Workbench ActiveDocument="WebService/Startup.cs">
     <Files>
-      <File FileName="WebService/ClientApp/app/components/counter/counter.component.html" Line="1" Column="1" />
-      <File FileName="WebService/WebService.csproj" Line="35" Column="5" />
+      <File FileName="WebService/ClientApp/app/components/resident/resident.component.html" Line="44" Column="76" />
+      <File FileName="WebService/ClientApp/app/components/sidenav/sidenav.component.html" Line="2" Column="73" />
+      <File FileName="WebService/wwwroot/js/app.js" Line="3" Column="1" />
+      <File FileName="WebService/Program.cs" Line="2" Column="36" />
+      <File FileName="WebService/Startup.cs" Line="1" Column="1" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
