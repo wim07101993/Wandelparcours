@@ -16,4 +16,9 @@
     <ProjectReference Include="..\WebService\WebService.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Controllers\" />
+    <Folder Include="Helpers\" />
+  </ItemGroup>
+
 </Project>
