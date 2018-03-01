@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
+using MongoDB.Bson;
 using WebService.Models;
 
 namespace WebService.Services.Data
@@ -31,5 +32,16 @@ namespace WebService.Services.Data
         /// - null if the resident was not created
         /// </returns>
         string CreateResident(Resident resident);
+
+        /// <inheritdoc cref="IDataService.Remove" />
+        /// <summary>
+        /// RemoveResident is supposed to remove the <see cref="Resident"/> with the given id from the database.
+        /// </summary>
+        /// <param name="id">is the id of the <see cref="Resident"/> to remove in the database</param>
+        /// <returns>
+        /// - true if the <see cref="Resident"/> was removed from the database
+        /// - false if the resident was not removed
+        /// </returns>
+        bool Remove(ObjectId id);
     }
 }

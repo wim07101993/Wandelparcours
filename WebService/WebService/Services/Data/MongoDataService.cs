@@ -117,5 +117,22 @@ namespace WebService.Services.Data
                 // else return null
                 : null;
         }
+
+        /// <inheritdoc cref="IDataService.Remove" />
+        /// <summary>
+        /// RemoveResident removes the <see cref="Resident"/> with the given id from the database.
+        /// </summary>
+        /// <param name="id">is the id of the <see cref="Resident"/> to remove in the database</param>
+        /// <returns>
+        /// - true if the <see cref="Resident"/> was removed from the database
+        /// - false if the resident was not removed
+        /// </returns>
+        public bool Remove(ObjectId id)
+        {
+            // remove the document from the database with the given id
+            var result = _collection.DeleteOne(x => x.ID == id);
+            // return true if something acutaly happened
+            return result.IsAcknowledged && result.DeletedCount > 0;
+        }
     }
 }

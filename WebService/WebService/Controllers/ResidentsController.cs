@@ -3,6 +3,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
 using System.Net;
 using Microsoft.AspNetCore.Mvc;
+using MongoDB.Bson;
 using WebService.Services.Logging;
 using WebService.Models;
 using WebService.Services.Data;
@@ -102,8 +103,7 @@ namespace WebService.Controllers
         /// <param name="resident">is the <see cref="Resident"/> to save in the database</param>
         /// <returns>
         /// - Status created (201) if succes
-        /// - Status not modified (304) if there was no error but the <see cref="Resident"/> has not been added
-        /// - Status internal server error (500) on error
+        /// - Status internal server error (500) on error or not created
         /// </returns>
         [HttpPost]
         public IActionResult Create([FromBody] Resident resident)
@@ -115,7 +115,39 @@ namespace WebService.Controllers
                     // if the resident was created return satus created
                     ? StatusCode((int) HttpStatusCode.Created)
                     // if the resident was not created return status not modified
-                    : StatusCode((int) HttpStatusCode.NotModified);
+                    : StatusCode((int) HttpStatusCode.InternalServerError);
+            }
+            catch (Exception e)
+            {
+                // log the error
+                _logger.Log(this, ELogLevel.Error, e);
+                // return a 500 internal server error code
+                return StatusCode((int) HttpStatusCode.InternalServerError);
+            }
+        }
+
+        /// <summary>
+        /// Delete is the method corresonding to the DELETE method of the /Residents controller of the REST service. (DELETE 0.0.0.0:3000/api/v1/residents/{id})
+        /// <para/>
+        /// It saves the passed <see cref="Resident"/> to the database.
+        /// </summary>
+        /// <param name="id">is the id of the <see cref="Resident"/> to remove from the database</param>
+        /// <returns>
+        /// - Status created (201) if succes
+        /// - Status no content (204) if there was no erro but also no object to remove
+        /// - Status internal server error (500) on error
+        /// </returns>
+        [HttpDelete("{id}")]
+        public IActionResult Delete(string id)
+        {
+            try
+            {
+                // use the data service to remove the resident
+                return _dataService.Remove(new ObjectId(id))
+                    // if the resident was deleted return status ok
+                    ? StatusCode((int) HttpStatusCode.OK)
+                    // if the resident was not deleted return status no content
+                    : StatusCode((int) HttpStatusCode.NoContent);
             }
             catch (Exception e)
             {
