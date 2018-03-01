@@ -10,7 +10,7 @@ namespace WebService
         public static IWebHost BuildWebHost(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
                 .UseStartup<Startup>()
-                .UseUrls("http://0.0.0.0:3000")
+             //   .UseUrls("http://0.0.0.0:3000")
                 .Build();
     }
 }
