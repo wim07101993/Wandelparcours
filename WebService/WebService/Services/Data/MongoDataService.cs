@@ -41,14 +41,15 @@ namespace WebService.Services.Data
 
             var selector = Builders<Resident>.Projection.Include(x => x.ID);
 
-            // ReSharper disable once PossibleNullReferenceException
+            //ReSharper disable once PossibleNullReferenceException
             foreach (var property in properties)
-                selector.Include(property);
-
-            return foundItems.Project<Resident>(selector).ToList();
+                selector = selector.Include(property);
+            
+            var items = foundItems.Project<Resident>(selector).ToList();
+            return items;
         }
 
-        public bool CreateResident(Resident resident)
+        public string CreateResident(Resident resident)
         {
             resident.ID = ObjectId.GenerateNewId();
             _collection.InsertOne(resident);
@@ -57,7 +58,9 @@ namespace WebService.Services.Data
                 .Find(x => x.ID == resident.ID)
                 .FirstOrDefault();
 
-            return newItem != null;
+            return newItem != null 
+                ? resident.ID.ToString()
+                : null;
         }
     }
 }

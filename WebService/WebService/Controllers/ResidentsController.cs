@@ -3,7 +3,6 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
 using System.Net;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
 using WebService.Services.Logging;
 using WebService.Models;
 using WebService.Services.Data;
@@ -16,7 +15,7 @@ namespace WebService.Controllers
     /// <para />
     /// It handles the reading and writing of residents data to the database.
     /// </summary>
-    /// [Route("api/v1/[controller]")]
+    [Route("api/v1/[controller]")]
     [SuppressMessage("ReSharper", "SpecifyACultureInStringConversionExplicitly")]
     public class ResidentsController : Controller
     {
@@ -112,7 +111,7 @@ namespace WebService.Controllers
             try
             {
                 // use the data service to create a new resident
-                return _dataService.CreateResident(resident)
+                return _dataService.CreateResident(resident) != null
                     // if the resident was created return satus created
                     ? StatusCode((int) HttpStatusCode.Created)
                     // if the resident was not created return status not modified

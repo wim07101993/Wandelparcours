@@ -9,6 +9,6 @@ namespace WebService.Services.Data
     {
         IEnumerable<Resident> GetResidents(IEnumerable<Expression<Func<Resident, object>>> propertiesToInclude = null);
         
-        bool CreateResident(Resident resdResident);
+        string CreateResident(Resident resident);
     }
 }
