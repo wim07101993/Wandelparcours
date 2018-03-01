@@ -1,5 +1,15 @@
+
 <div class="row">
-    <div class="col s6 m4 l3">
+    <div style="padding-left:0.75rem">
+        <i class="material-icons" style="font-size:50px" (click)="view='list-view'">view_list</i><!--*ngIf="view=='card-view'"-->
+        <i class="material-icons" style="font-size: 50px">navigate_before</i>
+        <i class="material-icons" style="font-size: 50px">navigate_next</i>
+        <i class="material-icons" style="font-size:50px" (click)="view='card-view'">view_comfy</i><!--*ngIf="view=='list-view'"-->
+    </div>    
+</div>
+
+<div class="row" *ngIf="view=='card-view'">
+    <div class="col sm6 m4 l4" *ngFor="let resident of residents">
         <div class="card">
             <div class="card-image">
                 <img src="/images/boss.png">
@@ -7,23 +17,61 @@
             </div>
             <div class="card-content">
                 <p>
-                    Naam: {{model.param1}}
+                    Naam: {{resident.firstName}}
                 </p>
                 <p>
-                    Voornaam: {{firstName}}
+                    Voornaam: {{resident.lastName}}
                 </p>
                 <p>
-                    Geboortedatum: {{birthday}}
+                    Geboortedatum: {{resident.birthday}}
                 </p>
                 <p>
-                    Dokter: {{docter}} || Tel: {{phoneNumber}}
+                    Dokter: {{resident.doctor.name}}  Tel: {{resident.doctor.phoneNumber}}
                 </p>
             </div>
             <div class="card-action center">
-                <a class="waves-effect waves-light btn">button</a>
-                <a class="waves-effect waves-light btn">button</a>
+                <i class="material-icons blue-text" style="font-size:50px">edit</i>
+                <i class="material-icons red-text"  style="font-size:50px">clear</i>
+            </div>
+
+            <div id="modal{{resident.id}}" class="modal">
+                <div class="modal-content">
+                    <h4>Modal Header</h4>
+                    <p>A bunch of text</p>
+                </div>
+                <div class="modal-footer">
+                    <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat">Agree</a>
+                </div>
             </div>
         </div>
     </div>
+</div>
+
+<div class="row" *ngIf="view=='list-view'">
+    <table class="striped">
+        <thead>
+            <tr>
+                <th>Voornaam</th>
+                <th>Naam</th>
+                <th>Geboortedatum</th>
+                <th>Dokter</th>
+                <th>Tel:</th>
+                <th>Wijzig</th>
+                <th>Verwijder</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            <tr *ngFor="let resident of residents">
+                <td>{{resident.firstName}}</td>
+                <td>{{resident.lastName}}</td>
+                <td>{{resident.birthday}}</td>
+                <td>{{resident.doctor.name}}</td>
+                <td>{{resident.doctor.phoneNumber}}</td>
+                <td class="center"><i class="material-icons blue-text">edit</i></td>
+                <td class="center"><i class="material-icons red-text">clear</i></td>
+            </tr>
+        </tbody>
+    </table>
 </div>
 

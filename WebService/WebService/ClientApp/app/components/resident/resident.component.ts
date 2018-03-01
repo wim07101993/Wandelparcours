@@ -10,26 +10,21 @@ import { Response } from '@angular/http'
   providers: [RestServiceService]
 })
 export class ResidentComponent implements OnInit {
-    public model: Resident;
+    view: string = "card-view";
     data: any = null;
-
+    residents: Resident[];
     constructor(private service: RestServiceService) {
-        this.model = new Resident();
-        console.log(this.bla());
-        this.testData();
+        this.showAllResidents();
+        this.residents = [];
     }
 
-    bla() {
-        return this.service.testData();
-    }
-
-
-   testData() {
-        return this.service.getAllResidents().subscribe(data => {
-            this.data = data;
-            console.log(this.data);
-
-        });
+    async showAllResidents() {
+      let residents= await this.service.getAllResidents();
+      if (residents != undefined)
+          this.residents = residents;
+      else {
+          alert("oops! :( looks like something went wrong :(");
+      }
     }
 
   ngOnInit() {

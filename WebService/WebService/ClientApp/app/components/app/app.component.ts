@@ -1,6 +1,5 @@
 import { Component } from '@angular/core';
 import { RestServiceService } from '../../service/rest-service.service';
-//import { RestServiceService } from '../../service/rest-service.service';
 
 
 @Component({
@@ -10,5 +9,5 @@ import { RestServiceService } from '../../service/rest-service.service';
     providers: [RestServiceService]
 })
 export class AppComponent {
-    constructor(public restService: RestServiceService) {}
+    //constructor(public restService: RestServiceService) {}
 }

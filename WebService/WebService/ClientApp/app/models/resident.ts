@@ -1,13 +1,13 @@
 export class Resident {
-    _id: string
-    _firstName: string
-    _lastName: string
-    _picture: any
-    _birthDay: string
-    _doctor: Doctor
+    id: string
+    firstName: string
+    lastName: string
+    picture: any
+    birthDay: string
+    doctor: Doctor
 }
 
 export class Doctor {
-    _name: string
-    _phoneNumber: string
+    name: string
+    phoneNumber: string
 }

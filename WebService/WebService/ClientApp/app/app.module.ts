@@ -14,9 +14,8 @@ import { StationmanagementComponent } from './components/stationmanagement/stati
 import { HeaderComponent } from './components/header/header.component';
 import { SidenavComponent } from './components/sidenav/sidenav.component';
 import { ResidentComponent } from './components/resident/resident.component';
-import { RestServiceService } from './service/rest-service.service';
+//import { RestServiceService } from './service/rest-service.service';
 
-//import { RestServiceService } from '../../service/rest-service.service';
 
 
 @NgModule({
@@ -45,8 +44,8 @@ import { RestServiceService } from './service/rest-service.service';
             { path: 'resident', component: ResidentComponent},
             { path: '**', redirectTo: 'home' }
         ])
-    ],
-    providers: [RestServiceService]
+    ]
+    //providers: [RestServiceService]
 })
 export class AppModuleShared {
 }
