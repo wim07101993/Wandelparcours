@@ -27,3 +27,59 @@
     </div>
 </div>
 
+
+<!-- Modal Structure -->
+<!-- Form to add resident -->
+<div id="add-resident-modal" class="modal">
+    <div class="modal-content">
+        <h4>Bewoner toevoegen</h4>
+        <div class="row">
+            <form class="col s12">
+                <div class="row">
+                    <div class="input-field col s6">
+                        <input id="first_name" type="text" class="validate">
+                        <label for="first_name">Voornaam</label>
+                    </div>
+                    <div class="input-field col s6">
+                        <input id="last_name" type="text" class="validate">
+                        <label for="last_name">Familienaam</label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="input-field col s6">
+                        <input id="room" type="text" class="validate">
+                        <label for="room">Kamer</label>
+                    </div>
+                    <div class="input-field col s6">
+                        <input id="birthdate" type="text" class="datepicker validate">
+                        <label for="birthdate">Geboortedatum</label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="input-field col s12">
+                        <input id="password" type="password" class="validate">
+                        <label for="password">Password</label>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button class="btn waves-effect waves-light green lighten-1" type="submit" name="action">
+            Toevoegen
+            <i class="material-icons right">send</i>
+        </button>
+        <button class="btn waves-effect waves-light red lighten-1 modal-action modal-close" type="submit" name="action">
+            Annuleren
+            <i class="material-icons right">cancel</i>
+        </button>
+    </div>
+</div>
+
+<!-- Modal Trigger -->
+<!-- This will pop up the form to add a resident -->
+<div class="fixed-action-btn">
+    <a class="btn-floating btn-large red modal-trigger" href="#add-resident-modal">
+        <i class="large material-icons">person_add</i>
+    </a>
+</div>
