@@ -23,30 +23,5 @@
     <script type="text/javascript" src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
     <script type="text/javascript" src="js/materialize.min.js"></script>
     <script type="text/javascript" src="js/app.js"></script>
-
-    <script>
-        $(document).ready(function(){
-            // Shows/Hides SideNav
-            $('.button-collapse').sideNav({
-                menuWidth: 240,
-                closeOnClick: true // Closes side-nav on <a> clicks, useful for Angular/Meteor
-            });
-            $('.collapsible').collapsible();
-
-            // Shows Modal 
-            $('.modal').modal();
-
-            // Js variation of datepicker.js
-            $('.datepicker').pickadate({
-                selectMonths: true,
-                selectYears: 15,
-                today: 'Vandaag',
-                clear: 'Wis',
-                close: 'Akkoord',
-                closeOnSelect: false
-            });
-
-        });
-    </script>
 </body>
 </html>
