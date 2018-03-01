@@ -1,11 +1,9 @@
 
 <div class="row">
     <div style="padding-left:0.75rem">
-        <i class="material-icons" style="font-size:50px" (click)="view='list-view'">view_list</i><!--*ngIf="view=='card-view'"-->
-        <i class="material-icons" style="font-size: 50px">navigate_before</i>
-        <i class="material-icons" style="font-size: 50px">navigate_next</i>
-        <i class="material-icons" style="font-size:50px" (click)="view='card-view'">view_comfy</i><!--*ngIf="view=='list-view'"-->
-    </div>    
+        <i class="material-icons" style="font-size:50px" (click)="view='list-view'" *ngIf="view=='card-view'">view_list</i><!---->
+        <i class="material-icons" style="font-size:50px" (click)="view='card-view'" *ngIf="view=='list-view'">view_comfy</i><!---->
+    </div>
 </div>
 
 <div class="row" *ngIf="view=='card-view'">
@@ -23,26 +21,18 @@
                     Voornaam: {{resident.lastName}}
                 </p>
                 <p>
-                    Geboortedatum: {{resident.birthday}}
+                    Geboortedatum: {{resident.birthday | date:'dd-MM-yyyy'}}
                 </p>
                 <p>
-                    Dokter: {{resident.doctor.name}}  Tel: {{resident.doctor.phoneNumber}}
+                    Dokter: {{resident.doctor.name}} <br /> Tel: {{resident.doctor.phoneNumber}}
                 </p>
             </div>
             <div class="card-action center">
-                <i class="material-icons blue-text" style="font-size:50px">edit</i>
-                <i class="material-icons red-text"  style="font-size:50px">clear</i>
+                <i class="material-icons blue-text" style="font-size:50px" (click)="openEditModal(resident.id)" >edit</i>
+                <i class="material-icons red-text " (click)="openModal(resident.id)" style="font-size:50px">clear</i>
             </div>
 
-            <div id="modal{{resident.id}}" class="modal">
-                <div class="modal-content">
-                    <h4>Modal Header</h4>
-                    <p>A bunch of text</p>
-                </div>
-                <div class="modal-footer">
-                    <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat">Agree</a>
-                </div>
-            </div>
+            
         </div>
     </div>
 </div>
@@ -56,8 +46,8 @@
                 <th>Geboortedatum</th>
                 <th>Dokter</th>
                 <th>Tel:</th>
-                <th>Wijzig</th>
-                <th>Verwijder</th>
+                <th class="center">Wijzig</th>
+                <th class="center">Verwijder</th>
             </tr>
         </thead>
 
@@ -65,13 +55,67 @@
             <tr *ngFor="let resident of residents">
                 <td>{{resident.firstName}}</td>
                 <td>{{resident.lastName}}</td>
-                <td>{{resident.birthday}}</td>
+                <td>{{resident.birthday | date:'dd-MM-yyyy'}}</td>
                 <td>{{resident.doctor.name}}</td>
                 <td>{{resident.doctor.phoneNumber}}</td>
-                <td class="center"><i class="material-icons blue-text">edit</i></td>
-                <td class="center"><i class="material-icons red-text">clear</i></td>
+                <td class="center"><i class="material-icons blue-text" (click)="openEditModal(resident.id)">edit</i></td>
+                <td class="center"><i class="material-icons red-text" (click)="openModal(resident.id)">clear</i></td>
             </tr>
         </tbody>
     </table>
 </div>
 
+
+<div *ngFor="let resident of residents">
+    <div id="modal{{resident.id}}" class="modal">
+        <div class="modal-content">
+            <h4>{{resident.firstName}}</h4>
+            <p>Let op! U staat op het punt {{resident.firstName}} te verwijderen!</p>
+        </div>
+        <div class="modal-footer">
+            <a class="modal-action modal-close waves-effect waves-red btn-flat red lighten-1 white-text" (click)="closeModal()">Verwijder</a>
+            <a class="modal-action modal-close waves-effect waves-green btn-flat blue lighten-1 white-text" (click)="closeModal()">Annuleer</a>
+        </div>
+    </div>
+    <div id="modalEdit{{resident.id}}" class="modal">
+        <div class="modal-content">
+            <div class="row">
+                <form class="col s12">
+                    <h1>Wijzig gegevens van {{resident.firstName}}</h1>
+                    <div class="row">
+                        <div class="input-field col s6">
+                            <input placeholder="{{resident.firstName}}" id="first_name" type="text" class="validate">
+                            <label for="first_name" class="active">Voornaam</label>
+                        </div>
+                        <div class="input-field col s6">
+                            <input placeholder="{{resident.lastName}}" id="last_name" type="text" class="validate">
+                            <label for="last_name" class="active">Naam</label>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="input-field col s6">
+                            <input placeholder="{{resident.birthday | date:'dd-MM-yyyy'}}" id="birthDay" type="text" class="validate">
+                            <label for="birthday" class="active">Voornaam</label>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="input-field col s6">
+                            <input placeholder="{{resident.doctor.name}}" id="doctor_name" type="text" class="validate">
+                            <label for="doctor_name" class="active">Dokter</label>
+                        </div>
+                        <div class="input-field col s6">
+                            <input placeholder="{{resident.doctor.phoneNumber}}" id="doctor_number" type="text" class="validate">
+                            <label for="doctor_number" class="active">Tel:</label>
+                        </div>
+                    </div>
+                    <div>
+                        <a class="modal-action modal-close waves-effect waves-red btn-flat blue lighten-1 white-text" (click)="closeModal()">Opslaan</a>
+                        <a class="modal-action modal-close waves-effect waves-green btn-flat green lighten-1 white-text" (click)="closeModal()">Annuleer</a>
+                    </div>
+
+
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

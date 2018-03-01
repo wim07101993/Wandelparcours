@@ -3,7 +3,7 @@ export class Resident {
     firstName: string
     lastName: string
     picture: any
-    birthDay: string
+    birthday: Date
     doctor: Doctor
 }
 

@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core'
 import { Resident } from '../../models/resident'
 import { RestServiceService } from '../../service/rest-service.service' 
 import { Response } from '@angular/http'
+declare var $: any
 
 @Component({
   selector: 'app-resident',
@@ -10,12 +11,29 @@ import { Response } from '@angular/http'
   providers: [RestServiceService]
 })
 export class ResidentComponent implements OnInit {
+ 
     view: string = "card-view";
     data: any = null;
     residents: Resident[];
     constructor(private service: RestServiceService) {
         this.showAllResidents();
         this.residents = [];
+
+    }
+
+    openModal(uniqueIdentifier: string) {
+        //alert(uniqueIdentifier);
+        $("#modal" + uniqueIdentifier).modal();
+        $("#modal" + uniqueIdentifier).modal("open");
+    }
+
+    openEditModal(uniqueIdentifier: string) {
+        $("#modalEdit" + uniqueIdentifier).modal();
+        $("#modalEdit" + uniqueIdentifier).modal("open");
+    }
+
+    closeModal() {
+        $().modal("close");
     }
 
     async showAllResidents() {
