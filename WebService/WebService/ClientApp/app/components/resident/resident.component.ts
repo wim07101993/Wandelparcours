@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Resident } from '../../models/resident';
+import { Resident } from '../../models/resident'
 
 @Component({
   selector: 'app-resident',
