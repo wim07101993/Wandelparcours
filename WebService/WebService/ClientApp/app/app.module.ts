@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { HttpModule } from '@angular/http';
 import { RouterModule } from '@angular/router';
 
+
 import { AppComponent } from './components/app/app.component';
 import { NavMenuComponent } from './components/navmenu/navmenu.component';
 import { HomeComponent } from './components/home/home.component';
@@ -13,6 +14,9 @@ import { StationmanagementComponent } from './components/stationmanagement/stati
 import { HeaderComponent } from './components/header/header.component';
 import { SidenavComponent } from './components/sidenav/sidenav.component';
 import { ResidentComponent } from './components/resident/resident.component';
+//import { RestServiceService } from './service/rest-service.service';
+
+
 
 @NgModule({
     declarations: [
@@ -41,6 +45,7 @@ import { ResidentComponent } from './components/resident/resident.component';
             { path: '**', redirectTo: 'home' }
         ])
     ]
+    //providers: [RestServiceService]
 })
 export class AppModuleShared {
 }

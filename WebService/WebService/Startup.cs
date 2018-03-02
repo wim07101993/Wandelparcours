@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.SpaServices.Webpack;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using WebService.Services.Data;
 using WebService.Services.Logging;
 
 namespace WebService
@@ -19,8 +20,10 @@ namespace WebService
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddSingleton(typeof(ILogger), new LoggerCollection {new ConsoleLogger(), new FileLogger()});
-
+            services
+                .AddSingleton(typeof(ILogger), new LoggerCollection {new ConsoleLogger(), new FileLogger()})
+                .AddSingleton<IDataService, MongoDataService>();
+            
             services.AddMvc();
         }
 
