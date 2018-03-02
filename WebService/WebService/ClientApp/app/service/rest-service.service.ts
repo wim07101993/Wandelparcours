@@ -38,13 +38,15 @@ export class RestServiceService {
         });
     }
 
-    editResidentWithData(resident: Resident) {
+    editResidentWithData(dataToUpdate: any) {
+        console.log(dataToUpdate);
+        
         return new Promise(resolve => {
-            this.http.put(this.restUrl + 'api/v1/residents', resident).subscribe(response => {
+            this.http.put(this.restUrl + 'api/v1/residents', dataToUpdate).subscribe(response => {
                 console.log("updated");
                 resolve();
             }, error => {
-                console.log("Oops! Something went wrong!");
+                console.log("Could not update data!");
                 resolve();
             });
         });

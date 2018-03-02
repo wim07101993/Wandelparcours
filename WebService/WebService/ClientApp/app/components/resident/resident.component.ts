@@ -16,12 +16,15 @@ export class ResidentComponent implements OnInit {
     data: any = null;
     residents: Resident[];
     modalResident: Resident;
-    
+    updateResident: any;
     constructor(private service: RestServiceService) {
         this.showAllResidents();
         this.residents = [];
         this.modalResident = <Resident>{
-            firstName: "", lastName: "",room:"", id: "", birthday: new Date(), doctor: { name: "", phoneNumber: "" }
+            firstName: "", lastName: "", room: "", id: "", birthday: new Date(), doctor: { name: "", phoneNumber: "" }
+        };
+        this.updateResident = {
+            firstName: "", lastName: "", room: "", id: "", birthday: "", doctor: { name: "", phoneNumber: "" }
         };
 
     }
@@ -35,17 +38,25 @@ export class ResidentComponent implements OnInit {
 
     openEditModal(modalResident: Resident) {
         this.modalResident = modalResident;
+        //this.modalResident.birthday=new Date(modalResident.birthday)
         $("#editModalResident").modal();
         $("#editModalResident").modal("open");
         $('.datepicker').pickadate({
             selectMonths: true, // Creates a dropdown to control month
             selectYears: 200, // Creates a dropdown of 15 years to control year,
+            monthsFull: ['Januari', 'Februari', 'Maart', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'December'],
+            monthsShort: ['Jan','Feb','Maa','Apr','Mei','Jun','Jul','Aug','Sep','Okt','Nov','Dec'],
+            weekdaysShort: ['maa', 'din', 'woe', 'don', 'vri', 'zat', 'zon'],
             today: 'Today',
             clear: 'Clear',
             close: 'Ok',
+            formatSubmit: 'dd-mm-yyyy',
+            dateFormat: 'dd-mm-yyyy',
+            DisplayDate: 'dd-mm-yyyy',
+            format: 'yyyy-mm-dd',
+            hiddenName: true,
             closeOnSelect: false // Close upon selecting a date,
         });
-
     }
 
     closeModal() {
@@ -53,8 +64,14 @@ export class ResidentComponent implements OnInit {
     }
 
     async showAllResidents() {
-        let residents = await this.service.getAllResidents();
-    
+        let residents: any = await this.service.getAllResidents();
+        for (let a of residents) {
+            //testing.substring(0,testing.indexOf("T"))
+            let b: string = "" + a.birthday;
+            let c = b.substring(0, b.indexOf("T"));
+        }
+
+
       if (residents != undefined)
           this.residents = residents;
       else {
@@ -68,7 +85,45 @@ export class ResidentComponent implements OnInit {
     }
 
     async editResident(resident: Resident) {
-        await this.service.editResidentWithData(resident);
+        this.updateResident.id = resident.id;
+        let birthDay = $("#birthDay").val();
+        
+        if (birthDay != "") {
+            console.log("update birthday");
+            let a = new Date(birthDay);
+            console.log(a);
+            this.updateResident.birthday = a;
+        }
+        
+
+        console.log(this.updateResident);
+        let changedProperties = [];
+        for (let prop in this.updateResident)
+        {
+            if (this.updateResident[prop] != null && this.updateResident[prop] != "") {
+                changedProperties.push(prop);
+            }
+        }
+        if (this.updateResident.doctor.name == "") {
+            this.updateResident.doctor.name = this.modalResident.doctor.name;
+        }
+        if (this.updateResident.doctor.phoneNumber == "") {
+            this.updateResident.doctor.phoneNumber = this.modalResident.doctor.phoneNumber;
+        }
+        console.log(changedProperties);
+
+        $('#birthDay').val("");
+
+        //updatedResident.firstName = 
+        let updateData = { value: this.updateResident, propertiesToUpdate: changedProperties };
+        
+        await this.service.editResidentWithData(updateData);
+
+        this.updateResident = {
+            firstName: "", lastName: "", room: "", id : "", birthday: "", doctor: { name: "", phoneNumber: "" }
+        };
+
+
         this.showAllResidents();
     }
 
