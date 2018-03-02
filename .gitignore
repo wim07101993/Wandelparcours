@@ -40,3 +40,5 @@ WebService/WebService/**/packages/*
 #!**/packages/repositories.config
 WebService/WebAPIUnitTests/obj/
 WebService/WebAPIUnitTests/bin/
+WebService/WebAPIUnitTests/bin/
+WebService/WebAPIUnitTests/obj/

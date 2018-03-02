@@ -147,14 +147,16 @@ namespace WebService.Services.Data
         /// - the new id if the <see cref="Resident"/> was created in the list
         /// - null if the newResident was not created
         /// </returns>
+     
         public string CreateResident(Resident resident)
         {
-            // create a new ide for the newResident
+            // create a new ide for the resident
             resident.ID = new ObjectId();
-            // add the new newResident to the list
+            // add the new resident to the list
             MockData.Add(resident);
 
-            // check if the newResident was created
+            // check if the resident was created
+
             return MockData.Any(x => x.ID == resident.ID)
                 // if it is, return the id
                 ? resident.ID.ToString()
@@ -235,5 +237,6 @@ namespace WebService.Services.Data
             // return the updated resident
             return MockData.FirstOrDefault(x => x.ID == newResident.ID);
         }
+
     }
 }

@@ -71,7 +71,7 @@ namespace WebService.Services.Data
 
             // convert the properties to include to a list (if not null)
             var properties = propertiesToInclude?.ToList();
-            // if the proeprteis are null or there are none, return all the properties
+            // if the proeprties are null or there are none, return all the properties
             if (EnumerableExtensions.IsNullOrEmpty(properties))
                 return foundItems.ToList();
 
