@@ -38,6 +38,11 @@ WebService/WebService/**/packages/*
 !**/packages/build/
 # Uncomment if necessary however generally it will be regenerated when needed
 #!**/packages/repositories.config
+WebService/WebAPIUnitTests/obj/project.assets.json
+WebService/WebAPIUnitTests/obj/WebAPIUnitTests.csproj.nuget.g.targets
+WebService/WebAPIUnitTests/obj/WebAPIUnitTests.csproj.nuget.g.props
+WebService/WebAPIUnitTests/obj/Debug/netcoreapp2.0/WebAPIUnitTests.Program.cs
+WebService/WebAPIUnitTests/obj/Debug/netcoreapp2.0/WebAPIUnitTests.AssemblyInfo.cs
 WebService/WebAPIUnitTests/obj/
 WebService/WebAPIUnitTests/bin/
 WebService/WebAPIUnitTests/bin/
