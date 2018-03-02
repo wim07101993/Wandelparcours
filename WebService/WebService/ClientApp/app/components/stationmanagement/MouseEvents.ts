@@ -1,7 +1,7 @@
 import {StationmanagementComponent} from "./stationmanagement.component"
 import {getBaseUrl} from "../../app.module.browser";
 import {RenderBuffer} from "./RenderBuffer";
-
+import {Position} from "../../models/station"
 export class MouseEvents{
     station:StationmanagementComponent;
     canvas : HTMLCanvasElement;
@@ -58,6 +58,15 @@ export class MouseEvents{
         let mousepos: Point= {x:x,y:y};
         return mousepos;
     }
+
+     calculateStationPosOnImage(position:Position){
+        let point:Point= {
+            x: (position.x*this.mapPos.width) + this.mapPos.x ,
+            y:(position.y*this.mapPos.height) + this.mapPos.y 
+        };
+        return point;
+        
+    }
     
     async mouseUp(e:MouseEvent){
         //disable tracking
@@ -74,7 +83,7 @@ export class MouseEvents{
             this.screenPos = {x:e.screenX,y:e.screenY};
         }else{
             let mouseposition = await this.calculateMousePosOnImage({x:e.layerX,y:e.layerY});
-            this.station.saveStationToDatabase(mouseposition)
+            this.station.saveStationToDatabaseModal(mouseposition)
             
         }
     }
