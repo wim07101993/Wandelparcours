@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
 using System.Net;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Bson;
+using WebService.Helpers;
 using WebService.Services.Logging;
 using WebService.Models;
 using WebService.Services.Data;
@@ -73,7 +75,7 @@ namespace WebService.Controllers
         #region METHODS
 
         /// <summary>
-        /// Get is the method corresponding to the GET method of the /Residents controller of the REST service. (GET 0.0.0.0:3000/api/v1/residents)
+        /// Get is the method corresponding to the GET method of the /Residents controller of the REST service. (GET 0.0.0.0:5000/api/v1/residents)
         /// <para/>
         /// It returns all the Residents in the database wrapped in an <see cref="IActionResult"/>. To limit the data traffic only a few fields are returned:
         /// <list type="bullet">
@@ -106,7 +108,7 @@ namespace WebService.Controllers
         }
 
         /// <summary>
-        /// Create is the method corresonding to the POST method of the /Residents controller of the REST service. (POST 0.0.0.0:3000/api/v1/residents)
+        /// Create is the method corresonding to the POST method of the /Residents controller of the REST service. (POST 0.0.0.0:5000/api/v1/residents)
         /// <para/>
         /// It saves the passed <see cref="Resident"/> to the database.
         /// </summary>
@@ -137,14 +139,14 @@ namespace WebService.Controllers
         }
 
         /// <summary>
-        /// Delete is the method corresonding to the DELETE method of the /Residents controller of the REST service. (DELETE 0.0.0.0:3000/api/v1/residents/{id})
+        /// Delete is the method corresonding to the DELETE method of the /Residents controller of the REST service. (DELETE 0.0.0.0:5000/api/v1/residents/{id})
         /// <para/>
         /// It saves the passed <see cref="Resident"/> to the database.
         /// </summary>
         /// <param name="id">is the id of the <see cref="Resident"/> to remove from the database</param>
         /// <returns>
         /// - Status created (201) if succes
-        /// - Status no content (204) if there was no erro but also no object to remove
+        /// - Status not found (40) if there was no erro but also no object to remove
         /// - Status internal server error (500) on error
         /// </returns>
         [HttpDelete("{id}")]
@@ -157,7 +159,77 @@ namespace WebService.Controllers
                     // if the resident was deleted return status ok
                     ? StatusCode((int) HttpStatusCode.OK)
                     // if the resident was not deleted return status no content
-                    : StatusCode((int) HttpStatusCode.NoContent);
+                    : StatusCode((int) HttpStatusCode.NotFound);
+            }
+            catch (Exception e)
+            {
+                // log the error
+                _logger.Log(this, ELogLevel.Error, e);
+                // return a 500 internal server error code
+                return StatusCode((int) HttpStatusCode.NotFound);
+            }
+        }
+
+        /// <summary>
+        /// Update is the method corresponding to the PUT method of the /Residents controller of the REST service. (PUT 0.0.0.0:5000/api/v1/residents)
+        /// <para/>
+        /// It updates the fields of the <see cref="Resident"/> in the updater.
+        /// If the Resident doesn't exist, a new is created in the database.
+        /// </summary>
+        /// <param name="updater">containse the <see cref="Resident"/> to update ande the properties that should be updated</param>
+        /// <returns>
+        /// - Status ok (200) if the <see cref="Resident"/> was updated
+        /// - Status created (201) if a new one was created
+        /// - Status internal server error (500) on error or not created
+        /// </returns>
+        [HttpPut]
+        public IActionResult Update([FromBody] ResidentUpdater updater)
+        {
+            try
+            {
+                // create a new list of selectors
+                var selectors = new List<Expression<Func<Resident, object>>>();
+
+                // fill the list of selectors by iterating over the properties to update
+                foreach (var propertyName in updater.PropertiesToUpdate)
+                {
+                    // if the name of a properties matches a property of a Resident, 
+                    // add the corresponding selector
+                    if (propertyName.EqualsWithCamelCasing(nameof(Resident.Birthday)))
+                        selectors.Add(x => x.Birthday);
+                    else if (propertyName.EqualsWithCamelCasing(nameof(Resident.Colors)))
+                        selectors.Add(x => x.Colors);
+                    else if (propertyName.EqualsWithCamelCasing(nameof(Resident.Doctor)))
+                        selectors.Add(x => x.Doctor);
+                    else if (propertyName.EqualsWithCamelCasing(nameof(Resident.FirstName)))
+                        selectors.Add(x => x.FirstName);
+                    else if (propertyName.EqualsWithCamelCasing(nameof(Resident.Images)))
+                        selectors.Add(x => x.Images);
+                    else if (propertyName.EqualsWithCamelCasing(nameof(Resident.LastName)))
+                        selectors.Add(x => x.LastName);
+                    else if (propertyName.EqualsWithCamelCasing(nameof(Resident.LastRecordedPosition)))
+                        selectors.Add(x => x.LastRecordedPosition);
+                    else if (propertyName.EqualsWithCamelCasing(nameof(Resident.Locations)))
+                        selectors.Add(x => x.Locations);
+                    else if (propertyName.EqualsWithCamelCasing(nameof(Resident.Music)))
+                        selectors.Add(x => x.Music);
+                    else if (propertyName.EqualsWithCamelCasing(nameof(Resident.Picture)))
+                        selectors.Add(x => x.Picture);
+                    else if (propertyName.EqualsWithCamelCasing(nameof(Resident.Room)))
+                        selectors.Add(x => x.Room);
+                    else if (propertyName.EqualsWithCamelCasing(nameof(Resident.Tags)))
+                        selectors.Add(x => x.Tags);
+                    else if (propertyName.EqualsWithCamelCasing(nameof(Resident.Videos)))
+                        selectors.Add(x => x.Videos);
+                }
+
+                // update the resident in the data service
+                var resident = _dataService.UpdateResident(updater.Resident, selectors);
+                return resident == null
+                    // if the update failed, try creating a new resident
+                    ? Create(updater.Resident)
+                    // if the update was a succes, reutrn 200
+                    : Ok(resident);
             }
             catch (Exception e)
             {
@@ -166,11 +238,6 @@ namespace WebService.Controllers
                 // return a 500 internal server error code
                 return StatusCode((int) HttpStatusCode.InternalServerError);
             }
-        }
-
-        public IActionResult Update(Resident resident)
-        {
-            return NotFound();
         }
 
         #endregion METHDOS
