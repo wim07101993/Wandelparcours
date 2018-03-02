@@ -9,7 +9,7 @@ using MongoDB.Driver;
 using WebService.Helpers;
 using WebService.Models.Bases;
 
-namespace WebService.Services.Data
+namespace WebService.Services.Data.Mongo
 {
     public abstract class AMongoDataService<T> : IDataService<T> where T : IModelWithID
     {
