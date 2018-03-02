@@ -1,4 +1,6 @@
-﻿using MongoDB.Bson.Serialization.Attributes;
+﻿using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
+using Newtonsoft.Json;
 using WebService.Models.Bases;
 
 namespace WebService.Models
@@ -8,6 +10,16 @@ namespace WebService.Models
     /// </summary>
     public class ReceiverModule : AModelWithID
     {
+        /// <inheritdoc cref="AModelWithID.Id" />
+        /// <summary>
+        /// X is the x coordinate of the Point
+        /// <para />
+        /// In the database the value is stored under the field "x"
+        /// </summary>
+        [BsonId]
+        [JsonIgnore]
+        public override ObjectId Id { get; set; }
+
         /// <summary>
         /// Mac is the mac address of the ReceiverModule
         /// <para/>

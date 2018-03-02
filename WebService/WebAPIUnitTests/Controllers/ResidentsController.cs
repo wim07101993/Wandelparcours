@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -25,11 +26,10 @@ namespace WebAPIUnitTests.Controllers
             {
                 new Resident
                 {
-                    ID = new ObjectId("5a9566c58b9ed54db08d0ce7"),
+                    Id = new ObjectId("5a9566c58b9ed54db08d0ce7"),
                     FirstName = "Lea",
                     LastName = "Thuwis",
                     Room = "AT109 A",
-                    Birthday = new DateTime(1937, 4, 8),
                     Doctor = new Doctor
                     {
                         Name = "Massimo Destino",
@@ -38,11 +38,10 @@ namespace WebAPIUnitTests.Controllers
                 },
                 new Resident
                 {
-                    ID = new ObjectId("5a95677d8b9ed54db08d0ce8"),
+                    Id = new ObjectId("5a95677d8b9ed54db08d0ce8"),
                     FirstName = "Martha",
                     LastName = "Schroyen",
                     Room = "AT109 A",
-                    Birthday = new DateTime(1929, 5, 26),
                     Doctor = new Doctor
                     {
                         Name = "Luc Euben",
@@ -51,11 +50,10 @@ namespace WebAPIUnitTests.Controllers
                 },
                 new Resident
                 {
-                    ID = new ObjectId("5a9568328b9ed54db08d0ce9"),
+                    Id = new ObjectId("5a9568328b9ed54db08d0ce9"),
                     FirstName = "Roland",
                     LastName = "Mertens",
                     Room = "AQ230 A",
-                    Birthday = new DateTime(1948, 9, 19),
                     Doctor = new Doctor
                     {
                         Name = "Peter Potargent",
@@ -64,11 +62,10 @@ namespace WebAPIUnitTests.Controllers
                 },
                 new Resident
                 {
-                    ID = new ObjectId("5a9568838b9ed54db08d0cea"),
+                    Id = new ObjectId("5a9568838b9ed54db08d0cea"),
                     FirstName = "Maria",
                     LastName = "Creces",
                     Room = "SA347 A",
-                    Birthday = new DateTime(1934, 1, 26),
                     Doctor = new Doctor
                     {
                         Name = "Willy Denier - Medebo",
@@ -77,11 +74,10 @@ namespace WebAPIUnitTests.Controllers
                 },
                 new Resident
                 {
-                    ID = new ObjectId("5a967fc4c45be323bc42b5d8"),
+                    Id = new ObjectId("5a967fc4c45be323bc42b5d8"),
                     FirstName = "Ludovica",
                     LastName = "Van Houten",
                     Room = "AQ468 A",
-                    Birthday = new DateTime(1933, 1, 25),
                     Doctor = new Doctor
                     {
                         Name = "Marcel Mellebeek",
@@ -124,12 +120,12 @@ namespace WebAPIUnitTests.Controllers
             var id = new ObjectId().ToString();
             var resident = new Resident();
 
-            var dataService = new Mock<IDataService>();
-            dataService.Setup(x => x.CreateResident(resident)).Returns(() => id);
+            var dataService = new Mock<IDataService<Resident>>();
+            dataService.Setup(x => x.CreateAsync(resident)).Returns(() => Task.FromResult(id));
 
 
             new WebService.Controllers.ResidentsController(dataService.Object, new ConsoleLogger())
-                .Create(resident).Should().BeOfType<StatusCodeResult>()
+                .CreateAsync(resident).Result.Should().BeOfType<StatusCodeResult>()
                 .Subject.StatusCode.Should().Be((int) HttpStatusCode.Created);
         }
 
@@ -212,7 +208,7 @@ namespace WebAPIUnitTests.Controllers
         public void UpdateWithNormalConditions()
         {
             var dataService = new MockDataService();
-            var resident = new Resident {ID = dataService.MockData[0].ID, FirstName = "Test", LastName = null};
+            var resident = new Resident {Id = dataService.MockData[0].Id, FirstName = "Test", LastName = null};
 
             var updater = new ResidentUpdater
             {
@@ -230,7 +226,7 @@ namespace WebAPIUnitTests.Controllers
         {
             var updater = new ResidentUpdater
             {
-                Resident = new Resident {ID = new ObjectId(), FirstName = "Test", LastName = null},
+                Resident = new Resident {Id = new ObjectId(), FirstName = "Test", LastName = null},
                 PropertiesToUpdate = new[] {nameof(Resident.FirstName), nameof(Resident.LastName)}
             };
 
@@ -260,7 +256,7 @@ namespace WebAPIUnitTests.Controllers
             var dataService = new MockDataService();
             var updater = new ResidentUpdater
             {
-                Resident = new Resident {ID = dataService.MockData[0].ID, FirstName = "Test", LastName = null}
+                Resident = new Resident {Id = dataService.MockData[0].Id, FirstName = "Test", LastName = null}
             };
 
             new WebService.Controllers.ResidentsController(dataService, new ConsoleLogger())

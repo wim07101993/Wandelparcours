@@ -27,7 +27,7 @@ namespace WebService.Services.Data
         {
             //new Resident
             //{
-            //    ID = new ObjectId("5a9566c58b9ed54db08d0ce7"),
+            //    Id = new ObjectId("5a9566c58b9ed54db08d0ce7"),
             //    FirstName = "Lea",
             //    LastName = "Thuwis",
             //    Room = "AT109 A",
@@ -40,7 +40,7 @@ namespace WebService.Services.Data
             //},
             //new Resident
             //{
-            //    ID = new ObjectId("5a95677d8b9ed54db08d0ce8"),
+            //    Id = new ObjectId("5a95677d8b9ed54db08d0ce8"),
             //    FirstName = "Martha",
             //    LastName = "Schroyen",
             //    Room = "AT109 A",
@@ -53,7 +53,7 @@ namespace WebService.Services.Data
             //},
             //new Resident
             //{
-            //    ID = new ObjectId("5a9568328b9ed54db08d0ce9"),
+            //    Id = new ObjectId("5a9568328b9ed54db08d0ce9"),
             //    FirstName = "Roland",
             //    LastName = "Mertens",
             //    Room = "AQ230 A",
@@ -66,7 +66,7 @@ namespace WebService.Services.Data
             //},
             //new Resident
             //{
-            //    ID = new ObjectId("5a9568838b9ed54db08d0cea"),
+            //    Id = new ObjectId("5a9568838b9ed54db08d0cea"),
             //    FirstName = "Maria",
             //    LastName = "Creces",
             //    Room = "SA347 A",
@@ -79,7 +79,7 @@ namespace WebService.Services.Data
             //},
             //new Resident
             //{
-            //    ID = new ObjectId("5a967fc4c45be323bc42b5d8"),
+            //    Id = new ObjectId("5a967fc4c45be323bc42b5d8"),
             //    FirstName = "Ludovica",
             //    LastName = "Van Houten",
             //    Room = "AQ468 A",
@@ -114,7 +114,7 @@ namespace WebService.Services.Data
                 : MockData.Select(mockResident =>
                 {
                     // create new newResident to return with the ide filled in
-                    var residentToReturn = new Resident {ID = mockResident.ID};
+                    var residentToReturn = new Resident {Id = mockResident.Id};
 
                     // ReSharper disable once PossibleNullReferenceException
                     // go over each property selector that should be included
@@ -151,15 +151,15 @@ namespace WebService.Services.Data
         public string CreateResident(Resident resident)
         {
             // create a new ide for the resident
-            resident.ID = new ObjectId();
+            resident.Id = new ObjectId();
             // add the new resident to the list
             MockData.Add(resident);
 
             // check if the resident was created
 
-            return MockData.Any(x => x.ID == resident.ID)
+            return MockData.Any(x => x.Id == resident.Id)
                 // if it is, return the id
-                ? resident.ID.ToString()
+                ? resident.Id.ToString()
                 // else return null
                 : null;
         }
@@ -176,7 +176,7 @@ namespace WebService.Services.Data
         public bool RemoveResident(ObjectId id)
         {
             // get the index of the newResident with the given id
-            var index = MockData.FindIndex(x => x.ID == id);
+            var index = MockData.FindIndex(x => x.Id == id);
 
             // if the index is -1 there was no item found
             if (index == -1)
@@ -203,7 +203,7 @@ namespace WebService.Services.Data
             // create list of the enumerable to prevent multiple enumerations of enumerable
             var propertiesToUpdateList = propertiesToUpdate?.ToList();
 
-            var index = MockData.FindIndex(x => x.ID == newResident.ID);
+            var index = MockData.FindIndex(x => x.Id == newResident.Id);
             if (index < 0)
                 return null;
 
@@ -214,7 +214,7 @@ namespace WebService.Services.Data
                 // update the resident;
                 MockData[index] = newResident;
                 // return the updated resident
-                return MockData.FirstOrDefault(x => x.ID == newResident.ID);
+                return MockData.FirstOrDefault(x => x.Id == newResident.Id);
             }
 
             // ReSharper disable once PossibleNullReferenceException
@@ -235,7 +235,7 @@ namespace WebService.Services.Data
             }
 
             // return the updated resident
-            return MockData.FirstOrDefault(x => x.ID == newResident.ID);
+            return MockData.FirstOrDefault(x => x.Id == newResident.Id);
         }
 
         public IEnumerable<ReceiverModule> GetReceiverModules()
