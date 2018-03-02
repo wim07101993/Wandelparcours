@@ -17,6 +17,7 @@ export class HeaderComponent implements OnInit {
     ngOnInit() {
   }
 
+  /* function to Open and Close the sideNav */
   openSideNav(){
     $('.button-collapse').sideNav({
                 menuWidth: 240,

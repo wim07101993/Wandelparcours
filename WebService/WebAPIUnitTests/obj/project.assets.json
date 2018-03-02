@@ -5648,7 +5648,6 @@
         "dependencies": {
           "BCrypt.Net-Core": "1.4.0",
           "Microsoft.AspNetCore.All": "2.0.5",
-          "Microsoft.NETCore.App": "2.0.0",
           "Microsoft.VisualStudio.Web.CodeGeneration.Design": "2.0.2",
           "MongoDB.Driver": "2.5.0"
         },
@@ -14624,43 +14623,35 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\wimva\\.nuget\\packages\\": {},
-    "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackagesFallback\\": {},
-    "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder": {}
+    "/Users/kenan/.nuget/packages/": {},
+    "/usr/local/share/dotnet/sdk/NuGetFallbackFolder": {}
   },
   "project": {
     "version": "1.0.0",
-    "restoreSettings": {
-      "hideWarningsAndErrors": true
-    },
     "restore": {
-      "projectUniqueName": "D:\\Dev\\src\\github.com\\sanlihakan\\Wandelparcours\\WebService\\WebAPIUnitTests\\WebAPIUnitTests.csproj",
+      "projectUniqueName": "/Users/kenan/Documents/GitHub/Wandelparcours/WebService/WebAPIUnitTests/WebAPIUnitTests.csproj",
       "projectName": "WebAPIUnitTests",
-      "projectPath": "D:\\Dev\\src\\github.com\\sanlihakan\\Wandelparcours\\WebService\\WebAPIUnitTests\\WebAPIUnitTests.csproj",
-      "packagesPath": "C:\\Users\\wimva\\.nuget\\packages\\",
-      "outputPath": "D:\\Dev\\src\\github.com\\sanlihakan\\Wandelparcours\\WebService\\WebAPIUnitTests\\obj\\",
+      "projectPath": "/Users/kenan/Documents/GitHub/Wandelparcours/WebService/WebAPIUnitTests/WebAPIUnitTests.csproj",
+      "packagesPath": "/Users/kenan/.nuget/packages/",
+      "outputPath": "/Users/kenan/Documents/GitHub/Wandelparcours/WebService/WebAPIUnitTests/obj",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
-        "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackagesFallback\\",
-        "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
+        "/usr/local/share/dotnet/sdk/NuGetFallbackFolder"
       ],
       "configFilePaths": [
-        "C:\\Users\\wimva\\AppData\\Roaming\\NuGet\\NuGet.Config",
-        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config",
-        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.Fallback.config"
+        "/Users/kenan/.config/NuGet/NuGet.Config"
       ],
       "originalTargetFrameworks": [
         "netcoreapp2.0"
       ],
       "sources": {
-        "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
         "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {
         "netcoreapp2.0": {
           "projectReferences": {
-            "D:\\Dev\\src\\github.com\\sanlihakan\\Wandelparcours\\WebService\\WebService\\WebService.csproj": {
-              "projectPath": "D:\\Dev\\src\\github.com\\sanlihakan\\Wandelparcours\\WebService\\WebService\\WebService.csproj"
+            "/Users/kenan/Documents/GitHub/Wandelparcours/WebService/WebService/WebService.csproj": {
+              "projectPath": "/Users/kenan/Documents/GitHub/Wandelparcours/WebService/WebService/WebService.csproj"
             }
           }
         }
@@ -14674,22 +14665,23 @@
     "frameworks": {
       "netcoreapp2.0": {
         "dependencies": {
-          "MSTest.TestAdapter": {
+          "Microsoft.NETCore.App": {
+            "suppressParent": "All",
             "target": "Package",
-            "version": "[1.2.0, )"
-          },
-          "MSTest.TestFramework": {
-            "target": "Package",
-            "version": "[1.2.0, )"
+            "version": "2.0",
+            "autoReferenced": true
           },
           "Microsoft.NET.Test.Sdk": {
             "target": "Package",
-            "version": "[15.5.0, )"
+            "version": "15.5.0"
           },
-          "Microsoft.NETCore.App": {
+          "MSTest.TestAdapter": {
             "target": "Package",
-            "version": "[2.0.0, )",
-            "autoReferenced": true
+            "version": "1.2.0"
+          },
+          "MSTest.TestFramework": {
+            "target": "Package",
+            "version": "1.2.0"
           }
         },
         "imports": [
