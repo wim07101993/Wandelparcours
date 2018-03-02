@@ -67,6 +67,11 @@ export class ResidentComponent implements OnInit {
         this.showAllResidents();
     }
 
+    async editResident(resident: Resident) {
+        await this.service.editResidentWithData(resident);
+        this.showAllResidents();
+    }
+
   ngOnInit() {
   }
 
