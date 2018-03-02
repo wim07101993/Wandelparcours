@@ -47,6 +47,8 @@ export class StationmanagementComponent implements OnInit {
             await this.saveStationToDatabase(this.saveStation);
             this.stations = await this.loadStations();
             this.saveStation=new Station();
+            $("#markerModel").modal("close");
+            this.adMarker=false;
         }else{
             Materialize.toast('Station adres verkeerd', 4000);
         }
@@ -234,7 +236,7 @@ export class StationmanagementComponent implements OnInit {
           let x =position.x-(width/2);
           let y =position.y-width;
             
-          await renderBuffer.add(this.marker,x, y,width,width, station.id ,"marker");
+          await renderBuffer.add(this.marker,x, y,width,width, station.mac ,"marker");
         }
         
   }

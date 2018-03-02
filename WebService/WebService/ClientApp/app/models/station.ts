@@ -1,11 +1,11 @@
 export class Station{
-    id:string;
+    
     isActive:boolean;
     mac:string;
     position:Position;
     
     constructor(){
-        this.id="";
+        
         this.isActive=false;
         this.mac="";
         this.position=new Position();
