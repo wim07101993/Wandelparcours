@@ -72,6 +72,11 @@ export class ResidentComponent implements OnInit {
         this.showAllResidents();
     }
 
+    openResidentAddModal(){
+        $("#add-resident-modal").modal();
+        $("#add-resident-modal").modal("open");
+        
+    }
   ngOnInit() {
   }
 
