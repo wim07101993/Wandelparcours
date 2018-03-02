@@ -19,7 +19,7 @@ namespace WebAPIUnitTests.Controllers
         #region get
 
         [TestMethod]
-        public void GetSucces()
+        public void GetWithDataServiceWorking()
         {
             var mockData = new List<Resident>
             {
@@ -101,7 +101,7 @@ namespace WebAPIUnitTests.Controllers
         }
 
         [TestMethod]
-        public void GetException()
+        public void GetWithDataServiceNotWorking()
         {
             var dataService = new Mock<IDataService>();
             dataService
@@ -119,7 +119,7 @@ namespace WebAPIUnitTests.Controllers
         #region create
 
         [TestMethod]
-        public void CreateSucces()
+        public void CreateNewResident()
         {
             var id = new ObjectId().ToString();
             var resident = new Resident();
@@ -134,7 +134,7 @@ namespace WebAPIUnitTests.Controllers
         }
 
         [TestMethod]
-        public void CreateNoSuccess()
+        public void CreateResidentDoesNotExecute()
         {
             var resident = new Resident();
 
@@ -147,7 +147,7 @@ namespace WebAPIUnitTests.Controllers
         }
 
         [TestMethod]
-        public void CreateException()
+        public void CreateResidentThrowsException()
         {
             var resident = new Resident();
 
@@ -165,7 +165,7 @@ namespace WebAPIUnitTests.Controllers
         #region delete
 
         [TestMethod]
-        public void DeleteSucces()
+        public void DeleteExistingResident()
         {
             var id = new ObjectId();
 
@@ -178,7 +178,7 @@ namespace WebAPIUnitTests.Controllers
         }
 
         [TestMethod]
-        public void DeleteNoSucces()
+        public void DeleteNonExistingResident()
         {
             var id = new ObjectId();
 
@@ -191,7 +191,7 @@ namespace WebAPIUnitTests.Controllers
         }
 
         [TestMethod]
-        public void DeleteException()
+        public void DeleteServiceException()
         {
             var id = new ObjectId();
 
