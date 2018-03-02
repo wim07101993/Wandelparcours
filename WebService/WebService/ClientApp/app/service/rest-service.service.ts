@@ -1,11 +1,13 @@
 import { Injectable } from '@angular/core';
 import { Http, HttpModule, Response } from '@angular/http';
-import 'rxjs/add/operator/map'
+import 'rxjs/add/operator/map';
+import 'rxjs/add/operator/catch';
 import { getBaseUrl } from '../app.module.browser';
 import { Resident } from '../models/resident';
 
 @Injectable()
 export class RestServiceService {
+    [x: string]: any;
 
     restUrl = "http://localhost:5000/";
 
@@ -21,9 +23,28 @@ export class RestServiceService {
                   resolve(undefined);
               }
           );
-      });
-      
-      //this.http.get(getBaseUrl() + 'api/v1/residents')
+      });   
+    }
+
+    deleteResidentByUniqueId(uniqueIdentifier: string) {
+        return new Promise(resolve => {
+            this.http.delete(this.restUrl + 'api/v1/residents/' + uniqueIdentifier).subscribe(response => {
+                console.log("Deleted");
+                resolve();
+            }
+                , error => {
+                    console.log("Something went wrong");
+                    resolve();
+                });
+
+        });
+
+
+ 
+    }
+}
+
+//this.http.get(getBaseUrl() + 'api/v1/residents')
       //    .map(
       //    (response: Response) => {
       //        this.residents = [];
@@ -35,5 +56,3 @@ export class RestServiceService {
       //        return this.residents;
       //    })
           //.map((res: Response) => res.json());
-  }
-}

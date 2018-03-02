@@ -15,21 +15,27 @@ export class ResidentComponent implements OnInit {
     view: string = "card-view";
     data: any = null;
     residents: Resident[];
+    modalResident: Resident;
     constructor(private service: RestServiceService) {
         this.showAllResidents();
         this.residents = [];
+        this.modalResident = <Resident>{
+            firstName: "", lastName: "",room:"", id: "", birthday: new Date(), doctor: { name: "", phoneNumber: "" }
+        };
 
     }
 
-    openModal(uniqueIdentifier: string) {
+    openModal(modalResident: Resident) {
         //alert(uniqueIdentifier);
-        $("#modal" + uniqueIdentifier).modal();
-        $("#modal" + uniqueIdentifier).modal("open");
+        this.modalResident = modalResident;
+        $("#deleteModalResident").modal();
+        $("#deleteModalResident").modal("open");
     }
 
-    openEditModal(uniqueIdentifier: string) {
-        $("#modalEdit" + uniqueIdentifier).modal();
-        $("#modalEdit" + uniqueIdentifier).modal("open");
+    openEditModal(modalResident: Resident) {
+        this.modalResident = modalResident;
+        $("#editModalResident").modal();
+        $("#editModalResident").modal("open");
         $('.datepicker').pickadate({
             selectMonths: true, // Creates a dropdown to control month
             selectYears: 200, // Creates a dropdown of 15 years to control year,
@@ -46,12 +52,18 @@ export class ResidentComponent implements OnInit {
     }
 
     async showAllResidents() {
-      let residents= await this.service.getAllResidents();
+        let residents = await this.service.getAllResidents();
+    
       if (residents != undefined)
           this.residents = residents;
       else {
           alert("oops! :( looks like something went wrong :(");
       }
+    }
+
+    async deleteResident(uniqueIdentifier: string) {
+        await this.service.deleteResidentByUniqueId(uniqueIdentifier);
+        this.showAllResidents();
     }
 
   ngOnInit() {

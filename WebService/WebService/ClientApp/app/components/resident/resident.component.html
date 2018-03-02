@@ -31,8 +31,8 @@
                 </p>
             </div>
             <div class="card-action center">
-                <i class="material-icons blue-text" style="font-size:50px" (click)="openEditModal(resident.id)" >edit</i>
-                <i class="material-icons red-text " (click)="openModal(resident.id)" style="font-size:50px">clear</i>
+                <i class="material-icons blue-text" style="font-size:50px" (click)="openEditModal(resident)" >edit</i>
+                <i class="material-icons red-text " (click)="openModal(resident)" style="font-size:50px">clear</i>
             </div>
 
             
@@ -63,62 +63,63 @@
                 <td>{{resident.room}}</td>
                 <td>{{resident.doctor.name}}</td>
                 <td>{{resident.doctor.phoneNumber}}</td>
-                <td class="center"><i class="material-icons blue-text" (click)="openEditModal(resident.id)">edit</i></td>
-                <td class="center"><i class="material-icons red-text" (click)="openModal(resident.id)">clear</i></td>
+                <td class="center"><i class="material-icons blue-text" (click)="openEditModal(resident)">edit</i></td>
+                <td class="center"><i class="material-icons red-text" (click)="openModal(resident)">clear</i></td>
             </tr>
         </tbody>
     </table>
 </div>
 
 
-<div *ngFor="let resident of residents">
-    <div id="modal{{resident.id}}" class="modal">
+
+    <div id="deleteModalResident" class="modal">
         <div class="modal-content">
-            <h4>{{resident.firstName}}</h4>
-            <p>Let op! U staat op het punt {{resident.firstName}} te verwijderen!</p>
+            <h4>{{modalResident.firstName}}</h4>
+            <p>Let op! U staat op het punt {{modalResident.firstName}} te verwijderen!</p>
         </div>
         <div class="modal-footer">
-            <a class="modal-action modal-close waves-effect waves-red btn-flat red lighten-1 white-text" (click)="closeModal()">Verwijder</a>
+            <a class="modal-action modal-close waves-effect waves-red btn-flat red lighten-1 white-text" (click)="deleteResident(modalResident.id)">Verwijder</a>
             <a class="modal-action modal-close waves-effect waves-green btn-flat blue lighten-1 white-text" (click)="closeModal()">Annuleer</a>
         </div>
     </div>
-    <div id="modalEdit{{resident.id}}" class="modal">
+
+    <div id="editModalResident" class="modal">
         <div class="modal-content">
             <div class="row">
                 <form class="col s12">
-                    <h1>Wijzig gegevens van {{resident.firstName}}</h1>
+                    <h1>Wijzig gegevens van {{modalResident.firstName}}</h1>
                     <div class="row">
                         <div class="input-field col s6">
-                            <input placeholder="{{resident.firstName}}" id="first_name" type="text" class="validate">
+                            <input placeholder="{{modalResident.firstName}}" id="first_name" type="text" class="validate">
                             <label for="first_name" class="active">Voornaam</label>
                         </div>
                         <div class="input-field col s6">
-                            <input placeholder="{{resident.lastName}}" id="last_name" type="text" class="validate">
+                            <input placeholder="{{modalResident.lastName}}" id="last_name" type="text" class="validate">
                             <label for="last_name" class="active">Naam</label>
                         </div>
                     </div>
                     <div class="row">
                         <div class="input-field col s6">
-                            <input placeholder="{{resident.room}}" id="room" type="text" class="validate">
+                            <input placeholder="{{modalResident.room}}" id="room" type="text" class="validate">
                             <label for="room" class="active">Kamer</label>
                         </div>
                         <div class="input-field col s6">
-                            <input placeholder="{{resident.birthday | date:'dd-MM-yyyy'}}" id="birthDay" type="text" class="validate datepicker">
+                            <input placeholder="{{modalResident.birthday | date:'dd-MM-yyyy'}}" id="birthDay" type="text" class="validate datepicker">
                             <label for="birthDay" class="active">Geboortedatum</label>
                         </div>
                     </div>
                     <div class="row">
                         <div class="input-field col s6">
-                            <input placeholder="{{resident.doctor.name}}" id="doctor_name" type="text" class="validate">
+                            <input placeholder="{{modalResident.doctor.name}}" id="doctor_name" type="text" class="validate">
                             <label for="doctor_name" class="active">Huisarts</label>
                         </div>
                         <div class="input-field col s6">
-                            <input placeholder="{{resident.doctor.phoneNumber}}" id="doctor_number" type="text" class="validate">
+                            <input placeholder="{{modalResident.doctor.phoneNumber}}" id="doctor_number" type="text" class="validate">
                             <label for="doctor_number" class="active">Tel:</label>
                         </div>
                     </div>
                     <div class="right">
-                        <a class="modal-action modal-close waves-effect waves-red btn-flat green lighten-1 white-text" (click)="closeModal()">Opslaan</a>
+                        <a class="modal-action modal-close waves-effect waves-red btn-flat green lighten-1 white-text" (click)="editResident(modalResident.id)">Opslaan</a>
                         <a class="modal-action modal-close waves-effect waves-green btn-flat red lighten-1 white-text" (click)="closeModal()">Annuleer</a>
                     </div>
 
@@ -127,4 +128,3 @@
             </div>
         </div>
     </div>
-</div>
