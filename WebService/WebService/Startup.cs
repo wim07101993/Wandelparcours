@@ -6,7 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Serialization;
 using WebService.Models;
 using WebService.Services.Data;
-using WebService.Services.Data.Mondo;
+using WebService.Services.Data.Mongo;
 using WebService.Services.Logging;
 
 namespace WebService
