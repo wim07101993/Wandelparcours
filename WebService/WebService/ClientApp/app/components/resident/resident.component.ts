@@ -2,9 +2,6 @@ import { Component, OnInit } from '@angular/core'
 import { Resident } from '../../models/resident'
 import { RestServiceService } from '../../service/rest-service.service' 
 import { Response } from '@angular/http'
-declare var $: any
-import { Component, OnInit } from '@angular/core';
-import { Resident } from '../../models/resident';
 declare var $:any;
 
 @Component({
@@ -19,6 +16,7 @@ export class ResidentComponent implements OnInit {
     data: any = null;
     residents: Resident[];
     modalResident: Resident;
+    
     constructor(private service: RestServiceService) {
         this.showAllResidents();
         this.residents = [];
@@ -67,27 +65,11 @@ export class ResidentComponent implements OnInit {
     async deleteResident(uniqueIdentifier: string) {
         await this.service.deleteResidentByUniqueId(uniqueIdentifier);
         this.showAllResidents();
-    public model: Resident;
-    constructor() {
-        this.model = new Resident();
-        this.model.param1 = "Test";
     }
 
   ngOnInit() {
   }
 
-  openModal(){
-    $('.modal').modal();
-    $('.modal').modal('open');
-    $('.datepicker').pickadate({
-                selectMonths: true,
-                selectYears: 200,
-                today: 'Vandaag',
-                clear: 'Wis',
-                close: 'Akkoord',
-                closeOnSelect: false
-            });
-  }
 
 
 }
