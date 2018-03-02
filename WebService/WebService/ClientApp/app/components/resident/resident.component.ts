@@ -66,7 +66,11 @@ export class ResidentComponent implements OnInit {
         await this.service.deleteResidentByUniqueId(uniqueIdentifier);
         this.showAllResidents();
     }
-
+    openResidentAddModal(){
+        $("#add-resident-modal").modal();
+        $("#add-resident-modal").modal("open");
+        
+    }
   ngOnInit() {
   }
 
