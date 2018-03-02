@@ -30,7 +30,8 @@ export class StationmanagementComponent implements OnInit {
     framerate=5;
     imageUrl="";
     markerUrl="";
-    
+    adMarker:boolean=false;
+    macAdress:string="";
     constructor(private http: Http) {}
     async ngOnInit() {
         
@@ -54,6 +55,7 @@ export class StationmanagementComponent implements OnInit {
             $("#markerModel").modal();
             //set a auto render of 5 fps
             setInterval(()=>{this.tick()},1000/this.framerate);
+          this.tick();
             
       }catch (ex){
           console.log("error");
@@ -61,9 +63,7 @@ export class StationmanagementComponent implements OnInit {
     
     
     }
-    async addMarker(){
-        $("#markerModel").modal("open");
-    }
+
     
     async closeModal(){
         $("#markerModel").modal("close");
@@ -87,14 +87,39 @@ export class StationmanagementComponent implements OnInit {
     }
     //tick does the needed calculatations for the render, and draws the rendering on the canvas
     async tick(){
-        
         try{
             await this.renderBuffer.clear();
             this.drawMap();
+            this.drawStationOnCursor();
             await this.renderBuffer.render();
         }catch (ex){console.log(ex);}
     }     
   
+    async drawStationOnCursor(){
+        if (this.adMarker){
+            let renderBuffer:RenderBuffer=this.renderBuffer;
+            let width;
+            let image:HTMLImageElement=this.marker;
+
+            if(window.innerHeight>window.innerWidth){
+
+                width = window.innerHeight/image.height*image.width;
+            }else{
+                width = window.innerWidth;
+
+            }
+            width=width/25;
+            let x =this.mouseEvents.mousepos.x-(width/2);
+            let y =this.mouseEvents.mousepos.y-(width);
+            await renderBuffer.add(this.marker,x, y,width,width,"marker","marker");
+            
+
+            
+        }
+    }
+    async saveStationToDatabase(stationPosition:Point){
+        $("#markerModel").modal("open");
+    }
   //this function loads the image of the building
   async loadMap(){
         return new Promise(resolve => {
@@ -152,6 +177,7 @@ export class StationmanagementComponent implements OnInit {
             width=width*this.zoomFactor;
             //render
             this.renderBuffer.add(this.image,this.mouseEvents.position.x, this.mouseEvents.position.y,width,height,"map","map");
+            
             //add the map location/size to the mouseevents for relative location calculation
             this.mouseEvents.mapPos={x:this.mouseEvents.position.x,y:this.mouseEvents.position.y, width:width,height:height};
             

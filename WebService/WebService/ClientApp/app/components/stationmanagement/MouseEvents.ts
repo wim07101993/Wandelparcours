@@ -1,5 +1,6 @@
 import {StationmanagementComponent} from "./stationmanagement.component"
 import {getBaseUrl} from "../../app.module.browser";
+import {RenderBuffer} from "./RenderBuffer";
 
 export class MouseEvents{
     station:StationmanagementComponent;
@@ -7,6 +8,7 @@ export class MouseEvents{
     clicked:boolean=false;
     position:Point;
     screenPos:Point;
+    mousePos:Point;
     mapPos:any;
     
     x=0;
@@ -41,9 +43,11 @@ export class MouseEvents{
             //update the frame
             this.station.tick();
         }
-        let mousePos:Point = {x:e.layerX,y:e.layerY};
-        this.calculateMousePosOnImage(mousePos);    
         
+        this.mousepos={x:e.layerX,y:e.layerY};
+        if (this.station.adMarker){
+            this.station.tick();
+        }
         
         
     }
@@ -51,7 +55,8 @@ export class MouseEvents{
     async calculateMousePosOnImage(mousePos:Point){
         let x=(mousePos.x-this.mapPos.x)/this.mapPos.width;
         let y =(mousePos.y-this.mapPos.y)/this.mapPos.height;
-        console.log({x:x,y:y});
+        let mousepos: Point= {x:x,y:y};
+        return mousepos;
     }
     
     async mouseUp(e:MouseEvent){
@@ -61,10 +66,17 @@ export class MouseEvents{
         
     }
     async mouseDown(e:MouseEvent){
-        //start tracking
-        this.clicked=true;
-        //set the x/y of current for comparison on the next frame
-        this.screenPos = {x:e.screenX,y:e.screenY};
+        //start calcutating mapmoving if admarker button isn't clicked
+        if (!this.station.adMarker){
+            //start tracking
+            this.clicked=true;
+            //set the x/y of current for comparison on the next frame
+            this.screenPos = {x:e.screenX,y:e.screenY};
+        }else{
+            let mouseposition = await this.calculateMousePosOnImage({x:e.layerX,y:e.layerY});
+            this.station.saveStationToDatabase(mouseposition)
+            
+        }
     }
     
     async rightClick(e:MouseEvent){

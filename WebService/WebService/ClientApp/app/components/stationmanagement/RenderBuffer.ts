@@ -14,7 +14,6 @@ export class RenderBuffer{
         return new Promise(resolve => {
             
             for ( let element of this.buffer){
-                
                 this.station.context.drawImage(element.image,element.x, element.y, element.width,element.height);
             }
         });
