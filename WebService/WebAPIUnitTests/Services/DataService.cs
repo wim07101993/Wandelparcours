@@ -15,7 +15,7 @@ namespace WebAPIUnitTests.Services
             new WebService.Services.Data.MockDataService();
 
 
-        #region GetResidents
+        #region Get
 
         [TestMethod]
         public void GetResidentsWithAllProperties()
@@ -76,10 +76,10 @@ namespace WebAPIUnitTests.Services
                 DataService.GetResidents(new Expression<Func<Resident, object>>[] { }),
                 DataService.MockData);
 
-        #endregion GetResidents
+        #endregion Get
 
 
-        #region CreateResident
+        #region Create
 
         [TestMethod]
         [ExpectedException(typeof(NullReferenceException))]
@@ -150,7 +150,7 @@ namespace WebAPIUnitTests.Services
             Assert.IsNull(newResident.Videos);
         }
 
-        #endregion CreateResident
+        #endregion Create
 
 
         #region RemoveResident

@@ -1,26 +1,13 @@
-﻿using MongoDB.Bson;
-using MongoDB.Bson.Serialization.Attributes;
-using Newtonsoft.Json;
-using WebService.Helpers;
+﻿using MongoDB.Bson.Serialization.Attributes;
+using WebService.Models.Bases;
 
 namespace WebService.Models
 {
     /// <summary>
     /// ReceiverModule is the representation of a hardware module that detects tags of residents.
     /// </summary>
-    public class ReceiverModule
+    public class ReceiverModule : AModelWithID
     {
-        /// <summary>
-        /// ID is the id of the User
-        /// <para/>
-        /// When serialized to json it is converted to a string.
-        /// <para/>
-        /// In the database the value is stored under the field "id"
-        /// </summary>
-        [BsonId]
-        [JsonConverter(typeof(ObjectIdConverter))]
-        public ObjectId ID { get; set; }
-
         /// <summary>
         /// Mac is the mac address of the ReceiverModule
         /// <para/>
@@ -34,7 +21,7 @@ namespace WebService.Models
         /// <para/>
         /// In the database the value is stored under the field "postition"
         /// </summary>
-        [BsonElement("postition")]
+        [BsonElement("position")]
         public Point Position { get; set; }
 
         /// <summary>

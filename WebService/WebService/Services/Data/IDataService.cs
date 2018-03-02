@@ -14,7 +14,7 @@ namespace WebService.Services.Data
         #region RESIDENT
 
         /// <summary>
-        /// GetResidents is supposed to return all the residents from the database. 
+        /// Get is supposed to return all the residents from the database. 
         /// <para/>
         /// It should only fill the properties passed in the <see cref="propertiesToInclude"/> parameter. The id is always passed and 
         /// if the <see cref="propertiesToInclude"/> parameter is null (which it is by default), all the properties are included. 
@@ -24,7 +24,7 @@ namespace WebService.Services.Data
         IEnumerable<Resident> GetResidents(IEnumerable<Expression<Func<Resident, object>>> propertiesToInclude = null);
 
         /// <summary>
-        /// CreateResident is supposed to save the passed <see cref="Resident"/> to the database.
+        /// Create is supposed to save the passed <see cref="Resident"/> to the database.
         /// <para/>
         /// If the newResident is created, the method should return the id of the new <see cref="Resident"/>, else null.
         /// </summary>

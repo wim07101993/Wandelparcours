@@ -64,7 +64,7 @@ namespace WebService.Services.Data
 
         /// <inheritdoc cref="IDataService.GetResidents" />
         /// <summary>
-        /// GetResidents returns all the residents from the database. 
+        /// Get returns all the residents from the database. 
         /// <para />
         /// It only fills the properties passed in the <see cref="propertiesToInclude" /> parameter. The id is always passed and 
         /// if the <see cref="propertiesToInclude" /> parameter is null (which it is by default), all the properties are included.
@@ -102,7 +102,7 @@ namespace WebService.Services.Data
 
         /// <inheritdoc cref="IDataService.CreateResident" />
         /// <summary>
-        /// CreateResident saves the passed <see cref="Resident"/> to the database.
+        /// Create saves the passed <see cref="Resident"/> to the database.
         /// <para/>
         /// If the newResident is created, the method returns the id of the new <see cref="Resident"/>, else null.
         /// </summary>
@@ -147,12 +147,12 @@ namespace WebService.Services.Data
 
         /// <inheritdoc cref="IDataService.UpdateResident" />
         /// <summary>
-        /// UpdateResident updates the <see cref="T:WebService.Models.Resident" /> with the id of the given <see cref="T:WebService.Models.Resident" />.
+        /// UpdateResident updates the <see cref="T:WebService.Models.Value" /> with the id of the given <see cref="T:WebService.Models.Value" />.
         /// <para />
         /// The updated properties are defined in the <see cref="!:propertiesToUpdate" /> parameter.
         /// If the <see cref="!:propertiesToUpdate" /> parameter is null or empty (which it is by default), all properties are updated.
         /// </summary>
-        /// <param name="newResident">is the <see cref="T:WebService.Models.Resident" /> to update</param>
+        /// <param name="newResident">is the <see cref="T:WebService.Models.Value" /> to update</param>
         /// <param name="propertiesToUpdate">are the properties that need to be updated</param>
         /// <returns>The updated newResident</returns>
         public Resident UpdateResident(Resident newResident,
