@@ -31,16 +31,23 @@ export class RestServiceService {
             this.http.delete(this.restUrl + 'api/v1/residents/' + uniqueIdentifier).subscribe(response => {
                 console.log("Deleted");
                 resolve();
-            }
-                , error => {
-                    console.log("Something went wrong");
-                    resolve();
-                });
-
+            }, error => {
+                console.log("Something went wrong");
+                resolve();
+            });
         });
+    }
 
-
- 
+    editResidentWithData(resident: Resident) {
+        return new Promise(resolve => {
+            this.http.put(this.restUrl + 'api/v1/residents', resident).subscribe(response => {
+                console.log("updated");
+                resolve();
+            }, error => {
+                console.log("Oops! Something went wrong!");
+                resolve();
+            });
+        });
     }
 }
 
