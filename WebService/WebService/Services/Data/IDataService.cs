@@ -11,8 +11,10 @@ namespace WebService.Services.Data
     /// </summary>
     public interface IDataService
     {
+        #region RESIDENT
+
         /// <summary>
-        /// GetResidents is supposed to return all the residents from the database. 
+        /// Get is supposed to return all the residents from the database. 
         /// <para/>
         /// It should only fill the properties passed in the <see cref="propertiesToInclude"/> parameter. The id is always passed and 
         /// if the <see cref="propertiesToInclude"/> parameter is null (which it is by default), all the properties are included. 
@@ -22,7 +24,7 @@ namespace WebService.Services.Data
         IEnumerable<Resident> GetResidents(IEnumerable<Expression<Func<Resident, object>>> propertiesToInclude = null);
 
         /// <summary>
-        /// CreateResident is supposed to save the passed <see cref="Resident"/> to the database.
+        /// Create is supposed to save the passed <see cref="Resident"/> to the database.
         /// <para/>
         /// If the newResident is created, the method should return the id of the new <see cref="Resident"/>, else null.
         /// </summary>
@@ -52,6 +54,48 @@ namespace WebService.Services.Data
         /// <param name="newResident">is the <see cref="Resident"/> to update</param>
         /// <param name="propertiesToUpdate">are the properties that need to be updated</param>
         /// <returns>The updated newResident</returns>
-        Resident UpdateResident(Resident newResident, IEnumerable<Expression<Func<Resident, object>>> propertiesToUpdate = null);
+        Resident UpdateResident(Resident newResident,
+            IEnumerable<Expression<Func<Resident, object>>> propertiesToUpdate = null);
+
+        #endregion RESIDENT
+
+        #region RECEIVER MODULE
+
+        /// <summary>
+        /// GetReceiverModules is supposed to return all the receivers from the database. 
+        /// </summary>
+        /// <returns>An <see cref="IEnumerable{T}"/> filled with all the receivers in the database.</returns>
+        IEnumerable<ReceiverModule> GetReceiverModules();
+
+        /// <summary>
+        /// CreateReceiverModule is supposed to save the passed <see cref="ReceiverModule"/> to the database.
+        /// <para/>
+        /// If the newReceiverModule is created, the method should return the id of the new <see cref="ReceiverModule"/>, else null.
+        /// </summary>
+        /// <param name="receiver">is the <see cref="ReceiverModule"/> to save in the database</param>
+        /// <returns>
+        /// - the new id if the <see cref="ReceiverModule"/> was created in the database
+        /// - null if the newReceiverModule was not created
+        /// </returns>
+        string CreateReceiverModule(ReceiverModule receiver);
+
+        /// <summary>
+        /// RemoveReceiverModule is supposed to remove the <see cref="ReceiverModule"/> with the given id from the database.
+        /// </summary>
+        /// <param name="id">is the id of the <see cref="ReceiverModule"/> to remove in the database</param>
+        /// <returns>
+        /// - true if the <see cref="ReceiverModule"/> was removed from the database
+        /// - false if the newReceiverModule was not removed
+        /// </returns>
+        bool RemoveReceiverModule(ObjectId id);
+
+        /// <summary>
+        /// UpdateReceiverModule is supposed to update the <see cref="ReceiverModule"/> with the id of the given <see cref="ReceiverModule"/>.
+        /// </summary>
+        /// <param name="newReceiverModule">is the <see cref="ReceiverModule"/> to update</param>
+        /// <returns>The updated newReceiverModule</returns>
+        ReceiverModule UpdateReceiverModule(ReceiverModule newReceiverModule);
+
+        #endregion RECEIVER MODULE
     }
 }

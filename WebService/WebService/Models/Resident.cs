@@ -1,30 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
-using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
-using Newtonsoft.Json;
-using WebService.Helpers;
+using WebService.Models.Bases;
 
 namespace WebService.Models
 {
     /// <summary>
-    /// Resident is a representation of a resident in the home to use for detection and animation at the kiosk.
+    /// Value is a representation of a resident in the home to use for detection and animation at the kiosk.
     /// </summary>
-    public class Resident
+    public class Resident :AModelWithID
     {
         /// <summary>
-        /// ID is the id of the Resident
-        /// <para/>
-        /// When serialized to json it is converted to a string.
-        /// <para/>
-        /// In the database the value is stored under the field "id"
-        /// </summary>
-        [BsonId]
-        [JsonConverter(typeof(ObjectIdConverter))]
-        public ObjectId ID { get; set; }
-
-        /// <summary>
-        /// FirstName is the first name of the Resident
+        /// FirstName is the first name of the Value
         /// <para/>
         /// In the database the value is stored under the field "firstName"
         /// </summary>
@@ -32,7 +19,7 @@ namespace WebService.Models
         public string FirstName { get; set; }
 
         /// <summary>
-        /// LastName is the last name of the Resident
+        /// LastName is the last name of the Value
         /// <para/>
         /// In the database the value is stored under the field "lastName"
         /// </summary>
@@ -40,7 +27,7 @@ namespace WebService.Models
         public string LastName { get; set; }
 
         /// <summary>
-        /// Picture is a picture of the Resident
+        /// Picture is a picture of the Value
         /// <para/>
         /// In the database the value is stored under the field "picture"
         /// </summary>
@@ -48,23 +35,24 @@ namespace WebService.Models
         public byte[] Picture { get; set; }
 
         /// <summary>
-        /// Room is the room of the Resident
+        /// Room is the room of the Value
         /// <para/>
         /// In the database the value is stored under the field "room"
         /// </summary>
         [BsonElement("room")]
         public string Room { get; set; }
 
+        // TODO change back to dateTime
         /// <summary>
-        /// Birthday is the birthday of the Resident
+        /// Birthday is the birthday of the Value
         /// <para/>
         /// In the database the value is stored under the field "birthday"
         /// </summary>
         [BsonElement("birthday")]
-        public DateTime Birthday { get; set; }
+        public string Birthday { get; set; }
 
         /// <summary>
-        /// Doctor is the doctor that takes care of the Resident
+        /// Doctor is the doctor that takes care of the Value
         /// <para/>
         /// In the database the value is stored under the field "doctor"
         /// </summary>
@@ -72,7 +60,7 @@ namespace WebService.Models
         public Doctor Doctor { get; set; }
 
         /// <summary>
-        /// Tags are the tags to track the Resident
+        /// Tags are the tags to track the Value
         /// <para/>
         /// In the database the value is stored under the field "tags"
         /// </summary>
@@ -80,7 +68,7 @@ namespace WebService.Models
         public IEnumerable<int> Tags { get; set; }
 
         /// <summary>
-        /// Music is the musiccollection of the Resident
+        /// Music is the musiccollection of the Value
         /// <para/>
         /// In the database the value is stored under the field "music"
         /// </summary>
@@ -88,7 +76,7 @@ namespace WebService.Models
         public IEnumerable<byte[]> Music { get; set; }
 
         /// <summary>
-        /// Videos is the videocollection of the Resident
+        /// Videos is the videocollection of the Value
         /// <para/>
         /// In the database the value is stored under the field "videos"
         /// </summary>
@@ -96,7 +84,7 @@ namespace WebService.Models
         public IEnumerable<byte[]> Videos { get; set; }
 
         /// <summary>
-        /// Images is the imagecollection of the Resident
+        /// Images is the imagecollection of the Value
         /// <para/>
         /// In the database the value is stored under the field "images"
         /// </summary>
@@ -104,7 +92,7 @@ namespace WebService.Models
         public IEnumerable<byte[]> Images { get; set; }
 
         /// <summary>
-        /// Colors are the favorite colors of the Resident
+        /// Colors are the favorite colors of the Value
         /// <para/>
         /// In the database the value is stored under the field "colors"
         /// </summary>

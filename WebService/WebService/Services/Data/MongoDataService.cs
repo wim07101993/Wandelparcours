@@ -24,9 +24,14 @@ namespace WebService.Services.Data
         #region FIELDS
 
         /// <summary>
-        /// _collection is the mongo collection to query residents.
+        /// _residentsCollection is the mongo collection to query residents.
         /// </summary>
-        private readonly IMongoCollection<Resident> _collection;
+        private readonly IMongoCollection<Resident> _residentsCollection;
+
+        /// <summary>
+        /// _receiverModulesCollection is the mongo collection to query residents.
+        /// </summary>
+        private readonly IMongoCollection<ReceiverModule> _receiverModulesCollection;
 
         #endregion FIELDS
 
@@ -41,21 +46,25 @@ namespace WebService.Services.Data
         /// <param name="config"></param>
         public MongoDataService(IConfiguration config)
         {
+            // create a new client and get the databas from it
+            var db = new MongoClient(config["Database:ConnectionString"]).GetDatabase(config["Database:DatabaseName"]);
+
             // get the residents mongo collection
-            _collection =
-                // create a new client
-                new MongoClient(config["Database:ConnectionString"])
-                    // get the database
-                    .GetDatabase(config["Database:DatabaseName"])
-                    // get the collection
-                    .GetCollection<Resident>(config["Database:ResidentsCollectionName"]);
+            _residentsCollection = db.GetCollection<Resident>(config["Database:ResidentsCollectionName"]);
+            // get the receiver modules mongo collection
+            _receiverModulesCollection = db.GetCollection<ReceiverModule>(config["Database:ReceiverModulesCollectionName"]);
         }
 
         #endregion CONSTRUCTORS
 
+
+        #region METHDOS
+
+        #region residents
+
         /// <inheritdoc cref="IDataService.GetResidents" />
         /// <summary>
-        /// GetResidents returns all the residents from the database. 
+        /// Get returns all the residents from the database. 
         /// <para />
         /// It only fills the properties passed in the <see cref="propertiesToInclude" /> parameter. The id is always passed and 
         /// if the <see cref="propertiesToInclude" /> parameter is null (which it is by default), all the properties are included.
@@ -67,7 +76,7 @@ namespace WebService.Services.Data
             IEnumerable<Expression<Func<Resident, object>>> propertiesToInclude = null)
         {
             // get all the items
-            var foundItems = _collection.Find(FilterDefinition<Resident>.Empty);
+            var foundItems = _residentsCollection.Find(FilterDefinition<Resident>.Empty);
 
             // convert the properties to include to a list (if not null)
             var properties = propertiesToInclude?.ToList();
@@ -93,7 +102,7 @@ namespace WebService.Services.Data
 
         /// <inheritdoc cref="IDataService.CreateResident" />
         /// <summary>
-        /// CreateResident saves the passed <see cref="Resident"/> to the database.
+        /// Create saves the passed <see cref="Resident"/> to the database.
         /// <para/>
         /// If the newResident is created, the method returns the id of the new <see cref="Resident"/>, else null.
         /// </summary>
@@ -107,10 +116,10 @@ namespace WebService.Services.Data
             // create a new ide for the newResident
             resident.ID = ObjectId.GenerateNewId();
             // save the new newResident to the database
-            _collection.InsertOne(resident);
+            _residentsCollection.InsertOne(resident);
 
             // check if the newResident was created
-            return _collection
+            return _residentsCollection
                        .Find(x => x.ID == resident.ID)
                        .FirstOrDefault() != null
                 // if it is, return the id
@@ -131,19 +140,19 @@ namespace WebService.Services.Data
         public bool RemoveResident(ObjectId id)
         {
             // remove the document from the database with the given id
-            var result = _collection.DeleteOne(x => x.ID == id);
+            var result = _residentsCollection.DeleteOne(x => x.ID == id);
             // return true if something acutaly happened
             return result.IsAcknowledged && result.DeletedCount > 0;
         }
 
         /// <inheritdoc cref="IDataService.UpdateResident" />
         /// <summary>
-        /// UpdateResident updates the <see cref="T:WebService.Models.Resident" /> with the id of the given <see cref="T:WebService.Models.Resident" />.
+        /// UpdateResident updates the <see cref="T:WebService.Models.Value" /> with the id of the given <see cref="T:WebService.Models.Value" />.
         /// <para />
         /// The updated properties are defined in the <see cref="!:propertiesToUpdate" /> parameter.
         /// If the <see cref="!:propertiesToUpdate" /> parameter is null or empty (which it is by default), all properties are updated.
         /// </summary>
-        /// <param name="newResident">is the <see cref="T:WebService.Models.Resident" /> to update</param>
+        /// <param name="newResident">is the <see cref="T:WebService.Models.Value" /> to update</param>
         /// <param name="propertiesToUpdate">are the properties that need to be updated</param>
         /// <returns>The updated newResident</returns>
         public Resident UpdateResident(Resident newResident,
@@ -156,11 +165,11 @@ namespace WebService.Services.Data
             if (EnumerableExtensions.IsNullOrEmpty(propertiesToUpdateList))
             {
                 // if there are no properties in the liest, replace the document
-                var replaceOneResult = _collection.ReplaceOne(x => x.ID == newResident.ID, newResident);
+                var replaceOneResult = _residentsCollection.ReplaceOne(x => x.ID == newResident.ID, newResident);
                 // check if something was replaced
                 return replaceOneResult.IsAcknowledged && replaceOneResult.ModifiedCount > 0
                     // if something was replaced, return the new newResident
-                    ? _collection
+                    ? _residentsCollection
                         .Find(x => x.ID == newResident.ID)
                         .ToList()
                         .FirstOrDefault()
@@ -193,17 +202,102 @@ namespace WebService.Services.Data
             }
 
             // update the document
-            var updateResult = _collection.UpdateOne(filter, update);
+            var updateResult = _residentsCollection.UpdateOne(filter, update);
 
             // check if something was updated
             return updateResult.IsAcknowledged && updateResult.ModifiedCount > 0
                 // if something was updated, return the new newResident
-                ? _collection
+                ? _residentsCollection
                     .Find(x => x.ID == newResident.ID)
                     .ToList()
                     .FirstOrDefault()
                 // else return null;
                 : null;
         }
+
+        #endregion residents
+
+
+        #region receiver modules
+
+        /// <inheritdoc cref="IDataService.GetReceiverModules" />
+        /// <summary>
+        /// GetReceiverModules returns all the receivers from the database. 
+        /// </summary>
+        /// <returns>An <see cref="IEnumerable{T}"/> filled with all the receivers in the database.</returns>
+        public IEnumerable<ReceiverModule> GetReceiverModules()
+            => _receiverModulesCollection.Find(FilterDefinition<ReceiverModule>.Empty).ToList();
+
+        /// <inheritdoc cref="IDataService.CreateReceiverModule" />
+        /// <summary>
+        /// CreateReceiverModule saves the passed <see cref="ReceiverModule"/> to the database.
+        /// <para/>
+        /// If the newReceiverModule is created, the method returns the id of the new <see cref="ReceiverModule"/>, else null.
+        /// </summary>
+        /// <param name="receiver">is the <see cref="ReceiverModule"/> to save in the database</param>
+        /// <returns>
+        /// - the new id if the <see cref="ReceiverModule"/> was created in the database
+        /// - null if the newReceiverModule was not created
+        /// </returns>
+        public string CreateReceiverModule(ReceiverModule receiver)
+        {
+            // create a new ide for the newReceiverModule
+            receiver.ID = ObjectId.GenerateNewId();
+            // save the new newReceiverModule to the database
+            _receiverModulesCollection.InsertOne(receiver);
+
+            // check if the newReceiverModule was created
+            return _receiverModulesCollection
+                       .Find(x => x.ID == receiver.ID)
+                       .FirstOrDefault() != null
+                // if it is, return the id
+                ? receiver.ID.ToString()
+                // else return null
+                : null;
+        }
+
+        /// <inheritdoc cref="IDataService.RemoveReceiverModule" />
+        /// <summary>
+        /// RemoveReceiverModule removes the <see cref="ReceiverModule"/> with the given id from the database.
+        /// </summary>
+        /// <param name="id">is the id of the <see cref="ReceiverModule"/> to remove in the database</param>
+        /// <returns>
+        /// - true if the <see cref="ReceiverModule"/> was removed from the database
+        /// - false if the newReceiverModule was not removed
+        /// </returns>
+        public bool RemoveReceiverModule(ObjectId id)
+        {
+            // remove the document from the database with the given id
+            var result = _receiverModulesCollection.DeleteOne(x => x.ID == id);
+            // return true if something acutaly happened
+            return result.IsAcknowledged && result.DeletedCount > 0;
+        }
+
+        /// <inheritdoc cref="IDataService.UpdateReceiverModule" />
+        /// <summary>
+        /// UpdateReceiverModule updates the <see cref="ReceiverModule" /> with the id of the given <see cref="ReceiverModule" />.
+        /// </summary>
+        /// <param name="newReceiverModule">is the <see cref="ReceiverModule" /> to update</param>
+        /// <returns>The updated newReceiverModule</returns>
+        public ReceiverModule UpdateReceiverModule(ReceiverModule newReceiverModule)
+        {
+            // replace the document
+            var replaceOneResult = _receiverModulesCollection
+                .ReplaceOne(x => x.ID == newReceiverModule.ID, newReceiverModule);
+
+            // check if something was replaced
+            return replaceOneResult.IsAcknowledged && replaceOneResult.ModifiedCount > 0
+                // if something was replaced, return the new newReceiverModule
+                ? _receiverModulesCollection
+                    .Find(x => x.ID == newReceiverModule.ID)
+                    .ToList()
+                    .FirstOrDefault()
+                // else return null
+                : null;
+        }
+
+        #endregion receiver modules
+
+        #endregion METHODS
     }
 }

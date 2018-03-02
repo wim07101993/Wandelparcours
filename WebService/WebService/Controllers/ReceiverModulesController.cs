@@ -1,39 +1,28 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
-using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using MongoDB.Bson;
 using WebService.Controllers.Bases;
-using WebService.Helpers;
-using WebService.Services.Logging;
 using WebService.Models;
 using WebService.Models.Bases;
 using WebService.Services.Data;
+using WebService.Services.Logging;
 
 namespace WebService.Controllers
 {
-    /// <inheritdoc cref="Controller"/>
-    /// <summary>
-    /// ResidentsController is a controller for the REST service.
-    /// <para />
-    /// It handles the reading and writing of residents data to the database.
-    /// </summary>
     [Route("api/v1/[controller]")]
-    [SuppressMessage("ReSharper", "SpecifyACultureInStringConversionExplicitly")]
-    public class ResidentsController : ARestControllerBase<Resident>
+    public class ReceiverModulesController : ARestControllerBase<ReceiverModule>
     {
         #region CONSTRUCTOR
 
         /// <inheritdoc cref="ARestControllerBase{T}" />
         /// <summary>
-        /// Residentscontroller creates an instance of the <see cref="T:WebService.Controllers.ResidentsController" /> class. 
+        /// Residentscontroller creates an instance of the <see cref="ReceiverModulesController" /> class. 
         /// </summary>
         /// <param name="dataService">is a service to handle the database connection</param>
         /// <param name="logger">is a service to hanlde the logging of messages</param>
-        public ResidentsController(IDataService<Resident> dataService, ILogger logger)
+        public ReceiverModulesController(IDataService<ReceiverModule> dataService, ILogger logger)
             : base(dataService, logger)
         {
         }
@@ -47,21 +36,13 @@ namespace WebService.Controllers
         /// SmallDataProperties is a collection of expressions to select the properties that
         /// consume the least space (FirstName, LastName, Room Birthday and Doctor).
         /// </summary>
-        public override Expression<Func<Resident, object>>[] PropertiesToSendOnGet { get; } =
-        {
-            // specify the fields that need to be returned
-            x => x.FirstName,
-            x => x.LastName,
-            x => x.Room,
-            x => x.Birthday,
-            x => x.Doctor,
-        };
+        public override Expression<Func<ReceiverModule, object>>[] PropertiesToSendOnGet { get; } = null;
 
 
-        public override IEnumerable<Expression<Func<Resident, object>>> ConvertStringsToSelectors(
+        public override IEnumerable<Expression<Func<ReceiverModule, object>>> ConvertStringsToSelectors(
             IEnumerable<string> strings)
         {
-            return strings.ConvertToResidentPropertySelectors();
+            return null;
         }
 
         [HttpGet]
@@ -69,7 +50,7 @@ namespace WebService.Controllers
             => await base.GetAsync();
 
         [HttpPost]
-        public override async Task<IActionResult> CreateAsync([FromBody] Resident item)
+        public override async Task<IActionResult> CreateAsync([FromBody] ReceiverModule item)
             => await base.CreateAsync(item);
 
         [HttpDelete("{id}")]
@@ -77,7 +58,7 @@ namespace WebService.Controllers
             => await base.DeleteAsync(id);
 
         [HttpPut]
-        public override async Task<IActionResult> UpdateAsync([FromBody] AUpdater<Resident> updater)
+        public override async Task<IActionResult> UpdateAsync([FromBody] AUpdater<ReceiverModule> updater)
             => await base.UpdateAsync(updater);
 
         #endregion METHODS
