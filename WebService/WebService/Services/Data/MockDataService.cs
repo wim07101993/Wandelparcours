@@ -25,77 +25,77 @@ namespace WebService.Services.Data
         /// </summary>
         public List<Resident> MockData { get; set; } = new List<Resident>
         {
-            new Resident
-            {
-                ID = new ObjectId("5a9566c58b9ed54db08d0ce7"),
-                FirstName = "Lea",
-                LastName = "Thuwis",
-                Room = "AT109 A",
-                Birthday = new DateTime(1937, 4, 8),
-                Doctor = new Doctor
-                {
-                    Name = "Massimo Destino",
-                    PhoneNumber = "089 84 29 87"
-                }
-            },
-            new Resident
-            {
-                ID = new ObjectId("5a95677d8b9ed54db08d0ce8"),
-                FirstName = "Martha",
-                LastName = "Schroyen",
-                Room = "AT109 A",
-                Birthday = new DateTime(1929, 5, 26),
-                Doctor = new Doctor
-                {
-                    Name = "Luc Euben",
-                    PhoneNumber = "089 38 51 57"
-                }
-            },
-            new Resident
-            {
-                ID = new ObjectId("5a9568328b9ed54db08d0ce9"),
-                FirstName = "Roland",
-                LastName = "Mertens",
-                Room = "AQ230 A",
-                Birthday = new DateTime(1948, 9, 19),
-                Doctor = new Doctor
-                {
-                    Name = "Peter Potargent",
-                    PhoneNumber = "089 35 26 87"
-                }
-            },
-            new Resident
-            {
-                ID = new ObjectId("5a9568838b9ed54db08d0cea"),
-                FirstName = "Maria",
-                LastName = "Creces",
-                Room = "SA347 A",
-                Birthday = new DateTime(1934, 1, 26),
-                Doctor = new Doctor
-                {
-                    Name = "Willy Denier - Medebo",
-                    PhoneNumber = "089 35 47 22"
-                }
-            },
-            new Resident
-            {
-                ID = new ObjectId("5a967fc4c45be323bc42b5d8"),
-                FirstName = "Ludovica",
-                LastName = "Van Houten",
-                Room = "AQ468 A",
-                Birthday = new DateTime(1933, 1, 25),
-                Doctor = new Doctor
-                {
-                    Name = "Marcel Mellebeek",
-                    PhoneNumber = "089 65 74 85"
-                }
-            },
+            //new Resident
+            //{
+            //    ID = new ObjectId("5a9566c58b9ed54db08d0ce7"),
+            //    FirstName = "Lea",
+            //    LastName = "Thuwis",
+            //    Room = "AT109 A",
+            //    Birthday = new DateTime(1937, 4, 8),
+            //    Doctor = new Doctor
+            //    {
+            //        Name = "Massimo Destino",
+            //        PhoneNumber = "089 84 29 87"
+            //    }
+            //},
+            //new Resident
+            //{
+            //    ID = new ObjectId("5a95677d8b9ed54db08d0ce8"),
+            //    FirstName = "Martha",
+            //    LastName = "Schroyen",
+            //    Room = "AT109 A",
+            //    Birthday = new DateTime(1929, 5, 26),
+            //    Doctor = new Doctor
+            //    {
+            //        Name = "Luc Euben",
+            //        PhoneNumber = "089 38 51 57"
+            //    }
+            //},
+            //new Resident
+            //{
+            //    ID = new ObjectId("5a9568328b9ed54db08d0ce9"),
+            //    FirstName = "Roland",
+            //    LastName = "Mertens",
+            //    Room = "AQ230 A",
+            //    Birthday = new DateTime(1948, 9, 19),
+            //    Doctor = new Doctor
+            //    {
+            //        Name = "Peter Potargent",
+            //        PhoneNumber = "089 35 26 87"
+            //    }
+            //},
+            //new Resident
+            //{
+            //    ID = new ObjectId("5a9568838b9ed54db08d0cea"),
+            //    FirstName = "Maria",
+            //    LastName = "Creces",
+            //    Room = "SA347 A",
+            //    Birthday = new DateTime(1934, 1, 26),
+            //    Doctor = new Doctor
+            //    {
+            //        Name = "Willy Denier - Medebo",
+            //        PhoneNumber = "089 35 47 22"
+            //    }
+            //},
+            //new Resident
+            //{
+            //    ID = new ObjectId("5a967fc4c45be323bc42b5d8"),
+            //    FirstName = "Ludovica",
+            //    LastName = "Van Houten",
+            //    Room = "AQ468 A",
+            //    Birthday = new DateTime(1933, 1, 25),
+            //    Doctor = new Doctor
+            //    {
+            //        Name = "Marcel Mellebeek",
+            //        PhoneNumber = "089 65 74 85"
+            //    }
+            //},
         };
 
 
         /// <inheritdoc cref="IDataService.GetResidents" />
         /// <summary>
-        /// GetResidents returns all the residents from the mock list. 
+        /// Get returns all the residents from the mock list. 
         /// <para />
         /// It only fills the properties passed in the <see cref="propertiesToInclude" /> parameter. The id is always passed and 
         /// if the <see cref="propertiesToInclude" /> parameter is null (which it is by default), all the properties are included.
@@ -138,7 +138,7 @@ namespace WebService.Services.Data
 
         /// <inheritdoc cref="IDataService.CreateResident" />
         /// <summary>
-        /// CreateResident saves the passed <see cref="Resident"/> to the list.
+        /// Create saves the passed <see cref="Resident"/> to the list.
         /// <para/>
         /// If the newResident is created, the method returns the id of the new <see cref="Resident"/>, else null.
         /// </summary>
@@ -238,5 +238,24 @@ namespace WebService.Services.Data
             return MockData.FirstOrDefault(x => x.ID == newResident.ID);
         }
 
+        public IEnumerable<ReceiverModule> GetReceiverModules()
+        {
+            throw new NotImplementedException();
+        }
+
+        public string CreateReceiverModule(ReceiverModule receiver)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool RemoveReceiverModule(ObjectId id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public ReceiverModule UpdateReceiverModule(ReceiverModule newReceiverModule)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

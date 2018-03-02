@@ -1,26 +1,13 @@
-﻿using MongoDB.Bson;
-using MongoDB.Bson.Serialization.Attributes;
-using Newtonsoft.Json;
-using WebService.Helpers;
+﻿using MongoDB.Bson.Serialization.Attributes;
+using WebService.Models.Bases;
 
 namespace WebService.Models
 {
     /// <summary>
     /// User is a representation of a user to log in on webApp. 
     /// </summary>
-    public class User
+    public class User : AModelWithID
     {
-        /// <summary>
-        /// ID is the id of the User
-        /// <para/>
-        /// When serialized to json it is converted to a string.
-        /// <para/>
-        /// In the database the value is stored under the field "id"
-        /// </summary>
-        [BsonId]
-        [JsonConverter(typeof(ObjectIdConverter))]
-        public ObjectId ID { get; set; }
-
         /// <summary>
         /// UserName is the name of the User
         /// <para/>

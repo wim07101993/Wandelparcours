@@ -34,7 +34,7 @@ namespace WebService.Helpers
             // fill the list of selectors by iterating over the properties to update
             foreach (var propertyName in This)
             {
-                // if the name of a properties matches a property of a Resident, 
+                // if the name of a properties matches a property of a Value, 
                 // add the corresponding selector
                 if (propertyName.EqualsWithCamelCasing(nameof(Resident.Birthday)))
                     selectors.Add(x => x.Birthday);

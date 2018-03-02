@@ -3,7 +3,10 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.SpaServices.Webpack;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Newtonsoft.Json.Serialization;
+using WebService.Models;
 using WebService.Services.Data;
+using WebService.Services.Data.Mondo;
 using WebService.Services.Logging;
 
 namespace WebService
@@ -22,9 +25,16 @@ namespace WebService
         {
             services
                 .AddSingleton(typeof(ILogger), new LoggerCollection {new ConsoleLogger(), new FileLogger()})
-                .AddSingleton<IDataService, MongoDataService>();
+                .AddSingleton<IDataService, MongoDataService>()
+                .AddSingleton<IDataService<Resident>, ResidentsService>()
+                .AddSingleton<IDataService<ReceiverModule>, ReceiverModuleService>(); ;
             
-            services.AddMvc();
+            services
+                .AddMvc()
+                .AddJsonOptions(options =>
+                {
+                    options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
+                });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

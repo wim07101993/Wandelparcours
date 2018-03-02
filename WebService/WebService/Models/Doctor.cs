@@ -3,7 +3,7 @@
 namespace WebService.Models
 {
     /// <summary>
-    /// Doctor is the representation of the doctor that takes care of the Resident.
+    /// Doctor is the representation of the doctor that takes care of the Value.
     /// </summary>
     public class Doctor
     {

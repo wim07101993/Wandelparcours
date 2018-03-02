@@ -6,7 +6,7 @@ namespace WebService.Models
     /// <summary>
     /// Point is a X,Y-location where something (or someone) is at a given point in time.
     /// </summary>
-    public struct Point
+    public class Point
     {
         /// <summary>
         /// X is the x coordinate of the Point
@@ -24,12 +24,13 @@ namespace WebService.Models
         [BsonElement("y")]
         public double Y { get; set; }
 
+        // TODO use datetime instead of string
         /// <summary>
         /// TimeStamp is the time when the element/person has been detected
         /// <para/>
         /// In the database the value is stored under the field "timeStamp"
         /// </summary>
         [BsonElement("timeStamp")]
-        public DateTime TimeStamp { get; set; }
+        public string TimeStamp { get; set; }
     }
 }
