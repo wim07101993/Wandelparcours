@@ -24,12 +24,12 @@ namespace WebService.Services.Data
         /// <summary>
         /// CreateResident is supposed to save the passed <see cref="Resident"/> to the database.
         /// <para/>
-        /// If the resident is created, the method should return the id of the new <see cref="Resident"/>, else null.
+        /// If the newResident is created, the method should return the id of the new <see cref="Resident"/>, else null.
         /// </summary>
         /// <param name="resident">is the <see cref="Resident"/> to save in the database</param>
         /// <returns>
         /// - the new id if the <see cref="Resident"/> was created in the database
-        /// - null if the resident was not created
+        /// - null if the newResident was not created
         /// </returns>
         string CreateResident(Resident resident);
 
@@ -39,7 +39,7 @@ namespace WebService.Services.Data
         /// <param name="id">is the id of the <see cref="Resident"/> to remove in the database</param>
         /// <returns>
         /// - true if the <see cref="Resident"/> was removed from the database
-        /// - false if the resident was not removed
+        /// - false if the newResident was not removed
         /// </returns>
         bool RemoveResident(ObjectId id);
 
@@ -49,9 +49,9 @@ namespace WebService.Services.Data
         /// The updated properties are defined in the <see cref="propertiesToUpdate"/> parameter.
         /// If the <see cref="propertiesToUpdate"/> parameter is null or empty (which it is by default), all properties are updated.
         /// </summary>
-        /// <param name="resident">is the <see cref="Resident"/> to update</param>
+        /// <param name="newResident">is the <see cref="Resident"/> to update</param>
         /// <param name="propertiesToUpdate">are the properties that need to be updated</param>
-        /// <returns>The updated resident</returns>
-        Resident UpdateResident(Resident resident, IEnumerable<Expression<Func<Resident, object>>> propertiesToUpdate = null);
+        /// <returns>The updated newResident</returns>
+        Resident UpdateResident(Resident newResident, IEnumerable<Expression<Func<Resident, object>>> propertiesToUpdate = null);
     }
 }

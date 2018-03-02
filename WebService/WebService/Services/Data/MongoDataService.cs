@@ -95,21 +95,21 @@ namespace WebService.Services.Data
         /// <summary>
         /// CreateResident saves the passed <see cref="Resident"/> to the database.
         /// <para/>
-        /// If the resident is created, the method returns the id of the new <see cref="Resident"/>, else null.
+        /// If the newResident is created, the method returns the id of the new <see cref="Resident"/>, else null.
         /// </summary>
         /// <param name="resident">is the <see cref="Resident"/> to save in the database</param>
         /// <returns>
         /// - the new id if the <see cref="Resident"/> was created in the database
-        /// - null if the resident was not created
+        /// - null if the newResident was not created
         /// </returns>
         public string CreateResident(Resident resident)
         {
-            // create a new ide for the resident
+            // create a new ide for the newResident
             resident.ID = ObjectId.GenerateNewId();
-            // save the new resident to the database
+            // save the new newResident to the database
             _collection.InsertOne(resident);
 
-            // check if the resident was created
+            // check if the newResident was created
             return _collection
                        .Find(x => x.ID == resident.ID)
                        .FirstOrDefault() != null
@@ -126,7 +126,7 @@ namespace WebService.Services.Data
         /// <param name="id">is the id of the <see cref="Resident"/> to remove in the database</param>
         /// <returns>
         /// - true if the <see cref="Resident"/> was removed from the database
-        /// - false if the resident was not removed
+        /// - false if the newResident was not removed
         /// </returns>
         public bool RemoveResident(ObjectId id)
         {
@@ -143,10 +143,10 @@ namespace WebService.Services.Data
         /// The updated properties are defined in the <see cref="!:propertiesToUpdate" /> parameter.
         /// If the <see cref="!:propertiesToUpdate" /> parameter is null or empty (which it is by default), all properties are updated.
         /// </summary>
-        /// <param name="resident">is the <see cref="T:WebService.Models.Resident" /> to update</param>
+        /// <param name="newResident">is the <see cref="T:WebService.Models.Resident" /> to update</param>
         /// <param name="propertiesToUpdate">are the properties that need to be updated</param>
-        /// <returns>The updated resident</returns>
-        public Resident UpdateResident(Resident resident,
+        /// <returns>The updated newResident</returns>
+        public Resident UpdateResident(Resident newResident,
             IEnumerable<Expression<Func<Resident, object>>> propertiesToUpdate = null)
         {
             // create list of the enumerable to prevent multiple enumerations of enumerable
@@ -156,12 +156,12 @@ namespace WebService.Services.Data
             if (EnumerableExtensions.IsNullOrEmpty(propertiesToUpdateList))
             {
                 // if there are no properties in the liest, replace the document
-                var replaceOneResult = _collection.ReplaceOne(x => x.ID == resident.ID, resident);
+                var replaceOneResult = _collection.ReplaceOne(x => x.ID == newResident.ID, newResident);
                 // check if something was replaced
                 return replaceOneResult.IsAcknowledged && replaceOneResult.ModifiedCount > 0
-                    // if something was replaced, return the new resident
+                    // if something was replaced, return the new newResident
                     ? _collection
-                        .Find(x => x.ID == resident.ID)
+                        .Find(x => x.ID == newResident.ID)
                         .ToList()
                         .FirstOrDefault()
                     // else return null
@@ -169,11 +169,11 @@ namespace WebService.Services.Data
             }
 
             // create a filter that filters on id
-            var filter = Builders<Resident>.Filter.Eq(x => x.ID, resident.ID);
+            var filter = Builders<Resident>.Filter.Eq(x => x.ID, newResident.ID);
 
             // create an update definition.
             // since there needs to be an updateDefinition to start from, update the id, that is the same for the old an new object
-            var update = Builders<Resident>.Update.Set(x => x.ID, resident.ID);
+            var update = Builders<Resident>.Update.Set(x => x.ID, newResident.ID);
 
             // ReSharper disable once PossibleNullReferenceException
             // iterate over all the properties that need to be updated
@@ -189,7 +189,7 @@ namespace WebService.Services.Data
                 // check if the property exists
                 if (prop != null)
                     // if it does, add the selector and value to the updateDefinition
-                    update = update.Set(selector, prop.GetValue(resident));
+                    update = update.Set(selector, prop.GetValue(newResident));
             }
 
             // update the document
@@ -197,9 +197,9 @@ namespace WebService.Services.Data
 
             // check if something was updated
             return updateResult.IsAcknowledged && updateResult.ModifiedCount > 0
-                // if something was updated, return the new resident
+                // if something was updated, return the new newResident
                 ? _collection
-                    .Find(x => x.ID == resident.ID)
+                    .Find(x => x.ID == newResident.ID)
                     .ToList()
                     .FirstOrDefault()
                 // else return null;

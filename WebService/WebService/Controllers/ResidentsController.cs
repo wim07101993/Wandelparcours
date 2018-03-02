@@ -87,8 +87,8 @@ namespace WebService.Controllers
         /// </list>
         /// </summary>
         /// <returns>
-        /// - Status ok with An IEnumerable of all the Residents in the database on success
-        /// - Status internal server error when an error occures
+        /// - Status ok (200) with An IEnumerable of all the Residents in the database on success
+        /// - Status internal server (500) error when an error occures
         /// </returns>
         [HttpGet]
         public IActionResult Get()
@@ -166,7 +166,7 @@ namespace WebService.Controllers
                 // log the error
                 _logger.Log(this, ELogLevel.Error, e);
                 // return a 500 internal server error code
-                return StatusCode((int) HttpStatusCode.NotFound);
+                return StatusCode((int) HttpStatusCode.InternalServerError);
             }
         }
 
@@ -180,6 +180,7 @@ namespace WebService.Controllers
         /// <returns>
         /// - Status ok (200) if the <see cref="Resident"/> was updated
         /// - Status created (201) if a new one was created
+        /// - Status bad request (400) if the passed resident is null
         /// - Status internal server error (500) on error or not created
         /// </returns>
         [HttpPut]
@@ -187,49 +188,28 @@ namespace WebService.Controllers
         {
             try
             {
-                // create a new list of selectors
-                var selectors = new List<Expression<Func<Resident, object>>>();
+                // check if the resident to update exists
+                if (updater.Resident == null)
+                    return new StatusCodeResult((int) HttpStatusCode.BadRequest);
 
-                // fill the list of selectors by iterating over the properties to update
-                foreach (var propertyName in updater.PropertiesToUpdate)
+                Resident updatedResident;
+                if (EnumerableExtensions.IsNullOrEmpty(updater.PropertiesToUpdate))
+                    // if there are no properties to update, pass none to the data service
+                    updatedResident = _dataService.UpdateResident(updater.Resident);
+                else
                 {
-                    // if the name of a properties matches a property of a Resident, 
-                    // add the corresponding selector
-                    if (propertyName.EqualsWithCamelCasing(nameof(Resident.Birthday)))
-                        selectors.Add(x => x.Birthday);
-                    else if (propertyName.EqualsWithCamelCasing(nameof(Resident.Colors)))
-                        selectors.Add(x => x.Colors);
-                    else if (propertyName.EqualsWithCamelCasing(nameof(Resident.Doctor)))
-                        selectors.Add(x => x.Doctor);
-                    else if (propertyName.EqualsWithCamelCasing(nameof(Resident.FirstName)))
-                        selectors.Add(x => x.FirstName);
-                    else if (propertyName.EqualsWithCamelCasing(nameof(Resident.Images)))
-                        selectors.Add(x => x.Images);
-                    else if (propertyName.EqualsWithCamelCasing(nameof(Resident.LastName)))
-                        selectors.Add(x => x.LastName);
-                    else if (propertyName.EqualsWithCamelCasing(nameof(Resident.LastRecordedPosition)))
-                        selectors.Add(x => x.LastRecordedPosition);
-                    else if (propertyName.EqualsWithCamelCasing(nameof(Resident.Locations)))
-                        selectors.Add(x => x.Locations);
-                    else if (propertyName.EqualsWithCamelCasing(nameof(Resident.Music)))
-                        selectors.Add(x => x.Music);
-                    else if (propertyName.EqualsWithCamelCasing(nameof(Resident.Picture)))
-                        selectors.Add(x => x.Picture);
-                    else if (propertyName.EqualsWithCamelCasing(nameof(Resident.Room)))
-                        selectors.Add(x => x.Room);
-                    else if (propertyName.EqualsWithCamelCasing(nameof(Resident.Tags)))
-                        selectors.Add(x => x.Tags);
-                    else if (propertyName.EqualsWithCamelCasing(nameof(Resident.Videos)))
-                        selectors.Add(x => x.Videos);
+                    // create a new list of selectors
+                    var selectors = updater.PropertiesToUpdate.ConvertToResidentPropertySelectors();
+
+                    // update the resident in the data service
+                    updatedResident = _dataService.UpdateResident(updater.Resident, selectors);
                 }
 
-                // update the resident in the data service
-                var resident = _dataService.UpdateResident(updater.Resident, selectors);
-                return resident == null
+                return updatedResident == null
                     // if the update failed, try creating a new resident
                     ? Create(updater.Resident)
                     // if the update was a succes, reutrn 200
-                    : Ok(resident);
+                    : StatusCode((int) HttpStatusCode.OK);
             }
             catch (Exception e)
             {

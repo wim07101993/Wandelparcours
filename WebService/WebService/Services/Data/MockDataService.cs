@@ -17,7 +17,7 @@ namespace WebService.Services.Data
     /// <para/>
     /// The connectionstring, db name and collections that are used are stored in the IConfiguration dependency under the Database object.
     /// </summary>
-    public class MockDataService
+    public class MockDataService : IDataService
 
     {
         /// <summary>
@@ -113,7 +113,7 @@ namespace WebService.Services.Data
                 // else return a list with only the asked properties filled
                 : MockData.Select(mockResident =>
                 {
-                    // create new resident to return with the ide filled in
+                    // create new newResident to return with the ide filled in
                     var residentToReturn = new Resident {ID = mockResident.ID};
 
                     // ReSharper disable once PossibleNullReferenceException
@@ -131,7 +131,7 @@ namespace WebService.Services.Data
                         prop?.SetValue(residentToReturn, prop.GetValue(mockResident));
                     }
 
-                    // return the resident
+                    // return the newResident
                     return residentToReturn;
                 });
         }
@@ -140,21 +140,21 @@ namespace WebService.Services.Data
         /// <summary>
         /// CreateResident saves the passed <see cref="Resident"/> to the list.
         /// <para/>
-        /// If the resident is created, the method returns the id of the new <see cref="Resident"/>, else null.
+        /// If the newResident is created, the method returns the id of the new <see cref="Resident"/>, else null.
         /// </summary>
         /// <param name="resident">is the <see cref="Resident"/> to save in the list</param>
         /// <returns>
         /// - the new id if the <see cref="Resident"/> was created in the list
-        /// - null if the resident was not created
+        /// - null if the newResident was not created
         /// </returns>
         public string CreateResident(Resident resident)
         {
-            // create a new ide for the resident
+            // create a new ide for the newResident
             resident.ID = new ObjectId();
-            // add the new resident to the list
+            // add the new newResident to the list
             MockData.Add(resident);
 
-            // check if the resident was created
+            // check if the newResident was created
             return MockData.Any(x => x.ID == resident.ID)
                 // if it is, return the id
                 ? resident.ID.ToString()
@@ -169,20 +169,71 @@ namespace WebService.Services.Data
         /// <param name="id">is the id of the <see cref="Resident"/> to remove in the list</param>
         /// <returns>
         /// - true if the <see cref="Resident"/> was removed from the list
-        /// - false if the resident was not removed
+        /// - false if the newResident was not removed
         /// </returns>
         public bool RemoveResident(ObjectId id)
         {
-            // get the index of the resident with the given id
+            // get the index of the newResident with the given id
             var index = MockData.FindIndex(x => x.ID == id);
 
             // if the index is -1 there was no item found
             if (index == -1)
                 return false;
 
-            // remove the resident
+            // remove the newResident
             MockData.RemoveAt(index);
             return true;
+        }
+
+        /// <inheritdoc cref="IDataService.UpdateResident" />
+        /// <summary>
+        /// UpdateResident updates the <see cref="Resident" /> with the id of the given <see cref="Resident" />.
+        /// <para />
+        /// The updated properties are defined in the <see cref="propertiesToUpdate" /> parameter.
+        /// If the <see cref="!:propertiesToUpdate" /> parameter is null or empty (which it is by default), all properties are updated.
+        /// </summary>
+        /// <param name="newResident">is the <see cref="Resident" /> to update</param>
+        /// <param name="propertiesToUpdate">are the properties that need to be updated</param>
+        /// <returns>The updated newResident</returns>
+        public Resident UpdateResident(Resident newResident,
+            IEnumerable<Expression<Func<Resident, object>>> propertiesToUpdate = null)
+        {
+            // create list of the enumerable to prevent multiple enumerations of enumerable
+            var propertiesToUpdateList = propertiesToUpdate?.ToList();
+
+            var index = MockData.FindIndex(x => x.ID == newResident.ID);
+            if (index < 0)
+                return null;
+
+
+            // check if thereare properties to update.
+            if (EnumerableExtensions.IsNullOrEmpty(propertiesToUpdateList))
+            {
+                // update the resident;
+                MockData[index] = newResident;
+                // return the updated resident
+                return MockData.FirstOrDefault(x => x.ID == newResident.ID);
+            }
+
+            // ReSharper disable once PossibleNullReferenceException
+            // iterate over all the properties that need to be updated
+            foreach (var selector in propertiesToUpdateList)
+            {
+                // get the property
+                var prop = selector.Body is MemberExpression expression
+                    // via member expression
+                    ? expression.Member as PropertyInfo
+                    // if that failse, unary expression
+                    : ((MemberExpression) ((UnaryExpression) selector.Body).Operand).Member as PropertyInfo;
+
+                // check if the property exists
+                if (prop != null)
+                    // if it does, add the selector and value to the updateDefinition
+                    prop.SetValue(MockData[index], prop.GetValue(newResident));
+            }
+
+            // return the updated resident
+            return MockData.FirstOrDefault(x => x.ID == newResident.ID);
         }
     }
 }
