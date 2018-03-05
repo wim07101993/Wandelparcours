@@ -50,10 +50,9 @@ export class ResidentComponent implements OnInit {
             today: 'Today',
             clear: 'Clear',
             close: 'Ok',
-            formatSubmit: 'dd-mm-yyyy',
-            dateFormat: 'dd-mm-yyyy',
-            DisplayDate: 'dd-mm-yyyy',
-            format: 'yyyy-mm-dd',
+            formatSubmit: 'mm-dd-yyyy',
+            dateFormat: 'mm-dd-yyyy',
+            format: 'mm-dd-yyyy', //hier loopt iets mis?
             hiddenName: true,
             closeOnSelect: false // Close upon selecting a date,
         });
@@ -65,11 +64,11 @@ export class ResidentComponent implements OnInit {
 
     async showAllResidents() {
         let residents: any = await this.service.getAllResidents();
-        for (let a of residents) {
+        //for (let a of residents) {
             //testing.substring(0,testing.indexOf("T"))
-            let b: string = "" + a.birthday;
-            let c = b.substring(0, b.indexOf("T"));
-        }
+          //  let b: string = "" + a.birthday;
+            //let c = b.substring(0, b.indexOf("T"));
+        //}
 
 
       if (residents != undefined)
@@ -87,16 +86,19 @@ export class ResidentComponent implements OnInit {
     async editResident(resident: Resident) {
         this.updateResident.id = resident.id;
         let birthDay = $("#birthDay").val();
-        
+
+        console.log(birthDay);
         if (birthDay != "") {
-            console.log("update birthday");
+            //console.log("update birthday");
             let a = new Date(birthDay);
+            //let b = a.toLocaleDateString();
+            //console.log(b)
             console.log(a);
+            //this.updateResident.birthday = b;
             this.updateResident.birthday = a;
         }
-        
 
-        console.log(this.updateResident);
+        //console.log(this.updateResident);
         let changedProperties = [];
         for (let prop in this.updateResident)
         {
