@@ -63,21 +63,21 @@ export class ResidentComponent implements OnInit {
         this.modalResident = modalResident;
         $("#editModalResident").modal();
         $("#editModalResident").modal("open");
-        $('.datepicker').pickadate({
-            selectMonths: true, // Creates a dropdown to control month
-            selectYears: 200, // Creates a dropdown of 15 years to control year,
-            monthsFull: ['Januari', 'Februari', 'Maart', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'December'],
-            monthsShort: ['Jan','Feb','Maa','Apr','Mei','Jun','Jul','Aug','Sep','Okt','Nov','Dec'],
-            weekdaysShort: ['maa', 'din', 'woe', 'don', 'vri', 'zat', 'zon'],
-            today: 'Today',
-            clear: 'Clear',
-            close: 'Ok',
-            formatSubmit: 'mm-dd-yyyy',
-            dateFormat: 'mm-dd-yyyy',
-            format: 'mm-dd-yyyy', //hier loopt iets mis?
-            hiddenName: true,
-            closeOnSelect: false // Close upon selecting a date,
-        });
+        $('.datepicker').pickadate(
+            {
+                clearDate: true,
+                monthsFull: ['Januari', 'Februari', 'Maart', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'December'],
+                monthsShort: ['Jan', 'Feb', 'Maa', 'Apr', 'Mei', 'Jun', 'Jul', 'Aug', 'Sep', 'Okt', 'Nov', 'Dec'],
+                weekdaysShort: ['ma', 'di', 'wo', 'do', 'vr', 'zat', 'zon'],
+                selectMonths: true, // Creates a dropdown to control month
+                selectYears: 120, // Creates a dropdown of 15 years to control year,
+                max: new Date(),
+                today: 'Today',
+                clear: 'Clear',
+                close: 'Ok',
+                closeOnSelect: false,
+                format: 'mm-dd-yyyy'
+            });
     }
     /**
      * Close modal
