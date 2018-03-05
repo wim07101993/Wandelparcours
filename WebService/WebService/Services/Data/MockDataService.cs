@@ -17,7 +17,7 @@ namespace WebService.Services.Data
     /// <para/>
     /// The connectionstring, db name and collections that are used are stored in the IConfiguration dependency under the Database object.
     /// </summary>
-    public class MockDataService : IDataService
+    public class MockDataService
 
     {
         /// <summary>
