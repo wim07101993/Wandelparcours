@@ -13,7 +13,9 @@ export class RestServiceService {
 
     constructor(private http: Http) {}
 
-
+    /**
+     * Get all residents from database
+     */
     getAllResidents() {
       return new Promise<Resident[]>(resolve => {
           this.http.get(this.restUrl +'api/v1/residents').subscribe(response => {
@@ -25,7 +27,10 @@ export class RestServiceService {
           );
       });   
     }
-
+    /**
+     * delete resident from database based on id
+     * @param uniqueIdentifier
+     */
     deleteResidentByUniqueId(uniqueIdentifier: string) {
         return new Promise(resolve => {
             this.http.delete(this.restUrl + 'api/v1/residents/' + uniqueIdentifier).subscribe(response => {
@@ -37,7 +42,10 @@ export class RestServiceService {
             });
         });
     }
-
+    /**
+     * Update resident in database
+     * @param dataToUpdate
+     */
     editResidentWithData(dataToUpdate: any) {
         console.log(dataToUpdate);
         
@@ -52,16 +60,3 @@ export class RestServiceService {
         });
     }
 }
-
-//this.http.get(getBaseUrl() + 'api/v1/residents')
-      //    .map(
-      //    (response: Response) => {
-      //        this.residents = [];
-      //        const data = response.json();
-      //        for (const resident of data) {
-      //            let residentObj = <Resident>resident;
-      //            this.residents.push(residentObj);
-      //        }
-      //        return this.residents;
-      //    })
-          //.map((res: Response) => res.json());

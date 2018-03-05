@@ -18,7 +18,6 @@ export class ResidentComponent implements OnInit {
     residents: Resident[];
     modalResident: Resident;
     updateResident: any;
-    items: Resident;
 
     constructor(private service: RestServiceService) {
         this.showAllResidents();
@@ -31,17 +30,23 @@ export class ResidentComponent implements OnInit {
         };
 
     }
-
+    /**
+     * 
+     * @param modalResident
+     * Open Modal 
+     */
     openModal(modalResident: Resident) {
         //alert(uniqueIdentifier);
         this.modalResident = modalResident;
         $("#deleteModalResident").modal();
         $("#deleteModalResident").modal("open");
     }
-
+    /**
+     * Open modal in edit mode and fill modal with resident
+     * @param modalResident
+     */
     openEditModal(modalResident: Resident) {
         this.modalResident = modalResident;
-        //this.modalResident.birthday=new Date(modalResident.birthday)
         $("#editModalResident").modal();
         $("#editModalResident").modal("open");
         $('.datepicker').pickadate({
@@ -60,33 +65,38 @@ export class ResidentComponent implements OnInit {
             closeOnSelect: false // Close upon selecting a date,
         });
     }
-
+    /**
+     * Close modal
+     */
     closeModal() {
         $().modal("close");
     }
 
+    /**
+     * get all residents async from service
+     */
     async showAllResidents() {
         let residents: any = await this.service.getAllResidents();
-        this.items = residents;
-        //for (let a of residents) {
-            //testing.substring(0,testing.indexOf("T"))
-          //  let b: string = "" + a.birthday;
-            //let c = b.substring(0, b.indexOf("T"));
-        //}
-
-
-      if (residents != undefined)
+        if (residents != undefined)
           this.residents = residents;
-      else {
+        else {
           alert("oops! :( looks like something went wrong :(");
-      }
+        }
     }
 
+    /**
+     * Delete resident async based on unique identifier --> "ID"
+     * @param uniqueIdentifier
+     */
     async deleteResident(uniqueIdentifier: string) {
         await this.service.deleteResidentByUniqueId(uniqueIdentifier);
         this.showAllResidents();
     }
 
+    /**
+     * Edit and save resident from service
+     * @param resident
+     */
     async editResident(resident: Resident) {
         this.updateResident.id = resident.id;
         let birthDay = $("#birthDay").val();
@@ -95,14 +105,12 @@ export class ResidentComponent implements OnInit {
         if (birthDay != "") {
             //console.log("update birthday");
             let a = new Date(birthDay);
-            //let b = a.toLocaleDateString();
-            //console.log(b)
             console.log(a);
-            //this.updateResident.birthday = b;
             this.updateResident.birthday = a;
         }
-
-        //console.log(this.updateResident);
+        /**
+         * Send resident object and the changed properties
+         */
         let changedProperties = [];
         for (let prop in this.updateResident)
         {
@@ -120,7 +128,6 @@ export class ResidentComponent implements OnInit {
 
         $('#birthDay').val("");
 
-        //updatedResident.firstName = 
         let updateData = { value: this.updateResident, propertiesToUpdate: changedProperties };
         
         await this.service.editResidentWithData(updateData);
@@ -128,7 +135,6 @@ export class ResidentComponent implements OnInit {
         this.updateResident = {
             firstName: "", lastName: "", room: "", id : "", birthday: "", doctor: { name: "", phoneNumber: "" }
         };
-
 
         this.showAllResidents();
     }
