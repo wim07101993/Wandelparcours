@@ -1,6 +1,26 @@
-
-
+<div style="position:relative">
+<div id="menuButton" (click)="menu=!menu;" >
+    <a class="btn-floating waves-effect indigo lighten-4 z-depth-3">
+        <i class="large material-icons " *ngIf="!menu" >menu</i>
+        <i class="large material-icons " *ngIf="menu" >close</i>
+    </a>
+</div>
+<div id="sideBar"  *ngIf="menu" class="indigo lighten-4 z-depth-3">
+    <div >
+        <h4 >Stations</h4>
+        
+        <ul>
+            <li *ngFor="let station of stations" (click)="deleteModal(station.mac);">
+                
+                <div>{{station.mac}} <i class="material-icons ">cancel</i> </div>
+                
+            </li>
+         
+        </ul>
+    </div>
+</div>
 <div id="mapButtonHolder">
+    
     <a id="addPiButton" class="btn-floating  waves-effect waves-light red"  *ngIf="!adMarker"   (click)="adMarker=true"><i class="material-icons">    add</i></a>
     <a id="moveButton"  class="btn-floating  waves-effect waves-light red"  *ngIf="adMarker"    (click)="adMarker=false"><i class="material-icons"> open_with</i></a>
     <br>
@@ -11,9 +31,6 @@
 
 <canvas #myCanvas id="map" >
 </canvas>
-
-
-
 
 <div id="markerModel" class="modal">
     <div class="modal-content">
@@ -29,9 +46,21 @@
     </div>
     <div class="modal-footer">
         <a (click)="closeModal()" class="modal-action modal-close waves-effect waves-green btn-flat">Close</a>
-        <a (click)="saveNewStation()" class=" waves-effect waves-green btn-flat">Agree</a>
+        <a (click)="saveNewStation()" class=" waves-effect waves-green btn-flat">Voeg toe</a>
+    </div>
+</div>
+
+<div id="deleteModal" class="modal">
+    <div class="modal-content" *ngIf="collidingElement !=null">
+        <h4>{{collidingElement.id}}</h4> 
+
+    </div>
+    <div class="modal-footer">
+        <a (click)="closeModal()" class="modal-action modal-close waves-effect waves-green btn-flat">Close</a>
+        <a (click)="saveNewStation()" class=" waves-effect waves-green btn-flat">Verwijder</a>
     </div>
 </div>
 
 
+</div>
 

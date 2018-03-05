@@ -21,6 +21,16 @@ export class RenderBuffer{
 
     }
     
+    async getElementById(id:string){
+        let be=null;
+        for (be of this.buffer){
+            if (be.id==id){
+                
+                return be;
+                
+            }
+        }
+    }
     
     async addAnonym(image:HTMLImageElement,x:number,y:number,width:number,heigth:number){
         return new Promise(resolve => {

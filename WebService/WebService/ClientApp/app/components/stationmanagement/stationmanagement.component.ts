@@ -34,9 +34,9 @@ export class StationmanagementComponent implements OnInit {
     imageUrl="";
     markerUrl="";
     adMarker:boolean=false;
-    
+    collidingElement:any;
     saveStation:Station;
-    
+    menu:boolean=false;
     stations:Station[]=[];
     markersize=25;
     async saveNewStation(){
@@ -57,6 +57,9 @@ export class StationmanagementComponent implements OnInit {
    
     constructor(private http: Http) {
         this.saveStation=new Station();
+        console.log("sta");
+        console.log(this.stations);
+        console.log("sta");
     }
     async ngOnInit() {
         
@@ -99,6 +102,18 @@ export class StationmanagementComponent implements OnInit {
         $("#markerModel").modal("close");
     }
     
+    async deleteModal(id?:string){
+        
+        if (id!=undefined){
+            this.collidingElement = await this.renderBuffer.getElementById(id);    
+        }
+        
+        
+            console.log(this.collidingElement);
+            $("#deleteModal").modal();
+            $("#deleteModal").modal("open");
+        
+    }
     //this function is needed to zoomin
     async zoomIn(){
             
@@ -115,6 +130,8 @@ export class StationmanagementComponent implements OnInit {
         
         this.tick();
     }
+    
+    
     //tick does the needed calculatations for the render, and draws the rendering on the canvas
     async tick(){
         try{
@@ -122,6 +139,7 @@ export class StationmanagementComponent implements OnInit {
             await this.drawMap();
             await this.drawModules();
             await this.drawStationOnCursor();
+            
             await this.renderBuffer.render();
         }catch (ex){console.log(ex);}
     }     
