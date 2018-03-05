@@ -145,7 +145,7 @@
                         <label for="aroom">Kamer</label>
                     </div>
                     <div class="input-field col s6">
-                        <input id="abirthdate" type="text" class="datepicker" ngModel name="aBirthday">
+                        <input id="abirthdate" type="text" class="datepicker validate" ngModel name="aBirthday">
                         <label for="abirthdate">Geboortedatum</label>
                     </div>
                 </div>
@@ -160,14 +160,14 @@
                     </div>
                 </div>
             <div class="modal-footer">
-                <button class="btn waves-effect waves-light green lighten-1" type="submit" name="action">
+                <button class="btn waves-effect waves-light green lighten-1" type="submit" name="action" [disabled]="!f.valid">
                     Toevoegen
                     <i class="material-icons right">send</i>
                 </button>
-                <button class="btn waves-effect waves-light red lighten-1 modal-action modal-close">
+                <a (click)="resetForm(f)" class="btn waves-effect waves-light red lighten-1 modal-action modal-close">
                     Annuleren
                     <i class="material-icons right">cancel</i>
-                </button>
+                </a>
             </div>
            
             </form>

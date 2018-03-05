@@ -61,10 +61,10 @@ export class RestServiceService {
         return new Promise(resolve => {
             this.http.post(this.restUrl + 'api/v1/residents', data).subscribe(response => {
                 console.log("updated");
-                resolve();
+                resolve(true);
             }, error => {
                 console.log("Could not update data!");
-                resolve();
+                resolve(false);
             });
         });
     }

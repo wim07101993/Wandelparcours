@@ -4,7 +4,7 @@ import { RestServiceService } from '../../service/rest-service.service'
 import { Response } from '@angular/http'
 import {NgForm} from "@angular/forms";
 declare var $:any;
-
+declare var Materialize:any;
 @Component({
   selector: 'app-resident',
   templateUrl: './resident.component.html',
@@ -18,7 +18,7 @@ export class ResidentComponent implements OnInit {
     residents: Resident[];
     modalResident: Resident;
     updateResident: any;
-    addResident: any;
+
     
     constructor(private service: RestServiceService) {
         this.showAllResidents();
@@ -30,9 +30,7 @@ export class ResidentComponent implements OnInit {
         this.updateResident = {
             firstName: "", lastName: "", room: "", id: "", birthday: "", doctor: { name: "", phoneNumber: "" }
         };
-        this.addResident = {
-            firstName: "", lastName: "", room: "", id: "", birthday: "", doctor: { name: "", phoneNumber: "" }
-        };
+
 
     }
 
@@ -138,10 +136,12 @@ export class ResidentComponent implements OnInit {
 
         this.showAllResidents();
     }
-    
-    
+
+    cleanForm(){
+        
+    }
     // Function to add new resident
-    addNewResident(form: NgForm){
+   async addNewResident(form: NgForm){
         
         // Workaround for dateformat
         let birthday = $("#abirthdate").val();
@@ -160,12 +160,17 @@ export class ResidentComponent implements OnInit {
          };
          
         // Send gathered data over the resrService
-         this.service.addResident(data);
-
-         // Reset Residents form
-        this.addResident = {
-            firstName: "", lastName: "", room: "", id : "", birthday: "", doctor: { name: "", phoneNumber: "" }
-        };
+       
+        if ((await this.service.addResident(data))){    
+            Materialize.toast(`bewoner: ${data.firstName} ${data.lastName} succesvol toegevoegd`, 5000);
+        }else{
+            Materialize.toast(`niet gelukt lan`, 5000);
+        }
+        
+        
+        // Reset Residents form
+        
+        form.reset();
 
         //close modal/form and 'reload' page 
         $("#add-resident-modal").modal("close");
@@ -173,6 +178,7 @@ export class ResidentComponent implements OnInit {
          
     }
     
+    resetForm(form: NgForm){form.reset();}
 
     openResidentAddModal(){
         $("#add-resident-modal").modal();
