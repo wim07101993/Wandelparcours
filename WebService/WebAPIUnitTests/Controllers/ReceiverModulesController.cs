@@ -54,11 +54,11 @@ namespace WebAPIUnitTests.Controllers
             new WebService.Controllers.ReceiverModulesController(dataService.Object, new ConsoleLogger())
                 .GetAsync(receiverModule.Mac).Result
                 .Should()
-                .BeOfType<StatusCodeResult>("all controller methods should return a status code as confirmation")
+                .BeOfType<OkObjectResult>("all controller methods should return a status code as confirmation")
                 .Subject
-                .StatusCode
+                .Value
                 .Should()
-                .Be((int) HttpStatusCode.OK, "the controller should return a 200 ok to the client");
+                .BeOfType<ReceiverModule>("the client asked for a resident");
         }
 
         #endregion get
