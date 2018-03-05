@@ -4,3 +4,24 @@
     margin-bottom: 20px;
     
 }
+.pointer {
+    cursor: pointer;
+}
+
+.test {
+    position: relative;
+    right: 0;
+    left: 0;
+    bottom: 23px;
+    padding-top: 15px;
+    margin-bottom: 0;
+    z-index: 997;
+}
+
+.md-48{
+    font-size: 48px;
+}
+
+.crd{
+    padding:0 16px;
+}

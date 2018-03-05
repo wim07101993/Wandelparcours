@@ -1,23 +1,24 @@
-<div>
-    <input type="text" [(ngModel)]="term">
-    <!--<div *ngFor="let resident of items | filter:term">
-        <p>
-            {{resident.firstName}}
-        </p>
-    </div>-->
-</div>
-
 
 <div class="row">
-    <div style="padding-left:0.75rem">
-        <i class="material-icons" style="font-size:50px" (click)="view='list-view'" *ngIf="view=='card-view'">view_list</i><!---->
-        <i class="material-icons" style="font-size:50px" (click)="view='card-view'" *ngIf="view=='list-view'">view_comfy</i><!---->
+
+    <div class="col s2">
+        <a class="btn-floating btn-large waves-effect waves-light blue" (click)="view='list-view'" *ngIf="view=='card-view'"><i class="material-icons md-48 pointer">view_list</i></a>
+        <a class="btn-floating btn-large waves-effect waves-light blue" (click)="view='card-view'" *ngIf="view=='list-view'"><i class="material-icons md-48 pointer" >view_comfy</i></a>
     </div>
+    <div class="col s9" *ngIf="search">
+        <input id="test" type="text" [(ngModel)]="term" placeholder="Zoek..." autofocus>
+    </div>
+    <div class="test">
+        <a class="btn-floating btn-large waves-effect waves-light red right" *ngIf="!search" (click)="search=!search;focusInput()"><i class="material-icons">search</i></a>
+        <a class="btn-floating btn-large waves-effect waves-light blue right" *ngIf="search" (click)="search=!search">
+            <i class="material-icons">zoom_out</i></a>       
+    </div>
+    
 </div>
 <!--Switch to cardview-->
 <div class="row" *ngIf="view=='card-view'">
-    <div class="col sm6 m4 l4" *ngFor="let resident of residents | filter:term">
-        <div class="card"> 
+    <div class="col s6 m3 l3" *ngFor="let resident of residents | filter:term">
+        <div class="card">
             <div class="card-image">
                 <img src="/images/boss.png">
                 <span class="card-title">Card Title</span>
@@ -39,12 +40,16 @@
                     Huisarts: {{resident.doctor.name}} <br /> Tel: {{resident.doctor.phoneNumber}}
                 </p>
             </div>
-            <div class="card-action center">
-                <i class="material-icons blue-text" style="font-size:50px" (click)="openEditModal(resident)">edit</i>
-                <i class="material-icons red-text " (click)="openModal(resident)" style="font-size:50px">clear</i>
+            <div class="crd">
+                <div class="row">
+                    <div class="col s6 left">
+                        <i class="material-icons blue-text pointer left" (click)="openEditModal(resident)">edit</i>
+                    </div>
+                    <div class="col s6 right">
+                        <i class="material-icons red-text pointer right" (click)="openModal(resident)">clear</i>
+                    </div>
+                </div>
             </div>
-
-
         </div>
     </div>
 </div>
@@ -72,8 +77,8 @@
                 <td>{{resident.room}}</td>
                 <td>{{resident.doctor.name}}</td>
                 <td>{{resident.doctor.phoneNumber}}</td>
-                <td class="center"><i class="material-icons blue-text" (click)="openEditModal(resident)">edit</i></td>
-                <td class="center"><i class="material-icons red-text" (click)="openModal(resident)">clear</i></td>
+                <td class="center"><i class="material-icons blue-text pointer" (click)="openEditModal(resident)">edit</i></td>
+                <td class="center"><i class="material-icons red-text pointer" (click)="openModal(resident)">clear</i></td>
             </tr>
         </tbody>
     </table>

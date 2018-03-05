@@ -27,6 +27,7 @@ export class RestServiceService {
           );
       });   
     }
+
     /**
      * delete resident from database based on id
      * @param uniqueIdentifier

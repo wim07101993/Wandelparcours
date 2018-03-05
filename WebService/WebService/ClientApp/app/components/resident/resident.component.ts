@@ -3,6 +3,7 @@ import { Resident } from '../../models/resident'
 import { RestServiceService } from '../../service/rest-service.service' 
 import { Response } from '@angular/http'
 import { Ng2SearchPipeModule } from 'ng2-search-filter'
+import { async } from '@angular/core/testing';
 declare var $:any;
 
 @Component({
@@ -12,12 +13,15 @@ declare var $:any;
   providers: [RestServiceService]
 })
 export class ResidentComponent implements OnInit {
- 
+
     view: string = "card-view";
     data: any = null;
     residents: Resident[];
     modalResident: Resident;
     updateResident: any;
+    search: boolean = false;
+    
+
 
     constructor(private service: RestServiceService) {
         this.showAllResidents();
@@ -29,7 +33,17 @@ export class ResidentComponent implements OnInit {
             firstName: "", lastName: "", room: "", id: "", birthday: "", doctor: { name: "", phoneNumber: "" }
         };
 
+
+    } 
+
+    focusInput() {
+        let a: any;
+        setTimeout(() => {
+            $('#test').focus();
+        }, 200);  
+        
     }
+
     /**
      * 
      * @param modalResident
@@ -76,12 +90,12 @@ export class ResidentComponent implements OnInit {
      * get all residents async from service
      */
     async showAllResidents() {
-        let residents: any = await this.service.getAllResidents();
-        if (residents != undefined)
-          this.residents = residents;
-        else {
-          alert("oops! :( looks like something went wrong :(");
-        }
+            let residents: any = await this.service.getAllResidents();
+            if (residents != undefined)
+                this.residents = residents;
+            else {
+                alert("oops! :( looks like something went wrong :(");
+            }
     }
 
     /**
@@ -102,6 +116,7 @@ export class ResidentComponent implements OnInit {
         let birthDay = $("#birthDay").val();
 
         console.log(birthDay);
+        
         if (birthDay != "") {
             //console.log("update birthday");
             let a = new Date(birthDay);
@@ -123,6 +138,9 @@ export class ResidentComponent implements OnInit {
         }
         if (this.updateResident.doctor.phoneNumber == "") {
             this.updateResident.doctor.phoneNumber = this.modalResident.doctor.phoneNumber;
+        }
+        if (this.updateResident.birthday == "") {
+            this.updateResident.birthday = this.modalResident.birthday;
         }
         console.log(changedProperties);
 
