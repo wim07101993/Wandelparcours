@@ -1,13 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
+using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using MongoDB.Bson;
 using WebService.Controllers.Bases;
 using WebService.Models;
 using WebService.Models.Bases;
 using WebService.Services.Data;
 using WebService.Services.Logging;
+using ILogger = WebService.Services.Logging.ILogger;
 
 namespace WebService.Controllers
 {
@@ -49,13 +52,49 @@ namespace WebService.Controllers
         public override async Task<IActionResult> GetAsync()
             => await base.GetAsync();
 
+        [HttpGet("{mac}")]
+        public async Task<IActionResult> GetAsync(string mac)
+        {
+            try
+            {
+                // get the value from the data service
+                var item = await ((IReceiverModuleService) DataService).GetAsync(mac);
+                // return the value wrapped in a 200 response 
+                return Ok(item);
+            }
+            catch (Exception e)
+            {
+                // log the exception
+                Logger.Log(this, ELogLevel.Error, e);
+                // return a 500 error to the client
+                return StatusCode((int) HttpStatusCode.InternalServerError);
+            }
+        }
+
         [HttpPost]
         public override async Task<IActionResult> CreateAsync([FromBody] ReceiverModule item)
             => await base.CreateAsync(item);
 
-        [HttpDelete("{id}")]
-        public override async Task<IActionResult> DeleteAsync(string id)
-            => await base.DeleteAsync(id);
+        [HttpDelete("{mac}")]
+        public override async Task<IActionResult> DeleteAsync(string mac)
+        {
+            try
+            {
+                // use the data service to remove the updater
+                return await ((IReceiverModuleService) DataService).RemoveAsync(mac)
+                    // if the updater was deleted return status ok
+                    ? StatusCode((int) HttpStatusCode.OK)
+                    // if the updater was not deleted return status no content
+                    : StatusCode((int) HttpStatusCode.NotFound);
+            }
+            catch (Exception e)
+            {
+                // log the error
+                Logger.Log(this, ELogLevel.Error, e);
+                // return a 500 internal server error code
+                return StatusCode((int) HttpStatusCode.InternalServerError);
+            }
+        }
 
         [HttpPut]
         public override async Task<IActionResult> UpdateAsync([FromBody] AUpdater<ReceiverModule> updater)
