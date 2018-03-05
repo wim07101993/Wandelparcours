@@ -92,7 +92,7 @@ namespace WebService.Services.Data.Mock
         public virtual async Task<string> CreateAsync(T item)
         {
             // create a new ide for the item
-            item.Id = new ObjectId();
+            item.Id = ObjectId.GenerateNewId();
             // add the new item to the list
             MockData.Add(item);
 
