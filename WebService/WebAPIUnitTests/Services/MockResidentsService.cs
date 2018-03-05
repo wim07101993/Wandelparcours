@@ -5,26 +5,29 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MongoDB.Bson;
 using WebService.Helpers;
 using WebService.Models;
+using WebService.Services.Data.Mock;
 
 namespace WebAPIUnitTests.Services
 {
     [TestClass]
-    public class MockDataService
+    public class MockResidentsService
     {
-        public WebService.Services.Data.Mock.MockResidentsService DataService { get; set; } =
-            new WebService.Services.Data.Mock.MockResidentsService();
-
-
         #region Get
 
         [TestMethod]
         public void GetResidentsWithAllProperties()
-            => Assert.AreEqual(DataService.GetAsync().Result, DataService.MockData);
+        {
+            var mockResidentsService = new WebService.Services.Data.Mock.MockResidentsService();
+
+            Assert.AreEqual(mockResidentsService.GetAsync().Result, mockResidentsService.MockData);
+        }
 
         [TestMethod]
         public void GetResidentsWithOnlyID()
         {
-            var residents = DataService
+            var mockResidentsService = new WebService.Services.Data.Mock.MockResidentsService();
+
+            var residents = mockResidentsService
                 .GetAsync(new Expression<Func<Resident, object>>[] {x => x.Id})
                 .Result
                 .ToList();
@@ -36,7 +39,7 @@ namespace WebAPIUnitTests.Services
 
             for (var i = 0; i < residents.Count; i++)
             {
-                Assert.AreEqual(residents[i].Id, DataService.MockData[i].Id);
+                Assert.AreEqual(residents[i].Id, mockResidentsService.MockData[i].Id);
                 foreach (var property in properties)
                     Assert.AreEqual(property.GetValue(residents[i]), property.PropertyType.GetDefault());
             }
@@ -45,7 +48,9 @@ namespace WebAPIUnitTests.Services
         [TestMethod]
         public void GetResidentsWithSomeFields()
         {
-            var residents = DataService
+            var mockResidentsService = new WebService.Services.Data.Mock.MockResidentsService();
+
+            var residents = mockResidentsService
                 .GetAsync(new Expression<Func<Resident, object>>[]
                 {
                     x => x.Id,
@@ -64,9 +69,9 @@ namespace WebAPIUnitTests.Services
 
             for (var i = 0; i < residents.Count; i++)
             {
-                Assert.AreEqual(residents[i].Id, DataService.MockData[i].Id);
-                Assert.AreEqual(residents[i].FirstName, DataService.MockData[i].FirstName);
-                Assert.AreEqual(residents[i].LastName, DataService.MockData[i].LastName);
+                Assert.AreEqual(residents[i].Id, mockResidentsService.MockData[i].Id);
+                Assert.AreEqual(residents[i].FirstName, mockResidentsService.MockData[i].FirstName);
+                Assert.AreEqual(residents[i].LastName, mockResidentsService.MockData[i].LastName);
                 foreach (var property in properties)
                     Assert.AreEqual(property.GetValue(residents[i]), property.PropertyType.GetDefault());
             }
@@ -74,9 +79,13 @@ namespace WebAPIUnitTests.Services
 
         [TestMethod]
         public void GetResidentsWithEmptySelector()
-            => Assert.AreEqual(
-                DataService.GetAsync(new Expression<Func<Resident, object>>[] { }).Result,
-                DataService.MockData);
+        {
+            var mockResidentsService = new WebService.Services.Data.Mock.MockResidentsService();
+
+            Assert.AreEqual(
+                mockResidentsService.GetAsync(new Expression<Func<Resident, object>>[] { }).Result,
+                mockResidentsService.MockData);
+        }
 
         #endregion Get
 
@@ -87,16 +96,28 @@ namespace WebAPIUnitTests.Services
         [ExpectedException(typeof(NullReferenceException))]
         public void CreateNullResident()
         {
-            var _ = DataService.CreateAsync(null).Result;
+            try
+            {
+                var mockResidentsService = new WebService.Services.Data.Mock.MockResidentsService();
+
+                var _ = mockResidentsService.CreateAsync(null).Result;
+            }
+            catch (AggregateException e)
+            {
+                throw e.InnerException;
+            }
+            
         }
 
         [TestMethod]
         public void CreateEmptyResident()
         {
-            var id = DataService.CreateAsync(new Resident()).Result;
+            var mockResidentsService = new WebService.Services.Data.Mock.MockResidentsService();
+
+            var id = mockResidentsService.CreateAsync(new Resident()).Result;
             Assert.IsFalse(string.IsNullOrEmpty(id));
 
-            var newResident = DataService.MockData.FirstOrDefault(x => x.Id == new ObjectId(id));
+            var newResident = mockResidentsService.MockData.FirstOrDefault(x => x.Id == new ObjectId(id));
             Assert.IsNotNull(newResident);
             Assert.IsNull(newResident.FirstName);
             Assert.IsNull(newResident.LastName);
@@ -116,11 +137,14 @@ namespace WebAPIUnitTests.Services
         [TestMethod]
         public void CreateNormalResident()
         {
+            var mockResidentsService = new WebService.Services.Data.Mock.MockResidentsService();
+
             var residtent = new Resident
             {
                 FirstName = "Anna",
                 LastName = "Heylen",
                 Room = "AT107 A",
+                Birthday = new DateTime(1923,01,27),
                 Doctor = new Doctor
                 {
                     Name = "Johan Jespers",
@@ -128,11 +152,11 @@ namespace WebAPIUnitTests.Services
                 },
             };
 
-            var id = DataService.CreateAsync(residtent).Result;
+            var id = mockResidentsService.CreateAsync(residtent).Result;
 
             Assert.IsFalse(string.IsNullOrEmpty(id));
 
-            var newResident = DataService.MockData.FirstOrDefault(x => x.Id == new ObjectId(id));
+            var newResident = mockResidentsService.MockData.FirstOrDefault(x => x.Id == new ObjectId(id));
             Assert.IsNotNull(newResident);
             Assert.AreEqual(newResident, residtent);
 
@@ -159,7 +183,9 @@ namespace WebAPIUnitTests.Services
         [TestMethod]
         public void RemoveResidentWithNonExistingID()
         {
-            Assert.IsFalse(DataService.RemoveAsync(new ObjectId()).Result);
+            var mockResidentsService = new WebService.Services.Data.Mock.MockResidentsService();
+
+            Assert.IsFalse(mockResidentsService.RemoveAsync(new ObjectId()).Result);
         }
 
         #endregion RemoveResident
