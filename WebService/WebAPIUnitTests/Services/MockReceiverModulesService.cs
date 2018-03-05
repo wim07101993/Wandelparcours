@@ -19,9 +19,10 @@ namespace WebAPIUnitTests.Services
         {
             var mockReceiverModulesService = new WebService.Services.Data.Mock.MockReceiverModulesService();
 
-            mockReceiverModulesService.GetAsync().Result
-                .Should().BeEquivalentTo(mockReceiverModulesService.MockData,
-                    "get should return all the data stored in the db");
+            mockReceiverModulesService
+                .GetAsync().Result
+                .Should()
+                .BeEquivalentTo(mockReceiverModulesService.MockData, "get should return all the data stored in the db");
         }
 
         [TestMethod]
@@ -30,7 +31,7 @@ namespace WebAPIUnitTests.Services
             var mockReceiverModulesService = new WebService.Services.Data.Mock.MockReceiverModulesService();
 
             var receiverModules = mockReceiverModulesService
-                .GetAsync(new Expression<Func<ReceiverModule, object>>[] { x => x.Id })
+                .GetAsync(new Expression<Func<ReceiverModule, object>>[] {x => x.Id})
                 .Result
                 .ToList();
 
@@ -41,14 +42,17 @@ namespace WebAPIUnitTests.Services
 
             for (var i = 0; i < receiverModules.Count; i++)
             {
-                mockReceiverModulesService.MockData[i].Id
-                    .Should().Be(receiverModules[i].Id,
+                mockReceiverModulesService.MockData[i]
+                    .Id
+                    .Should()
+                    .Be(receiverModules[i].Id,
                         "it should be the same object and the object id the only field that is asked in the selector");
 
                 foreach (var property in properties)
-                    property.GetValue(receiverModules[i])
-                        .Should().Be(property.PropertyType.GetDefault(),
-                            "only the id property is asked in the selector");
+                    property
+                        .GetValue(receiverModules[i])
+                        .Should()
+                        .Be(property.PropertyType.GetDefault(), "only the id property is asked in the selector");
             }
         }
 
@@ -76,19 +80,27 @@ namespace WebAPIUnitTests.Services
 
             for (var i = 0; i < receiverModules.Count; i++)
             {
-                mockReceiverModulesService.MockData[i].Id
-                    .Should().Be(receiverModules[i].Id,
+                mockReceiverModulesService.MockData[i]
+                    .Id
+                    .Should()
+                    .Be(receiverModules[i].Id,
                         "it should be the same object and the object id is never \"not-passed\"");
 
-                mockReceiverModulesService.MockData[i].Mac
-                    .Should().Be(receiverModules[i].Mac, "it is asked in the selector");
+                mockReceiverModulesService.MockData[i]
+                    .Mac
+                    .Should()
+                    .Be(receiverModules[i].Mac, "it is asked in the selector");
 
-                mockReceiverModulesService.MockData[i].IsActive
-                    .Should().Be(receiverModules[i].IsActive, "it is asked in the selector");
+                mockReceiverModulesService.MockData[i]
+                    .IsActive
+                    .Should()
+                    .Be(receiverModules[i].IsActive, "it is asked in the selector");
 
                 foreach (var property in properties)
-                    property.GetValue(receiverModules[i])
-                        .Should().Be(property.PropertyType.GetDefault(), "it is not asked in the selector");
+                    property
+                        .GetValue(receiverModules[i])
+                        .Should()
+                        .Be(property.PropertyType.GetDefault(), "it is not asked in the selector");
             }
         }
 
@@ -97,9 +109,10 @@ namespace WebAPIUnitTests.Services
         {
             var mockReceiverModulesService = new WebService.Services.Data.Mock.MockReceiverModulesService();
 
-            mockReceiverModulesService.GetAsync(new Expression<Func<ReceiverModule, object>>[] { }).Result
-                .Should().BeEquivalentTo(mockReceiverModulesService.MockData,
-                    "get should return all the data stored in the db");
+            mockReceiverModulesService
+                .GetAsync(new Expression<Func<ReceiverModule, object>>[] { }).Result
+                .Should()
+                .BeEquivalentTo(mockReceiverModulesService.MockData, "get should return all the data stored in the db");
         }
 
         #endregion Get
@@ -131,13 +144,20 @@ namespace WebAPIUnitTests.Services
             var receiverModule = new ReceiverModule();
 
             var id = mockReceiverModulesService.CreateAsync(receiverModule).Result;
-            id.Should().NotBeNullOrEmpty("it is assigned in the create method of the service");
+            id
+                .Should()
+                .NotBeNullOrEmpty("it is assigned in the create method of the service");
 
             var newReceiverModule = mockReceiverModulesService.MockData.FirstOrDefault(x => x.Id == new ObjectId(id));
-            newReceiverModule.Should().NotBeNull("it is created in the create method of the service");
+            newReceiverModule
+                .Should()
+                .NotBeNull("it is created in the create method of the service");
 
             // ReSharper disable PossibleNullReferenceException
-            newReceiverModule.Id.Should().NotBe(default(ObjectId), "a new object id is created in the service");
+            newReceiverModule
+                .Id
+                .Should()
+                .NotBe(default(ObjectId), "a new object id is created in the service");
             // ReSharper restore PossibleNullReferenceException
 
             var properties = typeof(ReceiverModule)
@@ -145,8 +165,10 @@ namespace WebAPIUnitTests.Services
                 .Where(x => x.Name != nameof(ReceiverModule.Id));
 
             foreach (var property in properties)
-                property.GetValue(newReceiverModule)
-                    .Should().Be(property.GetValue(receiverModule),
+                property
+                    .GetValue(newReceiverModule)
+                    .Should()
+                    .Be(property.GetValue(receiverModule),
                         $"it should be equal to the {property.Name} of the receiverModule");
         }
 
@@ -167,13 +189,20 @@ namespace WebAPIUnitTests.Services
             };
 
             var id = mockReceiverModulesService.CreateAsync(receiverModule).Result;
-            id.Should().NotBeNullOrEmpty("it is assigned in the create method of the service");
+            id
+                .Should()
+                .NotBeNullOrEmpty("it is assigned in the create method of the service");
 
             var newReceiverModule = mockReceiverModulesService.MockData.FirstOrDefault(x => x.Id == new ObjectId(id));
-            newReceiverModule.Should().NotBeNull("it is created in the create method of the service");
+            newReceiverModule
+                .Should()
+                .NotBeNull("it is created in the create method of the service");
 
             // ReSharper disable PossibleNullReferenceException
-            newReceiverModule.Id.Should().NotBe(default(ObjectId), "a new object id is created in the service");
+            newReceiverModule
+                .Id
+                .Should()
+                .NotBe(default(ObjectId), "a new object id is created in the service");
             // ReSharper restore PossibleNullReferenceException
 
             var properties = typeof(ReceiverModule)
@@ -181,8 +210,10 @@ namespace WebAPIUnitTests.Services
                 .Where(x => x.Name != nameof(ReceiverModule.Id));
 
             foreach (var property in properties)
-                property.GetValue(newReceiverModule)
-                    .Should().Be(property.GetValue(receiverModule),
+                property
+                    .GetValue(newReceiverModule)
+                    .Should()
+                    .Be(property.GetValue(receiverModule),
                         $"it should be equal to the {property.Name} of the receiverModule");
         }
 
@@ -196,7 +227,10 @@ namespace WebAPIUnitTests.Services
         {
             var mockReceiverModulesService = new WebService.Services.Data.Mock.MockReceiverModulesService();
 
-            mockReceiverModulesService.RemoveAsync(new ObjectId()).Result.Should().BeFalse("the item doesn't exist");
+            mockReceiverModulesService
+                .RemoveAsync(new ObjectId()).Result
+                .Should()
+                .BeFalse("the item doesn't exist");
         }
 
         [TestMethod]
@@ -204,7 +238,10 @@ namespace WebAPIUnitTests.Services
         {
             var mockReceiverModulesService = new WebService.Services.Data.Mock.MockReceiverModulesService();
 
-            mockReceiverModulesService.RemoveAsync(mockReceiverModulesService.MockData[0].Id).Result.Should().BeTrue("the item exist");
+            mockReceiverModulesService
+                .RemoveAsync(mockReceiverModulesService.MockData[0].Id).Result
+                .Should()
+                .BeTrue("the item exist");
         }
 
         #endregion RemoveReceiverModule

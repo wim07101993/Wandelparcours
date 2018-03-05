@@ -20,8 +20,8 @@ namespace WebAPIUnitTests.Services
             var mockResidentsService = new WebService.Services.Data.Mock.MockResidentsService();
 
             mockResidentsService.GetAsync().Result
-                .Should().BeEquivalentTo(mockResidentsService.MockData,
-                    "get should return all the data stored in the db");
+                .Should()
+                .BeEquivalentTo(mockResidentsService.MockData, "get should return all the data stored in the db");
         }
 
         [TestMethod]
@@ -41,13 +41,17 @@ namespace WebAPIUnitTests.Services
 
             for (var i = 0; i < residents.Count; i++)
             {
-                mockResidentsService.MockData[i].Id
-                    .Should().Be(residents[i].Id,
+                mockResidentsService.MockData[i]
+                    .Id
+                    .Should()
+                    .Be(residents[i].Id,
                         "it should be the same object and the object id the only field that is asked in the selector");
 
                 foreach (var property in properties)
-                    property.GetValue(residents[i])
-                        .Should().Be(property.PropertyType.GetDefault(),
+                    property
+                        .GetValue(residents[i])
+                        .Should()
+                        .Be(property.PropertyType.GetDefault(),
                             "only the id property is asked in the selector");
             }
         }
@@ -76,19 +80,26 @@ namespace WebAPIUnitTests.Services
 
             for (var i = 0; i < residents.Count; i++)
             {
-                mockResidentsService.MockData[i].Id
-                    .Should().Be(residents[i].Id,
-                        "it should be the same object and the object id is never \"not-passed\"");
+                mockResidentsService.MockData[i]
+                    .Id
+                    .Should()
+                    .Be(residents[i].Id, "it should be the same object and the object id is never \"not-passed\"");
 
-                mockResidentsService.MockData[i].FirstName
-                    .Should().Be(residents[i].FirstName, "it is asked in the selector");
+                mockResidentsService.MockData[i]
+                    .FirstName
+                    .Should()
+                    .Be(residents[i].FirstName, "it is asked in the selector");
 
-                mockResidentsService.MockData[i].LastName
-                    .Should().Be(residents[i].LastName, "it is asked in the selector");
+                mockResidentsService.MockData[i]
+                    .LastName
+                    .Should()
+                    .Be(residents[i].LastName, "it is asked in the selector");
 
                 foreach (var property in properties)
-                    property.GetValue(residents[i])
-                        .Should().Be(property.PropertyType.GetDefault(), "it is not asked in the selector");
+                    property
+                        .GetValue(residents[i])
+                        .Should()
+                        .Be(property.PropertyType.GetDefault(), "it is not asked in the selector");
             }
         }
 
@@ -97,9 +108,10 @@ namespace WebAPIUnitTests.Services
         {
             var mockResidentsService = new WebService.Services.Data.Mock.MockResidentsService();
 
-            mockResidentsService.GetAsync(new Expression<Func<Resident, object>>[] { }).Result
-                .Should().BeEquivalentTo(mockResidentsService.MockData,
-                    "get should return all the data stored in the db");
+            mockResidentsService
+                .GetAsync(new Expression<Func<Resident, object>>[] { }).Result
+                .Should()
+                .BeEquivalentTo(mockResidentsService.MockData, "get should return all the data stored in the db");
         }
 
         #endregion Get
@@ -131,13 +143,20 @@ namespace WebAPIUnitTests.Services
             var resident = new Resident();
 
             var id = mockResidentsService.CreateAsync(resident).Result;
-            id.Should().NotBeNullOrEmpty("it is assigned in the create method of the service");
+            id
+                .Should()
+                .NotBeNullOrEmpty("it is assigned in the create method of the service");
 
             var newResident = mockResidentsService.MockData.FirstOrDefault(x => x.Id == new ObjectId(id));
-            newResident.Should().NotBeNull("it is created in the create method of the service");
+            newResident
+                .Should()
+                .NotBeNull("it is created in the create method of the service");
 
             // ReSharper disable PossibleNullReferenceException
-            newResident.Id.Should().NotBe(default(ObjectId), "a new object id is created in the service");
+            newResident
+                .Id
+                .Should()
+                .NotBe(default(ObjectId), "a new object id is created in the service");
             // ReSharper restore PossibleNullReferenceException
 
             var properties = typeof(Resident)
@@ -145,9 +164,10 @@ namespace WebAPIUnitTests.Services
                 .Where(x => x.Name != nameof(Resident.Id));
 
             foreach (var property in properties)
-                property.GetValue(newResident)
-                    .Should().Be(property.GetValue(resident),
-                        $"it should be equal to the {property.Name} of the resident");
+                property
+                    .GetValue(newResident)
+                    .Should()
+                    .Be(property.GetValue(resident), $"it should be equal to the {property.Name} of the resident");
         }
 
         [TestMethod]
@@ -169,13 +189,20 @@ namespace WebAPIUnitTests.Services
             };
 
             var id = mockResidentsService.CreateAsync(resident).Result;
-            id.Should().NotBeNullOrEmpty("it is assigned in the create method of the service");
+            id
+                .Should()
+                .NotBeNullOrEmpty("it is assigned in the create method of the service");
 
             var newResident = mockResidentsService.MockData.FirstOrDefault(x => x.Id == new ObjectId(id));
-            newResident.Should().NotBeNull("it is created in the create method of the service");
+            newResident
+                .Should()
+                .NotBeNull("it is created in the create method of the service");
 
             // ReSharper disable PossibleNullReferenceException
-            newResident.Id.Should().NotBe(default(ObjectId), "a new object id is created in the service");
+            newResident
+                .Id
+                .Should()
+                .NotBe(default(ObjectId), "a new object id is created in the service");
             // ReSharper restore PossibleNullReferenceException
 
             var properties = typeof(Resident)
@@ -183,9 +210,10 @@ namespace WebAPIUnitTests.Services
                 .Where(x => x.Name != nameof(Resident.Id));
 
             foreach (var property in properties)
-                property.GetValue(newResident)
-                    .Should().Be(property.GetValue(resident),
-                        $"it should be equal to the {property.Name} of the resident");
+                property
+                    .GetValue(newResident)
+                    .Should()
+                    .Be(property.GetValue(resident), $"it should be equal to the {property.Name} of the resident");
         }
 
         #endregion Create
@@ -198,7 +226,10 @@ namespace WebAPIUnitTests.Services
         {
             var mockResidentsService = new WebService.Services.Data.Mock.MockResidentsService();
 
-            mockResidentsService.RemoveAsync(new ObjectId()).Result.Should().BeFalse("the item doesn't exist");
+            mockResidentsService
+                .RemoveAsync(new ObjectId()).Result
+                .Should()
+                .BeFalse("the item doesn't exist");
         }
 
         [TestMethod]
@@ -206,7 +237,10 @@ namespace WebAPIUnitTests.Services
         {
             var mockResidentsService = new WebService.Services.Data.Mock.MockResidentsService();
 
-            mockResidentsService.RemoveAsync(mockResidentsService.MockData[0].Id).Result.Should().BeTrue("the item exist");
+            mockResidentsService
+                .RemoveAsync(mockResidentsService.MockData[0].Id).Result
+                .Should()
+                .BeTrue("the item exist");
         }
 
         #endregion RemoveResident
