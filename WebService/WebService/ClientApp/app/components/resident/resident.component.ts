@@ -185,7 +185,8 @@ export class ResidentComponent implements OnInit {
         $("#add-resident-modal").modal("open");
         $('.datepicker').pickadate({
             selectMonths: true, // Creates a dropdown to control month
-            selectYears: 200, // Creates a dropdown of 15 years to control year,
+            selectYears: 110, // Creates a dropdown of 15 years to control year,
+            max: new Date(),
             monthsFull: ['Januari', 'Februari', 'Maart', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'December'],
             monthsShort: ['Jan','Feb','Maa','Apr','Mei','Jun','Jul','Aug','Sep','Okt','Nov','Dec'],
             weekdaysShort: ['ma', 'di', 'wo', 'do', 'vr', 'zat', 'zon'],
