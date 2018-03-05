@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using MongoDB.Bson.Serialization.Attributes;
+using Newtonsoft.Json;
+using WebService.Helpers.JsonConverters;
 using WebService.Models.Bases;
 
 namespace WebService.Models
@@ -49,7 +51,8 @@ namespace WebService.Models
         /// In the database the value is stored under the field "birthday"
         /// </summary>
         [BsonElement("birthday")]
-        public DateTime Birthday { get; set; }
+    //    [JsonConverter(typeof(DateTimeConverter))]
+        public DateTime? Birthday { get; set; }
 
         /// <summary>
         /// Doctor is the doctor that takes care of the Value

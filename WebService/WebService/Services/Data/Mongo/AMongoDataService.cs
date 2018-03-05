@@ -6,7 +6,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using MongoDB.Bson;
 using MongoDB.Driver;
-using WebService.Helpers;
+using WebService.Helpers.Extensions;
 using WebService.Models.Bases;
 
 namespace WebService.Services.Data.Mongo

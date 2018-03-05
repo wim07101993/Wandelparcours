@@ -5,7 +5,7 @@ using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using WebService.Controllers.Bases;
-using WebService.Helpers;
+using WebService.Helpers.Extensions;
 using WebService.Services.Logging;
 using WebService.Models;
 using WebService.Models.Bases;

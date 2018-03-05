@@ -32,12 +32,14 @@ namespace WebService.Services.Data.Mongo
             MongoCollection = db.GetCollection<ReceiverModule>(config["Database:ReceiverModulesCollectionName"]);
         }
 
+
         /// <inheritdoc cref="AMongoDataService{T}.MongoCollection" />
         /// <summary>
         /// MongoCollection is the mongo collection to query residents.
         /// </summary>
         public override IMongoCollection<ReceiverModule> MongoCollection { get; }
         
+
         /// <inheritdoc cref="IReceiverModuleService.GetAsync(string)" />
         /// <summary>
         /// GetAsync should return the receiver module with the given mac.

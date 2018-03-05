@@ -5,7 +5,7 @@ using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Bson;
-using WebService.Helpers;
+using WebService.Helpers.Extensions;
 using WebService.Models.Bases;
 using WebService.Services.Data;
 using WebService.Services.Logging;

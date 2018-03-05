@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using WebService.Models;
 
-namespace WebService.Helpers
+namespace WebService.Helpers.Extensions
 {
     public static class StringExtensions
     {

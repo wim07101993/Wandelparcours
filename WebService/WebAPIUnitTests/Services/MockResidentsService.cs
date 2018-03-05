@@ -4,7 +4,7 @@ using System.Linq.Expressions;
 using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MongoDB.Bson;
-using WebService.Helpers;
+using WebService.Helpers.Extensions;
 using WebService.Models;
 
 namespace WebAPIUnitTests.Services

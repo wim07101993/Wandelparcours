@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace WebService.Helpers
+namespace WebService.Helpers.Extensions
 {
     public static class TypeExtensions
     {
