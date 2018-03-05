@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core'
 import { Resident } from '../../models/resident'
 import { RestServiceService } from '../../service/rest-service.service' 
 import { Response } from '@angular/http'
+import { Ng2SearchPipeModule } from 'ng2-search-filter'
 declare var $:any;
 
 @Component({
@@ -17,6 +18,8 @@ export class ResidentComponent implements OnInit {
     residents: Resident[];
     modalResident: Resident;
     updateResident: any;
+    items: Resident;
+
     constructor(private service: RestServiceService) {
         this.showAllResidents();
         this.residents = [];
@@ -64,6 +67,7 @@ export class ResidentComponent implements OnInit {
 
     async showAllResidents() {
         let residents: any = await this.service.getAllResidents();
+        this.items = residents;
         //for (let a of residents) {
             //testing.substring(0,testing.indexOf("T"))
           //  let b: string = "" + a.birthday;
