@@ -1,10 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using WebService.Models.Bases;
 
 namespace WebService.Models
 {
-    public class ResidentUpdater
+    public class ResidentUpdater : AUpdater<Resident>
     {
-        public Resident Resident { get; set; }
-        public IEnumerable<string> PropertiesToUpdate { get; set; }
     }
 }

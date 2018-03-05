@@ -12,7 +12,7 @@ namespace WebService.Services.Data.Mock
     /// <para/>
     /// The connectionstring, db name and collections that are used are stored in the IConfiguration dependency under the Database object.
     /// </summary>
-    public class MockReceiverModuleService : AMockDataService<ReceiverModule>
+    public class MockReceiverModulesService : AMockDataService<ReceiverModule>
     {
         /// <inheritdoc cref="AMockDataService{T}" />
         /// <summary>
