@@ -1,6 +1,6 @@
 
 <div class="row">
-    <div style="padding-left:0.75rem">
+    <div>
         <i class="material-icons" style="font-size:50px" (click)="view='list-view'" *ngIf="view=='card-view'">view_list</i><!---->
         <i class="material-icons" style="font-size:50px" (click)="view='card-view'" *ngIf="view=='list-view'">view_comfy</i><!---->
     </div>
@@ -11,15 +11,9 @@
         <div class="card">
             <div class="card-image">
                 <img src="/images/boss.png">
-                <span class="card-title">Card Title</span>
+                <span class="card-title">{{resident.firstName}}, {{resident.lastName}} </span>
             </div>
             <div class="card-content">
-                <p>
-                    Naam: {{resident.firstName}}
-                </p>
-                <p>
-                    Voornaam: {{resident.lastName}}
-                </p>
                 <p>
                     Kamer: {{resident.room}}
                 </p>
@@ -50,8 +44,7 @@
                 <th>Kamer</th>
                 <th>Huisarts</th>
                 <th>Tel:</th>
-                <th class="center">Wijzig</th>
-                <th class="center">Verwijder</th>
+                <th colspan="2">Actie</th>
             </tr>
         </thead>
 
@@ -135,51 +128,52 @@
     <div class="modal-content">
         <h4>Bewoner toevoegen</h4>
         <div class="row">
-            <form class="col s12">
+            <form class="col s12" (ngSubmit)="addNewResident(f)" #f="ngForm">
                 <div class="row">
                     <div class="input-field col s6">
-                        <input id="first_name" type="text" class="validate" ngModel name="firstName">
-                        <label for="first_name">Voornaam</label>
+                        <input id="afirst_name" type="text" class="validate" ngModel name="aFirstName" required>
+                        <label for="afirst_name">Voornaam</label>
                     </div>
                     <div class="input-field col s6">
-                        <input id="last_name" type="text" class="validate">
-                        <label for="last_name">Familienaam</label>
+                        <input id="alast_name" type="text" class="validate" ngModel name="aLastName" required>
+                        <label for="alast_name">Familienaam</label>
                     </div>
                 </div>
                 <div class="row">
                     <div class="input-field col s6">
-                        <input id="room" type="text" class="validate">
-                        <label for="room">Kamer</label>
+                        <input id="aroom" type="text" class="validate" ngModel name="aRoom" required>
+                        <label for="aroom">Kamer</label>
                     </div>
                     <div class="input-field col s6">
-                        <input id="birthdate" type="text" class="datepicker validate">
-                        <label for="birthdate">Geboortedatum</label>
+                        <input id="abirthdate" type="text" class="datepicker" ngModel name="aBirthday">
+                        <label for="abirthdate">Geboortedatum</label>
                     </div>
                 </div>
                 <div class="row">
                     <div class="input-field col s6">
-                        <input id="doctor" type="text" class="validate">
-                        <label for="doctor">Huisarts</label>
+                        <input id="adoctor" type="text" class="validate" ngModel name="aDoctor">
+                        <label for="adoctor">Huisarts</label>
                     </div>
                     <div class="input-field col s6">
-                        <input id="telefoon" type="text" class="validate">
-                        <label for="telefoon">Telefoon</label>
+                        <input id="atelefoon" type="text" class="validate" ngModel name="aTelefoon">
+                        <label for="atelefoon">Telefoon</label>
                     </div>
                 </div>
+            <div class="modal-footer">
+                <button class="btn waves-effect waves-light green lighten-1" type="submit" name="action">
+                    Toevoegen
+                    <i class="material-icons right">send</i>
+                </button>
+                <button class="btn waves-effect waves-light red lighten-1 modal-action modal-close">
+                    Annuleren
+                    <i class="material-icons right">cancel</i>
+                </button>
+            </div>
            
             </form>
         </div>
     </div>
-    <div class="modal-footer">
-        <button class="btn waves-effect waves-light green lighten-1" type="submit" name="action">
-            Toevoegen
-            <i class="material-icons right">send</i>
-        </button>
-        <button class="btn waves-effect waves-light red lighten-1 modal-action modal-close" type="submit" name="action">
-            Annuleren
-            <i class="material-icons right">cancel</i>
-        </button>
-    </div>
+    
 </div>
 
 <!-- Modal Trigger -->

@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core'
 import { Resident } from '../../models/resident'
 import { RestServiceService } from '../../service/rest-service.service' 
 import { Response } from '@angular/http'
+import {NgForm} from "@angular/forms";
 declare var $:any;
 
 @Component({
@@ -17,13 +18,19 @@ export class ResidentComponent implements OnInit {
     residents: Resident[];
     modalResident: Resident;
     updateResident: any;
+    addResident: any;
+    
     constructor(private service: RestServiceService) {
         this.showAllResidents();
         this.residents = [];
+        
         this.modalResident = <Resident>{
             firstName: "", lastName: "", room: "", id: "", birthday: new Date(), doctor: { name: "", phoneNumber: "" }
         };
         this.updateResident = {
+            firstName: "", lastName: "", room: "", id: "", birthday: "", doctor: { name: "", phoneNumber: "" }
+        };
+        this.addResident = {
             firstName: "", lastName: "", room: "", id: "", birthday: "", doctor: { name: "", phoneNumber: "" }
         };
 
@@ -74,7 +81,7 @@ export class ResidentComponent implements OnInit {
       if (residents != undefined)
           this.residents = residents;
       else {
-          alert("oops! :( looks like something went wrong :(");
+          console.log("oops! :( looks like something went wrong :(");
       }
     }
 
@@ -112,6 +119,9 @@ export class ResidentComponent implements OnInit {
         if (this.updateResident.doctor.phoneNumber == "") {
             this.updateResident.doctor.phoneNumber = this.modalResident.doctor.phoneNumber;
         }
+        if (this.updateResident.birthday == ""){
+            this.updateResident.birtday = this.modalResident.birthday;
+        }
         console.log(changedProperties);
 
         $('#birthDay').val("");
@@ -128,10 +138,60 @@ export class ResidentComponent implements OnInit {
 
         this.showAllResidents();
     }
+    
+    
+    // Function to add new resident
+    addNewResident(form: NgForm){
+        
+        // Workaround for dateformat
+        let birthday = $("#abirthdate").val();
+        let a;
+        if (birthday != "") {
+            a = new Date(birthday);
+        }
+        
+        // Get data from form-inputs
+         let data = {
+             firstName: form.value.aFirstName, 
+             lastName: form.value.aLastName, 
+             room: form.value.aRoom, 
+             birthday: a, 
+             doctor: { name: form.value.aDoctor, phoneNumber: form.value.aTelefoon }
+         };
+         
+        // Send gathered data over the resrService
+         this.service.addResident(data);
+
+         // Reset Residents form
+        this.addResident = {
+            firstName: "", lastName: "", room: "", id : "", birthday: "", doctor: { name: "", phoneNumber: "" }
+        };
+
+        //close modal/form and 'reload' page 
+        $("#add-resident-modal").modal("close");
+        this.showAllResidents();
+         
+    }
+    
 
     openResidentAddModal(){
         $("#add-resident-modal").modal();
         $("#add-resident-modal").modal("open");
+        $('.datepicker').pickadate({
+            selectMonths: true, // Creates a dropdown to control month
+            selectYears: 200, // Creates a dropdown of 15 years to control year,
+            monthsFull: ['Januari', 'Februari', 'Maart', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'December'],
+            monthsShort: ['Jan','Feb','Maa','Apr','Mei','Jun','Jul','Aug','Sep','Okt','Nov','Dec'],
+            weekdaysShort: ['ma', 'di', 'wo', 'do', 'vr', 'zat', 'zon'],
+            today: 'Vandaag',
+            clear: 'Wissen',
+            close: 'Ok',
+            formatSubmit: 'mm-dd-yyyy',
+            dateFormat: 'mm-dd-yyyy',
+            format: 'mm-dd-yyyy', //hier loopt iets mis?
+            hiddenName: true,
+            closeOnSelect: false // Close upon selecting a date,
+        });
         
     }
   ngOnInit() {

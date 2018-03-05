@@ -11,7 +11,10 @@ export class RestServiceService {
 
     restUrl = "http://localhost:5000/";
 
-    constructor(private http: Http) {}
+    constructor(private http: Http) {
+        
+        
+    }
 
 
     getAllResidents() {
@@ -25,6 +28,7 @@ export class RestServiceService {
           );
       });   
     }
+
 
     deleteResidentByUniqueId(uniqueIdentifier: string) {
         return new Promise(resolve => {
@@ -51,17 +55,17 @@ export class RestServiceService {
             });
         });
     }
+    
+    addResident(data: any){
+        console.log(data);
+        return new Promise(resolve => {
+            this.http.post(this.restUrl + 'api/v1/residents', data).subscribe(response => {
+                console.log("updated");
+                resolve();
+            }, error => {
+                console.log("Could not update data!");
+                resolve();
+            });
+        });
+    }
 }
-
-//this.http.get(getBaseUrl() + 'api/v1/residents')
-      //    .map(
-      //    (response: Response) => {
-      //        this.residents = [];
-      //        const data = response.json();
-      //        for (const resident of data) {
-      //            let residentObj = <Resident>resident;
-      //            this.residents.push(residentObj);
-      //        }
-      //        return this.residents;
-      //    })
-          //.map((res: Response) => res.json());
