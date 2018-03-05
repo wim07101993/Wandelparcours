@@ -4,7 +4,6 @@ using System.Linq.Expressions;
 using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using MongoDB.Bson;
 using WebService.Controllers.Bases;
 using WebService.Models;
 using WebService.Models.Bases;
@@ -95,7 +94,7 @@ namespace WebService.Controllers
                 return StatusCode((int) HttpStatusCode.InternalServerError);
             }
         }
-
+        
         [HttpPut]
         public override async Task<IActionResult> UpdateAsync([FromBody] AUpdater<ReceiverModule> updater)
             => await base.UpdateAsync(updater);
