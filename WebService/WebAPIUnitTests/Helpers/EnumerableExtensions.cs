@@ -12,7 +12,8 @@ namespace WebAPIUnitTests.Helpers
         {
             var list = new List<int> {1};
             WebService.Helpers.Extensions.EnumerableExtensions.IsNullOrEmpty(list)
-                .Should().BeFalse();
+                .Should()
+                .BeFalse("we gave a list with one item (that is not empty or null)");
         }
 
         [TestMethod]
@@ -20,7 +21,8 @@ namespace WebAPIUnitTests.Helpers
         {
             var list = new List<string> {"a", "hello world", "test string"};
             WebService.Helpers.Extensions.EnumerableExtensions.IsNullOrEmpty(list)
-                .Should().BeFalse();
+                .Should()
+                .BeFalse("we gave a list with three item (that is not empty or null)");
         }
 
         [TestMethod]
@@ -29,7 +31,8 @@ namespace WebAPIUnitTests.Helpers
             // ReSharper disable once CollectionNeverUpdated.Local
             var list = new List<int>();
             WebService.Helpers.Extensions.EnumerableExtensions.IsNullOrEmpty(list)
-                .Should().BeTrue();
+                .Should()
+                .BeTrue("we gave a list with no items (that is empty)");
         }
 
         [TestMethod]
@@ -38,7 +41,8 @@ namespace WebAPIUnitTests.Helpers
             List<int> list = null;
             // ReSharper disable once ExpressionIsAlwaysNull
             WebService.Helpers.Extensions.EnumerableExtensions.IsNullOrEmpty(list)
-                .Should().BeTrue();
+                .Should()
+                .BeTrue("we gave null");
         }
     }
 }
