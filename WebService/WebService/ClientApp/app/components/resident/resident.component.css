@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 .modal .modal-footer{
     padding:24px;
     padding-top: 0px !important;
@@ -23,9 +22,9 @@
     font-size: 48px;
 }
 
-.crd{
-    padding:0 16px;
-=======
+.crd {
+    padding: 0 16px;
+}
 input.ng-invalid.ng-touched{
     border: 1px solid crimson;
 }
@@ -38,5 +37,4 @@ input.ng-invalid.ng-touched{
 
 .card .card-image .card-title{
     padding: 12px;
->>>>>>> kb-test
 }

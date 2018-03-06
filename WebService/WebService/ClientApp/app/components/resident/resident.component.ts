@@ -2,35 +2,30 @@ import { Component, OnInit } from '@angular/core'
 import { Resident } from '../../models/resident'
 import { RestServiceService } from '../../service/rest-service.service' 
 import { Response } from '@angular/http'
-<<<<<<< HEAD
 import { Ng2SearchPipeModule } from 'ng2-search-filter'
 import { async } from '@angular/core/testing';
-=======
 import {NgForm} from "@angular/forms";
->>>>>>> kb-test
 declare var $:any;
 declare var Materialize:any;
+
 @Component({
   selector: 'app-resident',
   templateUrl: './resident.component.html',
   styleUrls: ['./resident.component.css'],
   providers: [RestServiceService]
 })
+
 export class ResidentComponent implements OnInit {
+    ngOnInit(): void {
+    }
 
     view: string = "card-view";
     data: any = null;
     residents: Resident[];
     modalResident: Resident;
     updateResident: any;
-<<<<<<< HEAD
     search: boolean = false;
-
-
-=======
-
     
->>>>>>> kb-test
     constructor(private service: RestServiceService) {
         this.showAllResidents();
         this.residents = [];
@@ -41,9 +36,7 @@ export class ResidentComponent implements OnInit {
         this.updateResident = {
             firstName: "", lastName: "", room: "", id: "", birthday: "", doctor: { name: "", phoneNumber: "" }
         };
-
-
-<<<<<<< HEAD
+        
     } 
 
     /**
@@ -54,9 +47,7 @@ export class ResidentComponent implements OnInit {
         setTimeout(() => {
             $('#focusToInput').focus();
         }, 200);  
-        
-=======
->>>>>>> kb-test
+
     }
 
     /**
@@ -105,35 +96,27 @@ export class ResidentComponent implements OnInit {
      * get all residents async from service
      */
     async showAllResidents() {
-<<<<<<< HEAD
+
             let residents: any = await this.service.getAllResidents();
             if (residents != undefined)
                 this.residents = residents;
             else {
                 alert("oops! :( looks like something went wrong :(");
             }
-=======
-        let residents: any = await this.service.getAllResidents();
-        //for (let a of residents) {
-            //testing.substring(0,testing.indexOf("T"))
-          //  let b: string = "" + a.birthday;
-            //let c = b.substring(0, b.indexOf("T"));
-        //}
-
 
       if (residents != undefined)
           this.residents = residents;
       else {
           console.log("oops! :( looks like something went wrong :(");
       }
->>>>>>> kb-test
     }
 
     /**
      * Delete resident async based on unique identifier --> "ID"
      * @param uniqueIdentifier
      */
-    async deleteResident(uniqueIdentifier: string) {
+    
+        async deleteResident(uniqueIdentifier: string) {
         await this.service.deleteResidentByUniqueId(uniqueIdentifier);
         this.showAllResidents();
     }
@@ -147,7 +130,7 @@ export class ResidentComponent implements OnInit {
         let birthDay = $("#birthDay").val();
 
         console.log(birthDay);
-        
+
         if (birthDay != "") {
             //console.log("update birthday");
             let a = new Date(birthDay);
@@ -158,8 +141,7 @@ export class ResidentComponent implements OnInit {
          * Send resident object and the changed properties
          */
         let changedProperties = [];
-        for (let prop in this.updateResident)
-        {
+        for (let prop in this.updateResident) {
             if (this.updateResident[prop] != null && this.updateResident[prop] != "") {
                 changedProperties.push(prop);
             }
@@ -170,42 +152,42 @@ export class ResidentComponent implements OnInit {
         if (this.updateResident.doctor.phoneNumber == "") {
             this.updateResident.doctor.phoneNumber = this.modalResident.doctor.phoneNumber;
         }
-<<<<<<< HEAD
         if (this.updateResident.birthday == "") {
             this.updateResident.birthday = this.modalResident.birthday;
-=======
-        if (this.updateResident.birthday == ""){
-            this.updateResident.birtday = this.modalResident.birthday;
->>>>>>> kb-test
+            if (this.updateResident.birthday == "") {
+                this.updateResident.birtday = this.modalResident.birthday;
+            }
+            console.log(changedProperties);
+
+            $('#birthDay').val("");
+
+            let updateData = {value: this.updateResident, propertiesToUpdate: changedProperties};
+
+            await this.service.editResidentWithData(updateData);
+
+            this.updateResident = {
+                firstName: "", lastName: "", room: "", id: "", birthday: "", doctor: {name: "", phoneNumber: ""}
+            };
+
+            this.showAllResidents();
         }
-        console.log(changedProperties);
-
-        $('#birthDay').val("");
-
-        let updateData = { value: this.updateResident, propertiesToUpdate: changedProperties };
-        
-        await this.service.editResidentWithData(updateData);
-
-        this.updateResident = {
-            firstName: "", lastName: "", room: "", id : "", birthday: "", doctor: { name: "", phoneNumber: "" }
-        };
-
-        this.showAllResidents();
     }
 
     cleanForm(){
-        
+
     }
-    // Function to add new resident
-   async addNewResident(form: NgForm){
         
+   // Function to add new resident
+    
+   async addResident(form: NgForm){
+
         // Workaround for dateformat
         let birthday = $("#abirthdate").val();
         let a;
         if (birthday != "") {
             a = new Date(birthday);
         }
-        
+
         // Get data from form-inputs
          let data = {
              firstName: form.value.aFirstName, 
@@ -214,26 +196,26 @@ export class ResidentComponent implements OnInit {
              birthday: a, 
              doctor: { name: form.value.aDoctor, phoneNumber: form.value.aTelefoon }
          };
-         
+
         // Send gathered data over the resrService
-       
+
         if ((await this.service.addResident(data))){    
             Materialize.toast(`bewoner: ${data.firstName} ${data.lastName} succesvol toegevoegd`, 5000);
         }else{
             Materialize.toast(`niet gelukt lan`, 5000);
         }
-        
-        
+
+
         // Reset Residents form
-        
+
         form.reset();
 
         //close modal/form and 'reload' page 
         $("#add-resident-modal").modal("close");
         this.showAllResidents();
-         
+
     }
-    
+
     resetForm(form: NgForm){form.reset();}
 
     openResidentAddModal(){
@@ -255,12 +237,8 @@ export class ResidentComponent implements OnInit {
             hiddenName: true,
             closeOnSelect: false // Close upon selecting a date,
         });
-        
+
     }
-
-  ngOnInit() {
-  }
-
-
+        
 
 }

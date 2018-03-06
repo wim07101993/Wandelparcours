@@ -1,5 +1,5 @@
 <div class="row">
-<<<<<<< HEAD
+
 
     <div class="col s2">
         <a class="btn-floating btn-large waves-effect waves-light blue" (click)="view='list-view'" *ngIf="view=='card-view'"><i class="material-icons md-48 pointer">view_list</i></a>
@@ -7,11 +7,10 @@
     </div>
     <div class="col s9" *ngIf="search">
         <input id="focusToInput" type="text" [(ngModel)]="term" placeholder="Zoek..." autofocus>
-=======
     <div>
         <i class="material-icons" style="font-size:50px" (click)="view='list-view'" *ngIf="view=='card-view'">view_list</i><!---->
         <i class="material-icons" style="font-size:50px" (click)="view='card-view'" *ngIf="view=='list-view'">view_comfy</i><!---->
->>>>>>> kb-test
+
     </div>
     <div class="searchButton">
         <a class="btn-floating btn-large waves-effect waves-light red right" *ngIf="!search" (click)="search=!search;focusInput()"><i class="material-icons">search</i></a>
@@ -146,7 +145,7 @@
     <div class="modal-content">
         <h4>Bewoner toevoegen</h4>
         <div class="row">
-            <form class="col s12" (ngSubmit)="addNewResident(f)" #f="ngForm">
+            <form class="col s12" (ngSubmit)="addResident(f)" #f="ngForm">
                 <div class="row">
                     <div class="input-field col s6">
                         <input id="afirst_name" type="text" class="validate" ngModel name="aFirstName" required>
@@ -177,9 +176,6 @@
                         <label for="atelefoon">Telefoon</label>
                     </div>
                 </div>
-<<<<<<< HEAD
-
-=======
             <div class="modal-footer">
                 <button class="btn waves-effect waves-light green lighten-1" type="submit" name="action" [disabled]="!f.valid">
                     Toevoegen
@@ -190,8 +186,7 @@
                     <i class="material-icons right">cancel</i>
                 </a>
             </div>
-           
->>>>>>> kb-test
+                
             </form>
         </div>
     </div>
@@ -204,4 +199,5 @@
     <a class="btn-floating btn-large red modal-trigger" (click)="openResidentAddModal()">
         <i class="large material-icons">person_add</i>
     </a>
+</div>
 </div>

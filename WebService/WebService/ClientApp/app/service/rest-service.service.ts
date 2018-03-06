@@ -31,14 +31,12 @@ export class RestServiceService {
       });   
     }
 
-<<<<<<< HEAD
+
     /**
      * delete resident from database based on id
      * @param uniqueIdentifier
      */
-=======
 
->>>>>>> kb-test
     deleteResidentByUniqueId(uniqueIdentifier: string) {
         return new Promise(resolve => {
             this.http.delete(this.restUrl + 'api/v1/residents/' + uniqueIdentifier).subscribe(response => {
@@ -67,9 +65,6 @@ export class RestServiceService {
             });
         });
     }
-<<<<<<< HEAD
-=======
-    
     
     addResident(data: any){
         console.log(data);
@@ -83,5 +78,4 @@ export class RestServiceService {
             });
         });
     }
->>>>>>> kb-test
 }
