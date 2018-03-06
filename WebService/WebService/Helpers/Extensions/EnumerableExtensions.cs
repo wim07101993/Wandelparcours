@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 
-namespace WebService.Helpers
+namespace WebService.Helpers.Extensions
 {
     /// <summary>
     /// EnumerableExtensions is a static class that holds extension methods for the <see cref="IEnumerable{T}"/> interface.

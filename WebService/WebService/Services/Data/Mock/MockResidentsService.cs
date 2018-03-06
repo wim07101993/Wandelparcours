@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using MongoDB.Bson;
 using WebService.Models;
 
@@ -26,7 +27,7 @@ namespace WebService.Services.Data.Mock
                 FirstName = "Lea",
                 LastName = "Thuwis",
                 Room = "AT109 A",
-                //Birthday = new DateTime(1937, 4, 8),
+                Birthday = new DateTime(1937, 4, 8),
                 Doctor = new Doctor
                 {
                     Name = "Massimo Destino",
@@ -39,7 +40,7 @@ namespace WebService.Services.Data.Mock
                 FirstName = "Martha",
                 LastName = "Schroyen",
                 Room = "AT109 A",
-                //Birthday = new DateTime(1929, 5, 26),
+                Birthday = new DateTime(1929, 5, 26),
                 Doctor = new Doctor
                 {
                     Name = "Luc Euben",
@@ -52,7 +53,7 @@ namespace WebService.Services.Data.Mock
                 FirstName = "Roland",
                 LastName = "Mertens",
                 Room = "AQ230 A",
-                //Birthday = new DateTime(1948, 9, 19),
+                Birthday = new DateTime(1948, 9, 19),
                 Doctor = new Doctor
                 {
                     Name = "Peter Potargent",
@@ -65,7 +66,7 @@ namespace WebService.Services.Data.Mock
                 FirstName = "Maria",
                 LastName = "Creces",
                 Room = "SA347 A",
-                //Birthday = new DateTime(1934, 1, 26),
+                Birthday = new DateTime(1934, 1, 26),
                 Doctor = new Doctor
                 {
                     Name = "Willy Denier - Medebo",
@@ -78,7 +79,7 @@ namespace WebService.Services.Data.Mock
                 FirstName = "Ludovica",
                 LastName = "Van Houten",
                 Room = "AQ468 A",
-                //Birthday = new DateTime(1933, 1, 25),
+                Birthday = new DateTime(1933, 1, 25),
                 Doctor = new Doctor
                 {
                     Name = "Marcel Mellebeek",
