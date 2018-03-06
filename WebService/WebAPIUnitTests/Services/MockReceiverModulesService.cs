@@ -1,11 +1,5 @@
-﻿using System;
-using System.Linq;
-using System.Linq.Expressions;
-using FluentAssertions;
+﻿using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using MongoDB.Bson;
-using WebService.Helpers.Extensions;
-using WebService.Models;
 
 namespace WebAPIUnitTests.Services
 {
@@ -15,235 +9,52 @@ namespace WebAPIUnitTests.Services
         #region Get
 
         [TestMethod]
-        public void GetReceiverModulesWithAllProperties()
+        public void GetWitMacAddress()
         {
-            var mockReceiverModulesService = new WebService.Services.Data.Mock.MockReceiverModulesService();
+            var dataService = new WebService.Services.Data.Mock.MockReceiverModulesService();
+            var mac = dataService.MockData[0].Mac;
 
-            mockReceiverModulesService
-                .GetAsync().Result
+            dataService.GetAsync(mac).Result
                 .Should()
-                .BeEquivalentTo(mockReceiverModulesService.MockData, "get should return all the data stored in the db");
+                .BeEquivalentTo(dataService.MockData[0], "it is the object asked from the database");
         }
 
         [TestMethod]
-        public void GetReceiverModulesWithOnlyID()
+        public void GetWithNonExistingMacAddress()
         {
-            var mockReceiverModulesService = new WebService.Services.Data.Mock.MockReceiverModulesService();
+            var dataService = new WebService.Services.Data.Mock.MockReceiverModulesService();
 
-            var receiverModules = mockReceiverModulesService
-                .GetAsync(new Expression<Func<ReceiverModule, object>>[] {x => x.Id})
-                .Result
-                .ToList();
-
-            var properties = typeof(ReceiverModule)
-                .GetProperties()
-                .Where(x => x.Name != nameof(ReceiverModule.Id))
-                .ToList();
-
-            for (var i = 0; i < receiverModules.Count; i++)
-            {
-                mockReceiverModulesService.MockData[i]
-                    .Id
-                    .Should()
-                    .Be(receiverModules[i].Id,
-                        "it should be the same object and the object id the only field that is asked in the selector");
-
-                foreach (var property in properties)
-                    property
-                        .GetValue(receiverModules[i])
-                        .Should()
-                        .Be(property.PropertyType.GetDefault(), "only the id property is asked in the selector");
-            }
-        }
-
-        [TestMethod]
-        public void GetReceiverModulesWithSomeFields()
-        {
-            var mockReceiverModulesService = new WebService.Services.Data.Mock.MockReceiverModulesService();
-
-            var receiverModules = mockReceiverModulesService
-                .GetAsync(new Expression<Func<ReceiverModule, object>>[]
-                {
-                    x => x.Id,
-                    x => x.Mac,
-                    x => x.IsActive
-                })
-                .Result
-                .ToList();
-
-            var properties = typeof(ReceiverModule)
-                .GetProperties()
-                .Where(x => x.Name != nameof(ReceiverModule.Id) &&
-                            x.Name != nameof(ReceiverModule.Mac) &&
-                            x.Name != nameof(ReceiverModule.IsActive))
-                .ToList();
-
-            for (var i = 0; i < receiverModules.Count; i++)
-            {
-                mockReceiverModulesService.MockData[i]
-                    .Id
-                    .Should()
-                    .Be(receiverModules[i].Id,
-                        "it should be the same object and the object id is never \"not-passed\"");
-
-                mockReceiverModulesService.MockData[i]
-                    .Mac
-                    .Should()
-                    .Be(receiverModules[i].Mac, "it is asked in the selector");
-
-                mockReceiverModulesService.MockData[i]
-                    .IsActive
-                    .Should()
-                    .Be(receiverModules[i].IsActive, "it is asked in the selector");
-
-                foreach (var property in properties)
-                    property
-                        .GetValue(receiverModules[i])
-                        .Should()
-                        .Be(property.PropertyType.GetDefault(), "it is not asked in the selector");
-            }
-        }
-
-        [TestMethod]
-        public void GetReceiverModulesWithEmptySelector()
-        {
-            var mockReceiverModulesService = new WebService.Services.Data.Mock.MockReceiverModulesService();
-
-            mockReceiverModulesService
-                .GetAsync(new Expression<Func<ReceiverModule, object>>[] { }).Result
+            dataService.GetAsync("abc").Result
                 .Should()
-                .BeEquivalentTo(mockReceiverModulesService.MockData, "get should return all the data stored in the db");
+                .BeNull("there is no item with that id");
         }
 
         #endregion Get
 
 
-        #region Create
+        #region Remove
 
         [TestMethod]
-        [ExpectedException(typeof(NullReferenceException))]
-        public void CreateNullReceiverModule()
+        public void RemoveWithMacAddress()
         {
-            try
-            {
-                var mockReceiverModulesService = new WebService.Services.Data.Mock.MockReceiverModulesService();
+            var dataService = new WebService.Services.Data.Mock.MockReceiverModulesService();
+            var mac = dataService.MockData[0].Mac;
 
-                var _ = mockReceiverModulesService.CreateAsync(null).Result;
-            }
-            catch (AggregateException e)
-            {
-                throw e.InnerException;
-            }
+            dataService.RemoveAsync(mac).Result
+                .Should()
+                .BeTrue("the item with the given mac address exists and should be removed");
         }
 
         [TestMethod]
-        public void CreateEmptyReceiverModule()
+        public void RemoveWithNonExistingMacAddress()
         {
-            var mockReceiverModulesService = new WebService.Services.Data.Mock.MockReceiverModulesService();
+            var dataService = new WebService.Services.Data.Mock.MockReceiverModulesService();
 
-            var receiverModule = new ReceiverModule();
-
-            var id = mockReceiverModulesService.CreateAsync(receiverModule).Result;
-            id
+            dataService.RemoveAsync("abc").Result
                 .Should()
-                .NotBeNullOrEmpty("it is assigned in the create method of the service");
-
-            var newReceiverModule = mockReceiverModulesService.MockData.FirstOrDefault(x => x.Id == new ObjectId(id));
-            newReceiverModule
-                .Should()
-                .NotBeNull("it is created in the create method of the service");
-
-            // ReSharper disable PossibleNullReferenceException
-            newReceiverModule
-                .Id
-                .Should()
-                .NotBe(default(ObjectId), "a new object id is created in the service");
-            // ReSharper restore PossibleNullReferenceException
-
-            var properties = typeof(ReceiverModule)
-                .GetProperties()
-                .Where(x => x.Name != nameof(ReceiverModule.Id));
-
-            foreach (var property in properties)
-                property
-                    .GetValue(newReceiverModule)
-                    .Should()
-                    .Be(property.GetValue(receiverModule),
-                        $"it should be equal to the {property.Name} of the receiverModule");
+                .BeFalse("there is no item with that id");
         }
 
-        [TestMethod]
-        public void CreateNormalReceiverModule()
-        {
-            var mockReceiverModulesService = new WebService.Services.Data.Mock.MockReceiverModulesService();
-
-            var receiverModule = new ReceiverModule
-            {
-                IsActive = true,
-                Mac = "aa:aa:aa:aa:aa:aa",
-                Position = new Point
-                {
-                    X = 0.4,
-                    Y = 0.56,
-                }
-            };
-
-            var id = mockReceiverModulesService.CreateAsync(receiverModule).Result;
-            id
-                .Should()
-                .NotBeNullOrEmpty("it is assigned in the create method of the service");
-
-            var newReceiverModule = mockReceiverModulesService.MockData.FirstOrDefault(x => x.Id == new ObjectId(id));
-            newReceiverModule
-                .Should()
-                .NotBeNull("it is created in the create method of the service");
-
-            // ReSharper disable PossibleNullReferenceException
-            newReceiverModule
-                .Id
-                .Should()
-                .NotBe(default(ObjectId), "a new object id is created in the service");
-            // ReSharper restore PossibleNullReferenceException
-
-            var properties = typeof(ReceiverModule)
-                .GetProperties()
-                .Where(x => x.Name != nameof(ReceiverModule.Id));
-
-            foreach (var property in properties)
-                property
-                    .GetValue(newReceiverModule)
-                    .Should()
-                    .Be(property.GetValue(receiverModule),
-                        $"it should be equal to the {property.Name} of the receiverModule");
-        }
-
-        #endregion Create
-
-
-        #region RemoveReceiverModule
-
-        [TestMethod]
-        public void RemoveReceiverModuleWithNonExistingID()
-        {
-            var mockReceiverModulesService = new WebService.Services.Data.Mock.MockReceiverModulesService();
-
-            mockReceiverModulesService
-                .RemoveAsync(new ObjectId()).Result
-                .Should()
-                .BeFalse("the item doesn't exist");
-        }
-
-        [TestMethod]
-        public void RemoveReceiverModuleWithExistingID()
-        {
-            var mockReceiverModulesService = new WebService.Services.Data.Mock.MockReceiverModulesService();
-
-            mockReceiverModulesService
-                .RemoveAsync(mockReceiverModulesService.MockData[0].Id).Result
-                .Should()
-                .BeTrue("the item exist");
-        }
-
-        #endregion RemoveReceiverModule
+        #endregion Remove
     }
 }
