@@ -1,10 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Reflection;
+using System.Threading.Tasks;
 using MongoDB.Bson;
+using WebService.Helpers.Extensions;
 using WebService.Models;
 
 namespace WebService.Services.Data.Mock
 {
+#pragma warning disable 1998 // diable warning async method without await
     /// <inheritdoc cref="IDataService{T}"/>
     /// <summary>
     /// MockResidentsService is a class that implements the <see cref="IDataService{T}"/> interface.
@@ -13,7 +19,7 @@ namespace WebService.Services.Data.Mock
     /// <para/>
     /// The connectionstring, db name and collections that are used are stored in the IConfiguration dependency under the Database object.
     /// </summary>
-    public class MockResidentsService : AMockDataService<Resident>
+    public class MockResidentsService : AMockDataService<Resident>, IResidentsService
     {
         /// <inheritdoc cref="AMockDataService{T}" />
         /// <summary>
@@ -97,5 +103,54 @@ namespace WebService.Services.Data.Mock
         /// <returns>A new object of type <see cref="Resident" /></returns>
         public override Resident CreateNewItem(ObjectId id)
             => new Resident {Id = id};
+
+        /// <inheritdoc cref="IResidentsService.GetAsync(int,IEnumerable{Expression{Func{Resident,object}}})" />
+        /// <summary>
+        /// GetAsync returns the <see cref="Resident" /> with the given id from the database. 
+        /// <para />
+        /// It should only fill the properties passed in the <see cref="!:propertiesToInclude" /> parameter. The id is always passed and 
+        /// if the <see cref="!:propertiesToInclude" /> parameter is null (which it is by default), all the properties are included. 
+        /// </summary>
+        /// <param name="tag">is the id of the item that needs to be fetched</param>
+        /// <param name="propertiesToInclude">are the properties that should be included in the objects</param>
+        /// <returns>An <see cref="T:System.Collections.Generic.IEnumerable`1" /> filled with all the ts in the database.</returns>
+        public async Task<Resident> GetAsync(int tag,
+            IEnumerable<Expression<Func<Resident, object>>> propertiesToInclude = null)
+        {
+            var propertiesToIncludeList = propertiesToInclude?.ToList();
+            if (EnumerableExtensions.IsNullOrEmpty(propertiesToIncludeList))
+                return MockData.FirstOrDefault(x => x.Tags != null && x.Tags.Contains(tag));
+
+            foreach (var mockItem in MockData)
+            {
+                if (mockItem.Tags != null && mockItem.Tags.Contains(tag))
+                    continue;
+
+                // create new newItem to return with the ide filled in
+                var itemToReturn = CreateNewItem(mockItem.Id);
+
+                // ReSharper disable once PossibleNullReferenceException
+                // go over each property selector that should be included
+                foreach (var selector in propertiesToIncludeList)
+                {
+                    // get property
+                    var prop = selector.Body is MemberExpression expression
+                        // via member expression
+                        ? expression.Member as PropertyInfo
+                        // via unary expression
+                        : ((MemberExpression) ((UnaryExpression) selector.Body).Operand).Member as PropertyInfo;
+
+                    // set the value of the property with the value of the mockItem
+                    prop?.SetValue(itemToReturn, prop.GetValue(mockItem));
+                }
+
+                // return the newItem
+                return itemToReturn;
+            }
+
+            // if no item is found, return the default value
+            return default(Resident);
+        }
     }
+#pragma warning restore 1998
 }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
+using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using WebService.Controllers.Bases;
@@ -108,6 +109,45 @@ namespace WebService.Controllers
         [HttpGet]
         public override async Task<IActionResult> GetAsync()
             => await base.GetAsync();
+
+        [HttpGet("byTag/{tag}")]
+        public async Task<IActionResult> GetByTagAsync(int tag, string[] properties)
+        {
+            //create selectors
+            IEnumerable<Expression<Func<Resident, object>>> selectors = null;
+            // if there are no properties, they don't need to be converted
+            if (!EnumerableExtensions.IsNullOrEmpty(properties))
+                try
+                {
+                    // try converting the propertie names to selectors
+                    selectors = ConvertStringsToSelectors(properties);
+                }
+                catch (ArgumentException)
+                {
+                    // if it fails because of a bad argument (properties cannot be found)
+                    // return a 400 error
+                    return StatusCode((int)HttpStatusCode.BadRequest);
+                }
+
+            try
+            {
+                // get the item with the tag from the data service
+                var item = await ((IResidentsService) DataService).GetAsync(tag, selectors);
+
+                return item == null
+                    // if the item is null, return a 404
+                    ? StatusCode((int)HttpStatusCode.NotFound)
+                    // else return the values wrapped in a 200 response 
+                    : (IActionResult)Ok(item);
+            }
+            catch (Exception e)
+            {
+                // log the exception
+                Logger.Log(this, ELogLevel.Error, e);
+                // return a 500 error to the client
+                return StatusCode((int)HttpStatusCode.InternalServerError);
+            }
+        }
 
         [HttpPost]
         public override async Task<IActionResult> CreateAsync([FromBody] Resident item)
