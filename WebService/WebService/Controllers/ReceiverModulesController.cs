@@ -140,7 +140,7 @@ namespace WebService.Controllers
             }
         }
 
-        /// <inheritdoc cref="ARestControllerBase{T}.UpdateAsync" />
+        /// <inheritdoc cref="ARestControllerBase{T}.UpdateAsync(AUpdater{T})" />
         /// <summary>
         /// Update is the method corresponding to the PUT method of the controller of the REST service.
         /// <para/>
@@ -155,8 +155,29 @@ namespace WebService.Controllers
         /// - Status internal server error (500) on error or not created
         /// </returns>
         [HttpPut]
+        [Obsolete]
         public override async Task<IActionResult> UpdateAsync([FromBody] AUpdater<ReceiverModule> updater)
             => await base.UpdateAsync(updater);
+
+        /// <inheritdoc cref="ARestControllerBase{T}.UpdateAsync(ReceiverModule, string[])" />
+        /// <summary>
+        /// Update is the method corresponding to the PUT method of the controller of the REST service.
+        /// <para />
+        /// It updates the fields of the <see cref="ReceiverModule" /> in the updater.
+        /// If the Item doesn't exist, a new is created in the database.
+        /// </summary>
+        /// <param name="item">is the <see cref="ReceiverModule" /> to update</param>
+        /// <param name="properties">contains the properties that should be updated</param>
+        /// <returns>
+        /// - Status ok (200) if the <see cref="ReceiverModule" /> was updated
+        /// - Status created (201) if a new one was created
+        /// - Status bad request (400) if the passed properties are not found on <see cref="ReceiverModule" />
+        /// - Status internal server error (500) on error or not created
+        /// </returns>
+        [HttpPut]
+        public override async Task<IActionResult> UpdateAsync([FromBody] ReceiverModule item, [FromQuery] string[] properties)
+            => await base.UpdateAsync(item, properties);
+
 
         #endregion METHODS
     }

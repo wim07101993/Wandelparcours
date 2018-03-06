@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Bson;
 using WebService.Helpers.Extensions;
-using WebService.Models;
 using WebService.Models.Bases;
 using WebService.Services.Data;
 using WebService.Services.Logging;
@@ -226,6 +225,7 @@ namespace WebService.Controllers.Bases
         /// - Status bad request (400) if the passed updater is null
         /// - Status internal server error (500) on error or not created
         /// </returns>
+        [Obsolete]
         public virtual async Task<IActionResult> UpdateAsync([FromBody] AUpdater<T> updater)
         {
             //create selectors
@@ -241,7 +241,7 @@ namespace WebService.Controllers.Bases
                 {
                     // if it fails because of a bad argument (properties cannot be found)
                     // return a 400 error
-                    return StatusCode((int)HttpStatusCode.BadRequest);
+                    return StatusCode((int) HttpStatusCode.BadRequest);
                 }
 
             try
@@ -304,33 +304,31 @@ namespace WebService.Controllers.Bases
                 {
                     // if it fails because of a bad argument (properties cannot be found)
                     // return a 400 error
-                    return StatusCode((int)HttpStatusCode.BadRequest);
+                    return StatusCode((int) HttpStatusCode.BadRequest);
                 }
 
             try
             {
-                T updatedResident;
+                T updatedItem;
                 if (EnumerableExtensions.IsNullOrEmpty(properties))
                     // if there are no properties to update, pass none to the data service
-                    updatedResident = await DataService.UpdateAsync(item);
+                    updatedItem = await DataService.UpdateAsync(item);
                 else
-                {
                     // update the item in the data service
-                    updatedResident = await DataService.UpdateAsync(item, selectors);
-                }
+                    updatedItem = await DataService.UpdateAsync(item, selectors);
 
-                return Equals(updatedResident, default(T))
+                return Equals(updatedItem, default(T))
                     // if the update failed, try creating a new item
                     ? await CreateAsync(item)
                     // if the update was a succes, reutrn 200
-                    : StatusCode((int)HttpStatusCode.OK);
+                    : StatusCode((int) HttpStatusCode.OK);
             }
             catch (Exception e)
             {
                 // log the error
                 Logger.Log(this, ELogLevel.Error, e);
                 // return a 500 internal server error code
-                return StatusCode((int)HttpStatusCode.InternalServerError);
+                return StatusCode((int) HttpStatusCode.InternalServerError);
             }
         }
 

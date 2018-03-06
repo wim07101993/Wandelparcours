@@ -223,7 +223,7 @@ namespace WebService.Controllers
         public override async Task<IActionResult> DeleteAsync(string id)
             => await base.DeleteAsync(id);
 
-        /// <inheritdoc cref="ARestControllerBase{T}.UpdateAsync" />
+        /// <inheritdoc cref="ARestControllerBase{T}.UpdateAsync(AUpdater{T})" />
         /// <summary>
         /// Update is the method corresponding to the PUT method of the controller of the REST service.
         /// <para />
@@ -238,8 +238,29 @@ namespace WebService.Controllers
         /// - Status internal server error (500) on error or not created
         /// </returns>
         [HttpPut]
+        [Obsolete]
         public override async Task<IActionResult> UpdateAsync([FromBody] AUpdater<Resident> updater)
             => await base.UpdateAsync(updater);
+
+        /// <inheritdoc cref="ARestControllerBase{T}.UpdateAsync(Resident, string[])" />
+        /// <summary>
+        /// Update is the method corresponding to the PUT method of the controller of the REST service.
+        /// <para />
+        /// It updates the fields of the <see cref="Resident" /> in the updater.
+        /// If the Item doesn't exist, a new is created in the database.
+        /// </summary>
+        /// <param name="item">is the <see cref="Resident" /> to update</param>
+        /// <param name="properties">contains the properties that should be updated</param>
+        /// <returns>
+        /// - Status ok (200) if the <see cref="Resident" /> was updated
+        /// - Status created (201) if a new one was created
+        /// - Status bad request (400) if the passed properties are not found on <see cref="Resident" />
+        /// - Status internal server error (500) on error or not created
+        /// </returns>
+        [HttpPut]
+        public override async Task<IActionResult> UpdateAsync([FromBody] Resident item, [FromQuery] string[] properties)
+            => await base.UpdateAsync(item, properties);
+
 
         #endregion METHODS
     }
