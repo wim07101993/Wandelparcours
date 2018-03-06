@@ -56,6 +56,7 @@ export class RestServiceService {
         });
     }
     
+    
     addResident(data: any){
         console.log(data);
         return new Promise(resolve => {
