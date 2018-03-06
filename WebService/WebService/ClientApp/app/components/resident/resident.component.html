@@ -1,24 +1,20 @@
 <div class="row">
 
-
     <div class="col s2">
         <a class="btn-floating btn-large waves-effect waves-light blue" (click)="view='list-view'" *ngIf="view=='card-view'"><i class="material-icons md-48 pointer">view_list</i></a>
         <a class="btn-floating btn-large waves-effect waves-light blue" (click)="view='card-view'" *ngIf="view=='list-view'"><i class="material-icons md-48 pointer" >view_comfy</i></a>
     </div>
     <div class="col s9" *ngIf="search">
         <input id="focusToInput" type="text" [(ngModel)]="term" placeholder="Zoek..." autofocus>
-    <div>
-        <i class="material-icons" style="font-size:50px" (click)="view='list-view'" *ngIf="view=='card-view'">view_list</i><!---->
-        <i class="material-icons" style="font-size:50px" (click)="view='card-view'" *ngIf="view=='list-view'">view_comfy</i><!---->
-
     </div>
     <div class="searchButton">
         <a class="btn-floating btn-large waves-effect waves-light red right" *ngIf="!search" (click)="search=!search;focusInput()"><i class="material-icons">search</i></a>
         <a class="btn-floating btn-large waves-effect waves-light blue right" *ngIf="search" (click)="search=!search">
-            <i class="material-icons">zoom_out</i></a>       
+            <i class="material-icons">zoom_out</i></a>
     </div>
-    
+
 </div>
+
 <!--Switch to cardview-->
 <div class="row" *ngIf="view=='card-view'">
     <div class="col s6 m3 l3" *ngFor="let resident of residents | filter:term">
@@ -199,5 +195,4 @@
     <a class="btn-floating btn-large red modal-trigger" (click)="openResidentAddModal()">
         <i class="large material-icons">person_add</i>
     </a>
-</div>
 </div>
