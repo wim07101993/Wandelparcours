@@ -26,5 +26,17 @@
 .crd{
     padding:0 16px;
 =======
+input.ng-invalid.ng-touched{
+    border: 1px solid crimson;
+}
+
+.card-title{
+    text-align: center;
+    width:100%;
+    background-color: rgba(3,3,3,0.75);
+}
+
+.card .card-image .card-title{
+    padding: 12px;
 >>>>>>> kb-test
 }

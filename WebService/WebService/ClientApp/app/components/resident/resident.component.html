@@ -146,25 +146,25 @@
     <div class="modal-content">
         <h4>Bewoner toevoegen</h4>
         <div class="row">
-            <form class="col s12">
+            <form class="col s12" (ngSubmit)="addNewResident(f)" #f="ngForm">
                 <div class="row">
                     <div class="input-field col s6">
-                        <input id="first_name" type="text" class="validate" ngModel name="firstName">
-                        <label for="first_name">Voornaam</label>
+                        <input id="afirst_name" type="text" class="validate" ngModel name="aFirstName" required>
+                        <label for="afirst_name">Voornaam</label>
                     </div>
                     <div class="input-field col s6">
-                        <input id="last_name" type="text" class="validate">
-                        <label for="last_name">Familienaam</label>
+                        <input id="alast_name" type="text" class="validate" ngModel name="aLastName" required>
+                        <label for="alast_name">Familienaam</label>
                     </div>
                 </div>
                 <div class="row">
                     <div class="input-field col s6">
-                        <input id="room" type="text" class="validate">
-                        <label for="room">Kamer</label>
+                        <input id="aroom" type="text" class="validate" ngModel name="aRoom" required>
+                        <label for="aroom">Kamer</label>
                     </div>
                     <div class="input-field col s6">
-                        <input id="birthdate" type="text" class="datepicker validate">
-                        <label for="birthdate">Geboortedatum</label>
+                        <input id="abirthdate" type="text" class="datepicker validate" ngModel name="aBirthday">
+                        <label for="abirthdate">Geboortedatum</label>
                     </div>
                 </div>
                 <div class="row">
