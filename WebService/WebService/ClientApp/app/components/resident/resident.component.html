@@ -1,4 +1,3 @@
-
 <div class="row">
 
     <div class="col s2">
@@ -6,9 +5,9 @@
         <a class="btn-floating btn-large waves-effect waves-light blue" (click)="view='card-view'" *ngIf="view=='list-view'"><i class="material-icons md-48 pointer" >view_comfy</i></a>
     </div>
     <div class="col s9" *ngIf="search">
-        <input id="test" type="text" [(ngModel)]="term" placeholder="Zoek..." autofocus>
+        <input id="focusToInput" type="text" [(ngModel)]="term" placeholder="Zoek..." autofocus>
     </div>
-    <div class="test">
+    <div class="searchButton">
         <a class="btn-floating btn-large waves-effect waves-light red right" *ngIf="!search" (click)="search=!search;focusInput()"><i class="material-icons">search</i></a>
         <a class="btn-floating btn-large waves-effect waves-light blue right" *ngIf="search" (click)="search=!search">
             <i class="material-icons">zoom_out</i></a>       
@@ -43,7 +42,7 @@
             <div class="crd">
                 <div class="row">
                     <div class="col s6 left">
-                        <i class="material-icons blue-text pointer left" (click)="openEditModal(resident)">edit</i>
+                        <i class="material-icons blue-text pointer left" (click)="openEditModal(resident);focusInput2()">edit</i>
                     </div>
                     <div class="col s6 right">
                         <i class="material-icons red-text pointer right" (click)="openModal(resident)">clear</i>
@@ -92,16 +91,15 @@
         <p>Let op! U staat op het punt {{modalResident.firstName}} te verwijderen!</p>
     </div>
     <div class="modal-footer">
-        <a class="btn modal-action modal-close waves-effect waves-red btn-flat red lighten-1 white-text" (click)="deleteResident(modalResident.id)">Verwijder<i class="material-icons red lighten-1 white-text right">remove_circle</i></a>
-        <a class="btn modal-action modal-close waves-effect waves-green btn-flat blue lighten-1 white-text" (click)="closeModal()">Annuleer<i class="material-icons right">cancel</i></a>
+        <button class="btn modal-action modal-close waves-effect waves-red btn-flat red lighten-1 white-text" (click)="deleteResident(modalResident.id)">Verwijder<i class="material-icons red lighten-1 white-text right">remove_circle</i></button>
+        <button class="btn modal-action modal-close waves-effect waves-green btn-flat blue lighten-1 white-text" (click)="closeModal()">Annuleer<i class="material-icons right">cancel</i></button>
     </div>
 </div>
 <!--EDIT MODAL-->
 <div id="editModalResident" class="modal">
     <div class="modal-content">
         <div class="row">
-
-            <h1>Wijzig gegevens van {{modalResident.firstName}}</h1>
+            <h5>Wijzig gegevens van {{modalResident.firstName}}</h5>
             <div class="row">
                 <div class="input-field col s6">
                     <input placeholder="{{modalResident.firstName}}" [(ngModel)]="updateResident.firstName" id="first_name" type="text" class="validate">

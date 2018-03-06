@@ -20,7 +20,6 @@ export class ResidentComponent implements OnInit {
     modalResident: Resident;
     updateResident: any;
     search: boolean = false;
-    
 
 
     constructor(private service: RestServiceService) {
@@ -36,10 +35,13 @@ export class ResidentComponent implements OnInit {
 
     } 
 
+    /**
+     * Focus to input
+     */
     focusInput() {
         let a: any;
         setTimeout(() => {
-            $('#test').focus();
+            $('#focusToInput').focus();
         }, 200);  
         
     }
@@ -162,6 +164,7 @@ export class ResidentComponent implements OnInit {
         $("#add-resident-modal").modal("open");
         
     }
+
   ngOnInit() {
   }
 
