@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Net;
@@ -66,6 +67,39 @@ namespace WebService.Controllers.Bases
         /// <summary>
         /// Get is the method corresponding to the GET method of the controller of the REST service.
         /// <para/>
+        /// It returns the Item with the given id in the database wrapped in an <see cref="IActionResult"/>. To limit data traffic it is possible to
+        /// select only a number of properties by default. These properties are selected with the <see cref="properties"/> property.
+        /// </summary>
+        /// <returns>
+        /// - Status ok (200) with An IEnumerable of all the Items in the database on success
+        /// - Status internal server (500) error when an error occures
+        /// </returns>
+        public virtual async Task<IActionResult> GetAsync(string id, string[] properties)
+        {
+            if (!ObjectId.TryParse(id, out var objectId))
+                return StatusCode((int) HttpStatusCode.NotFound);
+
+            var selectors = ConvertStringsToSelectors(properties);
+
+            try
+            {
+                // get the value from the data service
+                var item = await DataService.GetAsync(objectId, selectors);
+                // return the values wrapped in a 200 response 
+                return Ok(item);
+            }
+            catch (Exception e)
+            {
+                // log the exception
+                Logger.Log(this, ELogLevel.Error, e);
+                // return a 500 error to the client
+                return StatusCode((int) HttpStatusCode.InternalServerError);
+            }
+        }
+
+        /// <summary>
+        /// Get is the method corresponding to the GET method of the controller of the REST service.
+        /// <para/>
         /// It returns all the Items in the database wrapped in an <see cref="IActionResult"/>. To limit data traffic it is possible to
         /// select only a number of properties by default. These properties are selected with the <see cref="PropertiesToSendOnGet"/> property.
         /// </summary>
@@ -90,7 +124,7 @@ namespace WebService.Controllers.Bases
                 return StatusCode((int) HttpStatusCode.InternalServerError);
             }
         }
-        
+
         /// <summary>
         /// Create is the method corresonding to the POST method of the controller of the REST service.
         /// <para/>
@@ -134,10 +168,13 @@ namespace WebService.Controllers.Bases
         /// </returns>
         public virtual async Task<IActionResult> DeleteAsync(string id)
         {
+            if (!ObjectId.TryParse(id, out var objectId))
+                return StatusCode((int)HttpStatusCode.NotFound);
+
             try
             {
                 // use the data service to remove the updater
-                return await DataService.RemoveAsync(new ObjectId(id))
+                return await DataService.RemoveAsync(objectId)
                     // if the updater was deleted return status ok
                     ? StatusCode((int) HttpStatusCode.OK)
                     // if the updater was not deleted return status no content

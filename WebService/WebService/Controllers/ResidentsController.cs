@@ -98,6 +98,10 @@ namespace WebService.Controllers
             return selectors;
         }
 
+        [HttpGet("{id}")]
+        public override async Task<IActionResult> GetAsync(string id, string[] properties)
+            => await base.GetAsync(id, properties);
+
         [HttpGet]
         public override async Task<IActionResult> GetAsync()
             => await base.GetAsync();

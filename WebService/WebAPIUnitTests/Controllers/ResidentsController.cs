@@ -149,6 +149,22 @@ namespace WebAPIUnitTests.Controllers
         }
 
         [TestMethod]
+        public void DeleteNonParsableId()
+        {
+            new WebService.Controllers.ResidentsController(
+                    new Mock<IDataService<Resident>>().Object,
+                    new ConsoleLogger())
+                .DeleteAsync("abc").Result
+                .Should()
+                .BeOfType<StatusCodeResult>("all controller methods should return a status code as confirmation")
+                .Subject
+                .StatusCode
+                .Should()
+                .Be((int) HttpStatusCode.NotFound,
+                    "if the receiver is not found, a 404 not found error should be returned");
+        }
+
+        [TestMethod]
         public void DeleteServiceException()
         {
             var id = new ObjectId();
