@@ -111,7 +111,7 @@ namespace WebService.Controllers
             => await base.GetAsync();
 
         [HttpGet("byTag/{tag}")]
-        public async Task<IActionResult> GetByTagAsync(int tag, string[] properties)
+        public async Task<IActionResult> GetAsync(int tag, string[] properties)
         {
             //create selectors
             IEnumerable<Expression<Func<Resident, object>>> selectors = null;

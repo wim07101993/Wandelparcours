@@ -38,7 +38,8 @@ namespace WebService.Services.Data.Mock
                 {
                     Name = "Massimo Destino",
                     PhoneNumber = "089 84 29 87"
-                }
+                },
+                Tags = new []{1,2,3,4}
             },
             new Resident
             {
@@ -51,7 +52,8 @@ namespace WebService.Services.Data.Mock
                 {
                     Name = "Luc Euben",
                     PhoneNumber = "089 38 51 57"
-                }
+                },
+                Tags = new []{5,6}
             },
             new Resident
             {
@@ -64,7 +66,8 @@ namespace WebService.Services.Data.Mock
                 {
                     Name = "Peter Potargent",
                     PhoneNumber = "089 35 26 87"
-                }
+                },
+                Tags = new []{7,9,8}
             },
             new Resident
             {
@@ -77,7 +80,8 @@ namespace WebService.Services.Data.Mock
                 {
                     Name = "Willy Denier - Medebo",
                     PhoneNumber = "089 35 47 22"
-                }
+                },
+                Tags = new []{10}
             },
             new Resident
             {
@@ -123,7 +127,7 @@ namespace WebService.Services.Data.Mock
 
             foreach (var mockItem in MockData)
             {
-                if (mockItem.Tags != null && mockItem.Tags.Contains(tag))
+                if (mockItem.Tags == null || !mockItem.Tags.Contains(tag))
                     continue;
 
                 // create new newItem to return with the ide filled in
