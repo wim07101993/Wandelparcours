@@ -2,8 +2,11 @@ import { Component, OnInit } from '@angular/core'
 import { Resident } from '../../models/resident'
 import { RestServiceService } from '../../service/rest-service.service' 
 import { Response } from '@angular/http'
+<<<<<<< HEAD
 import { Ng2SearchPipeModule } from 'ng2-search-filter'
 import { async } from '@angular/core/testing';
+=======
+>>>>>>> kb-test
 declare var $:any;
 
 @Component({
@@ -19,12 +22,18 @@ export class ResidentComponent implements OnInit {
     residents: Resident[];
     modalResident: Resident;
     updateResident: any;
+<<<<<<< HEAD
     search: boolean = false;
 
 
+=======
+
+    
+>>>>>>> kb-test
     constructor(private service: RestServiceService) {
         this.showAllResidents();
         this.residents = [];
+        
         this.modalResident = <Resident>{
             firstName: "", lastName: "", room: "", id: "", birthday: new Date(), doctor: { name: "", phoneNumber: "" }
         };
@@ -33,6 +42,7 @@ export class ResidentComponent implements OnInit {
         };
 
 
+<<<<<<< HEAD
     } 
 
     /**
@@ -44,6 +54,8 @@ export class ResidentComponent implements OnInit {
             $('#focusToInput').focus();
         }, 200);  
         
+=======
+>>>>>>> kb-test
     }
 
     /**
@@ -92,12 +104,28 @@ export class ResidentComponent implements OnInit {
      * get all residents async from service
      */
     async showAllResidents() {
+<<<<<<< HEAD
             let residents: any = await this.service.getAllResidents();
             if (residents != undefined)
                 this.residents = residents;
             else {
                 alert("oops! :( looks like something went wrong :(");
             }
+=======
+        let residents: any = await this.service.getAllResidents();
+        //for (let a of residents) {
+            //testing.substring(0,testing.indexOf("T"))
+          //  let b: string = "" + a.birthday;
+            //let c = b.substring(0, b.indexOf("T"));
+        //}
+
+
+      if (residents != undefined)
+          this.residents = residents;
+      else {
+          console.log("oops! :( looks like something went wrong :(");
+      }
+>>>>>>> kb-test
     }
 
     /**
@@ -141,8 +169,13 @@ export class ResidentComponent implements OnInit {
         if (this.updateResident.doctor.phoneNumber == "") {
             this.updateResident.doctor.phoneNumber = this.modalResident.doctor.phoneNumber;
         }
+<<<<<<< HEAD
         if (this.updateResident.birthday == "") {
             this.updateResident.birthday = this.modalResident.birthday;
+=======
+        if (this.updateResident.birthday == ""){
+            this.updateResident.birtday = this.modalResident.birthday;
+>>>>>>> kb-test
         }
         console.log(changedProperties);
 

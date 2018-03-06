@@ -11,7 +11,6 @@ export class RestServiceService {
 
     restUrl = "http://localhost:5000/";
 
-    constructor(private http: Http) {}
 
     /**
      * Get all residents from database
@@ -28,10 +27,14 @@ export class RestServiceService {
       });   
     }
 
+<<<<<<< HEAD
     /**
      * delete resident from database based on id
      * @param uniqueIdentifier
      */
+=======
+
+>>>>>>> kb-test
     deleteResidentByUniqueId(uniqueIdentifier: string) {
         return new Promise(resolve => {
             this.http.delete(this.restUrl + 'api/v1/residents/' + uniqueIdentifier).subscribe(response => {
@@ -60,4 +63,9 @@ export class RestServiceService {
             });
         });
     }
+<<<<<<< HEAD
+=======
+    
+    
+>>>>>>> kb-test
 }
