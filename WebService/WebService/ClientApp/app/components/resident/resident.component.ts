@@ -6,9 +6,10 @@ import { Response } from '@angular/http'
 import { Ng2SearchPipeModule } from 'ng2-search-filter'
 import { async } from '@angular/core/testing';
 =======
+import {NgForm} from "@angular/forms";
 >>>>>>> kb-test
 declare var $:any;
-
+declare var Materialize:any;
 @Component({
   selector: 'app-resident',
   templateUrl: './resident.component.html',
@@ -192,9 +193,68 @@ export class ResidentComponent implements OnInit {
         this.showAllResidents();
     }
 
+    cleanForm(){
+        
+    }
+    // Function to add new resident
+   async addNewResident(form: NgForm){
+        
+        // Workaround for dateformat
+        let birthday = $("#abirthdate").val();
+        let a;
+        if (birthday != "") {
+            a = new Date(birthday);
+        }
+        
+        // Get data from form-inputs
+         let data = {
+             firstName: form.value.aFirstName, 
+             lastName: form.value.aLastName, 
+             room: form.value.aRoom, 
+             birthday: a, 
+             doctor: { name: form.value.aDoctor, phoneNumber: form.value.aTelefoon }
+         };
+         
+        // Send gathered data over the resrService
+       
+        if ((await this.service.addResident(data))){    
+            Materialize.toast(`bewoner: ${data.firstName} ${data.lastName} succesvol toegevoegd`, 5000);
+        }else{
+            Materialize.toast(`niet gelukt lan`, 5000);
+        }
+        
+        
+        // Reset Residents form
+        
+        form.reset();
+
+        //close modal/form and 'reload' page 
+        $("#add-resident-modal").modal("close");
+        this.showAllResidents();
+         
+    }
+    
+    resetForm(form: NgForm){form.reset();}
+
     openResidentAddModal(){
         $("#add-resident-modal").modal();
         $("#add-resident-modal").modal("open");
+        $('.datepicker').pickadate({
+            selectMonths: true, // Creates a dropdown to control month
+            selectYears: 110, // Creates a dropdown of 15 years to control year,
+            max: new Date(),
+            monthsFull: ['Januari', 'Februari', 'Maart', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'December'],
+            monthsShort: ['Jan','Feb','Maa','Apr','Mei','Jun','Jul','Aug','Sep','Okt','Nov','Dec'],
+            weekdaysShort: ['ma', 'di', 'wo', 'do', 'vr', 'zat', 'zon'],
+            today: 'Vandaag',
+            clear: 'Wissen',
+            close: 'Ok',
+            formatSubmit: 'mm-dd-yyyy',
+            dateFormat: 'mm-dd-yyyy',
+            format: 'mm-dd-yyyy', //hier loopt iets mis?
+            hiddenName: true,
+            closeOnSelect: false // Close upon selecting a date,
+        });
         
     }
 

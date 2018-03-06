@@ -11,6 +11,10 @@ export class RestServiceService {
 
     restUrl = "http://localhost:5000/";
 
+    constructor(private http: Http) {
+        
+        
+    }
 
     /**
      * Get all residents from database
@@ -67,5 +71,17 @@ export class RestServiceService {
 =======
     
     
+    addResident(data: any){
+        console.log(data);
+        return new Promise(resolve => {
+            this.http.post(this.restUrl + 'api/v1/residents', data).subscribe(response => {
+                console.log("updated");
+                resolve(true);
+            }, error => {
+                console.log("Could not update data!");
+                resolve(false);
+            });
+        });
+    }
 >>>>>>> kb-test
 }

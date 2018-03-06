@@ -26,14 +26,9 @@
         <div class="card">
             <div class="card-image">
                 <img src="/images/boss.png">
+                <span class="card-title">{{resident.firstName}}, {{resident.lastName}} </span>
             </div>
             <div class="card-content">
-                <p>
-                    Naam: {{resident.firstName}}
-                </p>
-                <p>
-                    Voornaam: {{resident.lastName}}
-                </p>
                 <p>
                     Kamer: {{resident.room}}
                 </p>
@@ -68,8 +63,7 @@
                 <th>Kamer</th>
                 <th>Huisarts</th>
                 <th>Tel:</th>
-                <th class="center">Wijzig</th>
-                <th class="center">Verwijder</th>
+                <th colspan="2">Actie</th>
             </tr>
         </thead>
 
@@ -175,30 +169,31 @@
                 </div>
                 <div class="row">
                     <div class="input-field col s6">
-                        <input id="doctor" type="text" class="validate">
-                        <label for="doctor">Huisarts</label>
+                        <input id="adoctor" type="text" class="validate" ngModel name="aDoctor">
+                        <label for="adoctor">Huisarts</label>
                     </div>
                     <div class="input-field col s6">
-                        <input id="telefoon" type="text" class="validate">
-                        <label for="telefoon">Telefoon</label>
+                        <input id="atelefoon" type="text" class="validate" ngModel name="aTelefoon">
+                        <label for="atelefoon">Telefoon</label>
                     </div>
                 </div>
 <<<<<<< HEAD
 
 =======
+            <div class="modal-footer">
+                <button class="btn waves-effect waves-light green lighten-1" type="submit" name="action" [disabled]="!f.valid">
+                    Toevoegen
+                    <i class="material-icons right">send</i>
+                </button>
+                <a (click)="resetForm(f)" class="btn waves-effect waves-light red lighten-1 modal-action modal-close">
+                    Annuleren
+                    <i class="material-icons right">cancel</i>
+                </a>
+            </div>
+           
 >>>>>>> kb-test
             </form>
         </div>
-    </div>
-    <div class="modal-footer">
-        <button class="btn waves-effect waves-light green lighten-1" type="submit" name="action">
-            Toevoegen
-            <i class="material-icons right">send</i>
-        </button>
-        <button class="btn waves-effect waves-light red lighten-1 modal-action modal-close" type="submit" name="action">
-            Annuleren
-            <i class="material-icons right">cancel</i>
-        </button>
     </div>
     
 </div>
