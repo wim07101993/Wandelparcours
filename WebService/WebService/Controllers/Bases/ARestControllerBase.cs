@@ -60,8 +60,8 @@ namespace WebService.Controllers.Bases
         /// ConvertStringsToSelectors should convert a collection of property names to their selector in the form of 
         /// <see cref="Expression{TDelegate}"/> of type <see cref="Func{TInput,TResult}"/>
         /// </summary>
-        /// <param name="strings"></param>
-        /// <returns></returns>
+        /// <param name="strings">are the property names to convert to selectors</param>
+        /// <returns>An <see cref="IEnumerable{TDelegate}"/> that contains the converted selectors</returns>
         public abstract IEnumerable<Expression<Func<T, object>>> ConvertStringsToSelectors(IEnumerable<string> strings);
 
         /// <summary>

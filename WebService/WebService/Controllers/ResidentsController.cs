@@ -57,6 +57,13 @@ namespace WebService.Controllers
         };
 
 
+        /// <inheritdoc cref="ARestControllerBase{T}.ConvertStringsToSelectors" />
+        /// <summary>
+        /// ConvertStringsToSelectors should convert a collection of property names to their selector in the form of 
+        /// <see cref="Expression{TDelagete}" /> of type <see cref="Func{TResult}" />
+        /// </summary>
+        /// <param name="strings">are the property names to convert to selectors</param>
+        /// <returns>An <see cref="IEnumerable{T}" /> that contains the converted selectors</returns>
         public override IEnumerable<Expression<Func<Resident, object>>> ConvertStringsToSelectors(
             IEnumerable<string> strings)
         {
@@ -102,14 +109,50 @@ namespace WebService.Controllers
             return selectors;
         }
 
+        /// <inheritdoc cref="ARestControllerBase{T}.GetAsync(string,string[])" />
+        /// <summary>
+        /// Get is the method corresponding to the GET method of the controller of the REST service.
+        /// <para />
+        /// It returns the Item with the given id in the database wrapped in an <see cref="IActionResult" />. To limit data traffic it is possible to
+        /// select only a number of properties by default. These properties are selected with the <see cref="properties" /> property.
+        /// </summary>
+        /// <returns>
+        /// - Status ok (200) with An IEnumerable of all the Items in the database on success
+        /// - Status bad request (400) when there are properties passed that do not exist in a <see cref="Resident" />
+        /// - Status not found (404) when there is no <see cref="Resident" /> with the given id found
+        /// - Status internal server error (500) when an error occures
+        /// </returns>
         [HttpGet("{id}")]
         public override async Task<IActionResult> GetAsync(string id, string[] properties)
             => await base.GetAsync(id, properties);
 
+        /// <inheritdoc cref="ARestControllerBase{T}.GetAsync()" />
+        /// <summary>
+        /// Get is the method corresponding to the GET method of the controller of the REST service.
+        /// <para />
+        /// It returns all the Items in the database wrapped in an <see cref="IActionResult" />. To limit data traffic it is possible to
+        /// select only a number of properties by default. These properties are selected with the <see cref="PropertiesToSendOnGet" /> property.
+        /// </summary>
+        /// <returns>
+        /// - Status ok (200) with An IEnumerable of all the Items in the database on success
+        /// - Status internal server (500) error when an error occures
+        /// </returns>
         [HttpGet]
         public override async Task<IActionResult> GetAsync()
             => await base.GetAsync();
 
+        /// <summary>
+        /// Get is the method corresponding to the GET method of the controller of the REST service.
+        /// <para />
+        /// It returns the Item with the given tag in the database wrapped in an <see cref="IActionResult" />. To limit data traffic it is possible to
+        /// select only a number of properties by default. These properties are selected with the <see cref="properties" /> property.
+        /// </summary>
+        /// <returns>
+        /// - Status ok (200) with An IEnumerable of all the Items in the database on success
+        /// - Status bad request (400) when there are properties passed that do not exist in a <see cref="Resident" />
+        /// - Status not found (404) when there is no <see cref="Resident" /> with the given id found
+        /// - Status internal server error (500) when an error occures
+        /// </returns>
         [HttpGet("byTag/{tag}")]
         public async Task<IActionResult> GetAsync(int tag, string[] properties)
         {
@@ -149,14 +192,51 @@ namespace WebService.Controllers
             }
         }
 
+        /// <inheritdoc cref="ARestControllerBase{T}.CreateAsync" />
+        /// <summary>
+        /// Create is the method corresonding to the POST method of the controller of the REST service.
+        /// <para />
+        /// It saves the passed <see cref="Resident" /> to the database.
+        /// </summary>
+        /// <param name="item">is the <see cref="Resident" /> to save in the database</param>
+        /// <returns>
+        /// - Status created (201) if succes
+        /// - Status internal server error (500) on error or not created
+        /// </returns>
         [HttpPost]
         public override async Task<IActionResult> CreateAsync([FromBody] Resident item)
             => await base.CreateAsync(item);
 
+        /// <inheritdoc cref="ARestControllerBase{T}.DeleteAsync" />
+        /// <summary>
+        /// Delete is the method corresonding to the DELETE method of the controller of the REST service.
+        /// <para />
+        /// It saves the passed <see cref="Resident" /> to the database.
+        /// </summary>
+        /// <param name="id">is the id of the <see cref="Resident" /> to remove from the database</param>
+        /// <returns>
+        /// - Status created (201) if succes
+        /// - Status not found (40) if there was no erro but also no object to remove
+        /// - Status internal server error (500) on error
+        /// </returns>
         [HttpDelete("{id}")]
         public override async Task<IActionResult> DeleteAsync(string id)
             => await base.DeleteAsync(id);
 
+        /// <inheritdoc cref="ARestControllerBase{T}.UpdateAsync" />
+        /// <summary>
+        /// Update is the method corresponding to the PUT method of the controller of the REST service.
+        /// <para />
+        /// It updates the fields of the <see cref="Resident" /> in the updater.
+        /// If the Item doesn't exist, a new is created in the database.
+        /// </summary>
+        /// <param name="updater">containse the <see cref="Resident" /> to update ande the properties that should be updated</param>
+        /// <returns>
+        /// - Status ok (200) if the <see cref="Resident" /> was updated
+        /// - Status created (201) if a new one was created
+        /// - Status bad request (400) if the passed updater is null
+        /// - Status internal server error (500) on error or not created
+        /// </returns>
         [HttpPut]
         public override async Task<IActionResult> UpdateAsync([FromBody] AUpdater<Resident> updater)
             => await base.UpdateAsync(updater);
