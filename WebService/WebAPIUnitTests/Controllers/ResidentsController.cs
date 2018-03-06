@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Net;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -8,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MongoDB.Bson;
 using Moq;
+using WebService.Helpers.Extensions;
 using WebService.Models;
 using WebService.Services.Data;
 using WebService.Services.Data.Mock;
@@ -35,6 +37,146 @@ namespace WebAPIUnitTests.Controllers
                 .Count()
                 .Should()
                 .Be(mockResidentsService.MockData.Count, "all the items in the db should be returned");
+        }
+
+        [TestMethod]
+        public void GetByIdNormal()
+        {
+            var mockResidentsService = new MockResidentsService();
+            var id = mockResidentsService.MockData[0].Id.ToString();
+            var selector = new[]
+            {
+                "firstName",
+                "lastName",
+                "birthday"
+            };
+
+            var resident = new WebService.Controllers.ResidentsController(mockResidentsService, new ConsoleLogger())
+                .GetAsync(id, selector).Result
+                .Should()
+                .BeOfType<OkObjectResult>("the controller should return a 200 ok to the client").Subject
+                .Value
+                .Should()
+                .BeAssignableTo<Resident>("a collection of residents is asked").Subject;
+
+            resident
+                .FirstName
+                .Should()
+                .Be(mockResidentsService.MockData[0].FirstName, "that is the name of the resident with the given id");
+
+            resident
+                .LastName
+                .Should()
+                .Be(mockResidentsService.MockData[0].LastName,
+                    "that is the last name of the resident with the given id");
+
+            resident
+                .Birthday
+                .Should()
+                .Be(mockResidentsService.MockData[0].Birthday,
+                    "that is the birthday of the resident with the given id");
+
+            var properties = typeof(Resident)
+                .GetProperties()
+                .Where(x =>
+                    x.Name != nameof(Resident.FirstName) &&
+                    x.Name != nameof(Resident.LastName) &&
+                    x.Name != nameof(Resident.Birthday) &&
+                    x.Name != nameof(Resident.Id));
+
+            foreach (var property in properties)
+                property
+                    .GetValue(resident)
+                    .Should()
+                    .BeEquivalentTo(property.PropertyType.GetDefault(), "this property was not asked to return");
+        }
+
+        [TestMethod]
+        public void GetByIdBadIdFormat()
+        {
+            var mockResidentsService = new MockResidentsService();
+            var selector = new[]
+            {
+                "firstName",
+                "lastName",
+                "birthday"
+            };
+
+            new WebService.Controllers.ResidentsController(mockResidentsService, new ConsoleLogger())
+                .GetAsync("bad id", selector).Result
+                .Should()
+                .BeOfType<StatusCodeResult>("all controller methods should return a status code as confirmation")
+                .Subject
+                .StatusCode
+                .Should()
+                .Be((int) HttpStatusCode.NotFound, "a bad id cannot be found");
+        }
+
+        [TestMethod]
+        public void GetByIdNonExistingID()
+        {
+            var mockResidentsService = new MockResidentsService();
+            var selector = new[]
+            {
+                "firstName",
+                "lastName",
+                "birthday"
+            };
+
+            new WebService.Controllers.ResidentsController(mockResidentsService, new ConsoleLogger())
+                .GetAsync(ObjectId.GenerateNewId().ToString(), selector).Result
+                .Should()
+                .BeOfType<StatusCodeResult>("all controller methods should return a status code as confirmation")
+                .Subject
+                .StatusCode
+                .Should()
+                .Be((int) HttpStatusCode.NotFound, "a bad id cannot be found");
+        }
+
+        [TestMethod]
+        public void GetByIdBadProperties()
+        {
+            var mockResidentsService = new MockResidentsService();
+            var id = mockResidentsService.MockData[0].Id.ToString();
+            var selector = new[]
+            {
+                "firstName",
+                "lastame",
+                "birthday"
+            };
+
+            new WebService.Controllers.ResidentsController(mockResidentsService, new ConsoleLogger())
+                .GetAsync(id, selector).Result
+                .Should()
+                .BeOfType<StatusCodeResult>("all controller methods should return a status code as confirmation")
+                .Subject
+                .StatusCode
+                .Should()
+                .Be((int) HttpStatusCode.BadRequest, "bad properties cannot be found");
+        }
+
+        [TestMethod]
+        public void GetByIdNoProperties()
+        {
+            var mockResidentsService = new MockResidentsService();
+            var id = mockResidentsService.MockData[0].Id.ToString();
+            var resident = new WebService.Controllers.ResidentsController(mockResidentsService, new ConsoleLogger())
+                .GetAsync(id, null).Result
+                .Should()
+                .BeOfType<OkObjectResult>("the controller should return a 200 ok to the client").Subject
+                .Value
+                .Should()
+                .BeAssignableTo<Resident>("a collection of residents is asked").Subject;
+
+            var properties = typeof(Resident).GetProperties();
+
+            foreach (var property in properties)
+                property
+                    .GetValue(resident)
+                    .Should()
+                    .BeEquivalentTo(
+                        property.GetValue(mockResidentsService.MockData[0]),
+                        $"that is the {property.Name} of the resident");
         }
 
         #endregion get

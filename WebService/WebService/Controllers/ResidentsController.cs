@@ -93,6 +93,9 @@ namespace WebService.Controllers
                     selectors.Add(x => x.Tags);
                 else if (propertyName.EqualsWithCamelCasing(nameof(Resident.Videos)))
                     selectors.Add(x => x.Videos);
+                else
+                    throw new ArgumentException(nameof(strings),
+                        $"Property {propertyName} cannot be found on {typeof(Resident).Name}");
             }
 
             return selectors;

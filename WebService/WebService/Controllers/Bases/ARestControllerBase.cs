@@ -72,21 +72,43 @@ namespace WebService.Controllers.Bases
         /// </summary>
         /// <returns>
         /// - Status ok (200) with An IEnumerable of all the Items in the database on success
-        /// - Status internal server (500) error when an error occures
+        /// - Status bad request (400) when there are properties passed that do not exist in a <see cref="T"/>
+        /// - Status not found (404) when there is no <see cref="T"/> with the given id found
+        /// - Status internal server error (500) when an error occures
         /// </returns>
         public virtual async Task<IActionResult> GetAsync(string id, string[] properties)
         {
+            // parse the id
             if (!ObjectId.TryParse(id, out var objectId))
+                // if it fails, return a 404
                 return StatusCode((int) HttpStatusCode.NotFound);
 
-            var selectors = ConvertStringsToSelectors(properties);
+            //create selectors
+            IEnumerable<Expression<Func<T, object>>> selectors = null;
+            // if there are no properties, they don't need to be converted
+            if (!EnumerableExtensions.IsNullOrEmpty(properties))
+                try
+                {
+                    // try converting the propertie names to selectors
+                    selectors = ConvertStringsToSelectors(properties);
+                }
+                catch (ArgumentException)
+                {
+                    // if it fails because of a bad argument (properties cannot be found)
+                    // return a 400 error
+                    return StatusCode((int) HttpStatusCode.BadRequest);
+                }
 
             try
             {
                 // get the value from the data service
                 var item = await DataService.GetAsync(objectId, selectors);
-                // return the values wrapped in a 200 response 
-                return Ok(item);
+
+                return item == null
+                    // if the item is null, return a 404
+                    ? StatusCode((int) HttpStatusCode.NotFound)
+                    // else return the values wrapped in a 200 response 
+                    : (IActionResult) Ok(item);
             }
             catch (Exception e)
             {
@@ -168,8 +190,10 @@ namespace WebService.Controllers.Bases
         /// </returns>
         public virtual async Task<IActionResult> DeleteAsync(string id)
         {
+            // try to parse the id
             if (!ObjectId.TryParse(id, out var objectId))
-                return StatusCode((int)HttpStatusCode.NotFound);
+                // if it fails, return a 404 error
+                return StatusCode((int) HttpStatusCode.NotFound);
 
             try
             {
