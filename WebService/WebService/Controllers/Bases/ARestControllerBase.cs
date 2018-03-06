@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Net;
@@ -7,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Bson;
 using WebService.Helpers.Extensions;
+using WebService.Models;
 using WebService.Models.Bases;
 using WebService.Services.Data;
 using WebService.Services.Logging;
@@ -76,7 +76,7 @@ namespace WebService.Controllers.Bases
         /// - Status not found (404) when there is no <see cref="T"/> with the given id found
         /// - Status internal server error (500) when an error occures
         /// </returns>
-        public virtual async Task<IActionResult> GetAsync(string id, string[] properties)
+        public virtual async Task<IActionResult> GetAsync(string id, [FromQuery] string[] properties)
         {
             // parse the id
             if (!ObjectId.TryParse(id, out var objectId))
@@ -219,7 +219,7 @@ namespace WebService.Controllers.Bases
         /// It updates the fields of the <see cref="T"/> in the updater.
         /// If the Item doesn't exist, a new is created in the database.
         /// </summary>
-        /// <param name="updater">containse the <see cref="T"/> to update ande the properties that should be updated</param>
+        /// <param name="updater">contains the <see cref="T"/> to update and the properties that should be updated</param>
         /// <returns>
         /// - Status ok (200) if the <see cref="T"/> was updated
         /// - Status created (201) if a new one was created
@@ -228,9 +228,25 @@ namespace WebService.Controllers.Bases
         /// </returns>
         public virtual async Task<IActionResult> UpdateAsync([FromBody] AUpdater<T> updater)
         {
+            //create selectors
+            IEnumerable<Expression<Func<T, object>>> selectors = null;
+            // if there are no properties, they don't need to be converted
+            if (!EnumerableExtensions.IsNullOrEmpty(updater.PropertiesToUpdate))
+                try
+                {
+                    // try converting the propertie names to selectors
+                    selectors = ConvertStringsToSelectors(updater.PropertiesToUpdate);
+                }
+                catch (ArgumentException)
+                {
+                    // if it fails because of a bad argument (properties cannot be found)
+                    // return a 400 error
+                    return StatusCode((int)HttpStatusCode.BadRequest);
+                }
+
             try
             {
-                // check if the resident to update exists
+                // check if the item to update exists
                 if (updater.Value == null)
                     return new StatusCodeResult((int) HttpStatusCode.BadRequest);
 
@@ -240,15 +256,12 @@ namespace WebService.Controllers.Bases
                     updatedResident = await DataService.UpdateAsync(updater.Value);
                 else
                 {
-                    // create a new list of selectors
-                    var selectors = ConvertStringsToSelectors(updater.PropertiesToUpdate);
-
-                    // update the resident in the data service
+                    // update the item in the data service
                     updatedResident = await DataService.UpdateAsync(updater.Value, selectors);
                 }
 
                 return Equals(updatedResident, default(T))
-                    // if the update failed, try creating a new resident
+                    // if the update failed, try creating a new item
                     ? await CreateAsync(updater.Value)
                     // if the update was a succes, reutrn 200
                     : StatusCode((int) HttpStatusCode.OK);
@@ -259,6 +272,65 @@ namespace WebService.Controllers.Bases
                 Logger.Log(this, ELogLevel.Error, e);
                 // return a 500 internal server error code
                 return StatusCode((int) HttpStatusCode.InternalServerError);
+            }
+        }
+
+        /// <summary>
+        /// Update is the method corresponding to the PUT method of the controller of the REST service.
+        /// <para/>
+        /// It updates the fields of the <see cref="T"/> in the updater.
+        /// If the Item doesn't exist, a new is created in the database.
+        /// </summary>
+        /// <param name="item">is the <see cref="T"/> to update</param>
+        /// <param name="properties">contains the properties that should be updated</param>
+        /// <returns>
+        /// - Status ok (200) if the <see cref="T"/> was updated
+        /// - Status created (201) if a new one was created
+        /// - Status bad request (400) if the passed properties are not found on <see cref="T"/>
+        /// - Status internal server error (500) on error or not created
+        /// </returns>
+        public virtual async Task<IActionResult> UpdateAsync([FromBody] T item, [FromQuery] string[] properties)
+        {
+            //create selectors
+            IEnumerable<Expression<Func<T, object>>> selectors = null;
+            // if there are no properties, they don't need to be converted
+            if (!EnumerableExtensions.IsNullOrEmpty(properties))
+                try
+                {
+                    // try converting the propertie names to selectors
+                    selectors = ConvertStringsToSelectors(properties);
+                }
+                catch (ArgumentException)
+                {
+                    // if it fails because of a bad argument (properties cannot be found)
+                    // return a 400 error
+                    return StatusCode((int)HttpStatusCode.BadRequest);
+                }
+
+            try
+            {
+                T updatedResident;
+                if (EnumerableExtensions.IsNullOrEmpty(properties))
+                    // if there are no properties to update, pass none to the data service
+                    updatedResident = await DataService.UpdateAsync(item);
+                else
+                {
+                    // update the item in the data service
+                    updatedResident = await DataService.UpdateAsync(item, selectors);
+                }
+
+                return Equals(updatedResident, default(T))
+                    // if the update failed, try creating a new item
+                    ? await CreateAsync(item)
+                    // if the update was a succes, reutrn 200
+                    : StatusCode((int)HttpStatusCode.OK);
+            }
+            catch (Exception e)
+            {
+                // log the error
+                Logger.Log(this, ELogLevel.Error, e);
+                // return a 500 internal server error code
+                return StatusCode((int)HttpStatusCode.InternalServerError);
             }
         }
 
