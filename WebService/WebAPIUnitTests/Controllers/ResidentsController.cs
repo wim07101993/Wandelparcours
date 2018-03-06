@@ -26,11 +26,17 @@ namespace WebAPIUnitTests.Controllers
             var mockResidentsService = new MockResidentsService();
 
             new WebService.Controllers.ResidentsController(mockResidentsService, new ConsoleLogger())
-                .GetAsync().Result.Should().BeOfType<OkObjectResult>()
-                .Subject.Value.Should().BeAssignableTo<IEnumerable<Resident>>()
-                .Subject.Count().Should().Be(mockResidentsService.MockData.Count);
+                .GetAsync().Result
+                .Should()
+                .BeOfType<OkObjectResult>("the controller should return a 200 ok to the client").Subject
+                .Value
+                .Should()
+                .BeAssignableTo<IEnumerable<Resident>>("a collection of residents is asked").Subject
+                .Count()
+                .Should()
+                .Be(mockResidentsService.MockData.Count, "all the items in the db should be returned");
         }
-        
+
         #endregion get
 
 
@@ -43,11 +49,19 @@ namespace WebAPIUnitTests.Controllers
             var resident = new Resident();
 
             var dataService = new Mock<IDataService<Resident>>();
-            dataService.Setup(x => x.CreateAsync(resident)).Returns(() => Task.FromResult(id));
+            dataService
+                .Setup(x => x.CreateAsync(resident))
+                .Returns(() => Task.FromResult(id));
 
             new WebService.Controllers.ResidentsController(dataService.Object, new ConsoleLogger())
-                .CreateAsync(resident).Result.Should().BeOfType<StatusCodeResult>()
-                .Subject.StatusCode.Should().Be((int) HttpStatusCode.Created);
+                .CreateAsync(resident).Result
+                .Should()
+                .BeOfType<StatusCodeResult>("all controller methods should return a status code as confirmation")
+                .Subject
+                .StatusCode
+                .Should()
+                .Be((int) HttpStatusCode.Created,
+                    "the creation should be executed and the corresponding response is 201 in http");
         }
 
         [TestMethod]
@@ -56,11 +70,18 @@ namespace WebAPIUnitTests.Controllers
             var resident = new Resident();
 
             var dataService = new Mock<IDataService<Resident>>();
-            dataService.Setup(x => x.CreateAsync(resident)).Returns(() => Task.FromResult<string>(null));
+            dataService
+                .Setup(x => x.CreateAsync(resident))
+                .Returns(() => Task.FromResult<string>(null));
 
             new WebService.Controllers.ResidentsController(dataService.Object, new ConsoleLogger())
-                .CreateAsync(resident).Result.Should().BeOfType<StatusCodeResult>()
-                .Subject.StatusCode.Should().Be((int) HttpStatusCode.InternalServerError);
+                .CreateAsync(resident).Result
+                .Should()
+                .BeOfType<StatusCodeResult>("all controller methods should return a status code as confirmation")
+                .Subject
+                .StatusCode
+                .Should()
+                .Be((int) HttpStatusCode.InternalServerError);
         }
 
         [TestMethod]
@@ -69,11 +90,20 @@ namespace WebAPIUnitTests.Controllers
             var resident = new Resident();
 
             var dataService = new Mock<IDataService<Resident>>();
-            dataService.Setup(x => x.CreateAsync(resident)).Returns(() => throw new Exception());
+            dataService
+                .Setup(x => x.CreateAsync(resident))
+                .Returns(() => throw new Exception());
 
             new WebService.Controllers.ResidentsController(dataService.Object, new ConsoleLogger())
-                .CreateAsync(resident).Result.Should().BeOfType<StatusCodeResult>()
-                .Subject.StatusCode.Should().Be((int) HttpStatusCode.InternalServerError);
+                .CreateAsync(resident)
+                .Result
+                .Should()
+                .BeOfType<StatusCodeResult>("all controller methods should return a status code as confirmation")
+                .Subject
+                .StatusCode
+                .Should()
+                .Be((int) HttpStatusCode.InternalServerError,
+                    "if the service throws an exception, a 500 erro should be returned");
         }
 
         #endregion create
@@ -90,8 +120,13 @@ namespace WebAPIUnitTests.Controllers
             dataService.Setup(x => x.RemoveAsync(id)).Returns(() => Task.FromResult(true));
 
             new WebService.Controllers.ResidentsController(dataService.Object, new ConsoleLogger())
-                .DeleteAsync(id.ToString()).Result.Should().BeOfType<StatusCodeResult>()
-                .Subject.StatusCode.Should().Be((int) HttpStatusCode.OK);
+                .DeleteAsync(id.ToString()).Result
+                .Should()
+                .BeOfType<StatusCodeResult>("all controller methods should return a status code as confirmation")
+                .Subject
+                .StatusCode
+                .Should()
+                .Be((int) HttpStatusCode.OK, "if the item is removed, a 200 code should be returned");
         }
 
         [TestMethod]
@@ -103,8 +138,30 @@ namespace WebAPIUnitTests.Controllers
             dataService.Setup(x => x.RemoveAsync(id)).Returns(() => Task.FromResult(false));
 
             new WebService.Controllers.ResidentsController(dataService.Object, new ConsoleLogger())
-                .DeleteAsync(id.ToString()).Result.Should().BeOfType<StatusCodeResult>()
-                .Subject.StatusCode.Should().Be((int) HttpStatusCode.NotFound);
+                .DeleteAsync(id.ToString()).Result
+                .Should()
+                .BeOfType<StatusCodeResult>("all controller methods should return a status code as confirmation")
+                .Subject
+                .StatusCode
+                .Should()
+                .Be((int) HttpStatusCode.NotFound,
+                    "if the receiver is not found, a 404 not found error should be returned");
+        }
+
+        [TestMethod]
+        public void DeleteNonParsableId()
+        {
+            new WebService.Controllers.ResidentsController(
+                    new Mock<IDataService<Resident>>().Object,
+                    new ConsoleLogger())
+                .DeleteAsync("abc").Result
+                .Should()
+                .BeOfType<StatusCodeResult>("all controller methods should return a status code as confirmation")
+                .Subject
+                .StatusCode
+                .Should()
+                .Be((int) HttpStatusCode.NotFound,
+                    "if the receiver is not found, a 404 not found error should be returned");
         }
 
         [TestMethod]
@@ -116,8 +173,14 @@ namespace WebAPIUnitTests.Controllers
             dataService.Setup(x => x.RemoveAsync(id)).Returns(() => throw new Exception());
 
             new WebService.Controllers.ResidentsController(dataService.Object, new ConsoleLogger())
-                .DeleteAsync(id.ToString()).Result.Should().BeOfType<StatusCodeResult>()
-                .Subject.StatusCode.Should().Be((int) HttpStatusCode.InternalServerError);
+                .DeleteAsync(id.ToString()).Result
+                .Should()
+                .BeOfType<StatusCodeResult>("all controller methods should return a status code as confirmation")
+                .Subject
+                .StatusCode
+                .Should()
+                .Be((int) HttpStatusCode.InternalServerError,
+                    "if the service throws an exception, a 500 error should be returned");
         }
 
         #endregion delete
@@ -129,7 +192,12 @@ namespace WebAPIUnitTests.Controllers
         public void UpdateWithNormalConditions()
         {
             var mockResidentsService = new MockResidentsService();
-            var resident = new Resident {Id = mockResidentsService.MockData[0].Id, FirstName = "Test", LastName = null};
+            var resident = new Resident
+            {
+                Id = mockResidentsService.MockData[0].Id,
+                FirstName = "Test",
+                LastName = null
+            };
 
             var updater = new ResidentUpdater
             {
@@ -138,8 +206,13 @@ namespace WebAPIUnitTests.Controllers
             };
 
             new WebService.Controllers.ResidentsController(mockResidentsService, new ConsoleLogger())
-                .UpdateAsync(updater).Result.Should().BeOfType<StatusCodeResult>()
-                .Subject.StatusCode.Should().Be((int) HttpStatusCode.OK);
+                .UpdateAsync(updater).Result
+                .Should()
+                .BeOfType<StatusCodeResult>("all controller methods should return a status code as confirmation")
+                .Subject
+                .StatusCode
+                .Should()
+                .Be((int) HttpStatusCode.OK, "if an item is updated, a 200 status should be returned");
         }
 
         [TestMethod]
@@ -153,8 +226,13 @@ namespace WebAPIUnitTests.Controllers
 
             var dataService = new MockResidentsService();
             new WebService.Controllers.ResidentsController(dataService, new ConsoleLogger())
-                .UpdateAsync(updater).Result.Should().BeOfType<StatusCodeResult>()
-                .Subject.StatusCode.Should().Be((int) HttpStatusCode.Created);
+                .UpdateAsync(updater).Result
+                .Should()
+                .BeOfType<StatusCodeResult>("all controller methods should return a status code as confirmation")
+                .Subject
+                .StatusCode
+                .Should()
+                .Be((int) HttpStatusCode.Created, "if an item is not found, a 404 not found error should be returned");
         }
 
         [TestMethod]
@@ -167,8 +245,14 @@ namespace WebAPIUnitTests.Controllers
 
             var mockResidentsService = new MockResidentsService();
             new WebService.Controllers.ResidentsController(mockResidentsService, new ConsoleLogger())
-                .UpdateAsync(updater).Result.Should().BeOfType<StatusCodeResult>()
-                .Subject.StatusCode.Should().Be((int) HttpStatusCode.BadRequest);
+                .UpdateAsync(updater).Result
+                .Should()
+                .BeOfType<StatusCodeResult>("all controller methods should return a status code as confirmation")
+                .Subject
+                .StatusCode
+                .Should()
+                .Be((int) HttpStatusCode.BadRequest,
+                    "if no item to update is sent, the request is bad and a 400 bad request should be returned");
         }
 
         [TestMethod]
@@ -181,8 +265,14 @@ namespace WebAPIUnitTests.Controllers
             };
 
             new WebService.Controllers.ResidentsController(dataService, new ConsoleLogger())
-                .UpdateAsync(updater).Result.Should().BeOfType<StatusCodeResult>()
-                .Subject.StatusCode.Should().Be((int) HttpStatusCode.OK);
+                .UpdateAsync(updater).Result
+                .Should()
+                .BeOfType<StatusCodeResult>("all controller methods should return a status code as confirmation")
+                .Subject
+                .StatusCode
+                .Should()
+                .Be((int) HttpStatusCode.OK,
+                    "if the service says it everything is ok, we should return a 200 ok status");
         }
 
         #endregion update

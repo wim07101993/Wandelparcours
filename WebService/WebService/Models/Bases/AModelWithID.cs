@@ -1,7 +1,7 @@
 ﻿using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 using Newtonsoft.Json;
-using WebService.Helpers;
+using WebService.Helpers.JsonConverters;
 
 namespace WebService.Models.Bases
 {

@@ -13,7 +13,7 @@ namespace WebService.Services.Data.Mongo
     /// <para/>
     /// The connectionstring, db name and collections that are used are stored in the IConfiguration dependency under the Database object.
     /// </summary>
-    public class ResidentsService : AMongoDataService<Resident>
+    public class ResidentsService : AMongoDataService<Resident>, IResidentsService
     {
         /// <summary>
         /// ResidentsService is the contsructor to create an instance of the <see cref="ResidentsService"/> class.

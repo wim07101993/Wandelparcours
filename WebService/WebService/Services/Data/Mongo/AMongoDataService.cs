@@ -6,7 +6,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using MongoDB.Bson;
 using MongoDB.Driver;
-using WebService.Helpers;
+using WebService.Helpers.Extensions;
 using WebService.Models.Bases;
 
 namespace WebService.Services.Data.Mongo
@@ -25,7 +25,44 @@ namespace WebService.Services.Data.Mongo
 
         #region METHDOS
 
-        /// <inheritdoc cref="IDataService{T}.GetAsync" />
+        /// <inheritdoc cref="IDataService{T}.GetAsync(ObjectId,IEnumerable{Expression{System.Func{T,object}}})" />
+        /// <summary>
+        /// GetAsync returns the <see cref="T"/> with the given id from the database. 
+        /// <para/>
+        /// It only fills the properties passed in the <see cref="propertiesToInclude"/> parameter. The id is always passed and 
+        /// if the <see cref="propertiesToInclude"/> parameter is null (which it is by default), all the properties are included. 
+        /// </summary>
+        /// <param name="id">is the id of the item that needs to be fetched</param>
+        /// <param name="propertiesToInclude">are the properties that should be included in the objects</param>
+        /// <returns>An <see cref="IEnumerable{T}"/> filled with all the ts in the database.</returns>
+        public async Task<T> GetAsync(ObjectId id, IEnumerable<Expression<Func<T, object>>> propertiesToInclude = null)
+        {
+            // get the item with the given mac address
+            var foundItem = MongoCollection.Find(x => x.Id == id);
+
+            // convert the properties to include to a list (if not null)
+            var properties = propertiesToInclude?.ToList();
+            // if the proeprties are null or there are none, return all the properties
+            if (EnumerableExtensions.IsNullOrEmpty(properties))
+                return await foundItem.FirstOrDefaultAsync();
+
+            // create a propertyfilter
+            var selector = Builders<T>.Projection.Include(x => x.Id);
+
+            //ReSharper disable once PossibleNullReferenceException
+            // iterate over all the properties and add them to the filter
+            foreach (var property in properties)
+                selector = selector.Include(property);
+
+            // return the item
+            return await foundItem
+                // filter the properties
+                .Project<T>(selector)
+                // execute the query
+                .FirstOrDefaultAsync();
+        }
+
+        /// <inheritdoc cref="IDataService{T}.GetAsync(IEnumerable{Expression{System.Func{T,object}}})" />
         /// <summary>
         /// Get returns all the items from the database. 
         /// <para />

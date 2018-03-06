@@ -1,11 +1,12 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Bson;
-using WebService.Helpers;
+using WebService.Helpers.Extensions;
 using WebService.Models.Bases;
 using WebService.Services.Data;
 using WebService.Services.Logging;
@@ -19,12 +20,12 @@ namespace WebService.Controllers.Bases
         /// <summary>
         /// _dataService is used to handle the data traffice to and from the database.
         /// </summary>
-        private readonly IDataService<T> _dataService;
+        protected readonly IDataService<T> DataService;
 
         /// <summary>
         /// _logger is used to handle the logging of messages.
         /// </summary>
-        private readonly ILogger _logger;
+        protected readonly ILogger Logger;
 
         #endregion FIELDS
 
@@ -39,8 +40,8 @@ namespace WebService.Controllers.Bases
         protected ARestControllerBase(IDataService<T> dataService, ILogger logger)
         {
             // initiate the services
-            _dataService = dataService;
-            _logger = logger;
+            DataService = dataService;
+            Logger = logger;
         }
 
         #endregion CONSTRUCTORS
@@ -66,6 +67,39 @@ namespace WebService.Controllers.Bases
         /// <summary>
         /// Get is the method corresponding to the GET method of the controller of the REST service.
         /// <para/>
+        /// It returns the Item with the given id in the database wrapped in an <see cref="IActionResult"/>. To limit data traffic it is possible to
+        /// select only a number of properties by default. These properties are selected with the <see cref="properties"/> property.
+        /// </summary>
+        /// <returns>
+        /// - Status ok (200) with An IEnumerable of all the Items in the database on success
+        /// - Status internal server (500) error when an error occures
+        /// </returns>
+        public virtual async Task<IActionResult> GetAsync(string id, string[] properties)
+        {
+            if (!ObjectId.TryParse(id, out var objectId))
+                return StatusCode((int) HttpStatusCode.NotFound);
+
+            var selectors = ConvertStringsToSelectors(properties);
+
+            try
+            {
+                // get the value from the data service
+                var item = await DataService.GetAsync(objectId, selectors);
+                // return the values wrapped in a 200 response 
+                return Ok(item);
+            }
+            catch (Exception e)
+            {
+                // log the exception
+                Logger.Log(this, ELogLevel.Error, e);
+                // return a 500 error to the client
+                return StatusCode((int) HttpStatusCode.InternalServerError);
+            }
+        }
+
+        /// <summary>
+        /// Get is the method corresponding to the GET method of the controller of the REST service.
+        /// <para/>
         /// It returns all the Items in the database wrapped in an <see cref="IActionResult"/>. To limit data traffic it is possible to
         /// select only a number of properties by default. These properties are selected with the <see cref="PropertiesToSendOnGet"/> property.
         /// </summary>
@@ -78,14 +112,14 @@ namespace WebService.Controllers.Bases
             try
             {
                 // get the values from the data service
-                var items = await _dataService.GetAsync(PropertiesToSendOnGet);
+                var items = await DataService.GetAsync(PropertiesToSendOnGet);
                 // return the values wrapped in a 200 response 
                 return Ok(items);
             }
             catch (Exception e)
             {
                 // log the exception
-                _logger.Log(this, ELogLevel.Error, e);
+                Logger.Log(this, ELogLevel.Error, e);
                 // return a 500 error to the client
                 return StatusCode((int) HttpStatusCode.InternalServerError);
             }
@@ -106,7 +140,7 @@ namespace WebService.Controllers.Bases
             try
             {
                 // use the data service to create a new updater
-                return await _dataService.CreateAsync(item) != null
+                return await DataService.CreateAsync(item) != null
                     // if the updater was created return satus created
                     ? StatusCode((int) HttpStatusCode.Created)
                     // if the updater was not created return status not modified
@@ -115,7 +149,7 @@ namespace WebService.Controllers.Bases
             catch (Exception e)
             {
                 // log the error
-                _logger.Log(this, ELogLevel.Error, e);
+                Logger.Log(this, ELogLevel.Error, e);
                 // return a 500 internal server error code
                 return StatusCode((int) HttpStatusCode.InternalServerError);
             }
@@ -134,10 +168,13 @@ namespace WebService.Controllers.Bases
         /// </returns>
         public virtual async Task<IActionResult> DeleteAsync(string id)
         {
+            if (!ObjectId.TryParse(id, out var objectId))
+                return StatusCode((int)HttpStatusCode.NotFound);
+
             try
             {
                 // use the data service to remove the updater
-                return await _dataService.RemoveAsync(new ObjectId(id))
+                return await DataService.RemoveAsync(objectId)
                     // if the updater was deleted return status ok
                     ? StatusCode((int) HttpStatusCode.OK)
                     // if the updater was not deleted return status no content
@@ -146,7 +183,7 @@ namespace WebService.Controllers.Bases
             catch (Exception e)
             {
                 // log the error
-                _logger.Log(this, ELogLevel.Error, e);
+                Logger.Log(this, ELogLevel.Error, e);
                 // return a 500 internal server error code
                 return StatusCode((int) HttpStatusCode.InternalServerError);
             }
@@ -176,14 +213,14 @@ namespace WebService.Controllers.Bases
                 T updatedResident;
                 if (EnumerableExtensions.IsNullOrEmpty(updater.PropertiesToUpdate))
                     // if there are no properties to update, pass none to the data service
-                    updatedResident = await _dataService.UpdateAsync(updater.Value);
+                    updatedResident = await DataService.UpdateAsync(updater.Value);
                 else
                 {
                     // create a new list of selectors
                     var selectors = ConvertStringsToSelectors(updater.PropertiesToUpdate);
 
                     // update the resident in the data service
-                    updatedResident = await _dataService.UpdateAsync(updater.Value, selectors);
+                    updatedResident = await DataService.UpdateAsync(updater.Value, selectors);
                 }
 
                 return Equals(updatedResident, default(T))
@@ -195,7 +232,7 @@ namespace WebService.Controllers.Bases
             catch (Exception e)
             {
                 // log the error
-                _logger.Log(this, ELogLevel.Error, e);
+                Logger.Log(this, ELogLevel.Error, e);
                 // return a 500 internal server error code
                 return StatusCode((int) HttpStatusCode.InternalServerError);
             }
