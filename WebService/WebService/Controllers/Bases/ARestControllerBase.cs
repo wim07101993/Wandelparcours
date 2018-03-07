@@ -5,6 +5,7 @@ using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Bson;
+using WebService.Helpers.Exceptions;
 using WebService.Helpers.Extensions;
 using WebService.Models.Bases;
 using WebService.Services.Data;
@@ -87,7 +88,8 @@ namespace WebService.Controllers.Bases
             // parse the id
             if (!ObjectId.TryParse(id, out var objectId))
                 // if it fails, return a 404
-                return StatusCode((int) HttpStatusCode.NotFound);
+                throw new NotFoundException($"The {typeof(T).Name} with id {id} could not be found");
+            //return StatusCode((int) HttpStatusCode.NotFound);
 
             //create selectors
             IEnumerable<Expression<Func<T, object>>> selectors = null;
