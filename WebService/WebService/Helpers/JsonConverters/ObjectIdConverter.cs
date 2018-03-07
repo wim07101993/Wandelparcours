@@ -3,7 +3,7 @@ using MongoDB.Bson;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace WebService.Helpers
+namespace WebService.Helpers.JsonConverters
 {
     /// <inheritdoc cref="JsonConverter" />
     /// <summary>

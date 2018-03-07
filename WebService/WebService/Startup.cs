@@ -6,7 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Serialization;
 using WebService.Models;
 using WebService.Services.Data;
-using WebService.Services.Data.Mondo;
+using WebService.Services.Data.Mongo;
 using WebService.Services.Logging;
 
 namespace WebService
@@ -25,9 +25,8 @@ namespace WebService
         {
             services
                 .AddSingleton(typeof(ILogger), new LoggerCollection {new ConsoleLogger(), new FileLogger()})
-                .AddSingleton<IDataService, MongoDataService>()
                 .AddSingleton<IDataService<Resident>, ResidentsService>()
-                .AddSingleton<IDataService<ReceiverModule>, ReceiverModuleService>(); ;
+                .AddSingleton<IDataService<ReceiverModule>, ReceiverModulesService>(); ;
             
             services
                 .AddMvc()

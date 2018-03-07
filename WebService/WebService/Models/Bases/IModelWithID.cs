@@ -4,6 +4,6 @@ namespace WebService.Models.Bases
 {
     public interface IModelWithID
     {
-        ObjectId ID { get; set; }
+        ObjectId Id { get; set; }
     }
 }

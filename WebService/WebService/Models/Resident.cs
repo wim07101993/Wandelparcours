@@ -49,7 +49,7 @@ namespace WebService.Models
         /// In the database the value is stored under the field "birthday"
         /// </summary>
         [BsonElement("birthday")]
-        public string Birthday { get; set; }
+        public DateTime? Birthday { get; set; }
 
         /// <summary>
         /// Doctor is the doctor that takes care of the Value

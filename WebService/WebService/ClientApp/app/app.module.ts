@@ -14,6 +14,7 @@ import { StationmanagementComponent } from './components/stationmanagement/stati
 import { HeaderComponent } from './components/header/header.component';
 import { SidenavComponent } from './components/sidenav/sidenav.component';
 import { ResidentComponent } from './components/resident/resident.component';
+import { Ng2SearchPipeModule } from 'ng2-search-filter';
 //import { RestServiceService } from './service/rest-service.service';
 
 
@@ -32,6 +33,7 @@ import { ResidentComponent } from './components/resident/resident.component';
     ],
     imports: [
         CommonModule,
+        Ng2SearchPipeModule,
         HttpModule,
         FormsModule,
         RouterModule.forRoot([

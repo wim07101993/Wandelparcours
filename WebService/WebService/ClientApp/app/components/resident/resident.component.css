@@ -1,6 +1,35 @@
-.modal .modal-footer{
-    padding:24px;
-    padding-top: 0px !important;
-    margin-bottom: 20px;
-    
+.pointer {
+    cursor: pointer;
+}
+
+.searchButton {
+    position: relative;
+    right: 0;
+    left: 0;
+    bottom: 23px;
+    padding-top: 15px;
+    margin-bottom: 0;
+    z-index: 997;
+}
+
+.md-48{
+    font-size: 48px;
+}
+
+.crd {
+    padding: 0 16px;
+}
+
+input.ng-invalid.ng-touched{
+    border: 1px solid crimson;
+}
+
+.card-title{
+    text-align: center;
+    width:100%;
+    background-color: rgba(3,3,3,0.75);
+}
+
+.card .card-image .card-title{
+    padding: 12px;
 }

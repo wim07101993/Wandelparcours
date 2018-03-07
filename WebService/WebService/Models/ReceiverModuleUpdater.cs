@@ -2,7 +2,7 @@
 
 namespace WebService.Models
 {
-    public class ResidentUpdater : AUpdater<Resident>
+    public class ReceiverModuleUpdater : AUpdater<ReceiverModule>
     {
     }
 }
