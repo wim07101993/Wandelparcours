@@ -31,6 +31,22 @@ export class RestServiceService {
       });   
     }
 
+    /**
+     * Test met observable
+     * @param uniqueIdentifier
+     */
+    getResidentBasedOnId(uniqueIdentifier: string) {
+        return new Promise<Resident[]>(resolve => {
+            this.http.get(this.restUrl + 'api/v1/residents/' + uniqueIdentifier).subscribe(response => {
+                resolve(<Resident[]>response.json());
+            },
+                error => {
+                    resolve(undefined);
+                }
+            );
+        });
+    }
+
 
     /**
      * delete resident from database based on id

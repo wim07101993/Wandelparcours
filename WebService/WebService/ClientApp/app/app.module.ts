@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpModule } from '@angular/http';
-import { RouterModule } from '@angular/router';
+import { RouterModule, Routes } from '@angular/router';
 
 
 import { AppComponent } from './components/app/app.component';
@@ -15,9 +15,20 @@ import { HeaderComponent } from './components/header/header.component';
 import { SidenavComponent } from './components/sidenav/sidenav.component';
 import { ResidentComponent } from './components/resident/resident.component';
 import { Ng2SearchPipeModule } from 'ng2-search-filter';
+import { MediaComponent } from './components/media/media.component';
 //import { RestServiceService } from './service/rest-service.service';
 
-
+const appRoutes: Routes = [
+    { path: '', redirectTo: 'resident', pathMatch: 'full' },
+    { path: 'resident', component: ResidentComponent },
+    { path: 'resident/:id', component: MediaComponent },
+    { path: 'counter', component: CounterComponent },
+    { path: 'fetch-data', component: FetchDataComponent },
+    { path: 'stationmanagement', component: StationmanagementComponent },
+    { path: '**', redirectTo: 'resident' },
+    { path: 'resident', component: ResidentComponent },
+    { path: '**', redirectTo: 'home' }
+];
 
 @NgModule({
     declarations: [
@@ -29,23 +40,15 @@ import { Ng2SearchPipeModule } from 'ng2-search-filter';
         HomeComponent,
         HeaderComponent,
         ResidentComponent,
-        StationmanagementComponent
+        StationmanagementComponent,
+        MediaComponent,
     ],
     imports: [
         CommonModule,
         Ng2SearchPipeModule,
         HttpModule,
         FormsModule,
-        RouterModule.forRoot([
-            { path: '', redirectTo: 'resident', pathMatch: 'full' },
-            { path: 'resident', component: ResidentComponent },
-            { path: 'counter', component: CounterComponent },
-            { path: 'fetch-data', component: FetchDataComponent },
-            { path: 'stationmanagement', component: StationmanagementComponent },
-            { path: '**', redirectTo: 'resident' },
-            { path: 'resident', component: ResidentComponent},
-            { path: '**', redirectTo: 'home' }
-        ])
+        RouterModule.forRoot(appRoutes)
     ]
     //providers: [RestServiceService]
 })

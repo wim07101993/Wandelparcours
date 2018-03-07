@@ -5,6 +5,7 @@ import { Response } from '@angular/http'
 import { Ng2SearchPipeModule } from 'ng2-search-filter'
 import { async } from '@angular/core/testing';
 import {NgForm} from "@angular/forms";
+import { Router } from '@angular/router';
 declare var $:any;
 declare var Materialize:any;
 
@@ -26,7 +27,7 @@ export class ResidentComponent implements OnInit {
     updateResident: any;
     search: boolean = false;
     
-    constructor(private service: RestServiceService) {
+    constructor(private service: RestServiceService, private router: Router) {
         this.showAllResidents();
         this.residents = [];
         
@@ -96,19 +97,12 @@ export class ResidentComponent implements OnInit {
      * get all residents async from service
      */
     async showAllResidents() {
-
-            let residents: any = await this.service.getAllResidents();
-            if (residents != undefined)
-                this.residents = residents;
-            else {
-                alert("oops! :( looks like something went wrong :(");
-            }
-
-      if (residents != undefined)
-          this.residents = residents;
-      else {
-          console.log("oops! :( looks like something went wrong :(");
-      }
+        let residents: any = await this.service.getAllResidents();
+        if (residents != undefined)
+            this.residents = residents;
+        else {
+            alert("oops! :( looks like something went wrong :(");
+        }
     }
 
     /**
@@ -119,12 +113,15 @@ export class ResidentComponent implements OnInit {
         async deleteResident(uniqueIdentifier: string) {
         await this.service.deleteResidentByUniqueId(uniqueIdentifier);
         this.showAllResidents();
-    }
+    }   
 
     /**
      * Edit and save resident from service
      * @param resident
      */
+
+        
+
     async editResident(resident: Resident) {
         this.updateResident.id = resident.id;
         let birthDay = $("#birthDay").val();
@@ -238,6 +235,11 @@ export class ResidentComponent implements OnInit {
             closeOnSelect: false // Close upon selecting a date,
         });
 
+    }
+
+    navigateTo(resident: Resident) {
+        console.log(resident.id);
+        this.router.navigate(['/resident/' + resident.id]);
     }
         
 
