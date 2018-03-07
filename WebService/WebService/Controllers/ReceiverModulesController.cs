@@ -13,7 +13,7 @@ using WebService.Services.Logging;
 namespace WebService.Controllers
 {
     [Route("api/v1/[controller]")]
-    public class ReceiverModulesController : ARestControllerBase<ReceiverModule>
+    public class ReceiverModulesController : ARestControllerBase<ReceiverModule>, IReceiverModulesController
     {
         #region CONSTRUCTOR
 
