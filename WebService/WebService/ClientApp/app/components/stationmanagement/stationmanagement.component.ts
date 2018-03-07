@@ -34,9 +34,9 @@ export class StationmanagementComponent implements OnInit {
     imageUrl="";
     markerUrl="";
     adMarker:boolean=false;
-    
+    collidingElement:any;
     saveStation:Station;
-    
+    menu:boolean=false;
     stations:Station[]=[];
     markersize=25;
     async saveNewStation(){
@@ -44,6 +44,7 @@ export class StationmanagementComponent implements OnInit {
         let mac =this.saveStation.mac;
         console.log(mac);
         if (reg.test(mac)){
+            
             await this.saveStationToDatabase(this.saveStation);
             this.stations = await this.loadStations();
             this.saveStation=new Station();
@@ -57,6 +58,9 @@ export class StationmanagementComponent implements OnInit {
    
     constructor(private http: Http) {
         this.saveStation=new Station();
+        console.log("sta");
+        console.log(this.stations);
+        console.log("sta");
     }
     async ngOnInit() {
         
@@ -99,6 +103,18 @@ export class StationmanagementComponent implements OnInit {
         $("#markerModel").modal("close");
     }
     
+    async deleteModal(id?:string){
+        
+        if (id!=undefined){
+            this.collidingElement = await this.renderBuffer.getElementById(id);    
+        }
+        
+        
+            
+            $("#deleteModal").modal();
+            $("#deleteModal").modal("open");
+        
+    }
     //this function is needed to zoomin
     async zoomIn(){
             
@@ -115,6 +131,8 @@ export class StationmanagementComponent implements OnInit {
         
         this.tick();
     }
+    
+    
     //tick does the needed calculatations for the render, and draws the rendering on the canvas
     async tick(){
         try{
@@ -122,6 +140,7 @@ export class StationmanagementComponent implements OnInit {
             await this.drawMap();
             await this.drawModules();
             await this.drawStationOnCursor();
+            
             await this.renderBuffer.render();
         }catch (ex){console.log(ex);}
     }     
@@ -263,7 +282,24 @@ export class StationmanagementComponent implements OnInit {
         });
     }
 
+    async deleteStation(mac:string){
+        return new Promise(resolve => {
 
+            this.http.delete("http://localhost:5000/api/v1/receivermodules/"+mac).subscribe(response => {
+                    try{
+                        resolve("success");
+                    }catch (e){
+                        resolve("error");
+                    }
+
+                },
+                error =>{
+                    resolve("error");
+                }
+            )
+        });
+        
+    }
 
 
 async loadStations(){
@@ -285,4 +321,9 @@ async loadStations(){
         });
   }
 
+    async deleteCurrentStation() {
+        await this.deleteStation(this.collidingElement.id);
+        this.stations=await this.loadStations();
+        $("#deleteModal").modal("close");
+    }
 }

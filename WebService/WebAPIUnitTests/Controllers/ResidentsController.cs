@@ -2,13 +2,16 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MongoDB.Bson;
 using Moq;
+using WebService.Helpers.Extensions;
 using WebService.Models;
 using WebService.Services.Data;
+using WebService.Services.Data.Mock;
 using WebService.Services.Logging;
 
 namespace WebAPIUnitTests.Controllers
@@ -17,212 +20,158 @@ namespace WebAPIUnitTests.Controllers
     public class ResidentsController
     {
         #region get
-
+        
         [TestMethod]
-        public void GetWithDataServiceWorking()
+        public void GetByTagNormal()
         {
-            var mockData = new List<Resident>
+            var mockResidentsService = new MockResidentsService();
+            var tag = mockResidentsService.MockData[0].Tags.ToList()[0];
+            var selector = new[]
             {
-                new Resident
-                {
-                    ID = new ObjectId("5a9566c58b9ed54db08d0ce7"),
-                    FirstName = "Lea",
-                    LastName = "Thuwis",
-                    Room = "AT109 A",
-                    Birthday = new DateTime(1937, 4, 8),
-                    Doctor = new Doctor
-                    {
-                        Name = "Massimo Destino",
-                        PhoneNumber = "089 84 29 87"
-                    }
-                },
-                new Resident
-                {
-                    ID = new ObjectId("5a95677d8b9ed54db08d0ce8"),
-                    FirstName = "Martha",
-                    LastName = "Schroyen",
-                    Room = "AT109 A",
-                    Birthday = new DateTime(1929, 5, 26),
-                    Doctor = new Doctor
-                    {
-                        Name = "Luc Euben",
-                        PhoneNumber = "089 38 51 57"
-                    }
-                },
-                new Resident
-                {
-                    ID = new ObjectId("5a9568328b9ed54db08d0ce9"),
-                    FirstName = "Roland",
-                    LastName = "Mertens",
-                    Room = "AQ230 A",
-                    Birthday = new DateTime(1948, 9, 19),
-                    Doctor = new Doctor
-                    {
-                        Name = "Peter Potargent",
-                        PhoneNumber = "089 35 26 87"
-                    }
-                },
-                new Resident
-                {
-                    ID = new ObjectId("5a9568838b9ed54db08d0cea"),
-                    FirstName = "Maria",
-                    LastName = "Creces",
-                    Room = "SA347 A",
-                    Birthday = new DateTime(1934, 1, 26),
-                    Doctor = new Doctor
-                    {
-                        Name = "Willy Denier - Medebo",
-                        PhoneNumber = "089 35 47 22"
-                    }
-                },
-                new Resident
-                {
-                    ID = new ObjectId("5a967fc4c45be323bc42b5d8"),
-                    FirstName = "Ludovica",
-                    LastName = "Van Houten",
-                    Room = "AQ468 A",
-                    Birthday = new DateTime(1933, 1, 25),
-                    Doctor = new Doctor
-                    {
-                        Name = "Marcel Mellebeek",
-                        PhoneNumber = "089 65 74 85"
-                    }
-                },
+                "firstName",
+                "lastName",
+                "birthday"
             };
-            var dataService = new Mock<IDataService>();
-            dataService
-                .Setup(x => x.GetResidents(WebService.Controllers.ResidentsController.SmallDataProperties))
-                .Returns(() => mockData);
 
-            new WebService.Controllers.ResidentsController(dataService.Object, new ConsoleLogger())
-                .Get().Should().BeOfType<OkObjectResult>()
-                .Subject.Value.Should().BeAssignableTo<IEnumerable<Resident>>()
-                .Subject.Count().Should().Be(5);
+            var resident = new WebService.Controllers.ResidentsController(mockResidentsService, new ConsoleLogger())
+                .GetAsync(tag, selector).Result
+                .Should()
+                .BeOfType<OkObjectResult>("the controller should return a 200 ok to the client").Subject
+                .Value
+                .Should()
+                .BeAssignableTo<Resident>("a collection of residents is asked").Subject;
+
+            resident
+                .FirstName
+                .Should()
+                .Be(mockResidentsService.MockData[0].FirstName, "that is the name of the resident with the given id");
+
+            resident
+                .LastName
+                .Should()
+                .Be(mockResidentsService.MockData[0].LastName,
+                    "that is the last name of the resident with the given id");
+
+            resident
+                .Birthday
+                .Should()
+                .Be(mockResidentsService.MockData[0].Birthday,
+                    "that is the birthday of the resident with the given id");
+
+            var properties = typeof(Resident)
+                .GetProperties()
+                .Where(x =>
+                    x.Name != nameof(Resident.FirstName) &&
+                    x.Name != nameof(Resident.LastName) &&
+                    x.Name != nameof(Resident.Birthday) &&
+                    x.Name != nameof(Resident.Id));
+
+            foreach (var property in properties)
+                property
+                    .GetValue(resident)
+                    .Should()
+                    .BeEquivalentTo(property.PropertyType.GetDefault(), "this property was not asked to return");
         }
 
         [TestMethod]
-        public void GetWithDataServiceNotWorking()
+        public void GetByTagNonExistingID()
         {
-            var dataService = new Mock<IDataService>();
-            dataService
-                .Setup(x => x.GetResidents(WebService.Controllers.ResidentsController.SmallDataProperties))
-                .Returns(() => throw new Exception());
+            var mockResidentsService = new MockResidentsService();
+            var selector = new[]
+            {
+                "firstName",
+                "lastName",
+                "birthday"
+            };
 
-            new WebService.Controllers.ResidentsController(dataService.Object, new ConsoleLogger())
-                .Get().Should().BeOfType<StatusCodeResult>()
-                .Subject.StatusCode.Should().Be((int) HttpStatusCode.InternalServerError);
+            new WebService.Controllers.ResidentsController(mockResidentsService, new ConsoleLogger())
+                .GetAsync(-5, selector).Result
+                .Should()
+                .BeOfType<StatusCodeResult>("all controller methods should return a status code as confirmation")
+                .Subject
+                .StatusCode
+                .Should()
+                .Be((int)HttpStatusCode.NotFound, "a non existing tag cannot be found");
+        }
+
+        [TestMethod]
+        public void GetByTagBadProperties()
+        {
+            var mockResidentsService = new MockResidentsService();
+            var tag = mockResidentsService.MockData[0].Tags.ToList()[0];
+            var selector = new[]
+            {
+                "firstName",
+                "lastame",
+                "birthday"
+            };
+
+            new WebService.Controllers.ResidentsController(mockResidentsService, new ConsoleLogger())
+                .GetAsync(tag, selector).Result
+                .Should()
+                .BeOfType<StatusCodeResult>("all controller methods should return a status code as confirmation")
+                .Subject
+                .StatusCode
+                .Should()
+                .Be((int)HttpStatusCode.BadRequest, "bad properties cannot be found");
+        }
+
+        [TestMethod]
+        public void GetByTagNoProperties()
+        {
+            var mockResidentsService = new MockResidentsService();
+            var tag = mockResidentsService.MockData[0].Tags.ToList()[0];
+            var resident = new WebService.Controllers.ResidentsController(mockResidentsService, new ConsoleLogger())
+                .GetAsync(tag, null).Result
+                .Should()
+                .BeOfType<OkObjectResult>("the controller should return a 200 ok to the client").Subject
+                .Value
+                .Should()
+                .BeAssignableTo<Resident>("a collection of residents is asked").Subject;
+
+            var properties = typeof(Resident).GetProperties();
+
+            foreach (var property in properties)
+                property
+                    .GetValue(resident)
+                    .Should()
+                    .BeEquivalentTo(
+                        property.GetValue(mockResidentsService.MockData[0]),
+                        $"that is the {property.Name} of the resident");
         }
 
         #endregion get
 
-
-        #region create
-
-        [TestMethod]
-        public void CreateNewResident()
-        {
-            var id = new ObjectId().ToString();
-            var resident = new Resident();
-
-            var dataService = new Mock<IDataService>();
-            dataService.Setup(x => x.CreateResident(resident)).Returns(() => id);
-
-
-            new WebService.Controllers.ResidentsController(dataService.Object, new ConsoleLogger())
-                .Create(resident).Should().BeOfType<StatusCodeResult>()
-                .Subject.StatusCode.Should().Be((int) HttpStatusCode.Created);
-        }
-
-        [TestMethod]
-        public void CreateResidentDoesNotExecute()
-        {
-            var resident = new Resident();
-
-            var dataService = new Mock<IDataService>();
-            dataService.Setup(x => x.CreateResident(resident)).Returns(() => null);
-
-            new WebService.Controllers.ResidentsController(dataService.Object, new ConsoleLogger())
-                .Create(resident).Should().BeOfType<StatusCodeResult>()
-                .Subject.StatusCode.Should().Be((int) HttpStatusCode.InternalServerError);
-        }
-
-        [TestMethod]
-        public void CreateResidentThrowsException()
-        {
-            var resident = new Resident();
-
-            var dataService = new Mock<IDataService>();
-            dataService.Setup(x => x.CreateResident(resident)).Returns(() => throw new Exception());
-
-            new WebService.Controllers.ResidentsController(dataService.Object, new ConsoleLogger())
-                .Create(resident).Should().BeOfType<StatusCodeResult>()
-                .Subject.StatusCode.Should().Be((int) HttpStatusCode.InternalServerError);
-        }
-
-        #endregion create
-
-
-        #region delete
-
-        [TestMethod]
-        public void DeleteExistingResident()
-        {
-            var id = new ObjectId();
-
-            var dataService = new Mock<IDataService>();
-            dataService.Setup(x => x.RemoveResident(id)).Returns(() => true);
-
-            new WebService.Controllers.ResidentsController(dataService.Object, new ConsoleLogger())
-                .Delete(id.ToString()).Should().BeOfType<StatusCodeResult>()
-                .Subject.StatusCode.Should().Be((int) HttpStatusCode.OK);
-        }
-
-        [TestMethod]
-        public void DeleteNonExistingResident()
-        {
-            var id = new ObjectId();
-
-            var dataService = new Mock<IDataService>();
-            dataService.Setup(x => x.RemoveResident(id)).Returns(() => false);
-
-            new WebService.Controllers.ResidentsController(dataService.Object, new ConsoleLogger())
-                .Delete(id.ToString()).Should().BeOfType<StatusCodeResult>()
-                .Subject.StatusCode.Should().Be((int) HttpStatusCode.NotFound);
-        }
-
-        [TestMethod]
-        public void DeleteServiceException()
-        {
-            var id = new ObjectId();
-
-            var dataService = new Mock<IDataService>();
-            dataService.Setup(x => x.RemoveResident(id)).Returns(() => throw new Exception());
-
-            new WebService.Controllers.ResidentsController(dataService.Object, new ConsoleLogger())
-                .Delete(id.ToString()).Should().BeOfType<StatusCodeResult>()
-                .Subject.StatusCode.Should().Be((int) HttpStatusCode.InternalServerError);
-        }
-
-        #endregion delete
-
+        
+        
 
         #region update
 
         [TestMethod]
         public void UpdateWithNormalConditions()
         {
-            var dataService = new MockDataService();
-            var resident = new Resident {ID = dataService.MockData[0].ID, FirstName = "Test", LastName = null};
+            var mockResidentsService = new MockResidentsService();
+            var resident = new Resident
+            {
+                Id = mockResidentsService.MockData[0].Id,
+                FirstName = "Test",
+                LastName = null
+            };
 
             var updater = new ResidentUpdater
             {
-                Resident = resident,
+                Value = resident,
                 PropertiesToUpdate = new[] {nameof(Resident.FirstName), nameof(Resident.LastName)}
             };
 
-            new WebService.Controllers.ResidentsController(dataService, new ConsoleLogger())
-                .Update(updater).Should().BeOfType<StatusCodeResult>()
-                .Subject.StatusCode.Should().Be((int) HttpStatusCode.OK);
+            new WebService.Controllers.ResidentsController(mockResidentsService, new ConsoleLogger())
+                .UpdateAsync(updater).Result
+                .Should()
+                .BeOfType<StatusCodeResult>("all controller methods should return a status code as confirmation")
+                .Subject
+                .StatusCode
+                .Should()
+                .Be((int) HttpStatusCode.OK, "if an item is updated, a 200 status should be returned");
         }
 
         [TestMethod]
@@ -230,14 +179,19 @@ namespace WebAPIUnitTests.Controllers
         {
             var updater = new ResidentUpdater
             {
-                Resident = new Resident {ID = new ObjectId(), FirstName = "Test", LastName = null},
+                Value = new Resident {Id = new ObjectId(), FirstName = "Test", LastName = null},
                 PropertiesToUpdate = new[] {nameof(Resident.FirstName), nameof(Resident.LastName)}
             };
 
-            var dataService = new MockDataService();
+            var dataService = new MockResidentsService();
             new WebService.Controllers.ResidentsController(dataService, new ConsoleLogger())
-                .Update(updater).Should().BeOfType<StatusCodeResult>()
-                .Subject.StatusCode.Should().Be((int) HttpStatusCode.Created);
+                .UpdateAsync(updater).Result
+                .Should()
+                .BeOfType<StatusCodeResult>("all controller methods should return a status code as confirmation")
+                .Subject
+                .StatusCode
+                .Should()
+                .Be((int) HttpStatusCode.Created, "if an item is not found, a 404 not found error should be returned");
         }
 
         [TestMethod]
@@ -248,24 +202,36 @@ namespace WebAPIUnitTests.Controllers
                 PropertiesToUpdate = new[] {nameof(Resident.FirstName), nameof(Resident.LastName)}
             };
 
-            var dataService = new MockDataService();
-            new WebService.Controllers.ResidentsController(dataService, new ConsoleLogger())
-                .Update(updater).Should().BeOfType<StatusCodeResult>()
-                .Subject.StatusCode.Should().Be((int) HttpStatusCode.BadRequest);
+            var mockResidentsService = new MockResidentsService();
+            new WebService.Controllers.ResidentsController(mockResidentsService, new ConsoleLogger())
+                .UpdateAsync(updater).Result
+                .Should()
+                .BeOfType<StatusCodeResult>("all controller methods should return a status code as confirmation")
+                .Subject
+                .StatusCode
+                .Should()
+                .Be((int) HttpStatusCode.BadRequest,
+                    "if no item to update is sent, the request is bad and a 400 bad request should be returned");
         }
 
         [TestMethod]
         public void UpdateWithoutPropertiesToUpdate()
         {
-            var dataService = new MockDataService();
+            var dataService = new MockResidentsService();
             var updater = new ResidentUpdater
             {
-                Resident = new Resident {ID = dataService.MockData[0].ID, FirstName = "Test", LastName = null}
+                Value = new Resident {Id = dataService.MockData[0].Id, FirstName = "Test", LastName = null}
             };
 
             new WebService.Controllers.ResidentsController(dataService, new ConsoleLogger())
-                .Update(updater).Should().BeOfType<StatusCodeResult>()
-                .Subject.StatusCode.Should().Be((int) HttpStatusCode.OK);
+                .UpdateAsync(updater).Result
+                .Should()
+                .BeOfType<StatusCodeResult>("all controller methods should return a status code as confirmation")
+                .Subject
+                .StatusCode
+                .Should()
+                .Be((int) HttpStatusCode.OK,
+                    "if the service says it everything is ok, we should return a 200 ok status");
         }
 
         #endregion update

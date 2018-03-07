@@ -1,7 +1,8 @@
 import {StationmanagementComponent} from "./stationmanagement.component"
 import {getBaseUrl} from "../../app.module.browser";
-import {RenderBuffer} from "./RenderBuffer";
+import {bufferelement, RenderBuffer} from "./RenderBuffer";
 import {Position} from "../../models/station"
+declare var $: any
 export class MouseEvents{
     station:StationmanagementComponent;
     canvas : HTMLCanvasElement;
@@ -18,6 +19,7 @@ export class MouseEvents{
         //load in variables from the stationmanagement component
         this.station=station;
         this.canvas=this.station.canvas;
+        
         //ad listeners
         this.canvas.addEventListener("mousemove",(ev => this.mouseMove(ev)));
         this.canvas.addEventListener("contextmenu",ev =>  this.rightClick(ev));
@@ -44,12 +46,41 @@ export class MouseEvents{
             this.station.tick();
         }
         
-        this.mousepos={x:e.layerX,y:e.layerY};
+        this.mousepos={x:e.x,y:e.y};
         if (this.station.adMarker){
             this.station.tick();
         }
         
         
+    }
+    
+    
+    async collisionDetectionWithClass(className:string){
+        let buffer = this.station.renderBuffer.buffer;
+        let bufferElement:bufferelement;
+        let mousepos=this.mousepos;
+        if (mousepos==undefined) return null;
+        
+        for (bufferElement of buffer){
+            if (!(bufferElement.className==className)) continue;
+            
+            if (
+                //check if mouse position is coliding in x axis
+                (mousepos.x> bufferElement.x && mousepos.x< (bufferElement.x+bufferElement.width))
+                &&
+                // check if mouse position is coliding in y axis
+                (mousepos.y> bufferElement.y && mousepos.y< (bufferElement.y+bufferElement.height))
+                
+            )
+            {
+                
+                return bufferElement;
+            }
+        }
+        
+        
+        
+        return null;
     }
     
     async calculateMousePosOnImage(mousePos:Point){
@@ -75,14 +106,25 @@ export class MouseEvents{
         
     }
     async mouseDown(e:MouseEvent){
+        
+        
         //start calcutating mapmoving if admarker button isn't clicked
         if (!this.station.adMarker){
+            
+            this.mousepos={x:e.x,y:e.y};
+            this.station.collidingElement= await this.collisionDetectionWithClass("marker");
+            
+            //check if coliding, if so show box message on click
+            if (this.station.collidingElement!=null) {
+                this.station.deleteModal();
+                return;
+            }
             //start tracking
             this.clicked=true;
             //set the x/y of current for comparison on the next frame
             this.screenPos = {x:e.screenX,y:e.screenY};
         }else{
-            let mouseposition = await this.calculateMousePosOnImage({x:e.layerX,y:e.layerY});
+            let mouseposition = await this.calculateMousePosOnImage({x:e.x,y:e.y});
             this.station.saveStationToDatabaseModal(mouseposition)
             
         }

@@ -6,10 +6,10 @@ using System.Reflection;
 using System.Threading.Tasks;
 using MongoDB.Bson;
 using MongoDB.Driver;
-using WebService.Helpers;
+using WebService.Helpers.Extensions;
 using WebService.Models.Bases;
 
-namespace WebService.Services.Data
+namespace WebService.Services.Data.Mongo
 {
     public abstract class AMongoDataService<T> : IDataService<T> where T : IModelWithID
     {
@@ -25,7 +25,44 @@ namespace WebService.Services.Data
 
         #region METHDOS
 
-        /// <inheritdoc cref="IDataService{T}.GetAsync" />
+        /// <inheritdoc cref="IDataService{T}.GetAsync(ObjectId,IEnumerable{Expression{System.Func{T,object}}})" />
+        /// <summary>
+        /// GetAsync returns the <see cref="T"/> with the given id from the database. 
+        /// <para/>
+        /// It only fills the properties passed in the <see cref="propertiesToInclude"/> parameter. The id is always passed and 
+        /// if the <see cref="propertiesToInclude"/> parameter is null (which it is by default), all the properties are included. 
+        /// </summary>
+        /// <param name="id">is the id of the item that needs to be fetched</param>
+        /// <param name="propertiesToInclude">are the properties that should be included in the objects</param>
+        /// <returns>An <see cref="IEnumerable{T}"/> filled with all the ts in the database.</returns>
+        public async Task<T> GetAsync(ObjectId id, IEnumerable<Expression<Func<T, object>>> propertiesToInclude = null)
+        {
+            // get the item with the given mac address
+            var foundItem = MongoCollection.Find(x => x.Id == id);
+
+            // convert the properties to include to a list (if not null)
+            var properties = propertiesToInclude?.ToList();
+            // if the proeprties are null or there are none, return all the properties
+            if (EnumerableExtensions.IsNullOrEmpty(properties))
+                return await foundItem.FirstOrDefaultAsync();
+
+            // create a propertyfilter
+            var selector = Builders<T>.Projection.Include(x => x.Id);
+
+            //ReSharper disable once PossibleNullReferenceException
+            // iterate over all the properties and add them to the filter
+            foreach (var property in properties)
+                selector = selector.Include(property);
+
+            // return the item
+            return await foundItem
+                // filter the properties
+                .Project<T>(selector)
+                // execute the query
+                .FirstOrDefaultAsync();
+        }
+
+        /// <inheritdoc cref="IDataService{T}.GetAsync(IEnumerable{Expression{System.Func{T,object}}})" />
         /// <summary>
         /// Get returns all the items from the database. 
         /// <para />
@@ -47,7 +84,7 @@ namespace WebService.Services.Data
                 return await foundItems.ToListAsync();
 
             // create a propertyfilter
-            var selector = Builders<T>.Projection.Include(x => x.ID);
+            var selector = Builders<T>.Projection.Include(x => x.Id);
 
             //ReSharper disable once PossibleNullReferenceException
             // iterate over all the properties and add them to the filter
@@ -76,16 +113,16 @@ namespace WebService.Services.Data
         public async Task<string> CreateAsync(T item)
         {
             // create a new id for the new item
-            item.ID = ObjectId.GenerateNewId();
+            item.Id = ObjectId.GenerateNewId();
             // save the new item to the database
             await MongoCollection.InsertOneAsync(item);
 
             // check if the new item was created
             return MongoCollection
-                       .Find(x => x.ID == item.ID)
+                       .Find(x => x.Id == item.Id)
                        .FirstOrDefaultAsync() != null
                 // if it is, return the id
-                ? item.ID.ToString()
+                ? item.Id.ToString()
                 // else return null
                 : null;
         }
@@ -102,7 +139,7 @@ namespace WebService.Services.Data
         public async Task<bool> RemoveAsync(ObjectId id)
         {
             // remove the document from the database with the given id
-            var result = await MongoCollection.DeleteOneAsync(x => x.ID == id);
+            var result = await MongoCollection.DeleteOneAsync(x => x.Id == id);
             // return true if something acutaly happened
             return result.IsAcknowledged && result.DeletedCount > 0;
         }
@@ -126,23 +163,23 @@ namespace WebService.Services.Data
             if (EnumerableExtensions.IsNullOrEmpty(propertiesToUpdateList))
             {
                 // if there are no properties in the liest, replace the document
-                var replaceOneResult = await MongoCollection.ReplaceOneAsync(x => x.ID == newItem.ID, newItem);
+                var replaceOneResult = await MongoCollection.ReplaceOneAsync(x => x.Id == newItem.Id, newItem);
                 // check if something was replaced
                 return replaceOneResult.IsAcknowledged && replaceOneResult.ModifiedCount > 0
                     // if something was replaced, return the new newItem
                     ? await MongoCollection
-                        .Find(x => x.ID == newItem.ID)
+                        .Find(x => x.Id == newItem.Id)
                         .FirstOrDefaultAsync()
                     // else return null
                     : default(T);
             }
 
             // create a filter that filters on id
-            var filter = Builders<T>.Filter.Eq(x => x.ID, newItem.ID);
+            var filter = Builders<T>.Filter.Eq(x => x.Id, newItem.Id);
 
             // create an update definition.
             // since there needs to be an updateDefinition to start from, update the id, that is the same for the old an new object
-            var update = Builders<T>.Update.Set(x => x.ID, newItem.ID);
+            var update = Builders<T>.Update.Set(x => x.Id, newItem.Id);
 
             // ReSharper disable once PossibleNullReferenceException
             // iterate over all the properties that need to be updated
@@ -168,7 +205,7 @@ namespace WebService.Services.Data
             return updateResult.IsAcknowledged
                 // if something was updated, return the new newItem
                 ? await MongoCollection
-                    .Find(x => x.ID == newItem.ID)
+                    .Find(x => x.Id == newItem.Id)
                     .FirstOrDefaultAsync()
                 // else return null;
                 : default(T);
