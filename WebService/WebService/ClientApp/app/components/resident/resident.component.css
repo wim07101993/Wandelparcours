@@ -33,3 +33,13 @@ input.ng-invalid.ng-touched{
 .card .card-image .card-title{
     padding: 12px;
 }
+
+thead{
+    font-weight: bold;
+}
+input[type=text]:not(.browser-default){
+    margin-bottom: 0px;
+}
+.myCol {
+    padding-left: 0px;
+}
