@@ -15,13 +15,23 @@ import { HeaderComponent } from './components/header/header.component';
 import { SidenavComponent } from './components/sidenav/sidenav.component';
 import { ResidentComponent } from './components/resident/resident.component';
 import { Ng2SearchPipeModule } from 'ng2-search-filter';
-import { MediaComponent } from './components/media/media.component';
-//import { RestServiceService } from './service/rest-service.service';
+import { SeniorComponent } from './components/senior/senior.component';
+import { PictureComponent } from './components/senior/media/picture/picture.component';
+import { AudioComponent } from './components/senior/media/audio/audio.component';
+import { VideoComponent } from './components/senior/media/video/video.component';
+import { GameComponent } from './components/senior/media/game/game.component';
+import { TrackingComponent } from './components/senior/tracking/tracking.component';
+import { PersonaliaComponent } from './components/senior/personalia/personalia.component';
 
 const appRoutes: Routes = [
     { path: '', redirectTo: 'resident', pathMatch: 'full' },
     { path: 'resident', component: ResidentComponent },
-    { path: 'resident/:id', component: MediaComponent },
+    { path: 'resident/:id', component: PersonaliaComponent },
+    { path: 'resident/:id/picture', component: PictureComponent },
+    { path: 'resident/:id/video', component: VideoComponent },
+    { path: 'resident/:id/audio', component: AudioComponent },
+    { path: 'resident/:id/game', component: GameComponent },
+    { path: 'resident/:id/tracking', component: TrackingComponent },
     { path: 'counter', component: CounterComponent },
     { path: 'fetch-data', component: FetchDataComponent },
     { path: 'stationmanagement', component: StationmanagementComponent },
@@ -41,7 +51,13 @@ const appRoutes: Routes = [
         HeaderComponent,
         ResidentComponent,
         StationmanagementComponent,
-        MediaComponent,
+        SeniorComponent,
+        PictureComponent,
+        AudioComponent,
+        VideoComponent,
+        GameComponent,
+        TrackingComponent,
+        PersonaliaComponent,
     ],
     imports: [
         CommonModule,
@@ -50,7 +66,6 @@ const appRoutes: Routes = [
         FormsModule,
         RouterModule.forRoot(appRoutes)
     ]
-    //providers: [RestServiceService]
 })
 export class AppModuleShared {
 }
