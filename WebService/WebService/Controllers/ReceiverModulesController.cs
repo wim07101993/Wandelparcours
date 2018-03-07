@@ -105,7 +105,12 @@ namespace WebService.Controllers
         /// </returns>
         [HttpPost]
         public override async Task<IActionResult> CreateAsync([FromBody] ReceiverModule item)
-            => await base.CreateAsync(item);
+        {
+            item.Position.TimeStamp=DateTime.Now;
+            return await base.CreateAsync(item);    
+        }
+
+        
 
         /// <inheritdoc cref="ARestControllerBase{T}.DeleteAsync" />
         /// <summary>

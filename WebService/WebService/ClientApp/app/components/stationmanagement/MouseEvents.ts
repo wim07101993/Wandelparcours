@@ -124,7 +124,7 @@ export class MouseEvents{
             //set the x/y of current for comparison on the next frame
             this.screenPos = {x:e.screenX,y:e.screenY};
         }else{
-            let mouseposition = await this.calculateMousePosOnImage({x:e.layerX,y:e.layerY});
+            let mouseposition = await this.calculateMousePosOnImage({x:e.x,y:e.y});
             this.station.saveStationToDatabaseModal(mouseposition)
             
         }

@@ -44,6 +44,7 @@ export class StationmanagementComponent implements OnInit {
         let mac =this.saveStation.mac;
         console.log(mac);
         if (reg.test(mac)){
+            
             await this.saveStationToDatabase(this.saveStation);
             this.stations = await this.loadStations();
             this.saveStation=new Station();
@@ -297,6 +298,7 @@ export class StationmanagementComponent implements OnInit {
                 }
             )
         });
+        
     }
 
 
@@ -321,6 +323,7 @@ async loadStations(){
 
     async deleteCurrentStation() {
         await this.deleteStation(this.collidingElement.id);
-        this.stations=await this.loadStations()
+        this.stations=await this.loadStations();
+        $("#deleteModal").modal("close");
     }
 }
