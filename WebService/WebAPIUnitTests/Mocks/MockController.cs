@@ -15,7 +15,7 @@ namespace WebAPIUnitTests.Mocks
         {
         }
 
-        public override IEnumerable<Expression<Func<MockEntity, object>>> PropertiesToSendOnGet { get; } = null;
+        public override IEnumerable<Expression<Func<MockEntity, object>>> PropertiesToSendOnGetAll { get; } = null;
 
         public override IEnumerable<Expression<Func<MockEntity, object>>> ConvertStringsToSelectors(
             IEnumerable<string> strings)

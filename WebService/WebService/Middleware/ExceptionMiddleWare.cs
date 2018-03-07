@@ -59,7 +59,7 @@ namespace WebService.Middleware
                 await _next.Invoke(context);
             }
             // check for bad arguments by the client
-            catch (WebArgumetnException e)
+            catch (WebArgumentException e)
             {
                 // respond with a 400 bad request status code
                 context.Response.StatusCode = (int) HttpStatusCode.BadRequest;

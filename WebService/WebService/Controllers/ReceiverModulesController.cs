@@ -37,7 +37,7 @@ namespace WebService.Controllers
         /// SmallDataProperties is a collection of expressions to select the properties that
         /// consume the least space (FirstName, LastName, Room Birthday and Doctor).
         /// </summary>
-        public override IEnumerable<Expression<Func<ReceiverModule, object>>> PropertiesToSendOnGet { get; } = null;
+        public override IEnumerable<Expression<Func<ReceiverModule, object>>> PropertiesToSendOnGetAll { get; } = null;
 
 
         public override IEnumerable<Expression<Func<ReceiverModule, object>>> ConvertStringsToSelectors(
@@ -51,7 +51,7 @@ namespace WebService.Controllers
         /// Get is the method corresponding to the GET method of the controller of the REST service.
         /// <para/>
         /// It returns all the Items in the database wrapped in an <see cref="IActionResult"/>. To limit data traffic it is possible to
-        /// select only a number of properties by default. These properties are selected with the <see cref="PropertiesToSendOnGet"/> property.
+        /// select only a number of properties by default. These properties are selected with the <see cref="PropertiesToSendOnGetAll"/> property.
         /// </summary>
         /// <returns>
         /// - Status ok (200) with An IEnumerable of all the Items in the database on success

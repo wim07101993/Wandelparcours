@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Bson;
 using WebService.Controllers.Bases;
+using WebService.Helpers.Exceptions;
 using WebService.Helpers.Extensions;
 using WebService.Services.Logging;
 using WebService.Models;
@@ -47,7 +48,7 @@ namespace WebService.Controllers
         /// SmallDataProperties is a collection of expressions to select the properties that
         /// consume the least space (FirstName, LastName, Room Birthday and Doctor).
         /// </summary>
-        public override IEnumerable<Expression<Func<Resident, object>>> PropertiesToSendOnGet { get; }
+        public override IEnumerable<Expression<Func<Resident, object>>> PropertiesToSendOnGetAll { get; }
             = new Expression<Func<Resident, object>>[]
             {
                 // specify the fields that need to be returned
@@ -103,8 +104,8 @@ namespace WebService.Controllers
                 else if (propertyName.EqualsWithCamelCasing(nameof(Resident.Videos)))
                     selectors.Add(x => x.Videos);
                 else
-                    throw new ArgumentException(nameof(strings),
-                        $"Property {propertyName} cannot be found on {typeof(Resident).Name}");
+                    throw new WebArgumentException(
+                        $"Property {propertyName} cannot be found on {typeof(Resident).Name}", nameof(strings));
             }
 
             return selectors;
@@ -134,7 +135,7 @@ namespace WebService.Controllers
         /// Get is the method corresponding to the GET method of the controller of the REST service.
         /// <para />
         /// It returns all the Items in the database wrapped in an <see cref="IActionResult" />. To limit data traffic it is possible to
-        /// select only a number of properties by default. These properties are selected with the <see cref="PropertiesToSendOnGet" /> property.
+        /// select only a number of properties by default. These properties are selected with the <see cref="PropertiesToSendOnGetAll" /> property.
         /// </summary>
         /// <returns>
         /// - Status ok (200) with An IEnumerable of all the Items in the database on success
