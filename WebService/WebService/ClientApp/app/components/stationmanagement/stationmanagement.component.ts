@@ -109,7 +109,7 @@ export class StationmanagementComponent implements OnInit {
         }
         
         
-            console.log(this.collidingElement);
+            
             $("#deleteModal").modal();
             $("#deleteModal").modal("open");
         
@@ -281,7 +281,23 @@ export class StationmanagementComponent implements OnInit {
         });
     }
 
+    async deleteStation(mac:string){
+        return new Promise(resolve => {
 
+            this.http.delete("http://localhost:5000/api/v1/receivermodules/"+mac).subscribe(response => {
+                    try{
+                        resolve("success");
+                    }catch (e){
+                        resolve("error");
+                    }
+
+                },
+                error =>{
+                    resolve("error");
+                }
+            )
+        });
+    }
 
 
 async loadStations(){
@@ -303,4 +319,8 @@ async loadStations(){
         });
   }
 
+    async deleteCurrentStation() {
+        await this.deleteStation(this.collidingElement.id);
+        this.stations=await this.loadStations()
+    }
 }
