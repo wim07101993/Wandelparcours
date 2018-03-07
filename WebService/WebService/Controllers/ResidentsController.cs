@@ -47,15 +47,16 @@ namespace WebService.Controllers
         /// SmallDataProperties is a collection of expressions to select the properties that
         /// consume the least space (FirstName, LastName, Room Birthday and Doctor).
         /// </summary>
-        public override Expression<Func<Resident, object>>[] PropertiesToSendOnGet { get; } =
-        {
-            // specify the fields that need to be returned
-            x => x.FirstName,
-            x => x.LastName,
-            x => x.Room,
-            x => x.Birthday,
-            x => x.Doctor,
-        };
+        public override IEnumerable<Expression<Func<Resident, object>>> PropertiesToSendOnGet { get; }
+            = new Expression<Func<Resident, object>>[]
+            {
+                // specify the fields that need to be returned
+                x => x.FirstName,
+                x => x.LastName,
+                x => x.Room,
+                x => x.Birthday,
+                x => x.Doctor,
+            };
 
         /// <inheritdoc cref="ARestControllerBase{T}.ConvertStringsToSelectors" />
         /// <summary>
@@ -140,8 +141,8 @@ namespace WebService.Controllers
         /// - Status internal server (500) error when an error occures
         /// </returns>
         [HttpGet]
-        public override async Task<IActionResult> GetAsync()
-            => await base.GetAsync();
+        public override async Task<IActionResult> GetAsync([FromQuery] string[] properties)
+            => await base.GetAsync(properties);
 
         /// <inheritdoc cref="IResidentsController.GetAsync(int, string[])" />
         /// <summary>
@@ -302,9 +303,7 @@ namespace WebService.Controllers
 
         /// <inheritdoc cref="ARestControllerBase{T}.DeleteAsync" />
         /// <summary>
-        /// Delete is the method corresonding to the DELETE method of the controller of the REST service.
-        /// <para />
-        /// It saves the passed <see cref="Resident" /> to the database.
+        /// Delete deletes the passed <see cref="Resident" /> from the database.
         /// </summary>
         /// <param name="id">is the id of the <see cref="Resident" /> to remove from the database</param>
         /// <returns>
@@ -316,6 +315,12 @@ namespace WebService.Controllers
         public override async Task<IActionResult> DeleteAsync(string id)
             => await base.DeleteAsync(id);
 
+        /// <summary>
+        /// RemoveVideoAsync is the method corre
+        /// </summary>
+        /// <param name="residentId"></param>
+        /// <param name="mediaId"></param>
+        /// <returns></returns>
         [HttpPost("{residentId}/Music")]
         public async Task<IActionResult> RemoveVideoAsync(string residentId, string mediaId)
             => await RemoveMediaAsync(residentId, mediaId, EMediaType.Audio);

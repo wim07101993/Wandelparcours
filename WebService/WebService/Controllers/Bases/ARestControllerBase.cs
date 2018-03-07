@@ -54,7 +54,7 @@ namespace WebService.Controllers.Bases
 
         #region PROPERTIES
 
-        public abstract Expression<Func<T, object>>[] PropertiesToSendOnGet { get; }
+        public abstract IEnumerable<Expression<Func<T, object>>> PropertiesToSendOnGet { get; }
 
         #endregion PROPERTIES
 
@@ -136,12 +136,29 @@ namespace WebService.Controllers.Bases
         /// - Status ok (200) with An IEnumerable of all the Items in the database on success
         /// - Status internal server (500) error when an error occures
         /// </returns>
-        public virtual async Task<IActionResult> GetAsync()
+        public virtual async Task<IActionResult> GetAsync([FromQuery] string[] properties)
         {
             try
             {
+                var selectors = PropertiesToSendOnGet;
+
+                if (!EnumerableExtensions.IsNullOrEmpty(properties))
+                    try
+                    {
+                        // try converting the propertie names to selectors
+                        selectors = ConvertStringsToSelectors(properties);
+                    }
+                    catch (ArgumentException)
+                    {
+                        // if it fails because of a bad argument (properties cannot be found)
+                        // return a 400 error
+                        return StatusCode((int) HttpStatusCode.BadRequest);
+                    }
+
+
                 // get the values from the data service
-                var items = await DataService.GetAsync(PropertiesToSendOnGet);
+                var items = await DataService.GetAsync(selectors);
+
                 // return the values wrapped in a 200 response 
                 return Ok(items);
             }
@@ -221,7 +238,7 @@ namespace WebService.Controllers.Bases
                 return StatusCode((int) HttpStatusCode.InternalServerError);
             }
         }
-        
+
         /// <inheritdoc cref="IRestController{T}.UpdateAsync" />
         /// <summary>
         /// Update is the method corresponding to the PUT method of the controller of the REST service.

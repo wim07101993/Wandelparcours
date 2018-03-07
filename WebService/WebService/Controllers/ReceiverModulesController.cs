@@ -37,7 +37,7 @@ namespace WebService.Controllers
         /// SmallDataProperties is a collection of expressions to select the properties that
         /// consume the least space (FirstName, LastName, Room Birthday and Doctor).
         /// </summary>
-        public override Expression<Func<ReceiverModule, object>>[] PropertiesToSendOnGet { get; } = null;
+        public override IEnumerable<Expression<Func<ReceiverModule, object>>> PropertiesToSendOnGet { get; } = null;
 
 
         public override IEnumerable<Expression<Func<ReceiverModule, object>>> ConvertStringsToSelectors(
@@ -58,8 +58,8 @@ namespace WebService.Controllers
         /// - Status internal server (500) error when an error occures
         /// </returns>
         [HttpGet]
-        public override async Task<IActionResult> GetAsync()
-            => await base.GetAsync();
+        public override async Task<IActionResult> GetAsync([FromQuery] string[] properties)
+            => await base.GetAsync(properties);
 
         /// <summary>
         /// Get is the method corresponding to the GET method of the controller of the REST service.

@@ -26,7 +26,7 @@ namespace WebAPIUnitTests.Controllers
             var dataService = new MockDataService();
 
             new MockController(dataService, new ConsoleLogger())
-                .GetAsync().Result
+                .GetAsync(null).Result
                 .Should()
                 .BeOfType<OkObjectResult>("the controller should return a 200 ok to the client").Subject
                 .Value
