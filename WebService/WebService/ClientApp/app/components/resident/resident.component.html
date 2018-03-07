@@ -1,17 +1,17 @@
 <div class="row myRow">
 
-    <div class="col s2 myCol">
+    <div class="col s1 myCol">
         <a class="btn-floating btn-large waves-effect waves-light blue" (click)="view='list-view'" *ngIf="view=='card-view'"><i class="material-icons pointer">view_list</i></a>
         <a class="btn-floating btn-large waves-effect waves-light blue" (click)="view='card-view'" *ngIf="view=='list-view'"><i class="material-icons pointer" >view_comfy</i></a>
     </div>
     
-    <div class="col s9" *ngIf="search">
+    <div class="col s10" *ngIf="search">
         <input id="focusToInput" type="text" [(ngModel)]="term" placeholder="Zoek..." autofocus>
     </div>
     
     <div class="col s1 offsetsearchButton">
-        <a class="btn-floating btn-large waves-effect waves-light red right" *ngIf="!search" (click)="search=!search;focusInput()"><i class="material-icons">search</i></a>
-        <a class="btn-floating btn-large waves-effect waves-light blue right" *ngIf="search" (click)="search=!search">
+        <a class="btn-floating btn-large waves-effect waves-light amber darken-2" *ngIf="!search" (click)="search=!search;focusInput()"><i class="material-icons">search</i></a>
+        <a class="btn-floating btn-large waves-effect waves-light amber darken-4 right" *ngIf="search" (click)="search=!search">
             <i class="material-icons">zoom_out</i></a>
     </div>
 
@@ -19,30 +19,41 @@
 
 <!--Switch to cardview-->
 <div class="row" *ngIf="view=='card-view'">
-    <div class="col s6 m4 l3" *ngFor="let resident of residents | filter:term">
+    <div class="col s6 m4 l4" *ngFor="let resident of residents | filter:term">
         <div class="card">
-            <div class="card-image">
-                <img src="/images/boss.png">
-                <span class="card-title">{{resident.firstName}}, {{resident.lastName}} </span>
-            </div>
             <div class="card-content">
-                <p>
-                    Kamer: {{resident.room}}
-                </p>
-                <p>
-                    Geboortedatum: {{resident.birthday | date:'dd-MM-yyyy'}}
-                </p>
-                <p>
-                    Huisarts: {{resident.doctor.name}} <br /> Tel: {{resident.doctor.phoneNumber}}
-                </p>
+                <table>
+                    <tr>
+                        <td colspan="2" class="cardviewtd center">{{resident.firstName}}, {{resident.lastName}}</td>
+                    </tr>
+                    <tr>
+                        <th class="cardviewtd right">kamer:</th>
+                        <td class="cardviewtd">{{resident.room}}</td>
+                    </tr>
+                    <tr>
+                        <th class="cardviewtd right">gebdatum:</th>
+                        <td class="cardviewtd">{{resident.birthday | date:'dd-MM-yyyy'}}</td>
+                    </tr>
+                    <tr>
+                        <th class="cardviewtd right">huisarts:</th>
+                        <td class="cardviewtd">{{resident.doctor.name}}</td>
+                    </tr>
+                    <tr>
+                        <th class="cardviewtd right">tel:</th>
+                        <td class="cardviewtd">{{resident.doctor.phoneNumber}}</td>
+                    </tr>
+                </table>
             </div>
             <div class="crd">
                 <div class="row">
-                    <div class="col s6 left">
-                        <i class="material-icons blue-text pointer left" (click)="openEditModal(resident);focusInput2()">edit</i>
+                    <div class="col s4 center">
+                        <i class="material-icons blue-text pointer" (click)="openEditModal(resident);focusInput2()">edit</i>
                     </div>
-                    <div class="col s6 right">
-                        <i class="material-icons red-text pointer right" (click)="openModal(resident)">clear</i>
+                    <div class="col s4 center">
+                        <i class="material-icons orange-text pointer">portrait</i>
+                    </div>
+                    <div class="col s4 center">
+                        <i class="material-icons red-text pointer" (click)="openModal(resident)">delete</i>
                     </div>
                 </div>
             </div>

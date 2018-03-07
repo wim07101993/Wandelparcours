@@ -43,3 +43,12 @@ input[type=text]:not(.browser-default){
 .myCol {
     padding-left: 0px;
 }
+
+td.cardviewtd, th.cardviewtd{
+    padding-top:5px;
+    padding-bottom: 5px;
+}
+
+.col:nth-child(odd) .card{
+    background-color: rgba(0,0,0, 0.1);
+}
