@@ -5,6 +5,6 @@ namespace WebService.Models.Bases
     public class AUpdater<T>
     {
         public T Value { get; set; }
-        public IEnumerable<string> PropertiesToUpdate { get; set; }
+        public string[] PropertiesToUpdate { get; set; }
     }
 }

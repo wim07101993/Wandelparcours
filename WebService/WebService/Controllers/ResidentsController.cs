@@ -5,6 +5,7 @@ using System.Linq.Expressions;
 using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using MongoDB.Bson;
 using WebService.Controllers.Bases;
 using WebService.Helpers.Extensions;
 using WebService.Services.Logging;
@@ -14,7 +15,7 @@ using WebService.Services.Data;
 
 namespace WebService.Controllers
 {
-    /// <inheritdoc cref="Controller"/>
+    /// <inheritdoc cref="ARestControllerBase{T}"/>
     /// <summary>
     /// ResidentsController is a controller for the REST service.
     /// <para />
@@ -22,7 +23,7 @@ namespace WebService.Controllers
     /// </summary>
     [Route("api/v1/[controller]")]
     [SuppressMessage("ReSharper", "SpecifyACultureInStringConversionExplicitly")]
-    public class ResidentsController : ARestControllerBase<Resident>
+    public class ResidentsController : ARestControllerBase<Resident>, IResidentsController
     {
         #region CONSTRUCTOR
 
@@ -55,7 +56,6 @@ namespace WebService.Controllers
             x => x.Birthday,
             x => x.Doctor,
         };
-
 
         /// <inheritdoc cref="ARestControllerBase{T}.ConvertStringsToSelectors" />
         /// <summary>
@@ -109,6 +109,8 @@ namespace WebService.Controllers
             return selectors;
         }
 
+        #region get (read)
+
         /// <inheritdoc cref="ARestControllerBase{T}.GetAsync(string,string[])" />
         /// <summary>
         /// Get is the method corresponding to the GET method of the controller of the REST service.
@@ -123,7 +125,7 @@ namespace WebService.Controllers
         /// - Status internal server error (500) when an error occures
         /// </returns>
         [HttpGet("{id}")]
-        public override async Task<IActionResult> GetAsync(string id, string[] properties)
+        public override async Task<IActionResult> GetAsync(string id, [FromQuery] string[] properties)
             => await base.GetAsync(id, properties);
 
         /// <inheritdoc cref="ARestControllerBase{T}.GetAsync()" />
@@ -141,6 +143,7 @@ namespace WebService.Controllers
         public override async Task<IActionResult> GetAsync()
             => await base.GetAsync();
 
+        /// <inheritdoc cref="IResidentsController.GetAsync(int, string[])" />
         /// <summary>
         /// Get is the method corresponding to the GET method of the controller of the REST service.
         /// <para />
@@ -154,7 +157,7 @@ namespace WebService.Controllers
         /// - Status internal server error (500) when an error occures
         /// </returns>
         [HttpGet("byTag/{tag}")]
-        public async Task<IActionResult> GetAsync(int tag, string[] properties)
+        public async Task<IActionResult> GetAsync(int tag, [FromQuery] string[] properties)
         {
             //create selectors
             IEnumerable<Expression<Func<Resident, object>>> selectors = null;
@@ -169,7 +172,7 @@ namespace WebService.Controllers
                 {
                     // if it fails because of a bad argument (properties cannot be found)
                     // return a 400 error
-                    return StatusCode((int)HttpStatusCode.BadRequest);
+                    return StatusCode((int) HttpStatusCode.BadRequest);
                 }
 
             try
@@ -179,18 +182,22 @@ namespace WebService.Controllers
 
                 return item == null
                     // if the item is null, return a 404
-                    ? StatusCode((int)HttpStatusCode.NotFound)
+                    ? StatusCode((int) HttpStatusCode.NotFound)
                     // else return the values wrapped in a 200 response 
-                    : (IActionResult)Ok(item);
+                    : (IActionResult) Ok(item);
             }
             catch (Exception e)
             {
                 // log the exception
                 Logger.Log(this, ELogLevel.Error, e);
                 // return a 500 error to the client
-                return StatusCode((int)HttpStatusCode.InternalServerError);
+                return StatusCode((int) HttpStatusCode.InternalServerError);
             }
         }
+
+        #endregion get (read)
+
+        #region post (create)
 
         /// <inheritdoc cref="ARestControllerBase{T}.CreateAsync" />
         /// <summary>
@@ -206,6 +213,92 @@ namespace WebService.Controllers
         [HttpPost]
         public override async Task<IActionResult> CreateAsync([FromBody] Resident item)
             => await base.CreateAsync(item);
+
+        [HttpPost("{residentId}/Music")]
+        public async Task<IActionResult> AddMusicAsync(string residentId, [FromBody] byte[] data)
+            => await AddMediaAsync(residentId, data, EMediaType.Audio);
+
+        [HttpPost("{residentId}/Music")]
+        public async Task<IActionResult> AddMusicAsync(string residentId, [FromBody] string url)
+            => await AddMediaAsync(residentId, url, EMediaType.Audio);
+
+        [HttpPost("{residentId}/Videos")]
+        public async Task<IActionResult> AddVideoAsync(string residentId, byte[] data)
+            => await AddMediaAsync(residentId, data, EMediaType.Video);
+
+        [HttpPost("{residentId}/Videos")]
+        public async Task<IActionResult> AddVideoAsync(string residentId, string url)
+            => await AddMediaAsync(residentId, url, EMediaType.Video);
+
+        [HttpPost("{residentId}/Images")]
+        public async Task<IActionResult> AddImageAsync(string residentId, byte[] data)
+            => await AddMediaAsync(residentId, data, EMediaType.Image);
+
+        [HttpPost("{residentId}/Images")]
+        public async Task<IActionResult> AddImageAsync(string residentId, string url)
+            => await AddMediaAsync(residentId, url, EMediaType.Image);
+
+        [HttpPost("{residentId}/Colors")]
+        public async Task<IActionResult> AddColorAsync(string residentId, byte[] data)
+            => await AddMediaAsync(residentId, data, EMediaType.Color);
+
+        [HttpPost("{residentId}/Colors")]
+        public async Task<IActionResult> AddColorAsync(string residentId, string url)
+            => await AddMediaAsync(residentId, url, EMediaType.Color);
+
+        private async Task<IActionResult> AddMediaAsync(string residentId, byte[] data, EMediaType mediaType)
+        {
+            // parse the id
+            if (!ObjectId.TryParse(residentId, out var residentObjectId))
+                // if it fails, return a 404
+                return StatusCode((int) HttpStatusCode.NotFound);
+
+            try
+            {
+                // use the data service to create a new updater
+                return await ((IResidentsService) DataService).AddMediaAsync(residentObjectId, data, mediaType)
+                    // if the updater was created return satus created
+                    ? StatusCode((int) HttpStatusCode.OK)
+                    // if the updater was not created return status not modified
+                    : StatusCode((int) HttpStatusCode.NotFound);
+            }
+            catch (Exception e)
+            {
+                // log the error
+                Logger.Log(this, ELogLevel.Error, e);
+                // return a 500 internal server error code
+                return StatusCode((int) HttpStatusCode.InternalServerError);
+            }
+        }
+
+        private async Task<IActionResult> AddMediaAsync(string residentId, string url, EMediaType mediaType)
+        {
+            // parse the id
+            if (!ObjectId.TryParse(residentId, out var residentObjectId))
+                // if it fails, return a 404
+                return StatusCode((int) HttpStatusCode.NotFound);
+
+            try
+            {
+                // use the data service to create a new updater
+                return await ((IResidentsService) DataService).AddMediaAsync(residentObjectId, url, mediaType)
+                    // if the updater was created return satus created
+                    ? StatusCode((int) HttpStatusCode.OK)
+                    // if the updater was not created return status not modified
+                    : StatusCode((int) HttpStatusCode.NotFound);
+            }
+            catch (Exception e)
+            {
+                // log the error
+                Logger.Log(this, ELogLevel.Error, e);
+                // return a 500 internal server error code
+                return StatusCode((int) HttpStatusCode.InternalServerError);
+            }
+        }
+
+        #endregion post (create)
+
+        #region delete
 
         /// <inheritdoc cref="ARestControllerBase{T}.DeleteAsync" />
         /// <summary>
@@ -223,7 +316,56 @@ namespace WebService.Controllers
         public override async Task<IActionResult> DeleteAsync(string id)
             => await base.DeleteAsync(id);
 
-        /// <inheritdoc cref="ARestControllerBase{T}.UpdateAsync(AUpdater{T})" />
+        [HttpPost("{residentId}/Music")]
+        public async Task<IActionResult> RemoveVideoAsync(string residentId, string mediaId)
+            => await RemoveMediaAsync(residentId, mediaId, EMediaType.Audio);
+
+        [HttpPost("{residentId}/Videos")]
+        public async Task<IActionResult> RemoveMusicAsync(string residentId, string mediaId)
+            => await RemoveMediaAsync(residentId, mediaId, EMediaType.Video);
+
+        [HttpPost("{residentId}/Images")]
+        public async Task<IActionResult> RemoveImageAsync(string residentId, string mediaId)
+            => await RemoveMediaAsync(residentId, mediaId, EMediaType.Image);
+
+        [HttpPost("{residentId}/Colors")]
+        public async Task<IActionResult> RemoveColorAsync(string residentId, string mediaId)
+            => await RemoveMediaAsync(residentId, mediaId, EMediaType.Color);
+
+        private async Task<IActionResult> RemoveMediaAsync(string residentId, string mediaId, EMediaType mediaType)
+        {
+            // parse the id
+            if (!ObjectId.TryParse(residentId, out var residentObjectId))
+                // if it fails, return a 404
+                return StatusCode((int) HttpStatusCode.NotFound);
+
+            if (!ObjectId.TryParse(mediaId, out var mediaObjectId))
+                // if it fails, return a 404
+                return StatusCode((int) HttpStatusCode.NotFound);
+
+            try
+            {
+                // use the data service to create a new updater
+                return await ((IResidentsService) DataService).RemoveMediaAsync(residentObjectId, mediaObjectId,
+                    mediaType)
+                    // if the updater was created return satus created
+                    ? StatusCode((int) HttpStatusCode.OK)
+                    // if the updater was not created return status not modified
+                    : StatusCode((int) HttpStatusCode.NotFound);
+            }
+            catch (Exception e)
+            {
+                // log the error
+                Logger.Log(this, ELogLevel.Error, e);
+                // return a 500 internal server error code
+                return StatusCode((int) HttpStatusCode.InternalServerError);
+            }
+        }
+
+        #endregion delete
+
+        #region put (update)
+
         /// <summary>
         /// Update is the method corresponding to the PUT method of the controller of the REST service.
         /// <para />
@@ -239,10 +381,10 @@ namespace WebService.Controllers
         /// </returns>
         [HttpPut]
         [Obsolete]
-        public override async Task<IActionResult> UpdateAsync([FromBody] AUpdater<Resident> updater)
-            => await base.UpdateAsync(updater);
+        public async Task<IActionResult> UpdateAsync([FromBody] AUpdater<Resident> updater)
+            => await UpdateAsync(updater.Value, updater.PropertiesToUpdate);
 
-        /// <inheritdoc cref="ARestControllerBase{T}.UpdateAsync(Resident, string[])" />
+        /// <inheritdoc cref="ARestControllerBase{T}.UpdateAsync" />
         /// <summary>
         /// Update is the method corresponding to the PUT method of the controller of the REST service.
         /// <para />
@@ -261,6 +403,7 @@ namespace WebService.Controllers
         public override async Task<IActionResult> UpdateAsync([FromBody] Resident item, [FromQuery] string[] properties)
             => await base.UpdateAsync(item, properties);
 
+        #endregion put (update)
 
         #endregion METHODS
     }

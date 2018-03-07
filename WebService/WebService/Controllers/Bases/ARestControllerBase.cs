@@ -12,7 +12,13 @@ using WebService.Services.Logging;
 
 namespace WebService.Controllers.Bases
 {
-    public abstract class ARestControllerBase<T> : Controller where T : IModelWithID
+    /// <inheritdoc cref="Controller" />
+    /// <inheritdoc cref="IRestController{T}" />
+    /// <summary>
+    /// ARestControllerBase is an abstract class that holds the methods to Get, Create, Delete and Update data to a database.
+    /// </summary>
+    /// <typeparam name="T">is the type of the data to handle</typeparam>
+    public abstract class ARestControllerBase<T> : Controller, IRestController<T> where T : IModelWithID
     {
         #region FIELDS
 
@@ -63,6 +69,7 @@ namespace WebService.Controllers.Bases
         /// <returns>An <see cref="IEnumerable{TDelegate}"/> that contains the converted selectors</returns>
         public abstract IEnumerable<Expression<Func<T, object>>> ConvertStringsToSelectors(IEnumerable<string> strings);
 
+        /// <inheritdoc cref="IRestController{T}.GetAsync(string,string[])" />
         /// <summary>
         /// Get is the method corresponding to the GET method of the controller of the REST service.
         /// <para/>
@@ -118,6 +125,7 @@ namespace WebService.Controllers.Bases
             }
         }
 
+        /// <inheritdoc cref="IRestController{T}.GetAsync()" />
         /// <summary>
         /// Get is the method corresponding to the GET method of the controller of the REST service.
         /// <para/>
@@ -146,6 +154,7 @@ namespace WebService.Controllers.Bases
             }
         }
 
+        /// <inheritdoc cref="IRestController{T}.CreateAsync" />
         /// <summary>
         /// Create is the method corresonding to the POST method of the controller of the REST service.
         /// <para/>
@@ -176,6 +185,7 @@ namespace WebService.Controllers.Bases
             }
         }
 
+        /// <inheritdoc cref="IRestController{T}.DeleteAsync" />
         /// <summary>
         /// Delete is the method corresonding to the DELETE method of the controller of the REST service.
         /// <para/>
@@ -211,70 +221,8 @@ namespace WebService.Controllers.Bases
                 return StatusCode((int) HttpStatusCode.InternalServerError);
             }
         }
-
-        /// <summary>
-        /// Update is the method corresponding to the PUT method of the controller of the REST service.
-        /// <para/>
-        /// It updates the fields of the <see cref="T"/> in the updater.
-        /// If the Item doesn't exist, a new is created in the database.
-        /// </summary>
-        /// <param name="updater">contains the <see cref="T"/> to update and the properties that should be updated</param>
-        /// <returns>
-        /// - Status ok (200) if the <see cref="T"/> was updated
-        /// - Status created (201) if a new one was created
-        /// - Status bad request (400) if the passed updater is null
-        /// - Status internal server error (500) on error or not created
-        /// </returns>
-        [Obsolete]
-        public virtual async Task<IActionResult> UpdateAsync([FromBody] AUpdater<T> updater)
-        {
-            //create selectors
-            IEnumerable<Expression<Func<T, object>>> selectors = null;
-            // if there are no properties, they don't need to be converted
-            if (!EnumerableExtensions.IsNullOrEmpty(updater.PropertiesToUpdate))
-                try
-                {
-                    // try converting the propertie names to selectors
-                    selectors = ConvertStringsToSelectors(updater.PropertiesToUpdate);
-                }
-                catch (ArgumentException)
-                {
-                    // if it fails because of a bad argument (properties cannot be found)
-                    // return a 400 error
-                    return StatusCode((int) HttpStatusCode.BadRequest);
-                }
-
-            try
-            {
-                // check if the item to update exists
-                if (updater.Value == null)
-                    return new StatusCodeResult((int) HttpStatusCode.BadRequest);
-
-                bool itemUpdated;
-                if (EnumerableExtensions.IsNullOrEmpty(updater.PropertiesToUpdate))
-                    // if there are no properties to update, pass none to the data service
-                    itemUpdated = await DataService.UpdateAsync(updater.Value);
-                else
-                {
-                    // update the item in the data service
-                    itemUpdated = await DataService.UpdateAsync(updater.Value, selectors);
-                }
-
-                return itemUpdated
-                    // if the update failed, try creating a new item
-                    ? StatusCode((int) HttpStatusCode.OK)
-                    // if the update was a succes, reutrn 200
-                    : await CreateAsync(updater.Value);
-            }
-            catch (Exception e)
-            {
-                // log the error
-                Logger.Log(this, ELogLevel.Error, e);
-                // return a 500 internal server error code
-                return StatusCode((int) HttpStatusCode.InternalServerError);
-            }
-        }
-
+        
+        /// <inheritdoc cref="IRestController{T}.UpdateAsync" />
         /// <summary>
         /// Update is the method corresponding to the PUT method of the controller of the REST service.
         /// <para/>

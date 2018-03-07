@@ -140,7 +140,6 @@ namespace WebService.Controllers
             }
         }
 
-        /// <inheritdoc cref="ARestControllerBase{T}.UpdateAsync(AUpdater{T})" />
         /// <summary>
         /// Update is the method corresponding to the PUT method of the controller of the REST service.
         /// <para/>
@@ -156,10 +155,10 @@ namespace WebService.Controllers
         /// </returns>
         [HttpPut]
         [Obsolete]
-        public override async Task<IActionResult> UpdateAsync([FromBody] AUpdater<ReceiverModule> updater)
-            => await base.UpdateAsync(updater);
+        public async Task<IActionResult> UpdateAsync([FromBody] AUpdater<ReceiverModule> updater)
+            => await UpdateAsync(updater.Value, updater.PropertiesToUpdate);
 
-        /// <inheritdoc cref="ARestControllerBase{T}.UpdateAsync(ReceiverModule, string[])" />
+        /// <inheritdoc cref="ARestControllerBase{T}.UpdateAsync" />
         /// <summary>
         /// Update is the method corresponding to the PUT method of the controller of the REST service.
         /// <para />
@@ -175,9 +174,9 @@ namespace WebService.Controllers
         /// - Status internal server error (500) on error or not created
         /// </returns>
         [HttpPut]
-        public override async Task<IActionResult> UpdateAsync([FromBody] ReceiverModule item, [FromQuery] string[] properties)
+        public override async Task<IActionResult> UpdateAsync([FromBody] ReceiverModule item,
+            [FromQuery] string[] properties)
             => await base.UpdateAsync(item, properties);
-
 
         #endregion METHODS
     }
