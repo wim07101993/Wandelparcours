@@ -43,7 +43,7 @@ namespace WebService.Services.Data
         /// - the new id if the <see cref="T"/> was created in the database
         /// - null if the item was not created
         /// </returns>
-        Task<string> CreateAsync(T item);
+        Task<bool> CreateAsync(T item);
 
         /// <summary>
         /// RemoveAsync is supposed to remove the <see cref="T"/> with the given id from the database.
@@ -64,6 +64,6 @@ namespace WebService.Services.Data
         /// <param name="newItem">is the <see cref="T"/> to update</param>
         /// <param name="propertiesToUpdate">are the properties that need to be updated</param>
         /// <returns>The updated item</returns>
-        Task<T> UpdateAsync(T newItem, IEnumerable<Expression<Func<T, object>>> propertiesToUpdate = null);
+        Task<bool> UpdateAsync(T newItem, IEnumerable<Expression<Func<T, object>>> propertiesToUpdate = null);
     }
 }

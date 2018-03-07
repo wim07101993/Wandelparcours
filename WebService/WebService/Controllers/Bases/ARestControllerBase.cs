@@ -161,7 +161,7 @@ namespace WebService.Controllers.Bases
             try
             {
                 // use the data service to create a new updater
-                return await DataService.CreateAsync(item) != null
+                return await DataService.CreateAsync(item)
                     // if the updater was created return satus created
                     ? StatusCode((int) HttpStatusCode.Created)
                     // if the updater was not created return status not modified
@@ -250,21 +250,21 @@ namespace WebService.Controllers.Bases
                 if (updater.Value == null)
                     return new StatusCodeResult((int) HttpStatusCode.BadRequest);
 
-                T updatedResident;
+                bool itemUpdated;
                 if (EnumerableExtensions.IsNullOrEmpty(updater.PropertiesToUpdate))
                     // if there are no properties to update, pass none to the data service
-                    updatedResident = await DataService.UpdateAsync(updater.Value);
+                    itemUpdated = await DataService.UpdateAsync(updater.Value);
                 else
                 {
                     // update the item in the data service
-                    updatedResident = await DataService.UpdateAsync(updater.Value, selectors);
+                    itemUpdated = await DataService.UpdateAsync(updater.Value, selectors);
                 }
 
-                return Equals(updatedResident, default(T))
+                return itemUpdated
                     // if the update failed, try creating a new item
-                    ? await CreateAsync(updater.Value)
+                    ? StatusCode((int) HttpStatusCode.OK)
                     // if the update was a succes, reutrn 200
-                    : StatusCode((int) HttpStatusCode.OK);
+                    : await CreateAsync(updater.Value);
             }
             catch (Exception e)
             {
@@ -309,19 +309,19 @@ namespace WebService.Controllers.Bases
 
             try
             {
-                T updatedItem;
+                bool itemUpdated;
                 if (EnumerableExtensions.IsNullOrEmpty(properties))
                     // if there are no properties to update, pass none to the data service
-                    updatedItem = await DataService.UpdateAsync(item);
+                    itemUpdated = await DataService.UpdateAsync(item);
                 else
                     // update the item in the data service
-                    updatedItem = await DataService.UpdateAsync(item, selectors);
+                    itemUpdated = await DataService.UpdateAsync(item, selectors);
 
-                return Equals(updatedItem, default(T))
+                return itemUpdated
                     // if the update failed, try creating a new item
-                    ? await CreateAsync(item)
+                    ? StatusCode((int) HttpStatusCode.OK)
                     // if the update was a succes, reutrn 200
-                    : StatusCode((int) HttpStatusCode.OK);
+                    : await CreateAsync(item);
             }
             catch (Exception e)
             {

@@ -19,7 +19,7 @@ namespace WebService.Services.Data.Mock
     /// <para/>
     /// The connectionstring, db name and collections that are used are stored in the IConfiguration dependency under the Database object.
     /// </summary>
-    public abstract class AMockDataService<T> : IDataService<T> where T: IModelWithID
+    public abstract class AMockDataService<T> : IDataService<T> where T : IModelWithID
     {
         /// <summary>
         /// MockData is the list of items to test the application.
@@ -68,7 +68,7 @@ namespace WebService.Services.Data.Mock
                         // via member expression
                         ? expression.Member as PropertyInfo
                         // via unary expression
-                        : ((MemberExpression)((UnaryExpression)selector.Body).Operand).Member as PropertyInfo;
+                        : ((MemberExpression) ((UnaryExpression) selector.Body).Operand).Member as PropertyInfo;
 
                     // set the value of the property with the value of the mockItem
                     prop?.SetValue(itemToReturn, prop.GetValue(mockItem));
@@ -136,7 +136,7 @@ namespace WebService.Services.Data.Mock
         /// - the new id if the <see cref="T"/> was created in the list
         /// - null if the newItem was not created
         /// </returns>
-        public virtual async Task<string> CreateAsync(T item)
+        public virtual async Task<bool> CreateAsync(T item)
         {
             // create a new ide for the item
             item.Id = ObjectId.GenerateNewId();
@@ -145,11 +145,7 @@ namespace WebService.Services.Data.Mock
 
             // check if the item was created
 
-            return MockData.Any(x => x.Id == item.Id)
-                // if it is, return the id
-                ? item.Id.ToString()
-                // else return null
-                : null;
+            return MockData.Any(x => x.Id == item.Id);
         }
 
         /// <inheritdoc cref="IDataService{T}.RemoveAsync" />
@@ -185,7 +181,7 @@ namespace WebService.Services.Data.Mock
         /// <param name="newItem">is the <see cref="T" /> to update</param>
         /// <param name="propertiesToUpdate">are the properties that need to be updated</param>
         /// <returns>The updated newItem</returns>
-        public virtual async Task<T> UpdateAsync(T newItem,
+        public virtual async Task<bool> UpdateAsync(T newItem,
             IEnumerable<Expression<Func<T, object>>> propertiesToUpdate = null)
         {
             // create list of the enumerable to prevent multiple enumerations of enumerable
@@ -193,7 +189,7 @@ namespace WebService.Services.Data.Mock
 
             var index = MockData.FindIndex(x => x.Id == newItem.Id);
             if (index < 0)
-                return default(T);
+                return false;
 
             // check if thereare properties to update.
             if (EnumerableExtensions.IsNullOrEmpty(propertiesToUpdateList))
@@ -201,7 +197,7 @@ namespace WebService.Services.Data.Mock
                 // update the item;
                 MockData[index] = newItem;
                 // return the updated item
-                return MockData.FirstOrDefault(x => x.Id == newItem.Id);
+                return true;
             }
 
             // ReSharper disable once PossibleNullReferenceException
@@ -222,7 +218,7 @@ namespace WebService.Services.Data.Mock
             }
 
             // return the updated item
-            return MockData.FirstOrDefault(x => x.Id == newItem.Id);
+            return true;
         }
     }
 #pragma warning restore CS1998

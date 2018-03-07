@@ -4,6 +4,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
+using MongoDB.Bson;
 using MongoDB.Driver;
 using WebService.Helpers.Extensions;
 using WebService.Models;
@@ -79,6 +80,21 @@ namespace WebService.Services.Data.Mongo
                 .Project<Resident>(selector)
                 // execute the query
                 .FirstOrDefaultAsync();
+        }
+
+        public Task<bool> AddMediaAsync(ObjectId residentId, byte[] data, EMediaType mediaType)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<bool> AddMediaAsync(ObjectId residentId, string url, EMediaType mediaType)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<bool> RemoveMediaAsync(ObjectId residentId, ObjectId mediaId, EMediaType mediaType)
+        {
+            throw new NotImplementedException();
         }
     }
 }
