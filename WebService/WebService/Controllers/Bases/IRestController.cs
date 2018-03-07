@@ -1,29 +1,24 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq.Expressions;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using WebService.Models;
 using WebService.Models.Bases;
 
 namespace WebService.Controllers.Bases
 {
+    /// <summary>
+    /// IRestController defines the methods a REST controller should have
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
     // ReSharper disable once TypeParameterCanBeVariant
     public interface IRestController<T> where T : IModelWithID
     {
         /// <summary>
-        /// SmallDataProperties are supposed to be a collection of expressions to select the properties that
-        /// consume the least space.
+        /// Get is supposed to return the Item with the given id in the database wrapped in an <see cref="IActionResult"/>. 
+        /// To limit data traffic it is possible to select only a number of properties.
         /// </summary>
-        IEnumerable<Expression<Func<T, object>>> PropertiesToSendOnGet { get; }
-
-        /// <summary>
-        /// Get is supposed to correspond to the GET method of the controller of the REST service.
-        /// <para/>
-        /// It returns the Item with the given id in the database wrapped in an <see cref="IActionResult"/>. To limit data traffic it is possible to
-        /// select only a number of properties by default. These properties are selected with the <see cref="properties"/> property.
-        /// </summary>
+        /// <param name="id">is the id of the item to get</param>
+        /// <param name="properties">are the properties to get from that item</param>
         /// <returns>
+        /// The <see cref="T"/> that has the given id wrapped in:
         /// - Status ok (200) with An IEnumerable of all the Items in the database on success
         /// - Status bad request (400) when there are properties passed that do not exist in a <see cref="T"/>
         /// - Status not found (404) when there is no <see cref="T"/> with the given id found
@@ -32,51 +27,44 @@ namespace WebService.Controllers.Bases
         Task<IActionResult> GetAsync(string id, [FromQuery] string[] properties);
 
         /// <summary>
-        /// Get is supposed to correspond to the GET method of the controller of the REST service.
-        /// <para/>
-        /// It returns all the Items in the database wrapped in an <see cref="IActionResult"/>. To limit data traffic it is possible to
-        /// select only a number of properties by default. These properties are selected with the <see cref="PropertiesToSendOnGet"/> property.
+        /// Get is supposed to return all the Items in the database wrapped in an <see cref="IActionResult"/>.
+        /// To limit data traffic only the small properties should be returned by default but can be asked for. 
         /// </summary>
         /// <param name="properties">are the proeprties to include in the collection to return</param>
         /// <returns>
         /// - Status ok (200) with An IEnumerable of all the Items in the database on success
+        /// - Status bad request (400) when there are properties passed that do not exist in a <see cref="T"/>
         /// - Status internal server (500) error when an error occures
         /// </returns>
         Task<IActionResult> GetAsync([FromQuery] string[] properties);
 
         /// <summary>
-        /// Create is supposed to correspond to the POST method of the controller of the REST service.
-        /// <para/>
-        /// It saves the passed <see cref="T"/> to the database.
+        /// Create is supposed to create a new ide for the item and save it to the database.
         /// </summary>
         /// <param name="item">is the <see cref="T"/> to save in the database</param>
         /// <returns>
-        /// - Status created (201) if succes
+        /// - Status created (201) if success
         /// - Status internal server error (500) on error or not created
         /// </returns>
         Task<IActionResult> CreateAsync([FromBody] T item);
 
         /// <summary>
-        /// Delete is supposed to correspond to the DELETE method of the controller of the REST service.
-        /// <para/>
-        /// It saves the passed <see cref="T"/> to the database.
+        /// Delete is supposed to delete the passed <see cref="T"/> from the database.
         /// </summary>
         /// <param name="id">is the id of the <see cref="T"/> to remove from the database</param>
         /// <returns>
-        /// - Status created (201) if succes
-        /// - Status not found (40) if there was no erro but also no object to remove
+        /// - Status ok (200) if success
+        /// - Status not found (404) if there is no item with the given id
         /// - Status internal server error (500) on error
         /// </returns>
         Task<IActionResult> DeleteAsync(string id);
 
         /// <summary>
-        /// Update is supposed to correspond to the PUT method of the controller of the REST service.
-        /// <para/>
-        /// It updates the fields of the <see cref="T"/> in the updater.
-        /// If the Item doesn't exist, a new is created in the database.
+        /// Update is supposed to update a specified set of properties of the <see cref="T"/>.
+        /// If the item doesn't exist, a new is created in the database.
         /// </summary>
         /// <param name="item">is the <see cref="T"/> to update</param>
-        /// <param name="properties">contains the properties that should be updated</param>
+        /// <param name="properties">are the properties that should be updated</param>
         /// <returns>
         /// - Status ok (200) if the <see cref="T"/> was updated
         /// - Status created (201) if a new one was created
