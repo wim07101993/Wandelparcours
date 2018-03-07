@@ -16,9 +16,7 @@ namespace WebService.Models
         /// <para />
         /// In the database the value is stored under the field "x"
         /// </summary>
-        [BsonId]
-        [JsonIgnore]
-        public override ObjectId Id { get; set; }
+   
 
         /// <summary>
         /// Mac is the mac address of the ReceiverModule
