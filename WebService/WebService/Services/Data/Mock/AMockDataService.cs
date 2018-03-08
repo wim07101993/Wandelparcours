@@ -35,6 +35,9 @@ namespace WebService.Services.Data.Mock
         public abstract T CreateNewItem(ObjectId id);
 
 
+        public virtual async Task<object> GetPropertyAsync(ObjectId id, Expression<Func<T, object>> propertySelector) 
+            => MockData.Where(x => x.Id == id).Select(propertySelector.Compile()).FirstOrDefault();
+
         /// <inheritdoc cref="IDataService{T}.GetAsync(ObjectId,IEnumerable{Expression{Func{T,object}}})" />
         /// <summary>
         /// GetAsync returns the <see cref="!:T" /> with the given id from the database. 

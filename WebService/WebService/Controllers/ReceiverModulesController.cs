@@ -45,41 +45,28 @@ namespace WebService.Controllers
 
         #region METHODS
 
-        /// <inheritdoc cref="ARestControllerBase{T}.ConvertStringsToSelectors" />
+        /// <inheritdoc cref="ARestControllerBase{T}.ConvertStringToSelector" />
         /// <summary>
-        /// ConvertStringsToSelectors converts a collection of property names to their selector in the form of 
-        /// <see cref="Expression{TDelegate}"/> of type <see cref="Func{TInput,TResult}"/>
+        /// ConvertStringToSelector converts a property name to it's selector in the form of a <see cref="Func{TInput,TResult}"/>
         /// </summary>
-        /// <param name="strings">are the property names to convert to selectors</param>
-        /// <returns>An <see cref="IEnumerable{TDelegate}"/> that contains the converted selectors</returns>
-        /// <exception cref="WebArgumentException">When one ore more properties could not be converted to selectors</exception>
-        public override IEnumerable<Expression<Func<ReceiverModule, object>>> ConvertStringsToSelectors(
-            IEnumerable<string> strings)
+        /// <param name="propertyName">is the property name to convert to a selector</param>
+        /// <returns>An <see cref="Func{TInput,TResult}"/> that contains the converted selector</returns>
+        /// <exception cref="WebArgumentException">When the property could not be converted to a selector</exception>
+        public override Expression<Func<ReceiverModule, object>> ConvertStringToSelector(string propertyName)
         {
-            // create a new list of selectors
-            var selectors = new List<Expression<Func<ReceiverModule, object>>>();
+            // if the name of a properties matches a property of a Value, 
+            // add the corresponding selector
+            if (propertyName.EqualsWithCamelCasing(nameof(ReceiverModule.IsActive)))
+                return x => x.IsActive;
+            if (propertyName.EqualsWithCamelCasing(nameof(ReceiverModule.Mac)))
+                return x => x.Mac;
+            if (propertyName.EqualsWithCamelCasing(nameof(ReceiverModule.Position)))
+                return x => x.Position;
+            if (propertyName.EqualsWithCamelCasing(nameof(ReceiverModule.Id)))
+                return x => x.Id;
 
-            // fill the list of selectors by iterating over the properties to update
-            foreach (var propertyName in strings)
-            {
-                // if the name of a properties matches a property of a Value, 
-                // add the corresponding selector
-                if (propertyName.EqualsWithCamelCasing(nameof(ReceiverModule.IsActive)))
-                    selectors.Add(x => x.IsActive);
-                else if (propertyName.EqualsWithCamelCasing(nameof(ReceiverModule.Mac)))
-                    selectors.Add(x => x.Mac);
-                else if (propertyName.EqualsWithCamelCasing(nameof(ReceiverModule.Position)))
-                    selectors.Add(x => x.Position);
-                else if (propertyName.EqualsWithCamelCasing(nameof(ReceiverModule.Id)))
-                    // the id is always passed on get and ignored on update
-                    // ReSharper disable once RedundantJumpStatement
-                    continue;
-                else
-                    throw new WebArgumentException(
-                        $"Property {propertyName} cannot be found on {typeof(ReceiverModule).Name}", nameof(strings));
-            }
-
-            return selectors;
+            throw new WebArgumentException(
+                $"Property {propertyName} cannot be found on {typeof(ReceiverModule).Name}");
         }
 
         #region post (create)
@@ -97,6 +84,19 @@ namespace WebService.Controllers
         #endregion post (create)
 
         #region get (read)
+
+        /// <inheritdoc cref="ARestControllerBase{T}.GetPropertyAsync" />
+        /// <summary>
+        /// GetProperty returns the valu of the asked property of the asked <see cref="ReceiverModule"/>.
+        /// </summary>
+        /// <param name="id">is the id of the <see cref="ReceiverModule"/></param>
+        /// <param name="propertyName">is the name of the property to return</param>
+        /// <returns>The value of the asked property</returns>
+        /// <exception cref="NotFoundException">When the id cannot be parsed or <see cref="ReceiverModule"/> not found</exception>
+        /// <exception cref="WebArgumentException">When the property could not be found on <see cref="ReceiverModule"/></exception>
+        [HttpGet("{id}/{propertyName}")]
+        public override async Task<object> GetPropertyAsync(string id, string propertyName)
+            => await base.GetPropertyAsync(id, propertyName);
 
         /// <inheritdoc cref="ARestControllerBase{T}.GetAsync(string, string[])" />
         /// <summary>
@@ -172,7 +172,7 @@ namespace WebService.Controllers
         public override async Task DeleteAsync(string mac)
         {
             // use the data service to remove the item
-            var removed = await ((IReceiverModuleService)DataService).RemoveAsync(mac);
+            var removed = await ((IReceiverModuleService) DataService).RemoveAsync(mac);
 
             // if the item could not be deleted, throw exception
             if (!removed)

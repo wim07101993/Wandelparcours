@@ -61,61 +61,48 @@ namespace WebService.Controllers
 
         #region METHODS
 
-        /// <inheritdoc cref="ARestControllerBase{T}.ConvertStringsToSelectors" />
+        /// <inheritdoc cref="ARestControllerBase{T}.ConvertStringToSelector" />
         /// <summary>
-        /// ConvertStringsToSelectors converts a collection of property names to their selector in the form of 
-        /// <see cref="Expression{TDelegate}"/> of type <see cref="Func{TInput,TResult}"/>
+        /// ConvertStringToSelector converts a property name to it's selector in the form of a <see cref="Func{TInput,TResult}"/>
         /// </summary>
-        /// <param name="strings">are the property names to convert to selectors</param>
-        /// <returns>An <see cref="IEnumerable{TDelegate}"/> that contains the converted selectors</returns>
-        /// <exception cref="WebArgumentException">When one ore more properties could not be converted to selectors</exception>
-        public override IEnumerable<Expression<Func<Resident, object>>> ConvertStringsToSelectors(
-            IEnumerable<string> strings)
+        /// <param name="propertyName">is the property name to convert to a selector</param>
+        /// <returns>An <see cref="Func{TInput,TResult}"/> that contains the converted selector</returns>
+        /// <exception cref="WebArgumentException">When the property could not be converted to a selector</exception>
+        public override Expression<Func<Resident, object>> ConvertStringToSelector(string propertyName)
         {
-            // create a new list of selectors
-            var selectors = new List<Expression<Func<Resident, object>>>();
+            // if the name of a properties matches a property of a Value, 
+            // add the corresponding selector
+            if (propertyName.EqualsWithCamelCasing(nameof(Resident.Birthday)))
+                return x => x.Birthday;
+            if (propertyName.EqualsWithCamelCasing(nameof(Resident.Colors)))
+                return x => x.Colors;
+            if (propertyName.EqualsWithCamelCasing(nameof(Resident.Doctor)))
+                return x => x.Doctor;
+            if (propertyName.EqualsWithCamelCasing(nameof(Resident.FirstName)))
+                return x => x.FirstName;
+            if (propertyName.EqualsWithCamelCasing(nameof(Resident.Images)))
+                return x => x.Images;
+            if (propertyName.EqualsWithCamelCasing(nameof(Resident.LastName)))
+                return x => x.LastName;
+            if (propertyName.EqualsWithCamelCasing(nameof(Resident.LastRecordedPosition)))
+                return x => x.LastRecordedPosition;
+            if (propertyName.EqualsWithCamelCasing(nameof(Resident.Locations)))
+                return x => x.Locations;
+            if (propertyName.EqualsWithCamelCasing(nameof(Resident.Music)))
+                return x => x.Music;
+            if (propertyName.EqualsWithCamelCasing(nameof(Resident.Picture)))
+                return x => x.Picture;
+            if (propertyName.EqualsWithCamelCasing(nameof(Resident.Room)))
+                return x => x.Room;
+            if (propertyName.EqualsWithCamelCasing(nameof(Resident.Tags)))
+                return x => x.Tags;
+            if (propertyName.EqualsWithCamelCasing(nameof(Resident.Videos)))
+                return x => x.Videos;
+            if (propertyName.EqualsWithCamelCasing(nameof(Resident.Id)))
+                return x => x.Id;
 
-            // fill the list of selectors by iterating over the properties to update
-            foreach (var propertyName in strings)
-            {
-                // if the name of a properties matches a property of a Value, 
-                // add the corresponding selector
-                if (propertyName.EqualsWithCamelCasing(nameof(Resident.Birthday)))
-                    selectors.Add(x => x.Birthday);
-                else if (propertyName.EqualsWithCamelCasing(nameof(Resident.Colors)))
-                    selectors.Add(x => x.Colors);
-                else if (propertyName.EqualsWithCamelCasing(nameof(Resident.Doctor)))
-                    selectors.Add(x => x.Doctor);
-                else if (propertyName.EqualsWithCamelCasing(nameof(Resident.FirstName)))
-                    selectors.Add(x => x.FirstName);
-                else if (propertyName.EqualsWithCamelCasing(nameof(Resident.Images)))
-                    selectors.Add(x => x.Images);
-                else if (propertyName.EqualsWithCamelCasing(nameof(Resident.LastName)))
-                    selectors.Add(x => x.LastName);
-                else if (propertyName.EqualsWithCamelCasing(nameof(Resident.LastRecordedPosition)))
-                    selectors.Add(x => x.LastRecordedPosition);
-                else if (propertyName.EqualsWithCamelCasing(nameof(Resident.Locations)))
-                    selectors.Add(x => x.Locations);
-                else if (propertyName.EqualsWithCamelCasing(nameof(Resident.Music)))
-                    selectors.Add(x => x.Music);
-                else if (propertyName.EqualsWithCamelCasing(nameof(Resident.Picture)))
-                    selectors.Add(x => x.Picture);
-                else if (propertyName.EqualsWithCamelCasing(nameof(Resident.Room)))
-                    selectors.Add(x => x.Room);
-                else if (propertyName.EqualsWithCamelCasing(nameof(Resident.Tags)))
-                    selectors.Add(x => x.Tags);
-                else if (propertyName.EqualsWithCamelCasing(nameof(Resident.Videos)))
-                    selectors.Add(x => x.Videos);
-                else if (propertyName.EqualsWithCamelCasing(nameof(Resident.Id)))
-                    // the id is always passed on get and ignored on update
-                    // ReSharper disable once RedundantJumpStatement
-                    continue;
-                else
-                    throw new WebArgumentException(
-                        $"Property {propertyName} cannot be found on {typeof(Resident).Name}", nameof(strings));
-            }
-
-            return selectors;
+            throw new WebArgumentException(
+                $"Property {propertyName} cannot be found on {typeof(Resident).Name}");
         }
 
         #region post (create)
@@ -275,6 +262,19 @@ namespace WebService.Controllers
         #endregion post (create)
 
         #region get (read)
+
+        /// <inheritdoc cref="ARestControllerBase{T}.GetPropertyAsync" />
+        /// <summary>
+        /// GetProperty returns the valu of the asked property of the asked <see cref="Resident"/>.
+        /// </summary>
+        /// <param name="id">is the id of the <see cref="Resident"/></param>
+        /// <param name="propertyName">is the name of the property to return</param>
+        /// <returns>The value of the asked property</returns>
+        /// <exception cref="NotFoundException">When the id cannot be parsed or <see cref="Resident"/> not found</exception>
+        /// <exception cref="WebArgumentException">When the property could not be found on <see cref="Resident"/></exception>
+        [HttpGet("{id}/{propertyName}")]
+        public override async Task<object> GetPropertyAsync(string id, string propertyName)
+            => await base.GetPropertyAsync(id, propertyName);
 
         /// <inheritdoc cref="IResidentsController.GetAsync(int, string[])" />
         /// <summary>

@@ -1,7 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
+using System.Reflection;
 using System.Threading.Tasks;
 using MongoDB.Bson;
+using WebService.Helpers.Extensions;
 using WebService.Models;
 
 namespace WebService.Services.Data.Mock
@@ -26,14 +30,49 @@ namespace WebService.Services.Data.Mock
         public override ReceiverModule CreateNewItem(ObjectId id)
             => new ReceiverModule {Id = id};
 
-        /// <inheritdoc cref="IReceiverModuleService.GetAsync(string)" />
+        /// <inheritdoc cref="IReceiverModuleService.GetAsync(string, IEnumerable{Expression{Func{ReceiverModule, object}}})" />
         /// <summary>
         /// GetAsync should return the receiver module with the given mac.
         /// </summary>
         /// <param name="mac">is the mac address of the receiver module to fetch</param>
+        /// <param name="propertiesToInclude">are the properties of which the values should be returned</param>
         /// <returns>The receiver module with the given mac</returns>
-        public async Task<ReceiverModule> GetAsync(string mac)
-            => MockData.FirstOrDefault(x => x.Mac == mac);
+        public async Task<ReceiverModule> GetAsync(string mac, IEnumerable<Expression<Func<ReceiverModule, object>>> propertiesToInclude = null)
+        {
+            var propertiesToIncludeList = propertiesToInclude?.ToList();
+            if (EnumerableExtensions.IsNullOrEmpty(propertiesToIncludeList))
+                return MockData.FirstOrDefault(x => x.Mac == mac);
+
+            foreach (var mockItem in MockData)
+            {
+                if (mockItem.Mac != mac)
+                    continue;
+
+                // create new newItem to return with the ide filled in
+                var itemToReturn = CreateNewItem(mockItem.Id);
+
+                // ReSharper disable once PossibleNullReferenceException
+                // go over each property selector that should be included
+                foreach (var selector in propertiesToIncludeList)
+                {
+                    // get property
+                    var prop = selector.Body is MemberExpression expression
+                        // via member expression
+                        ? expression.Member as PropertyInfo
+                        // via unary expression
+                        : ((MemberExpression)((UnaryExpression)selector.Body).Operand).Member as PropertyInfo;
+
+                    // set the value of the property with the value of the mockItem
+                    prop?.SetValue(itemToReturn, prop.GetValue(mockItem));
+                }
+
+                // return the newItem
+                return itemToReturn;
+            }
+
+            // if no item is found, return the default value
+            return default(ReceiverModule);
+        }
 
         /// <inheritdoc cref="IReceiverModuleService.RemoveAsync(string)" />
         /// <summary>

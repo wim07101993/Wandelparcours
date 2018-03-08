@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -65,13 +66,23 @@ namespace WebService.Controllers.Bases
         #region METHODS
 
         /// <summary>
-        /// ConvertStringsToSelectors should convert a collection of property names to their selector in the form of 
-        /// <see cref="Expression{TDelegate}"/> of type <see cref="Func{TInput,TResult}"/>
+        /// ConvertStringToSelector should convert a property name to it's selector in the form of a
+        /// <see cref="Func{TInput,TResult}"/>
         /// </summary>
-        /// <param name="strings">are the property names to convert to selectors</param>
-        /// <returns>An <see cref="IEnumerable{TDelegate}"/> that contains the converted selectors</returns>
-        /// <exception cref="WebArgumentException">When one ore more properties could not be converted to selectors</exception>
-        public abstract IEnumerable<Expression<Func<T, object>>> ConvertStringsToSelectors(IEnumerable<string> strings);
+        /// <param name="propertyName">is the property name to convert to a selector</param>
+        /// <returns>An <see cref="Func{TInput,TResult}"/> that contains the converted selector</returns>
+        /// <exception cref="WebArgumentException">When the property could not be converted to a selector</exception>
+        public abstract Expression<Func<T, object>> ConvertStringToSelector(string propertyName);
+
+        /// <summary>
+        /// ConvertStringToSelector converts property names to their selectors in the form of <see cref="Func{TInput,TResult}"/>
+        /// </summary>
+        /// <param name="propertyNames">are the property names to convert to a selector</param>
+        /// <returns>An <see cref="Func{TInput,TResult}"/> that contains the converted selector</returns>
+        /// <exception cref="WebArgumentException">When the property could not be converted to a selector</exception>
+        public IEnumerable<Expression<Func<T, object>>> ConvertStringsToSelectors(IEnumerable<string> propertyNames)
+            => propertyNames.Select(ConvertStringToSelector);
+
 
         #region create
 
@@ -94,6 +105,31 @@ namespace WebService.Controllers.Bases
         #endregion create
 
         #region read
+
+        /// <inheritdoc cref="IRestController{T}.GetPropertyAsync" />
+        /// <summary>
+        /// GetProperty returns the valu of the asked property of the asked <see cref="T"/>.
+        /// </summary>
+        /// <param name="id">is the id of the <see cref="T"/></param>
+        /// <param name="propertyName">is the name of the property to return</param>
+        /// <returns>The value of the asked property</returns>
+        /// <exception cref="NotFoundException">When the id cannot be parsed or <see cref="T"/> not found</exception>
+        /// <exception cref="WebArgumentException">When the property could not be found on <see cref="T"/></exception>
+        public virtual async Task<object> GetPropertyAsync(string id, string propertyName)
+        {
+            // check if the property exists on the item
+            if (typeof(T).GetProperty(propertyName) == null)
+                throw new WebArgumentException(
+                    $"Property {propertyName} cannot be found on {typeof(T).Name}", nameof(propertyName));
+
+            // parse the id
+            if (!ObjectId.TryParse(id, out var objectId))
+                // if it fails, throw not found exception
+                throw new NotFoundException($"The {typeof(T).Name} with id {id} could not be found");
+            
+            // get the property from the database
+            return await DataService.GetPropertyAsync(objectId, ConvertStringToSelector(propertyName));
+        }
 
         /// <inheritdoc cref="IRestController{T}.GetAsync(string, string[])" />
         /// <summary>
@@ -121,7 +157,7 @@ namespace WebService.Controllers.Bases
 
             // get the value from the data service
             var item = await DataService.GetAsync(objectId, selectors);
-            
+
             return Equals(item, default(T))
                 // if the item is null, throw a not found exception
                 ? throw new NotFoundException($"The {typeof(T).Name} with id {id} could not be found")

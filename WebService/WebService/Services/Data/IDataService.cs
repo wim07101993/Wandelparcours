@@ -13,6 +13,14 @@ namespace WebService.Services.Data
     public interface IDataService<T> where T : IModelWithID
     {
         /// <summary>
+        /// GetPropertyAsync is supposed to return a single property of the <see cref="T"/> with the given id
+        /// </summary>
+        /// <param name="id">is the id of the <see cref="T"/> to get the property from</param>
+        /// <param name="propertySelector">is the selector to select the property to return</param>
+        /// <returns>The value of the aksed property</returns>
+        Task<object> GetPropertyAsync(ObjectId id, Expression<Func<T, object>> propertySelector);
+
+        /// <summary>
         /// GetAsync is supposed to return the <see cref="T"/> with the given id from the database. 
         /// <para/>
         /// It should only fill the properties passed in the <see cref="propertiesToInclude"/> parameter. The id is always passed and 

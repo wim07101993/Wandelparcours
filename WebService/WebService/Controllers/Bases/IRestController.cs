@@ -28,6 +28,16 @@ namespace WebService.Controllers.Bases
         #region READ
 
         /// <summary>
+        /// GetProperty is supposed to return the valu of the asked property of the asked <see cref="T"/>.
+        /// </summary>
+        /// <param name="id">is the id of the <see cref="T"/></param>
+        /// <param name="propertyName">is the name of the property to return</param>
+        /// <returns>The value of the asked property</returns>
+        /// <exception cref="NotFoundException">When the id cannot be parsed or <see cref="T"/> not found</exception>
+        /// <exception cref="WebArgumentException">When the property could not be found on <see cref="T"/></exception>
+        Task<object> GetPropertyAsync(string id, string propertyName);
+
+        /// <summary>
         /// Get is supposed to return the <see cref="T"/> with the given id in the database. 
         /// To limit data traffic it is possible to select only a number of properties.
         /// </summary>
