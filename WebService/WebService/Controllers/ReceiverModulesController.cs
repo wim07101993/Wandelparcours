@@ -58,7 +58,7 @@ namespace WebService.Controllers
         /// - Status internal server (500) error when an error occures
         /// </returns>
         [HttpGet]
-        public override async Task<IActionResult> GetAsync([FromQuery] string[] properties)
+        public override async Task<IEnumerable<ReceiverModule>> GetAsync([FromQuery] string[] properties)
             => await base.GetAsync(properties);
 
         /// <summary>
@@ -104,7 +104,7 @@ namespace WebService.Controllers
         /// - Status internal server error (500) on error or not created
         /// </returns>
         [HttpPost]
-        public override async Task<IActionResult> CreateAsync([FromBody] ReceiverModule item)
+        public override async Task CreateAsync([FromBody] ReceiverModule item)
             => await base.CreateAsync(item);
 
         /// <inheritdoc cref="ARestControllerBase{T}.DeleteAsync" />
@@ -120,23 +120,23 @@ namespace WebService.Controllers
         /// - Status internal server error (500) on error
         /// </returns>
         [HttpDelete("{mac}")]
-        public override async Task<IActionResult> DeleteAsync(string mac)
+        public override async Task DeleteAsync(string mac)
         {
             try
             {
                 // use the data service to remove the updater
-                return await ((IReceiverModuleService) DataService).RemoveAsync(mac)
-                    // if the updater was deleted return status ok
-                    ? StatusCode((int) HttpStatusCode.OK)
-                    // if the updater was not deleted return status no content
-                    : StatusCode((int) HttpStatusCode.NotFound);
+                await ((IReceiverModuleService) DataService).RemoveAsync(mac);
+                //// if the updater was deleted return status ok
+                //? StatusCode((int) HttpStatusCode.OK)
+                //// if the updater was not deleted return status no content
+                //: StatusCode((int) HttpStatusCode.NotFound);
             }
             catch (Exception e)
             {
                 // log the error
                 Logger.Log(this, ELogLevel.Error, e);
                 // return a 500 internal server error code
-                return StatusCode((int) HttpStatusCode.InternalServerError);
+                //return StatusCode((int) HttpStatusCode.InternalServerError);
             }
         }
 
@@ -155,7 +155,7 @@ namespace WebService.Controllers
         /// </returns>
         [HttpPut]
         [Obsolete]
-        public async Task<IActionResult> UpdateAsync([FromBody] AUpdater<ReceiverModule> updater)
+        public async Task UpdateAsync([FromBody] AUpdater<ReceiverModule> updater)
             => await UpdateAsync(updater.Value, updater.PropertiesToUpdate);
 
         /// <inheritdoc cref="ARestControllerBase{T}.UpdateAsync" />
@@ -174,7 +174,7 @@ namespace WebService.Controllers
         /// - Status internal server error (500) on error or not created
         /// </returns>
         [HttpPut]
-        public override async Task<IActionResult> UpdateAsync([FromBody] ReceiverModule item,
+        public override async Task UpdateAsync([FromBody] ReceiverModule item,
             [FromQuery] string[] properties)
             => await base.UpdateAsync(item, properties);
 

@@ -54,7 +54,7 @@ namespace WebAPIUnitTests.Controllers
             dataService.Setup(x => x.RemoveAsync(mac)).Returns(() => Task.FromResult(true));
 
             new WebService.Controllers.ReceiverModulesController(dataService.Object, new ConsoleLogger())
-                .DeleteAsync(mac).Result
+                .DeleteAsync(mac)
                 .Should()
                 .BeOfType<StatusCodeResult>("all controller methods should return a status code as confirmation")
                 .Subject
@@ -72,7 +72,7 @@ namespace WebAPIUnitTests.Controllers
             dataService.Setup(x => x.RemoveAsync(mac)).Returns(() => Task.FromResult(false));
 
             new WebService.Controllers.ReceiverModulesController(dataService.Object, new ConsoleLogger())
-                .DeleteAsync(mac).Result
+                .DeleteAsync(mac)
                 .Should()
                 .BeOfType<StatusCodeResult>("all controller methods should return a status code as confirmation")
                 .Subject
@@ -91,7 +91,7 @@ namespace WebAPIUnitTests.Controllers
             dataService.Setup(x => x.RemoveAsync(mac)).Returns(() => throw new Exception());
 
             new WebService.Controllers.ReceiverModulesController(dataService.Object, new ConsoleLogger())
-                .DeleteAsync(mac).Result
+                .DeleteAsync(mac)
                 .Should()
                 .BeOfType<StatusCodeResult>("all controller methods should return a status code as confirmation")
                 .Subject

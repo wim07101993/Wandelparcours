@@ -157,7 +157,7 @@ namespace WebAPIUnitTests.Controllers
                 .Returns(() => Task.FromResult(true));
 
             new MockController(dataService.Object, new ConsoleLogger())
-                .CreateAsync(entity).Result
+                .CreateAsync(entity)
                 .Should()
                 .BeOfType<StatusCodeResult>("all controller methods should return a status code as confirmation")
                 .Subject
@@ -178,7 +178,7 @@ namespace WebAPIUnitTests.Controllers
                 .Returns(() => Task.FromResult(false));
 
             new MockController(dataService.Object, new ConsoleLogger())
-                .CreateAsync(entity).Result
+                .CreateAsync(entity)
                 .Should()
                 .BeOfType<StatusCodeResult>("all controller methods should return a status code as confirmation")
                 .Subject
@@ -199,7 +199,7 @@ namespace WebAPIUnitTests.Controllers
 
             new MockController(dataService.Object, new ConsoleLogger())
                 .CreateAsync(entity)
-                .Result
+                
                 .Should()
                 .BeOfType<StatusCodeResult>("all controller methods should return a status code as confirmation")
                 .Subject
@@ -223,7 +223,7 @@ namespace WebAPIUnitTests.Controllers
             dataService.Setup(x => x.RemoveAsync(id)).Returns(() => Task.FromResult(true));
 
             new MockController(dataService.Object, new ConsoleLogger())
-                .DeleteAsync(id.ToString()).Result
+                .DeleteAsync(id.ToString())
                 .Should()
                 .BeOfType<StatusCodeResult>("all controller methods should return a status code as confirmation")
                 .Subject
@@ -241,7 +241,7 @@ namespace WebAPIUnitTests.Controllers
             dataService.Setup(x => x.RemoveAsync(id)).Returns(() => Task.FromResult(false));
 
             new MockController(dataService.Object, new ConsoleLogger())
-                .DeleteAsync(id.ToString()).Result
+                .DeleteAsync(id.ToString())
                 .Should()
                 .BeOfType<StatusCodeResult>("all controller methods should return a status code as confirmation")
                 .Subject
@@ -257,7 +257,7 @@ namespace WebAPIUnitTests.Controllers
             new MockController(
                     new Mock<IDataService<MockEntity>>().Object,
                     new ConsoleLogger())
-                .DeleteAsync("abc").Result
+                .DeleteAsync("abc")
                 .Should()
                 .BeOfType<StatusCodeResult>("all controller methods should return a status code as confirmation")
                 .Subject
@@ -276,7 +276,7 @@ namespace WebAPIUnitTests.Controllers
             dataService.Setup(x => x.RemoveAsync(id)).Returns(() => throw new Exception());
 
             new MockController(dataService.Object, new ConsoleLogger())
-                .DeleteAsync(id.ToString()).Result
+                .DeleteAsync(id.ToString())
                 .Should()
                 .BeOfType<StatusCodeResult>("all controller methods should return a status code as confirmation")
                 .Subject
@@ -300,7 +300,7 @@ namespace WebAPIUnitTests.Controllers
                 .UpdateAsync(
                     new MockEntity {Id = dataService.MockData[0].Id, S = "Test", B = true},
                     new[] {nameof(MockEntity.S), nameof(MockEntity.B)})
-                .Result
+                
                 .Should()
                 .BeOfType<StatusCodeResult>("all controller methods should return a status code as confirmation")
                 .Subject
@@ -317,7 +317,7 @@ namespace WebAPIUnitTests.Controllers
                 .UpdateAsync(
                     new MockEntity {Id = new ObjectId(), S = "Test", B = false},
                     new[] {nameof(MockEntity.S), nameof(MockEntity.B)})
-                .Result
+                
                 .Should()
                 .BeOfType<StatusCodeResult>("all controller methods should return a status code as confirmation")
                 .Subject
@@ -331,7 +331,7 @@ namespace WebAPIUnitTests.Controllers
         {
             var dataService = new MockDataService();
             new MockController(dataService, new ConsoleLogger())
-                .UpdateAsync(new MockEntity {Id = dataService.MockData[0].Id, S = "Test", B = false}, null).Result
+                .UpdateAsync(new MockEntity {Id = dataService.MockData[0].Id, S = "Test", B = false}, null)
                 .Should()
                 .BeOfType<StatusCodeResult>("all controller methods should return a status code as confirmation")
                 .Subject

@@ -11,7 +11,7 @@ namespace WebService.Controllers.Bases
     public interface IReceiverModulesController : IRestController<ReceiverModule>
     {
         /// <summary>
-        /// GetAsync is supposed to return the <see cref="ReceiverModule"/> that has the given MAC-address, wrapped in an <see cref="IActionResult"/>.
+        /// GetAsync is supposed to return the <see cref="ReceiverModule"/> that has the given MAC-address.
         /// </summary>
         /// <param name="mac">is the MAC-address of the <see cref="ReceiverModule"/> to return</param>
         /// <returns>

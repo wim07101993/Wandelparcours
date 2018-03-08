@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
-using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Bson;
@@ -55,6 +54,9 @@ namespace WebService.Controllers.Bases
 
         #region PROPERTIES
 
+        /// <summary>
+        /// PropertiesToSendOnGetAll are the selectors of the properties to send when all the <see cref="T"/>s are asked from the database.
+        /// </summary>
         public abstract IEnumerable<Expression<Func<T, object>>> PropertiesToSendOnGetAll { get; }
 
         #endregion PROPERTIES
@@ -72,13 +74,13 @@ namespace WebService.Controllers.Bases
 
         /// <inheritdoc cref="IRestController{T}.GetAsync(string,string[])" />
         /// <summary>
-        /// Get returns the Item with the given id in the database wrapped in an <see cref="IActionResult"/>. 
+        /// Get fetches the item with the given id in the database. 
         /// To limit data traffic it is possible to select only a number of properties
         /// </summary>
         /// <returns>The <see cref="T"/> in the database that has the given id</returns>
         /// <exception cref="NotFoundException">When the id cannot be parsed or <see cref="T"/> not found</exception>
         /// <exception cref="WebArgumentException">When the properties could not be converted to selectors</exception>
-        public virtual async Task<IActionResult> GetAsync(string id, [FromQuery] string[] properties)
+        public virtual async Task<T> GetAsync(string id, [FromQuery] string[] properties)
         {
             // parse the id
             if (!ObjectId.TryParse(id, out var objectId))
@@ -96,10 +98,10 @@ namespace WebService.Controllers.Bases
             var item = await DataService.GetAsync(objectId, selectors);
 
             return item == null
-                // if the item is null, return a 404
+                // if the item is null, throw a not found exception
                 ? throw new NotFoundException($"The {typeof(T).Name} with id {id} could not be found")
-                // else return the values wrapped in a 200 response 
-                : Ok(item);
+                // else return the values
+                : item;
         }
 
         /// <inheritdoc cref="IRestController{T}.GetAsync(string[])" />
@@ -112,7 +114,7 @@ namespace WebService.Controllers.Bases
         /// All <see cref="T"/>s in the database but only the given properties are filled in
         /// </returns>
         /// <exception cref="WebArgumentException">When the properties could not be converted to selectors</exception>
-        public virtual async Task<IActionResult> GetAsync([FromQuery] string[] properties)
+        public virtual async Task<IEnumerable<T>> GetAsync([FromQuery] string[] properties)
         {
             // the default selectors ar in the PropertiesToSendOnGetAll property
             var selectors = PropertiesToSendOnGetAll;
@@ -120,11 +122,8 @@ namespace WebService.Controllers.Bases
                 // convert the property names to selectors
                 selectors = ConvertStringsToSelectors(properties);
 
-            // get the values from the data service
-            var items = await DataService.GetAsync(selectors);
-
-            // return the values wrapped in a 200 response 
-            return Ok(items);
+            // return the items got from the data service
+            return await DataService.GetAsync(selectors);
         }
 
         /// <inheritdoc cref="IRestController{T}.CreateAsync" />
@@ -132,27 +131,25 @@ namespace WebService.Controllers.Bases
         /// Create saves the passed <see cref="T"/> to the database.
         /// </summary>
         /// <param name="item">is the <see cref="T"/> to save in the database</param>
-        /// <returns>A 201 Created status code if the <see cref="T"/> is created in the database</returns>
         /// <exception cref="NotFoundException">When the id cannot be parsed or <see cref="T"/> not found</exception>
-        public virtual async Task<IActionResult> CreateAsync([FromBody] T item)
+        public virtual async Task CreateAsync([FromBody] T item)
+        {
             // use the data service to create a new item
-            => await DataService.CreateAsync(item)
-                // if the item was created return satus created
-                ? StatusCode((int) HttpStatusCode.Created)
-                // if the item was not created return throw exception
-                : throw new Exception($"Could not create {typeof(T).Name} in the database");
+            var result = await DataService.CreateAsync(item);
+
+            // if the item was not created return throw exception
+            if (!result)
+                throw new Exception($"Could not create {typeof(T).Name} in the database");
+        }
 
         /// <inheritdoc cref="IRestController{T}.DeleteAsync" />
         /// <summary>
         /// Delete removes the <see cref="T"/> with the passed id from the database.
         /// </summary>
         /// <param name="id">is the id of the <see cref="T"/> to remove from the database</param>
-        /// <returns>
-        /// - Status created (201) if succes
-        /// - Status not found (40) if there was no erro but also no object to remove
-        /// - Status internal server error (500) on error
-        /// </returns>
-        public virtual async Task<IActionResult> DeleteAsync(string id)
+        /// <returns>Status created (201) if succes</returns>
+        /// <exception cref="NotFoundException">When the id cannot be parsed or <see cref="T"/> not found</exception>
+        public virtual async Task DeleteAsync(string id)
         {
             // parse the id
             if (!ObjectId.TryParse(id, out var objectId))
@@ -160,11 +157,11 @@ namespace WebService.Controllers.Bases
                 throw new NotFoundException($"The {typeof(T).Name} with id {id} could not be found");
 
             // use the data service to remove the item
-            return await DataService.RemoveAsync(objectId)
-                // if the item was deleted return status ok
-                ? StatusCode((int) HttpStatusCode.OK)
-                // if the item could not be deleted, throw exception
-                : throw new NotFoundException($"The {typeof(T).Name} with id {id} could not be found");
+            var result = await DataService.RemoveAsync(objectId);
+
+            // if the item could not be deleted, throw exception
+            if (!result)
+                throw new NotFoundException($"The {typeof(T).Name} with id {id} could not be found");
         }
 
         /// <inheritdoc cref="IRestController{T}.UpdateAsync" />
@@ -177,7 +174,7 @@ namespace WebService.Controllers.Bases
         /// <returns>Status ok (200) if the <see cref="T"/> was updated</returns>
         /// <exception cref="NotFoundException">When the id cannot be parsed or <see cref="T"/> not found</exception>
         /// <exception cref="WebArgumentException">When the properties could not be converted to selectors</exception>
-        public virtual async Task<IActionResult> UpdateAsync([FromBody] T item, [FromQuery] string[] properties)
+        public virtual async Task UpdateAsync([FromBody] T item, [FromQuery] string[] properties)
         {
             //create selectors
             IEnumerable<Expression<Func<T, object>>> selectors = null;
@@ -193,11 +190,9 @@ namespace WebService.Controllers.Bases
                 // update the item in the data service
                 : await DataService.UpdateAsync(item, selectors);
 
-            return itemUpdated
-                // if the update failed, try creating a new item
-                ? StatusCode((int) HttpStatusCode.OK)
-                // if the update was a succes, reutrn 200
-                : await CreateAsync(item);
+            // if the update was a succes, reutrn 200
+            if (!itemUpdated)
+                await CreateAsync(item);
         }
 
         #endregion METHOD
