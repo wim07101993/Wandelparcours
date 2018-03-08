@@ -82,7 +82,7 @@ export class ResidentComponent implements OnInit {
                 today: 'Vandaag',
                 clear: 'Wissen',
                 close: 'Bevestigen',
-                closeOnSelect: false,
+                closeOnSelect: true,
                 format: 'mm-dd-yyyy'
             });
     }
@@ -230,7 +230,7 @@ export class ResidentComponent implements OnInit {
             dateFormat: 'mm-dd-yyyy',
             format: 'mm-dd-yyyy', //hier loopt iets mis?
             hiddenName: true,
-            closeOnSelect: false // Close upon selecting a date,
+            closeOnSelect: true // Close upon selecting a date,
         });
 
     }

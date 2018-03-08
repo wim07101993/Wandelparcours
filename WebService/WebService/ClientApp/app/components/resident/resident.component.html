@@ -20,8 +20,11 @@
 <!--Switch to cardview-->
 <div class="row" *ngIf="view=='card-view'">
     <div class="col s12 m6 l4" *ngFor="let resident of residents | filter:term">
-        <div class="card">
+        
+        <div id="content" class="card">
+            <img src="/images/resident.jpg" class="ribbon" (click)="navigateTo(resident)" style="cursor:pointer"/>
             <div class="card-content">
+                
                 <table>
                     <tr>
                         <td colspan="2" class="cardviewtd center">{{resident.firstName}}, {{resident.lastName}}</td>
@@ -63,7 +66,7 @@
 <!--Switch to listView-->
 <div class="row" *ngIf="view=='list-view'">
     <table class="striped">
-        <thead class="amber lighten-2">
+        <thead class="color-grad">
         <tr>
             <th class="myth">Voornaam</th>
             <th>Naam</th>
@@ -83,7 +86,7 @@
             <td>{{resident.room}}</td>
             <td>{{resident.doctor.name}}</td>
             <td>{{resident.doctor.phoneNumber}}</td>
-            <td class="center"><i class="material-icons orange-text pointer">portrait</i></td>
+            <td class="center"><i class="material-icons orange-text pointer" (click)="navigateTo(resident)">portrait</i></td>
             <td class="center"><i class="material-icons blue-text pointer" (click)="openEditModal(resident)">edit</i></td>
             <td class="center"><i class="material-icons red-text pointer" (click)="openModal(resident)">delete</i></td>
         </tr>
@@ -183,8 +186,8 @@
                         <label for="adoctor">Huisarts</label>
                     </div>
                     <div class="input-field col s6">
-                        <input id="atelefoon" type="text" class="validate" ngModel name="aTelefoon">
-                        <label for="atelefoon">Telefoon</label>
+                        <input id="atelefoon" type="text" class="validate" ngModel name="aTelefoon" pattern="[0-9\s]{11}" placeholder="012 345 678">
+                        <label for="atelefoon" class="active">Telefoon</label>
                     </div>
                 </div>
                 <div class="modal-footer">
