@@ -66,7 +66,7 @@ namespace WebService.Controllers
                 return x => x.Id;
 
             throw new WebArgumentException(
-                $"Property {propertyName} cannot be found on {typeof(ReceiverModule).Name}");
+                $"Property {propertyName} cannot be found on {typeof(ReceiverModule).Name}", nameof(propertyName));
         }
 
         #region post (create)
@@ -156,6 +156,20 @@ namespace WebService.Controllers
         [HttpPut]
         public override async Task UpdateAsync([FromBody] ReceiverModule item, [FromQuery] string[] propertiesToUpdate)
             => await base.UpdateAsync(item, propertiesToUpdate);
+
+        /// <inheritdoc cref="IRestController{T}.UpdatePropertyAsync"/>
+        /// <summary>
+        /// UpdatePropertyAsync is supposed to update the jsonValue of the asked property of the asked <see cref="ReceiverModule"/>.
+        /// </summary>
+        /// <param name="id">is the id of the <see cref="ReceiverModule"/></param>
+        /// <param name="propertyName">is the name of the property to update</param>
+        /// <param name="jsonValue">is the new jsonValue of the property</param>
+        /// <exception cref="NotFoundException">When the id cannot be parsed or <see cref="ReceiverModule"/> not found</exception>
+        /// <exception cref="WebArgumentException">When the property could not be found on <see cref="ReceiverModule"/> or the jsonValue could not be assigned</exception>
+        /// <exception cref="Exception">When the update failed</exception>
+        [HttpPut("{id}/{propertyName}")]
+        public override async Task UpdatePropertyAsync(string id, string propertyName, [FromBody] string jsonValue)
+            => await base.UpdatePropertyAsync(id, propertyName, jsonValue);
 
         #endregion put (update)
 

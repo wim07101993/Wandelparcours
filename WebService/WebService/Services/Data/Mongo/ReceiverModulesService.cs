@@ -1,7 +1,11 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using MongoDB.Driver;
-using WebService.Helpers;
+using WebService.Helpers.Extensions;
 using WebService.Models;
 
 namespace WebService.Services.Data.Mongo
@@ -38,17 +42,42 @@ namespace WebService.Services.Data.Mongo
         /// MongoCollection is the mongo collection to query residents.
         /// </summary>
         public override IMongoCollection<ReceiverModule> MongoCollection { get; }
-        
 
-        /// <inheritdoc cref="IReceiverModuleService.GetAsync(string)" />
+
+        /// <inheritdoc cref="IReceiverModuleService.GetAsync(string,IEnumerable{Expression{Func{ReceiverModule,object}}})" />
         /// <summary>
         /// GetAsync should return the receiver module with the given mac.
         /// </summary>
         /// <param name="mac">is the mac address of the receiver module to fetch</param>
+        /// <param name="propertiesToInclude">are the properties that should be included in the objects</param>
         /// <returns>The receiver module with the given mac</returns>
-        public async Task<ReceiverModule> GetAsync(string mac) 
-            // return the item with the given mac address
-            => await MongoCollection.Find(x => x.Mac == mac).FirstOrDefaultAsync();
+        public async Task<ReceiverModule> GetAsync(string mac,
+                IEnumerable<Expression<Func<ReceiverModule, object>>> propertiesToInclude = null)
+        {
+            // get the item with the given id
+            var foundItem = MongoCollection.Find(x => x.Mac == mac);
+
+            // convert the properties to include to a list (if not null)
+            var properties = propertiesToInclude?.ToList();
+            // if the proeprties are null or there are none, return all the properties
+            if (EnumerableExtensions.IsNullOrEmpty(properties))
+                return await foundItem.FirstOrDefaultAsync();
+
+            // create a propertyfilter
+            var selector = Builders<ReceiverModule>.Projection.Include(x => x.Id);
+
+            //ReSharper disable once PossibleNullReferenceException
+            // iterate over all the properties and add them to the filter
+            foreach (var property in properties)
+                selector = selector.Include(property);
+
+            // return the item
+            return await foundItem
+                // filter the properties
+                .Project<ReceiverModule>(selector)
+                // execute the query
+                .FirstOrDefaultAsync();
+        }
 
         /// <inheritdoc cref="IReceiverModuleService.RemoveAsync(string)" />
         /// <summary>
@@ -66,6 +95,5 @@ namespace WebService.Services.Data.Mongo
             // return true if something acutaly happened
             return result.IsAcknowledged && result.DeletedCount > 0;
         }
-
     }
 }

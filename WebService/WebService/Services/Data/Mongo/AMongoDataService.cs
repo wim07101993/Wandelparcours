@@ -30,15 +30,15 @@ namespace WebService.Services.Data.Mongo
         /// GetPropertyAsync is supposed to return a single property of the <see cref="T"/> with the given id
         /// </summary>
         /// <param name="id">is the id of the <see cref="T"/> to get the property from</param>
-        /// <param name="propertySelector">is the selector to select the property to return</param>
+        /// <param name="propertyToSelect">is the selector to select the property to return</param>
         /// <returns>The value of the aksed property</returns>
-        public async Task<object> GetPropertyAsync(ObjectId id, Expression<Func<T, object>> propertySelector)
+        public async Task<object> GetPropertyAsync(ObjectId id, Expression<Func<T, object>> propertyToSelect)
         {
             // get the item with the given id
             var foundItem = MongoCollection.Find(x => x.Id == id);
 
             // create a property filter
-            var selector = Builders<T>.Projection.Include(propertySelector);
+            var selector = Builders<T>.Projection.Include(propertyToSelect);
 
             // excecute the query
             var items = await foundItem
@@ -47,7 +47,7 @@ namespace WebService.Services.Data.Mongo
 
             // return the asked property
             return items
-                .Select(propertySelector.Compile())
+                .Select(propertyToSelect.Compile())
                 .FirstOrDefault();
         }
 
@@ -218,7 +218,31 @@ namespace WebService.Services.Data.Mongo
             // update the document
             var updateResult = await MongoCollection.UpdateOneAsync(filter, update);
 
-            // return if something was updated
+            // return whether something was updated
+            return updateResult.IsAcknowledged;
+        }
+
+        /// <summary>
+        /// GetPropertyAsync updates a single property of the <see cref="T"/> with the given id
+        /// </summary>
+        /// <param name="id">is the id of the <see cref="T"/> to get the property from</param>
+        /// <param name="propertyToUpdate">is the selector to select the property to update</param>
+        /// <param name="value">is the new value of the property</param>
+        /// <returns>
+        /// - true if the property was updated
+        /// - false if the property was not updated
+        /// </returns>
+        public async Task<bool> UpdatePropertyAsync(ObjectId id, Expression<Func<T, object>> propertyToUpdate, object value)
+        {
+            // create a filter that filters on id
+            var filter = Builders<T>.Filter.Eq(x => x.Id, id);
+            // create an update definition.
+            var update = Builders<T>.Update.Set(propertyToUpdate, value);
+
+            // update the document
+            var updateResult = await MongoCollection.UpdateOneAsync(filter, update);
+
+            // return whether something was updated
             return updateResult.IsAcknowledged;
         }
 

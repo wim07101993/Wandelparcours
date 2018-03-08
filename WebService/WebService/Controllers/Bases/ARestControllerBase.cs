@@ -5,6 +5,7 @@ using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Bson;
+using Newtonsoft.Json;
 using WebService.Helpers.Exceptions;
 using WebService.Helpers.Extensions;
 using WebService.Models.Bases;
@@ -108,11 +109,11 @@ namespace WebService.Controllers.Bases
 
         /// <inheritdoc cref="IRestController{T}.GetPropertyAsync" />
         /// <summary>
-        /// GetProperty returns the valu of the asked property of the asked <see cref="T"/>.
+        /// GetProperty returns the jsonValue of the asked property of the asked <see cref="T"/>.
         /// </summary>
         /// <param name="id">is the id of the <see cref="T"/></param>
         /// <param name="propertyName">is the name of the property to return</param>
-        /// <returns>The value of the asked property</returns>
+        /// <returns>The jsonValue of the asked property</returns>
         /// <exception cref="NotFoundException">When the id cannot be parsed or <see cref="T"/> not found</exception>
         /// <exception cref="WebArgumentException">When the property could not be found on <see cref="T"/></exception>
         public virtual async Task<object> GetPropertyAsync(string id, string propertyName)
@@ -126,7 +127,7 @@ namespace WebService.Controllers.Bases
             if (!ObjectId.TryParse(id, out var objectId))
                 // if it fails, throw not found exception
                 throw new NotFoundException($"The {typeof(T).Name} with id {id} could not be found");
-            
+
             // get the property from the database
             return await DataService.GetPropertyAsync(objectId, ConvertStringToSelector(propertyName));
         }
@@ -155,7 +156,7 @@ namespace WebService.Controllers.Bases
                 ? ConvertStringsToSelectors(propertiesToInclude)
                 : null;
 
-            // get the value from the data service
+            // get the jsonValue from the data service
             var item = await DataService.GetAsync(objectId, selectors);
 
             return Equals(item, default(T))
@@ -214,6 +215,53 @@ namespace WebService.Controllers.Bases
             // if the update did not happen, try to create a new item.
             if (!updated)
                 await CreateAsync(item);
+        }
+
+        /// <inheritdoc cref="IRestController{T}.UpdatePropertyAsync"/>
+        /// <summary>
+        /// UpdatePropertyAsync is supposed to update the jsonValue of the asked property of the asked <see cref="T"/>.
+        /// </summary>
+        /// <param name="id">is the id of the <see cref="T"/></param>
+        /// <param name="propertyName">is the name of the property to update</param>
+        /// <param name="jsonValue">is the new jsonValue of the property</param>
+        /// <exception cref="NotFoundException">When the id cannot be parsed or <see cref="T"/> not found</exception>
+        /// <exception cref="WebArgumentException">When the property could not be found on <see cref="T"/> or the jsonValue could not be assigned</exception>
+        /// <exception cref="Exception">When the update failed</exception>
+        public virtual async Task UpdatePropertyAsync(string id, string propertyName, [FromBody] string jsonValue)
+        {
+            var property = typeof(T)
+                .GetProperties()
+                .FirstOrDefault(propertyInfo => propertyInfo.Name.EqualsWithCamelCasing(propertyName));
+
+            // check if the property exists on the item
+            if (property == null)
+                throw new WebArgumentException(
+                    $"Property {propertyName} cannot be found on {typeof(T).Name}", nameof(propertyName));
+
+            object value;
+            try
+            {
+                // try to convert the jsonValue to the type of the property
+                value = JsonConvert.DeserializeObject(jsonValue, property.PropertyType);
+            }
+            catch (JsonException)
+            {
+                // if it fails, throw web argument exception
+                throw new WebArgumentException(
+                    $"The passed jsonValue is not assignableto the property {propertyName} of type {typeof(T).Name}", jsonValue);
+            }
+
+
+            if (!ObjectId.TryParse(id, out var objectId))
+                // if it fails, throw not found exception
+                throw new NotFoundException($"The {typeof(T).Name} with id {id} could not be found");
+
+            // update the property int the database
+            var updated = await DataService.UpdatePropertyAsync(objectId, ConvertStringToSelector(propertyName), value);
+
+            // if the update did not happen, try to create a new item.
+            if (!updated)
+                throw new Exception($"Could not update property {propertyName} of {typeof(T).Name}");
         }
 
         #endregion update

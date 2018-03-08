@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using WebService.Helpers.Exceptions;
 using WebService.Models.Bases;
 
 namespace WebService.Controllers.Bases
@@ -28,11 +26,11 @@ namespace WebService.Controllers.Bases
         #region READ
 
         /// <summary>
-        /// GetProperty is supposed to return the valu of the asked property of the asked <see cref="T"/>.
+        /// GetProperty is supposed to return the jsonValue of the asked property of the asked <see cref="T"/>.
         /// </summary>
         /// <param name="id">is the id of the <see cref="T"/></param>
         /// <param name="propertyName">is the name of the property to return</param>
-        /// <returns>The value of the asked property</returns>
+        /// <returns>The jsonValue of the asked property</returns>
         /// <exception cref="NotFoundException">When the id cannot be parsed or <see cref="T"/> not found</exception>
         /// <exception cref="WebArgumentException">When the property could not be found on <see cref="T"/></exception>
         Task<object> GetPropertyAsync(string id, string propertyName);
@@ -71,6 +69,17 @@ namespace WebService.Controllers.Bases
         /// <exception cref="NotFoundException">When the id cannot be parsed or <see cref="T"/> not found</exception>
         /// <exception cref="WebArgumentException">When one ore more properties could not be converted to selectors</exception>
         Task UpdateAsync([FromBody] T item, [FromQuery] string[] propertiesToUpdate);
+
+
+        /// <summary>
+        /// UpdatePropertyAsync is supposed to update the jsonValue of the asked property of the asked <see cref="T"/>.
+        /// </summary>
+        /// <param name="id">is the id of the <see cref="T"/></param>
+        /// <param name="propertyName">is the name of the property to update</param>
+        /// <param name="jsonValue">is the new jsonValue of the property</param>
+         /// <exception cref="NotFoundException">When the id cannot be parsed or <see cref="T"/> not found</exception>
+        /// <exception cref="WebArgumentException">When the property could not be found on <see cref="T"/> or the jsonValue could not be assigned</exception>
+        Task UpdatePropertyAsync(string id, string propertyName, [FromBody] string jsonValue);
 
         #endregion UPDATE
 
