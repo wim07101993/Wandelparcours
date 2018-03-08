@@ -98,6 +98,7 @@ export class ResidentComponent implements OnInit {
      */
     async showAllResidents() {
         let residents: any = await this.service.getAllResidents();
+        console.log(residents);
         if (residents != undefined)
             this.residents = residents;
         else {
