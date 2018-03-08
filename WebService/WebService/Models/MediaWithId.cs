@@ -1,4 +1,5 @@
-﻿using WebService.Models.Bases;
+﻿using MongoDB.Bson.Serialization.Attributes;
+using WebService.Models.Bases;
 
 namespace WebService.Models
 {
@@ -15,6 +16,7 @@ namespace WebService.Models
         /// <para/>
         /// If the <see cref="MediaWithId"/> has data, there can't be an url and the other way around.
         /// </summary>
+        [BsonElement("data")]
         public byte[] Data
         {
             get => _data;
@@ -32,6 +34,7 @@ namespace WebService.Models
         /// <para/>
         /// If the <see cref="MediaWithId"/> has an url, there can't be data and the other way around.
         /// </summary>
+        [BsonElement("url")]
         public string Url
         {
             get => _url;

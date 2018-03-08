@@ -10,10 +10,10 @@ declare var $:any;
 declare var Materialize:any;
 
 @Component({
-  selector: 'app-resident',
-  templateUrl: './resident.component.html',
-  styleUrls: ['./resident.component.css'],
-  providers: [RestServiceService]
+    selector: 'app-resident',
+    templateUrl: './resident.component.html',
+    styleUrls: ['./resident.component.css'],
+    providers: [RestServiceService]
 })
 
 export class ResidentComponent implements OnInit {
@@ -26,19 +26,19 @@ export class ResidentComponent implements OnInit {
     modalResident: Resident;
     updateResident: any;
     search: boolean = false;
-    
+
     constructor(private service: RestServiceService, private router: Router) {
         this.showAllResidents();
         this.residents = [];
-        
+
         this.modalResident = <Resident>{
             firstName: "", lastName: "", room: "", id: "", birthday: new Date(), doctor: { name: "", phoneNumber: "" }
         };
         this.updateResident = {
             firstName: "", lastName: "", room: "", id: "", birthday: "", doctor: { name: "", phoneNumber: "" }
         };
-        
-    } 
+
+    }
 
     /**
      * Focus to input
@@ -47,7 +47,7 @@ export class ResidentComponent implements OnInit {
         let a: any;
         setTimeout(() => {
             $('#focusToInput').focus();
-        }, 200);  
+        }, 200);
 
     }
 
@@ -110,18 +110,18 @@ export class ResidentComponent implements OnInit {
      * Delete resident async based on unique identifier --> "ID"
      * @param uniqueIdentifier
      */
-    
-        async deleteResident(uniqueIdentifier: string) {
+
+    async deleteResident(uniqueIdentifier: string) {
         await this.service.deleteResidentByUniqueId(uniqueIdentifier);
         this.showAllResidents();
-    }   
+    }
 
     /**
      * Edit and save resident from service
      * @param resident
      */
 
-        
+
 
     async editResident(resident: Resident) {
         this.updateResident.id = resident.id;
@@ -152,23 +152,20 @@ export class ResidentComponent implements OnInit {
         }
         if (this.updateResident.birthday == "") {
             this.updateResident.birthday = this.modalResident.birthday;
-            if (this.updateResident.birthday == "") {
-                this.updateResident.birtday = this.modalResident.birthday;
-            }
-            console.log(changedProperties);
-
-            $('#birthDay').val("");
-
-            let updateData = {value: this.updateResident, propertiesToUpdate: changedProperties};
-
-            await this.service.editResidentWithData(updateData);
-
-            this.updateResident = {
-                firstName: "", lastName: "", room: "", id: "", birthday: "", doctor: {name: "", phoneNumber: ""}
-            };
-
-            this.showAllResidents();
         }
+        console.log(changedProperties);
+
+        $('#birthDay').val("");
+
+        let updateData = this.updateResident
+
+        await this.service.editResidentWithData(updateData, changedProperties);
+
+        this.updateResident = {
+            firstName: "", lastName: "", room: "", id: "", birthday: "", doctor: { name: "", phoneNumber: "" }
+        };
+
+        this.showAllResidents();
     }
 
     cleanForm(){
@@ -197,7 +194,7 @@ export class ResidentComponent implements OnInit {
 
         // Send gathered data over the resrService
 
-        if ((await this.service.addResident(data))){    
+        if (await this.service.addResident(data)){    
             Materialize.toast(`bewoner: ${data.firstName} ${data.lastName} succesvol toegevoegd`, 5000);
         }else{
             Materialize.toast(`niet gelukt lan`, 5000);

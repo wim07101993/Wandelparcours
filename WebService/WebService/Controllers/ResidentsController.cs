@@ -107,6 +107,7 @@ namespace WebService.Controllers
                     selectors.Add(x => x.Tags);
                 else if (propertyName.EqualsWithCamelCasing(nameof(Resident.Videos)))
                     selectors.Add(x => x.Videos);
+                else if (propertyName.EqualsWithCamelCasing(nameof(Resident.Id))) continue;
                 else
                     throw new WebArgumentException(
                         $"Property {propertyName} cannot be found on {typeof(Resident).Name}", nameof(strings));
@@ -325,39 +326,6 @@ namespace WebService.Controllers
 
         #region put (update)
 
-        /// <summary>
-        /// Update is the method corresponding to the PUT method of the controller of the REST service.
-        /// <para />
-        /// It updates the fields of the <see cref="Resident" /> in the updater.
-        /// If the Item doesn't exist, a new is created in the database.
-        /// </summary>
-        /// <param name="updater">containse the <see cref="Resident" /> to update ande the properties that should be updated</param>
-        /// <returns>
-        /// - Status ok (200) if the <see cref="Resident" /> was updated
-        /// - Status created (201) if a new one was created
-        /// - Status bad request (400) if the passed updater is null
-        /// - Status internal server error (500) on error or not created
-        /// </returns>
-        [HttpPut]
-        [Obsolete]
-        public async Task UpdateAsync([FromBody] AUpdater<Resident> updater)
-            => await UpdateAsync(updater.Value, updater.PropertiesToUpdate);
-
-        /// <inheritdoc cref="ARestControllerBase{T}.UpdateAsync" />
-        /// <summary>
-        /// Update is the method corresponding to the PUT method of the controller of the REST service.
-        /// <para />
-        /// It updates the fields of the <see cref="Resident" /> in the updater.
-        /// If the Item doesn't exist, a new is created in the database.
-        /// </summary>
-        /// <param name="item">is the <see cref="Resident" /> to update</param>
-        /// <param name="properties">contains the properties that should be updated</param>
-        /// <returns>
-        /// - Status ok (200) if the <see cref="Resident" /> was updated
-        /// - Status created (201) if a new one was created
-        /// - Status bad request (400) if the passed properties are not found on <see cref="Resident" />
-        /// - Status internal server error (500) on error or not created
-        /// </returns>
         [HttpPut]
         public override async Task UpdateAsync([FromBody] Resident item, [FromQuery] string[] properties)
             => await base.UpdateAsync(item, properties);

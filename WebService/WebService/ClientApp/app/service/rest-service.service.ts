@@ -32,12 +32,24 @@ export class RestServiceService {
     }
 
     /**
-     * Test met observable
+     * get one resident and only the needed properties
      * @param uniqueIdentifier
      */
     getResidentBasedOnId(uniqueIdentifier: string) {
         return new Promise<Resident[]>(resolve => {
-            this.http.get(this.restUrl + 'api/v1/residents/' + uniqueIdentifier).subscribe(response => {
+            this.http.get(this.restUrl + 'api/v1/residents/' + uniqueIdentifier + '?properties=firstName&properties=lastName&properties=room&properties=birthday&properties=doctor').subscribe(response => {
+                resolve(<Resident[]>response.json());
+            },
+                error => {
+                    resolve(undefined);
+                }
+            );
+        });
+    }
+
+    getImagesOfResidentBasedOnId(uniqueIdentifier: string) {
+        return new Promise<Resident[]>(resolve => {
+            this.http.get(this.restUrl + 'api/v1/residents/' + uniqueIdentifier + '?properties=images').subscribe(response => {
                 resolve(<Resident[]>response.json());
             },
                 error => {
@@ -68,11 +80,16 @@ export class RestServiceService {
      * Update resident in database
      * @param dataToUpdate
      */
-    editResidentWithData(dataToUpdate: any) {
+    editResidentWithData(dataToUpdate: any, changedProperties: any) {
         console.log(dataToUpdate);
-        
+        let s: string = "";
+        let url: string = "?properties=" + changedProperties[0];
+        for (var _i = 1; _i < changedProperties.length; _i++ ){
+            url += "&properties=" + changedProperties[_i];
+        }
+
         return new Promise(resolve => {
-            this.http.put(this.restUrl + 'api/v1/residents', dataToUpdate).subscribe(response => {
+            this.http.put(this.restUrl + 'api/v1/residents'+url, dataToUpdate).subscribe(response => {
                 console.log("updated");
                 resolve();
             }, error => {
