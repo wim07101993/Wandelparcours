@@ -13,6 +13,14 @@ namespace WebService.Services.Data
     public interface IDataService<T> where T : IModelWithID
     {
         /// <summary>
+        /// GetPropertyAsync is supposed to return a single property of the <see cref="T"/> with the given id
+        /// </summary>
+        /// <param name="id">is the id of the <see cref="T"/> to get the property from</param>
+        /// <param name="propertyToSelect">is the selector to select the property to return</param>
+        /// <returns>The value of the aksed property</returns>
+        Task<object> GetPropertyAsync(ObjectId id, Expression<Func<T, object>> propertyToSelect);
+
+        /// <summary>
         /// GetAsync is supposed to return the <see cref="T"/> with the given id from the database. 
         /// <para/>
         /// It should only fill the properties passed in the <see cref="propertiesToInclude"/> parameter. The id is always passed and 
@@ -63,7 +71,22 @@ namespace WebService.Services.Data
         /// </summary>
         /// <param name="newItem">is the <see cref="T"/> to update</param>
         /// <param name="propertiesToUpdate">are the properties that need to be updated</param>
-        /// <returns>The updated item</returns>
+        /// <returns>
+        /// - true if the <see cref="T"/> was updated
+        /// - false if the item was not updated
+        /// </returns>
         Task<bool> UpdateAsync(T newItem, IEnumerable<Expression<Func<T, object>>> propertiesToUpdate = null);
+
+        /// <summary>
+        /// GetPropertyAsync is supposed to update a single property of the <see cref="T"/> with the given id
+        /// </summary>
+        /// <param name="id">is the id of the <see cref="T"/> to get the property from</param>
+        /// <param name="propertyToUpdate">is the selector to select the property to update</param>
+        /// <param name="value">is the new value of the property</param>
+        /// <returns>
+        /// - true if the property was updated
+        /// - false if the property was not updated
+        /// </returns>
+        Task<bool> UpdatePropertyAsync(ObjectId id, Expression<Func<T, object>> propertyToUpdate, object value);
     }
 }

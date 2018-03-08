@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Bson;
+using Newtonsoft.Json;
 using WebService.Helpers.Exceptions;
 using WebService.Helpers.Extensions;
 using WebService.Models.Bases;
@@ -65,39 +67,99 @@ namespace WebService.Controllers.Bases
         #region METHODS
 
         /// <summary>
-        /// ConvertStringsToSelectors should convert a collection of property names to their selector in the form of 
-        /// <see cref="Expression{TDelegate}"/> of type <see cref="Func{TInput,TResult}"/>
+        /// ConvertStringToSelector should convert a property name to it's selector in the form of a
+        /// <see cref="Func{TInput,TResult}"/>
         /// </summary>
-        /// <param name="strings">are the property names to convert to selectors</param>
-        /// <returns>An <see cref="IEnumerable{TDelegate}"/> that contains the converted selectors</returns>
-        public abstract IEnumerable<Expression<Func<T, object>>> ConvertStringsToSelectors(IEnumerable<string> strings);
+        /// <param name="propertyName">is the property name to convert to a selector</param>
+        /// <returns>An <see cref="Func{TInput,TResult}"/> that contains the converted selector</returns>
+        /// <exception cref="WebArgumentException">When the property could not be converted to a selector</exception>
+        public abstract Expression<Func<T, object>> ConvertStringToSelector(string propertyName);
 
-        /// <inheritdoc cref="IRestController{T}.GetAsync(string,string[])" />
         /// <summary>
-        /// Get fetches the item with the given id in the database. 
-        /// To limit data traffic it is possible to select only a number of properties
+        /// ConvertStringToSelector converts property names to their selectors in the form of <see cref="Func{TInput,TResult}"/>
         /// </summary>
+        /// <param name="propertyNames">are the property names to convert to a selector</param>
+        /// <returns>An <see cref="Func{TInput,TResult}"/> that contains the converted selector</returns>
+        /// <exception cref="WebArgumentException">When the property could not be converted to a selector</exception>
+        public IEnumerable<Expression<Func<T, object>>> ConvertStringsToSelectors(IEnumerable<string> propertyNames)
+            => propertyNames.Select(ConvertStringToSelector);
+
+
+        #region create
+
+        /// <inheritdoc cref="IRestController{T}.CreateAsync" />
+        /// <summary>
+        /// Create is supposed to save the passed <see cref="T"/> to the database.
+        /// </summary>
+        /// <param name="item">is the <see cref="T"/> to save in the database</param>
+        /// <exception cref="Exception">When the item could not be created</exception>
+        public virtual async Task CreateAsync([FromBody] T item)
+        {
+            // use the data service to create a new item
+            var created = await DataService.CreateAsync(item);
+
+            // if the item was not created return throw exception
+            if (!created)
+                throw new Exception($"Could not create {typeof(T).Name} in the database");
+        }
+
+        #endregion create
+
+        #region read
+
+        /// <inheritdoc cref="IRestController{T}.GetPropertyAsync" />
+        /// <summary>
+        /// GetProperty returns the jsonValue of the asked property of the asked <see cref="T"/>.
+        /// </summary>
+        /// <param name="id">is the id of the <see cref="T"/></param>
+        /// <param name="propertyName">is the name of the property to return</param>
+        /// <returns>The jsonValue of the asked property</returns>
+        /// <exception cref="NotFoundException">When the id cannot be parsed or <see cref="T"/> not found</exception>
+        /// <exception cref="WebArgumentException">When the property could not be found on <see cref="T"/></exception>
+        public virtual async Task<object> GetPropertyAsync(string id, string propertyName)
+        {
+            // check if the property exists on the item
+            if (typeof(T).GetProperty(propertyName) == null)
+                throw new WebArgumentException(
+                    $"Property {propertyName} cannot be found on {typeof(T).Name}", nameof(propertyName));
+
+            // parse the id
+            if (!ObjectId.TryParse(id, out var objectId))
+                // if it fails, throw not found exception
+                throw new NotFoundException($"The {typeof(T).Name} with id {id} could not be found");
+
+            // get the property from the database
+            return await DataService.GetPropertyAsync(objectId, ConvertStringToSelector(propertyName));
+        }
+
+        /// <inheritdoc cref="IRestController{T}.GetAsync(string, string[])" />
+        /// <summary>
+        /// Get is supposed to return the <see cref="T"/> with the given id in the database. 
+        /// To limit data traffic it is possible to select only a number of properties.
+        /// <para/>
+        /// By default all properties are returned.
+        /// </summary>
+        /// <param name="id">is the id of the <see cref="T"/> to get</param>
+        /// <param name="propertiesToInclude">are the properties of which the values should be returned</param>
         /// <returns>The <see cref="T"/> in the database that has the given id</returns>
         /// <exception cref="NotFoundException">When the id cannot be parsed or <see cref="T"/> not found</exception>
-        /// <exception cref="WebArgumentException">When the properties could not be converted to selectors</exception>
-        public virtual async Task<T> GetAsync(string id, [FromQuery] string[] properties)
+        /// <exception cref="WebArgumentException">When one ore more properties could not be converted to selectors</exception>
+        public virtual async Task<T> GetAsync(string id, [FromQuery] string[] propertiesToInclude)
         {
             // parse the id
             if (!ObjectId.TryParse(id, out var objectId))
                 // if it fails, throw not found exception
                 throw new NotFoundException($"The {typeof(T).Name} with id {id} could not be found");
 
-            //create selectors
-            IEnumerable<Expression<Func<T, object>>> selectors = null;
-            // if there are no properties, they don't need to be converted
-            if (!EnumerableExtensions.IsNullOrEmpty(properties))
-                // convert the property names to selectors
-                selectors = ConvertStringsToSelectors(properties);
+            // convert the property names to selectors, if there are any
+            var selectors = !EnumerableExtensions.IsNullOrEmpty(propertiesToInclude)
+                ? ConvertStringsToSelectors(propertiesToInclude)
+                : null;
 
-            // get the value from the data service
+            // get the jsonValue from the data service
             var item = await DataService.GetAsync(objectId, selectors);
 
-            return item == null
+            return Equals(item, default(T))
                 // if the item is null, throw a not found exception
                 ? throw new NotFoundException($"The {typeof(T).Name} with id {id} could not be found")
                 // else return the values
@@ -106,48 +168,111 @@ namespace WebService.Controllers.Bases
 
         /// <inheritdoc cref="IRestController{T}.GetAsync(string[])" />
         /// <summary>
-        /// Get returns all the Items in the database wrapped in an <see cref="IActionResult"/>. 
-        /// To limit data traffic it is possible to select only a number of properties by default. 
-        /// By default the properties in the <see cref="PropertiesToSendOnGetAll"/> are the only ones sent.
+        /// Get is supposed to return all the Items in the database. 
+        /// To limit data traffic it is possible to select only a number of propertie.
+        /// <para/>
+        /// By default only the properties in the selector <see cref="PropertiesToSendOnGetAll"/> are returned.
         /// </summary>
-        /// <returns>
-        /// All <see cref="T"/>s in the database but only the given properties are filled in
-        /// </returns>
-        /// <exception cref="WebArgumentException">When the properties could not be converted to selectors</exception>
-        public virtual async Task<IEnumerable<T>> GetAsync([FromQuery] string[] properties)
+        /// <param name="propertiesToInclude">are the properties of which the values should be returned</param>
+        /// <returns>All <see cref="T"/>s in the database but only the given properties are filled in</returns>
+        /// <exception cref="WebArgumentException">When one ore more properties could not be converted to selectors</exception>
+        public virtual async Task<IEnumerable<T>> GetAsync([FromQuery] string[] propertiesToInclude)
         {
-            // the default selectors ar in the PropertiesToSendOnGetAll property
-            var selectors = PropertiesToSendOnGetAll;
-            if (!EnumerableExtensions.IsNullOrEmpty(properties))
-                // convert the property names to selectors
-                selectors = ConvertStringsToSelectors(properties);
+            // convert the property names to selectors, if there are any
+            var selectors = !EnumerableExtensions.IsNullOrEmpty(propertiesToInclude)
+                ? ConvertStringsToSelectors(propertiesToInclude)
+                : null;
 
             // return the items got from the data service
             return await DataService.GetAsync(selectors);
         }
 
-        /// <inheritdoc cref="IRestController{T}.CreateAsync" />
-        /// <summary>
-        /// Create saves the passed <see cref="T"/> to the database.
-        /// </summary>
-        /// <param name="item">is the <see cref="T"/> to save in the database</param>
-        /// <exception cref="NotFoundException">When the id cannot be parsed or <see cref="T"/> not found</exception>
-        public virtual async Task CreateAsync([FromBody] T item)
-        {
-            // use the data service to create a new item
-            var result = await DataService.CreateAsync(item);
+        #endregion read
 
-            // if the item was not created return throw exception
-            if (!result)
-                throw new Exception($"Could not create {typeof(T).Name} in the database");
+        #region update
+
+        /// <inheritdoc cref="IRestController{T}.UpdateAsync" />
+        /// <summary>
+        /// Update updates the fields of the <see cref="T"/> that are specified in the <see cref="propertiesToUpdate"/> parameter.
+        /// If the item doesn't exist, a new is created in the database.
+        /// <para/>
+        /// By default all properties are updated.
+        /// </summary>
+        /// <param name="item">is the <see cref="T"/> to update</param>
+        /// <param name="propertiesToUpdate">contains the properties that should be updated</param>
+        /// <exception cref="NotFoundException">When the id cannot be parsed or <see cref="T"/> not found</exception>
+        /// <exception cref="WebArgumentException">When one ore more properties could not be converted to selectors</exception>
+        public virtual async Task UpdateAsync([FromBody] T item, [FromQuery] string[] propertiesToUpdate)
+        {
+            // convert the property names to selectors, if there are any
+            var selectors = !EnumerableExtensions.IsNullOrEmpty(propertiesToUpdate)
+                ? ConvertStringsToSelectors(propertiesToUpdate)
+                : null;
+
+            // update the item in the database
+            var updated = await DataService.UpdateAsync(item, selectors);
+
+            // if the update did not happen, try to create a new item.
+            if (!updated)
+                await CreateAsync(item);
         }
+
+        /// <inheritdoc cref="IRestController{T}.UpdatePropertyAsync"/>
+        /// <summary>
+        /// UpdatePropertyAsync is supposed to update the jsonValue of the asked property of the asked <see cref="T"/>.
+        /// </summary>
+        /// <param name="id">is the id of the <see cref="T"/></param>
+        /// <param name="propertyName">is the name of the property to update</param>
+        /// <param name="jsonValue">is the new jsonValue of the property</param>
+        /// <exception cref="NotFoundException">When the id cannot be parsed or <see cref="T"/> not found</exception>
+        /// <exception cref="WebArgumentException">When the property could not be found on <see cref="T"/> or the jsonValue could not be assigned</exception>
+        /// <exception cref="Exception">When the update failed</exception>
+        public virtual async Task UpdatePropertyAsync(string id, string propertyName, [FromBody] string jsonValue)
+        {
+            var property = typeof(T)
+                .GetProperties()
+                .FirstOrDefault(propertyInfo => propertyInfo.Name.EqualsWithCamelCasing(propertyName));
+
+            // check if the property exists on the item
+            if (property == null)
+                throw new WebArgumentException(
+                    $"Property {propertyName} cannot be found on {typeof(T).Name}", nameof(propertyName));
+
+            object value;
+            try
+            {
+                // try to convert the jsonValue to the type of the property
+                value = JsonConvert.DeserializeObject(jsonValue, property.PropertyType);
+            }
+            catch (JsonException)
+            {
+                // if it fails, throw web argument exception
+                throw new WebArgumentException(
+                    $"The passed jsonValue is not assignableto the property {propertyName} of type {typeof(T).Name}", jsonValue);
+            }
+
+
+            if (!ObjectId.TryParse(id, out var objectId))
+                // if it fails, throw not found exception
+                throw new NotFoundException($"The {typeof(T).Name} with id {id} could not be found");
+
+            // update the property int the database
+            var updated = await DataService.UpdatePropertyAsync(objectId, ConvertStringToSelector(propertyName), value);
+
+            // if the update did not happen, try to create a new item.
+            if (!updated)
+                throw new Exception($"Could not update property {propertyName} of {typeof(T).Name}");
+        }
+
+        #endregion update
+
+        #region delete
 
         /// <inheritdoc cref="IRestController{T}.DeleteAsync" />
         /// <summary>
-        /// Delete removes the <see cref="T"/> with the passed id from the database.
+        /// Delete is supposed to remove the <see cref="T"/> with the passed id from the database.
         /// </summary>
         /// <param name="id">is the id of the <see cref="T"/> to remove from the database</param>
-        /// <returns>Status created (201) if succes</returns>
         /// <exception cref="NotFoundException">When the id cannot be parsed or <see cref="T"/> not found</exception>
         public virtual async Task DeleteAsync(string id)
         {
@@ -157,43 +282,14 @@ namespace WebService.Controllers.Bases
                 throw new NotFoundException($"The {typeof(T).Name} with id {id} could not be found");
 
             // use the data service to remove the item
-            var result = await DataService.RemoveAsync(objectId);
+            var removed = await DataService.RemoveAsync(objectId);
 
             // if the item could not be deleted, throw exception
-            if (!result)
+            if (!removed)
                 throw new NotFoundException($"The {typeof(T).Name} with id {id} could not be found");
         }
 
-        /// <inheritdoc cref="IRestController{T}.UpdateAsync" />
-        /// <summary>
-        /// Update updates the fields of the <see cref="T"/> that are specified in the <see cref="properties"/> parameter.
-        /// If the item doesn't exist, a new is created in the database.
-        /// </summary>
-        /// <param name="item">is the <see cref="T"/> to update</param>
-        /// <param name="properties">contains the properties that should be updated</param>
-        /// <returns>Status ok (200) if the <see cref="T"/> was updated</returns>
-        /// <exception cref="NotFoundException">When the id cannot be parsed or <see cref="T"/> not found</exception>
-        /// <exception cref="WebArgumentException">When the properties could not be converted to selectors</exception>
-        public virtual async Task UpdateAsync([FromBody] T item, [FromQuery] string[] properties)
-        {
-            //create selectors
-            IEnumerable<Expression<Func<T, object>>> selectors = null;
-            // if there are no properties, they don't need to be converted
-            if (!EnumerableExtensions.IsNullOrEmpty(properties))
-                // convert the property names to selectors
-                selectors = ConvertStringsToSelectors(properties);
-
-            // boolean to indicate whether the item is updated
-            var itemUpdated = EnumerableExtensions.IsNullOrEmpty(properties)
-                // if there are no properties to update, pass none to the data service
-                ? await DataService.UpdateAsync(item)
-                // update the item in the data service
-                : await DataService.UpdateAsync(item, selectors);
-
-            // if the update was a succes, reutrn 200
-            if (!itemUpdated)
-                await CreateAsync(item);
-        }
+        #endregion delete
 
         #endregion METHOD
     }

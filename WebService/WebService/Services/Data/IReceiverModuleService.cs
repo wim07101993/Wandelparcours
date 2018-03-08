@@ -1,4 +1,7 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq.Expressions;
+using System.Threading.Tasks;
 using WebService.Models;
 
 namespace WebService.Services.Data
@@ -6,11 +9,15 @@ namespace WebService.Services.Data
     public interface IReceiverModuleService : IDataService<ReceiverModule>
     {
         /// <summary>
-        /// GetAsync should return the receiver module with the given mac.
+        /// GetAsync is supposed to return the <see cref="ReceiverModule"/> with the given MAC-address from the database. 
+        /// <para/>
+        /// It should only fill the properties passed in the <see cref="propertiesToInclude"/> parameter. The MAC-address is always passed and 
+        /// if the <see cref="propertiesToInclude"/> parameter is null (which it is by default), all the properties are included. 
         /// </summary>
-        /// <param name="mac">is the mac address of the receiver module to fetch</param>
-        /// <returns>The receiver module with the given mac</returns>
-        Task<ReceiverModule> GetAsync(string mac);
+        /// <param name="mac">is the MAC-address of the item that needs to be fetched</param>
+        /// <param name="propertiesToInclude">are the properties that should be included in the objects</param>
+        /// <returns>An <see cref="IEnumerable{T}"/> filled with all the ts in the database.</returns>
+        Task<ReceiverModule> GetAsync(string mac, IEnumerable<Expression<Func<ReceiverModule, object>>> propertiesToInclude = null);
 
         /// <summary>
         /// RemoveAsync is supposed to remove the <see cref="ReceiverModule"/> with the given mac from the database.

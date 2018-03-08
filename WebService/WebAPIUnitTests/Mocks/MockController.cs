@@ -17,25 +17,18 @@ namespace WebAPIUnitTests.Mocks
 
         public override IEnumerable<Expression<Func<MockEntity, object>>> PropertiesToSendOnGetAll { get; } = null;
 
-        public override IEnumerable<Expression<Func<MockEntity, object>>> ConvertStringsToSelectors(
-            IEnumerable<string> strings)
+        public override Expression<Func<MockEntity, object>> ConvertStringToSelector(
+            string propertyName)
         {
-            var selectors = new List<Expression<Func<MockEntity, object>>>();
+            if (propertyName.EqualsWithCamelCasing(nameof(MockEntity.S)))
+                return x => x.S;
+            if (propertyName.EqualsWithCamelCasing(nameof(MockEntity.I)))
+                return x => x.I;
+            if (propertyName.EqualsWithCamelCasing(nameof(MockEntity.B)))
+                return x => x.B;
 
-            foreach (var propertyName in strings)
-            {
-                if (propertyName.EqualsWithCamelCasing(nameof(MockEntity.S)))
-                    selectors.Add(x => x.S);
-                else if (propertyName.EqualsWithCamelCasing(nameof(MockEntity.I)))
-                    selectors.Add(x => x.I);
-                else if (propertyName.EqualsWithCamelCasing(nameof(MockEntity.B)))
-                    selectors.Add(x => x.B);
-                else
-                    throw new ArgumentException(nameof(strings),
-                        $"Property {propertyName} cannot be found on {typeof(MockEntity).Name}");
-            }
-
-            return selectors;
+            throw new ArgumentException(nameof(propertyName),
+                $"Property {propertyName} cannot be found on {typeof(MockEntity).Name}");
         }
     }
 }
