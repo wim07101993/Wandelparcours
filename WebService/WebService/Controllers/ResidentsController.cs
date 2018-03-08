@@ -5,7 +5,9 @@ using System.Linq.Expressions;
 using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using MongoDB.Bson;
 using WebService.Controllers.Bases;
+using WebService.Helpers.Exceptions;
 using WebService.Helpers.Extensions;
 using WebService.Services.Logging;
 using WebService.Models;
@@ -14,15 +16,13 @@ using WebService.Services.Data;
 
 namespace WebService.Controllers
 {
-    /// <inheritdoc cref="Controller"/>
+    /// <inheritdoc cref="ARestControllerBase{T}"/>
     /// <summary>
-    /// ResidentsController is a controller for the REST service.
-    /// <para />
-    /// It handles the reading and writing of residents data to the database.
+    /// ResidentsController handles the reading and writing of residents data to the database.
     /// </summary>
     [Route("api/v1/[controller]")]
     [SuppressMessage("ReSharper", "SpecifyACultureInStringConversionExplicitly")]
-    public class ResidentsController : ARestControllerBase<Resident>
+    public class ResidentsController : ARestControllerBase<Resident>, IResidentsController
     {
         #region CONSTRUCTOR
 
@@ -40,26 +40,32 @@ namespace WebService.Controllers
         #endregion CONSTRUCTOR
 
 
-        #region METHODS
+        #region PROPERTIES
 
+        /// <inheritdoc cref="ARestControllerBase{T}.PropertiesToSendOnGetAll" />
         /// <summary>
         /// SmallDataProperties is a collection of expressions to select the properties that
         /// consume the least space (FirstName, LastName, Room Birthday and Doctor).
         /// </summary>
-        public override Expression<Func<Resident, object>>[] PropertiesToSendOnGet { get; } =
-        {
-            // specify the fields that need to be returned
-            x => x.FirstName,
-            x => x.LastName,
-            x => x.Room,
-            x => x.Birthday,
-            x => x.Doctor,
-        };
+        public override IEnumerable<Expression<Func<Resident, object>>> PropertiesToSendOnGetAll { get; }
+            = new Expression<Func<Resident, object>>[]
+            {
+                // specify the fields that need to be returned
+                x => x.FirstName,
+                x => x.LastName,
+                x => x.Room,
+                x => x.Birthday,
+                x => x.Doctor,
+            };
 
+        #endregion PROPERTIES
+
+
+        #region METHODS
 
         /// <inheritdoc cref="ARestControllerBase{T}.ConvertStringsToSelectors" />
         /// <summary>
-        /// ConvertStringsToSelectors should convert a collection of property names to their selector in the form of 
+        /// ConvertStringsToSelectors converts a collection of property names to their selector in the form of 
         /// <see cref="Expression{TDelagete}" /> of type <see cref="Func{TResult}" />
         /// </summary>
         /// <param name="strings">are the property names to convert to selectors</param>
@@ -102,116 +108,169 @@ namespace WebService.Controllers
                 else if (propertyName.EqualsWithCamelCasing(nameof(Resident.Videos)))
                     selectors.Add(x => x.Videos);
                 else
-                    throw new ArgumentException(nameof(strings),
-                        $"Property {propertyName} cannot be found on {typeof(Resident).Name}");
+                    throw new WebArgumentException(
+                        $"Property {propertyName} cannot be found on {typeof(Resident).Name}", nameof(strings));
             }
 
             return selectors;
         }
 
+        #region get (read)
+
         /// <inheritdoc cref="ARestControllerBase{T}.GetAsync(string,string[])" />
         /// <summary>
-        /// Get is the method corresponding to the GET method of the controller of the REST service.
-        /// <para />
-        /// It returns the Item with the given id in the database wrapped in an <see cref="IActionResult" />. To limit data traffic it is possible to
-        /// select only a number of properties by default. These properties are selected with the <see cref="properties" /> property.
+        /// Get returns the Item with the given id in the database wrapped in an <see cref="IActionResult"/>. 
+        /// To limit data traffic it is possible to select only a number of properties
         /// </summary>
-        /// <returns>
-        /// - Status ok (200) with An IEnumerable of all the Items in the database on success
-        /// - Status bad request (400) when there are properties passed that do not exist in a <see cref="Resident" />
-        /// - Status not found (404) when there is no <see cref="Resident" /> with the given id found
-        /// - Status internal server error (500) when an error occures
-        /// </returns>
+        /// <returns>The <see cref="T"/> in the database that has the given id</returns>
+        /// <exception cref="NotFoundException">When the id cannot be parsed or <see cref="T"/> not found</exception>
+        /// <exception cref="WebArgumentException">When the properties could not be converted to selectors</exception>
         [HttpGet("{id}")]
-        public override async Task<IActionResult> GetAsync(string id, string[] properties)
+        public override async Task<Resident> GetAsync(string id, [FromQuery] string[] properties)
             => await base.GetAsync(id, properties);
 
-        /// <inheritdoc cref="ARestControllerBase{T}.GetAsync()" />
+        /// <inheritdoc cref="ARestControllerBase{T}.GetAsync(string[])" />
         /// <summary>
-        /// Get is the method corresponding to the GET method of the controller of the REST service.
-        /// <para />
-        /// It returns all the Items in the database wrapped in an <see cref="IActionResult" />. To limit data traffic it is possible to
-        /// select only a number of properties by default. These properties are selected with the <see cref="PropertiesToSendOnGet" /> property.
+        /// Get returns all the Items in the database wrapped in an <see cref="IActionResult"/>. 
+        /// To limit data traffic it is possible to select only a number of properties by default. 
+        /// By default the properties in the <see cref="PropertiesToSendOnGetAll"/> are the only ones sent.
         /// </summary>
         /// <returns>
-        /// - Status ok (200) with An IEnumerable of all the Items in the database on success
-        /// - Status internal server (500) error when an error occures
+        /// All <see cref="T"/>s in the database but only the given properties are filled in
         /// </returns>
+        /// <exception cref="WebArgumentException">When the properties could not be converted to selectors</exception>
         [HttpGet]
-        public override async Task<IActionResult> GetAsync()
-            => await base.GetAsync();
+        public override async Task<IEnumerable<Resident>> GetAsync([FromQuery] string[] properties)
+            => await base.GetAsync(properties);
 
+        /// <inheritdoc cref="IRestController{T}.GetAsync(string,string[])" />
         /// <summary>
-        /// Get is the method corresponding to the GET method of the controller of the REST service.
-        /// <para />
-        /// It returns the Item with the given tag in the database wrapped in an <see cref="IActionResult" />. To limit data traffic it is possible to
-        /// select only a number of properties by default. These properties are selected with the <see cref="properties" /> property.
+        /// Get returns the Item with the given tag in the database wrapped in an <see cref="IActionResult"/>. 
+        /// To limit data traffic it is possible to select only a number of properties
         /// </summary>
-        /// <returns>
-        /// - Status ok (200) with An IEnumerable of all the Items in the database on success
-        /// - Status bad request (400) when there are properties passed that do not exist in a <see cref="Resident" />
-        /// - Status not found (404) when there is no <see cref="Resident" /> with the given id found
-        /// - Status internal server error (500) when an error occures
-        /// </returns>
+        /// <returns>The <see cref="Resident"/> in the database that has the given tag</returns>
+        /// <exception cref="NotFoundException">When the no <see cref="Resident"/> has the given tag</exception>
+        /// <exception cref="WebArgumentException">When the properties could not be converted to selectors</exception>
         [HttpGet("byTag/{tag}")]
-        public async Task<IActionResult> GetAsync(int tag, string[] properties)
+        public async Task<Resident> GetAsync(int tag, [FromQuery] string[] properties)
         {
             //create selectors
             IEnumerable<Expression<Func<Resident, object>>> selectors = null;
             // if there are no properties, they don't need to be converted
             if (!EnumerableExtensions.IsNullOrEmpty(properties))
-                try
-                {
-                    // try converting the propertie names to selectors
-                    selectors = ConvertStringsToSelectors(properties);
-                }
-                catch (ArgumentException)
-                {
-                    // if it fails because of a bad argument (properties cannot be found)
-                    // return a 400 error
-                    return StatusCode((int)HttpStatusCode.BadRequest);
-                }
+                // convert the property names to selectors
+                selectors = ConvertStringsToSelectors(properties);
 
-            try
-            {
-                // get the item with the tag from the data service
-                var item = await ((IResidentsService) DataService).GetAsync(tag, selectors);
+            // get the item with the tag from the data service
+            var item = await ((IResidentsService) DataService).GetAsync(tag, selectors);
 
-                return item == null
-                    // if the item is null, return a 404
-                    ? StatusCode((int)HttpStatusCode.NotFound)
-                    // else return the values wrapped in a 200 response 
-                    : (IActionResult)Ok(item);
-            }
-            catch (Exception e)
-            {
-                // log the exception
-                Logger.Log(this, ELogLevel.Error, e);
-                // return a 500 error to the client
-                return StatusCode((int)HttpStatusCode.InternalServerError);
-            }
+            return item ?? throw new NotFoundException($"The {typeof(Resident).Name} with id {tag} could not be found");
         }
+
+        #endregion get (read)
+
+        #region post (create)
 
         /// <inheritdoc cref="ARestControllerBase{T}.CreateAsync" />
         /// <summary>
-        /// Create is the method corresonding to the POST method of the controller of the REST service.
-        /// <para />
-        /// It saves the passed <see cref="Resident" /> to the database.
+        /// Create saves the passed <see cref="Resident"/> to the database.
         /// </summary>
-        /// <param name="item">is the <see cref="Resident" /> to save in the database</param>
-        /// <returns>
-        /// - Status created (201) if succes
-        /// - Status internal server error (500) on error or not created
-        /// </returns>
+        /// <param name="item">is the <see cref="Resident"/> to save in the database</param>
+        /// <returns>A 201 Created status code if the <see cref="Resident"/> is created in the database</returns>
+        /// <exception cref="NotFoundException">When the id cannot be parsed or <see cref="Resident"/> not found</exception>
         [HttpPost]
-        public override async Task<IActionResult> CreateAsync([FromBody] Resident item)
+        public override async Task CreateAsync([FromBody] Resident item)
             => await base.CreateAsync(item);
+
+        [HttpPost("{residentId}/Music")]
+        public async Task AddMusicAsync(string residentId, [FromBody] byte[] data)
+            => await AddMediaAsync(residentId, data, EMediaType.Audio);
+
+        [HttpPost("{residentId}/Music")]
+        public async Task AddMusicAsync(string residentId, [FromBody] string url)
+            => await AddMediaAsync(residentId, url, EMediaType.Audio);
+
+        [HttpPost("{residentId}/Videos")]
+        public async Task AddVideoAsync(string residentId, byte[] data)
+            => await AddMediaAsync(residentId, data, EMediaType.Video);
+
+        [HttpPost("{residentId}/Videos")]
+        public async Task AddVideoAsync(string residentId, string url)
+            => await AddMediaAsync(residentId, url, EMediaType.Video);
+
+        [HttpPost("{residentId}/Images")]
+        public async Task AddImageAsync(string residentId, byte[] data)
+            => await AddMediaAsync(residentId, data, EMediaType.Image);
+
+        [HttpPost("{residentId}/Images")]
+        public async Task AddImageAsync(string residentId, string url)
+            => await AddMediaAsync(residentId, url, EMediaType.Image);
+
+        [HttpPost("{residentId}/Colors")]
+        public async Task AddColorAsync(string residentId, byte[] data)
+            => await AddMediaAsync(residentId, data, EMediaType.Color);
+
+        [HttpPost("{residentId}/Colors")]
+        public async Task AddColorAsync(string residentId, string url)
+            => await AddMediaAsync(residentId, url, EMediaType.Color);
+
+        private async Task<IActionResult> AddMediaAsync(string residentId, byte[] data, EMediaType mediaType)
+        {
+            // parse the id
+            if (!ObjectId.TryParse(residentId, out var residentObjectId))
+                // if it fails, return a 404
+                return StatusCode((int) HttpStatusCode.NotFound);
+
+            try
+            {
+                // use the data service to create a new updater
+                return await ((IResidentsService) DataService).AddMediaAsync(residentObjectId, data, mediaType)
+                    // if the updater was created return satus created
+                    ? StatusCode((int) HttpStatusCode.OK)
+                    // if the updater was not created return status not modified
+                    : StatusCode((int) HttpStatusCode.NotFound);
+            }
+            catch (Exception e)
+            {
+                // log the error
+                Logger.Log(this, ELogLevel.Error, e);
+                // return a 500 internal server error code
+                return StatusCode((int) HttpStatusCode.InternalServerError);
+            }
+        }
+
+        private async Task<IActionResult> AddMediaAsync(string residentId, string url, EMediaType mediaType)
+        {
+            // parse the id
+            if (!ObjectId.TryParse(residentId, out var residentObjectId))
+                // if it fails, return a 404
+                return StatusCode((int) HttpStatusCode.NotFound);
+
+            try
+            {
+                // use the data service to create a new updater
+                return await ((IResidentsService) DataService).AddMediaAsync(residentObjectId, url, mediaType)
+                    // if the updater was created return satus created
+                    ? StatusCode((int) HttpStatusCode.OK)
+                    // if the updater was not created return status not modified
+                    : StatusCode((int) HttpStatusCode.NotFound);
+            }
+            catch (Exception e)
+            {
+                // log the error
+                Logger.Log(this, ELogLevel.Error, e);
+                // return a 500 internal server error code
+                return StatusCode((int) HttpStatusCode.InternalServerError);
+            }
+        }
+
+        #endregion post (create)
+
+        #region delete
 
         /// <inheritdoc cref="ARestControllerBase{T}.DeleteAsync" />
         /// <summary>
-        /// Delete is the method corresonding to the DELETE method of the controller of the REST service.
-        /// <para />
-        /// It saves the passed <see cref="Resident" /> to the database.
+        /// Delete deletes the passed <see cref="Resident" /> from the database.
         /// </summary>
         /// <param name="id">is the id of the <see cref="Resident" /> to remove from the database</param>
         /// <returns>
@@ -220,10 +279,52 @@ namespace WebService.Controllers
         /// - Status internal server error (500) on error
         /// </returns>
         [HttpDelete("{id}")]
-        public override async Task<IActionResult> DeleteAsync(string id)
+        public override async Task DeleteAsync(string id)
             => await base.DeleteAsync(id);
 
-        /// <inheritdoc cref="ARestControllerBase{T}.UpdateAsync(AUpdater{T})" />
+        /// <summary>
+        /// RemoveVideoAsync is the method corre
+        /// </summary>
+        /// <param name="residentId"></param>
+        /// <param name="mediaId"></param>
+        /// <returns></returns>
+        [HttpPost("{residentId}/Music")]
+        public async Task RemoveVideoAsync(string residentId, string mediaId)
+            => await RemoveMediaAsync(residentId, mediaId, EMediaType.Audio);
+
+        [HttpPost("{residentId}/Videos")]
+        public async Task RemoveMusicAsync(string residentId, string mediaId)
+            => await RemoveMediaAsync(residentId, mediaId, EMediaType.Video);
+
+        [HttpPost("{residentId}/Images")]
+        public async Task RemoveImageAsync(string residentId, string mediaId)
+            => await RemoveMediaAsync(residentId, mediaId, EMediaType.Image);
+
+        [HttpPost("{residentId}/Colors")]
+        public async Task RemoveColorAsync(string residentId, string mediaId)
+            => await RemoveMediaAsync(residentId, mediaId, EMediaType.Color);
+
+        private async Task RemoveMediaAsync(string residentId, string mediaId, EMediaType mediaType)
+        {
+            // parse the id
+            if (!ObjectId.TryParse(residentId, out var residentObjectId))
+                // if it fails, return a 404
+                throw new NotFoundException();
+
+            if (!ObjectId.TryParse(mediaId, out var mediaObjectId))
+                // if it fails, return a 404
+                throw new NotFoundException();
+
+            // use the data service to create a new updater
+            if (!(await ((IResidentsService) DataService).RemoveMediaAsync(residentObjectId, mediaObjectId,
+                mediaType)))
+                throw new NotFoundException();
+        }
+
+        #endregion delete
+
+        #region put (update)
+
         /// <summary>
         /// Update is the method corresponding to the PUT method of the controller of the REST service.
         /// <para />
@@ -239,10 +340,10 @@ namespace WebService.Controllers
         /// </returns>
         [HttpPut]
         [Obsolete]
-        public override async Task<IActionResult> UpdateAsync([FromBody] AUpdater<Resident> updater)
-            => await base.UpdateAsync(updater);
+        public async Task UpdateAsync([FromBody] AUpdater<Resident> updater)
+            => await UpdateAsync(updater.Value, updater.PropertiesToUpdate);
 
-        /// <inheritdoc cref="ARestControllerBase{T}.UpdateAsync(Resident, string[])" />
+        /// <inheritdoc cref="ARestControllerBase{T}.UpdateAsync" />
         /// <summary>
         /// Update is the method corresponding to the PUT method of the controller of the REST service.
         /// <para />
@@ -258,9 +359,10 @@ namespace WebService.Controllers
         /// - Status internal server error (500) on error or not created
         /// </returns>
         [HttpPut]
-        public override async Task<IActionResult> UpdateAsync([FromBody] Resident item, [FromQuery] string[] properties)
+        public override async Task UpdateAsync([FromBody] Resident item, [FromQuery] string[] properties)
             => await base.UpdateAsync(item, properties);
 
+        #endregion put (update)
 
         #endregion METHODS
     }

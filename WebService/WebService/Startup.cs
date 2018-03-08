@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.SpaServices.Webpack;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Serialization;
+using WebService.Helpers.Extensions;
 using WebService.Models;
 using WebService.Services.Data;
 using WebService.Services.Data.Mongo;
@@ -26,8 +27,8 @@ namespace WebService
             services
                 .AddSingleton(typeof(ILogger), new LoggerCollection {new ConsoleLogger(), new FileLogger()})
                 .AddSingleton<IDataService<Resident>, ResidentsService>()
-                .AddSingleton<IDataService<ReceiverModule>, ReceiverModulesService>(); ;
-            
+                .AddSingleton<IDataService<ReceiverModule>, ReceiverModulesService>();
+
             services
                 .AddMvc()
                 .AddJsonOptions(options =>
@@ -52,18 +53,18 @@ namespace WebService
                 app.UseExceptionHandler("/Home/Error");
             }
 
-            app.UseStaticFiles();
+            app.UseExceptionMiddleware()
+                .UseStaticFiles()
+                .UseMvc(routes =>
+                {
+                    routes.MapRoute(
+                        name: "default",
+                        template: "{controller=Home}/{action=Index}/{id?}");
 
-            app.UseMvc(routes =>
-            {
-                routes.MapRoute(
-                    name: "default",
-                    template: "{controller=Home}/{action=Index}/{id?}");
-
-                routes.MapSpaFallbackRoute(
-                    name: "spa-fallback",
-                    defaults: new {controller = "Home", action = "Index"});
-            });
+                    routes.MapSpaFallbackRoute(
+                        name: "spa-fallback",
+                        defaults: new {controller = "Home", action = "Index"});
+                });
         }
     }
 }

@@ -13,7 +13,7 @@ using WebService.Services.Logging;
 namespace WebService.Controllers
 {
     [Route("api/v1/[controller]")]
-    public class ReceiverModulesController : ARestControllerBase<ReceiverModule>
+    public class ReceiverModulesController : ARestControllerBase<ReceiverModule>, IReceiverModulesController
     {
         #region CONSTRUCTOR
 
@@ -37,7 +37,7 @@ namespace WebService.Controllers
         /// SmallDataProperties is a collection of expressions to select the properties that
         /// consume the least space (FirstName, LastName, Room Birthday and Doctor).
         /// </summary>
-        public override Expression<Func<ReceiverModule, object>>[] PropertiesToSendOnGet { get; } = null;
+        public override IEnumerable<Expression<Func<ReceiverModule, object>>> PropertiesToSendOnGetAll { get; } = null;
 
 
         public override IEnumerable<Expression<Func<ReceiverModule, object>>> ConvertStringsToSelectors(
@@ -51,15 +51,15 @@ namespace WebService.Controllers
         /// Get is the method corresponding to the GET method of the controller of the REST service.
         /// <para/>
         /// It returns all the Items in the database wrapped in an <see cref="IActionResult"/>. To limit data traffic it is possible to
-        /// select only a number of properties by default. These properties are selected with the <see cref="PropertiesToSendOnGet"/> property.
+        /// select only a number of properties by default. These properties are selected with the <see cref="PropertiesToSendOnGetAll"/> property.
         /// </summary>
         /// <returns>
         /// - Status ok (200) with An IEnumerable of all the Items in the database on success
         /// - Status internal server (500) error when an error occures
         /// </returns>
         [HttpGet]
-        public override async Task<IActionResult> GetAsync()
-            => await base.GetAsync();
+        public override async Task<IEnumerable<ReceiverModule>> GetAsync([FromQuery] string[] properties)
+            => await base.GetAsync(properties);
 
         /// <summary>
         /// Get is the method corresponding to the GET method of the controller of the REST service.
@@ -104,13 +104,11 @@ namespace WebService.Controllers
         /// - Status internal server error (500) on error or not created
         /// </returns>
         [HttpPost]
-        public override async Task<IActionResult> CreateAsync([FromBody] ReceiverModule item)
+        public override async Task CreateAsync([FromBody] ReceiverModule item)
         {
             item.Position.TimeStamp=DateTime.Now;
-            return await base.CreateAsync(item);    
+            await base.CreateAsync(item);    
         }
-
-        
 
         /// <inheritdoc cref="ARestControllerBase{T}.DeleteAsync" />
         /// <summary>
@@ -125,27 +123,26 @@ namespace WebService.Controllers
         /// - Status internal server error (500) on error
         /// </returns>
         [HttpDelete("{mac}")]
-        public override async Task<IActionResult> DeleteAsync(string mac)
+        public override async Task DeleteAsync(string mac)
         {
             try
             {
                 // use the data service to remove the updater
-                return await ((IReceiverModuleService) DataService).RemoveAsync(mac)
-                    // if the updater was deleted return status ok
-                    ? StatusCode((int) HttpStatusCode.OK)
-                    // if the updater was not deleted return status no content
-                    : StatusCode((int) HttpStatusCode.NotFound);
+                await ((IReceiverModuleService) DataService).RemoveAsync(mac);
+                //// if the updater was deleted return status ok
+                //? StatusCode((int) HttpStatusCode.OK)
+                //// if the updater was not deleted return status no content
+                //: StatusCode((int) HttpStatusCode.NotFound);
             }
             catch (Exception e)
             {
                 // log the error
                 Logger.Log(this, ELogLevel.Error, e);
                 // return a 500 internal server error code
-                return StatusCode((int) HttpStatusCode.InternalServerError);
+                //return StatusCode((int) HttpStatusCode.InternalServerError);
             }
         }
 
-        /// <inheritdoc cref="ARestControllerBase{T}.UpdateAsync(AUpdater{T})" />
         /// <summary>
         /// Update is the method corresponding to the PUT method of the controller of the REST service.
         /// <para/>
@@ -161,10 +158,10 @@ namespace WebService.Controllers
         /// </returns>
         [HttpPut]
         [Obsolete]
-        public override async Task<IActionResult> UpdateAsync([FromBody] AUpdater<ReceiverModule> updater)
-            => await base.UpdateAsync(updater);
+        public async Task UpdateAsync([FromBody] AUpdater<ReceiverModule> updater)
+            => await UpdateAsync(updater.Value, updater.PropertiesToUpdate);
 
-        /// <inheritdoc cref="ARestControllerBase{T}.UpdateAsync(ReceiverModule, string[])" />
+        /// <inheritdoc cref="ARestControllerBase{T}.UpdateAsync" />
         /// <summary>
         /// Update is the method corresponding to the PUT method of the controller of the REST service.
         /// <para />
@@ -180,9 +177,9 @@ namespace WebService.Controllers
         /// - Status internal server error (500) on error or not created
         /// </returns>
         [HttpPut]
-        public override async Task<IActionResult> UpdateAsync([FromBody] ReceiverModule item, [FromQuery] string[] properties)
+        public override async Task UpdateAsync([FromBody] ReceiverModule item,
+            [FromQuery] string[] properties)
             => await base.UpdateAsync(item, properties);
-
 
         #endregion METHODS
     }

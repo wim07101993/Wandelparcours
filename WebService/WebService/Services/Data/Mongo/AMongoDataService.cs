@@ -110,7 +110,7 @@ namespace WebService.Services.Data.Mongo
         /// - the new id if the <see cref="T"/> was created in the database
         /// - null if the new item was not created
         /// </returns>
-        public async Task<string> CreateAsync(T item)
+        public async Task<bool> CreateAsync(T item)
         {
             // create a new id for the new item
             item.Id = ObjectId.GenerateNewId();
@@ -119,12 +119,8 @@ namespace WebService.Services.Data.Mongo
 
             // check if the new item was created
             return MongoCollection
-                       .Find(x => x.Id == item.Id)
-                       .FirstOrDefaultAsync() != null
-                // if it is, return the id
-                ? item.Id.ToString()
-                // else return null
-                : null;
+                .Find(x => x.Id == item.Id)
+                .Any();
         }
 
         /// <inheritdoc cref="IDataService{T}.RemoveAsync" />
@@ -154,7 +150,7 @@ namespace WebService.Services.Data.Mongo
         /// <param name="newItem">is the <see cref="T" /> to update</param>
         /// <param name="propertiesToUpdate">are the properties that need to be updated</param>
         /// <returns>The updated newItem</returns>
-        public async Task<T> UpdateAsync(T newItem, IEnumerable<Expression<Func<T, object>>> propertiesToUpdate = null)
+        public async Task<bool> UpdateAsync(T newItem, IEnumerable<Expression<Func<T, object>>> propertiesToUpdate = null)
         {
             // create list of the enumerable to prevent multiple enumerations of enumerable
             var propertiesToUpdateList = propertiesToUpdate?.ToList();
@@ -164,14 +160,8 @@ namespace WebService.Services.Data.Mongo
             {
                 // if there are no properties in the liest, replace the document
                 var replaceOneResult = await MongoCollection.ReplaceOneAsync(x => x.Id == newItem.Id, newItem);
-                // check if something was replaced
-                return replaceOneResult.IsAcknowledged && replaceOneResult.ModifiedCount > 0
-                    // if something was replaced, return the new newItem
-                    ? await MongoCollection
-                        .Find(x => x.Id == newItem.Id)
-                        .FirstOrDefaultAsync()
-                    // else return null
-                    : default(T);
+                // return if something was replaced
+                return replaceOneResult.IsAcknowledged;
             }
 
             // create a filter that filters on id
@@ -201,14 +191,8 @@ namespace WebService.Services.Data.Mongo
             // update the document
             var updateResult = await MongoCollection.UpdateOneAsync(filter, update);
 
-            // check if something was updated
-            return updateResult.IsAcknowledged
-                // if something was updated, return the new newItem
-                ? await MongoCollection
-                    .Find(x => x.Id == newItem.Id)
-                    .FirstOrDefaultAsync()
-                // else return null;
-                : default(T);
+            // return if something was updated
+            return updateResult.IsAcknowledged;
         }
 
         #endregion METHODS

@@ -113,9 +113,7 @@ namespace WebAPIUnitTests.Services
         {
             try
             {
-                var dataService = new Mocks.MockDataService();
-
-                var _ = dataService.CreateAsync(null).Result;
+                var _ = new Mocks.MockDataService().CreateAsync(null).Result;
             }
             catch (AggregateException e)
             {
@@ -126,77 +124,23 @@ namespace WebAPIUnitTests.Services
         [TestMethod]
         public void CreateEmptyMockEntity()
         {
-            var dataService = new Mocks.MockDataService();
-
-            var mockEntity = new MockEntity();
-
-            var id = dataService.CreateAsync(mockEntity).Result;
-            id
+            new Mocks.MockDataService().CreateAsync(new MockEntity()).Result
                 .Should()
-                .NotBeNullOrEmpty("it is assigned in the create method of the service");
-
-            var newMockEntity = dataService.MockData.FirstOrDefault(x => x.Id == new ObjectId(id));
-            newMockEntity
-                .Should()
-                .NotBeNull("it is created in the create method of the service");
-
-            // ReSharper disable PossibleNullReferenceException
-            newMockEntity
-                .Id
-                .Should()
-                .NotBe(default(ObjectId), "a new object id is created in the service");
-            // ReSharper restore PossibleNullReferenceException
-
-            var properties = typeof(MockEntity)
-                .GetProperties()
-                .Where(x => x.Name != nameof(MockEntity.Id));
-
-            foreach (var property in properties)
-                property
-                    .GetValue(newMockEntity)
-                    .Should()
-                    .Be(property.GetValue(mockEntity), $"it should be equal to the {property.Name} of the mockEntity");
+                .BeTrue("it is assigned in the create method of the service");
         }
 
         [TestMethod]
         public void CreateNormalMockEntity()
         {
-            var dataService = new Mocks.MockDataService();
-
-            var mockEntity = new MockEntity {S = "Anna", B = true};
-
-            var id = dataService.CreateAsync(mockEntity).Result;
-            id
+            new Mocks.MockDataService().CreateAsync(new MockEntity {S = "Anna", B = true}).Result
                 .Should()
-                .NotBeNullOrEmpty("it is assigned in the create method of the service");
-
-            var newMockEntity = dataService.MockData.FirstOrDefault(x => x.Id == new ObjectId(id));
-            newMockEntity
-                .Should()
-                .NotBeNull("it is created in the create method of the service");
-
-            // ReSharper disable PossibleNullReferenceException
-            newMockEntity
-                .Id
-                .Should()
-                .NotBe(default(ObjectId), "a new object id is created in the service");
-            // ReSharper restore PossibleNullReferenceException
-
-            var properties = typeof(MockEntity)
-                .GetProperties()
-                .Where(x => x.Name != nameof(MockEntity.Id));
-
-            foreach (var property in properties)
-                property
-                    .GetValue(newMockEntity)
-                    .Should()
-                    .Be(property.GetValue(mockEntity), $"it should be equal to the {property.Name} of the mockEntity");
+                .BeTrue("it is assigned in the create method of the service");
         }
 
         #endregion Create
 
 
-        #region RemoveMockEntity
+        #region Remove
 
         [TestMethod]
         public void RemoveMockEntityWithNonExistingID()
@@ -220,6 +164,13 @@ namespace WebAPIUnitTests.Services
                 .BeTrue("the item exist");
         }
 
-        #endregion RemoveMockEntity
+        #endregion Remove
+
+
+        #region Update
+
+        // TODO update testing
+
+        #endregion Update
     }
 }

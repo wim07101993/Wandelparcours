@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
-using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Bson;
+using WebService.Helpers.Exceptions;
 using WebService.Helpers.Extensions;
 using WebService.Models.Bases;
 using WebService.Services.Data;
@@ -12,7 +12,13 @@ using WebService.Services.Logging;
 
 namespace WebService.Controllers.Bases
 {
-    public abstract class ARestControllerBase<T> : Controller where T : IModelWithID
+    /// <inheritdoc cref="Controller" />
+    /// <inheritdoc cref="IRestController{T}" />
+    /// <summary>
+    /// ARestControllerBase is an abstract class that holds the methods to Get, Create, Delete and Update data to a database.
+    /// </summary>
+    /// <typeparam name="T">is the type of the data to handle</typeparam>
+    public abstract class ARestControllerBase<T> : Controller, IRestController<T> where T : IModelWithID
     {
         #region FIELDS
 
@@ -48,7 +54,10 @@ namespace WebService.Controllers.Bases
 
         #region PROPERTIES
 
-        public abstract Expression<Func<T, object>>[] PropertiesToSendOnGet { get; }
+        /// <summary>
+        /// PropertiesToSendOnGetAll are the selectors of the properties to send when all the <see cref="T"/>s are asked from the database.
+        /// </summary>
+        public abstract IEnumerable<Expression<Func<T, object>>> PropertiesToSendOnGetAll { get; }
 
         #endregion PROPERTIES
 
@@ -63,273 +72,127 @@ namespace WebService.Controllers.Bases
         /// <returns>An <see cref="IEnumerable{TDelegate}"/> that contains the converted selectors</returns>
         public abstract IEnumerable<Expression<Func<T, object>>> ConvertStringsToSelectors(IEnumerable<string> strings);
 
+        /// <inheritdoc cref="IRestController{T}.GetAsync(string,string[])" />
         /// <summary>
-        /// Get is the method corresponding to the GET method of the controller of the REST service.
-        /// <para/>
-        /// It returns the Item with the given id in the database wrapped in an <see cref="IActionResult"/>. To limit data traffic it is possible to
-        /// select only a number of properties by default. These properties are selected with the <see cref="properties"/> property.
+        /// Get fetches the item with the given id in the database. 
+        /// To limit data traffic it is possible to select only a number of properties
         /// </summary>
-        /// <returns>
-        /// - Status ok (200) with An IEnumerable of all the Items in the database on success
-        /// - Status bad request (400) when there are properties passed that do not exist in a <see cref="T"/>
-        /// - Status not found (404) when there is no <see cref="T"/> with the given id found
-        /// - Status internal server error (500) when an error occures
-        /// </returns>
-        public virtual async Task<IActionResult> GetAsync(string id, [FromQuery] string[] properties)
+        /// <returns>The <see cref="T"/> in the database that has the given id</returns>
+        /// <exception cref="NotFoundException">When the id cannot be parsed or <see cref="T"/> not found</exception>
+        /// <exception cref="WebArgumentException">When the properties could not be converted to selectors</exception>
+        public virtual async Task<T> GetAsync(string id, [FromQuery] string[] properties)
         {
             // parse the id
             if (!ObjectId.TryParse(id, out var objectId))
-                // if it fails, return a 404
-                return StatusCode((int) HttpStatusCode.NotFound);
+                // if it fails, throw not found exception
+                throw new NotFoundException($"The {typeof(T).Name} with id {id} could not be found");
 
             //create selectors
             IEnumerable<Expression<Func<T, object>>> selectors = null;
             // if there are no properties, they don't need to be converted
             if (!EnumerableExtensions.IsNullOrEmpty(properties))
-                try
-                {
-                    // try converting the propertie names to selectors
-                    selectors = ConvertStringsToSelectors(properties);
-                }
-                catch (ArgumentException)
-                {
-                    // if it fails because of a bad argument (properties cannot be found)
-                    // return a 400 error
-                    return StatusCode((int) HttpStatusCode.BadRequest);
-                }
+                // convert the property names to selectors
+                selectors = ConvertStringsToSelectors(properties);
 
-            try
-            {
-                // get the value from the data service
-                var item = await DataService.GetAsync(objectId, selectors);
+            // get the value from the data service
+            var item = await DataService.GetAsync(objectId, selectors);
 
-                return item == null
-                    // if the item is null, return a 404
-                    ? StatusCode((int) HttpStatusCode.NotFound)
-                    // else return the values wrapped in a 200 response 
-                    : (IActionResult) Ok(item);
-            }
-            catch (Exception e)
-            {
-                // log the exception
-                Logger.Log(this, ELogLevel.Error, e);
-                // return a 500 error to the client
-                return StatusCode((int) HttpStatusCode.InternalServerError);
-            }
+            return item == null
+                // if the item is null, throw a not found exception
+                ? throw new NotFoundException($"The {typeof(T).Name} with id {id} could not be found")
+                // else return the values
+                : item;
         }
 
+        /// <inheritdoc cref="IRestController{T}.GetAsync(string[])" />
         /// <summary>
-        /// Get is the method corresponding to the GET method of the controller of the REST service.
-        /// <para/>
-        /// It returns all the Items in the database wrapped in an <see cref="IActionResult"/>. To limit data traffic it is possible to
-        /// select only a number of properties by default. These properties are selected with the <see cref="PropertiesToSendOnGet"/> property.
+        /// Get returns all the Items in the database wrapped in an <see cref="IActionResult"/>. 
+        /// To limit data traffic it is possible to select only a number of properties by default. 
+        /// By default the properties in the <see cref="PropertiesToSendOnGetAll"/> are the only ones sent.
         /// </summary>
         /// <returns>
-        /// - Status ok (200) with An IEnumerable of all the Items in the database on success
-        /// - Status internal server (500) error when an error occures
+        /// All <see cref="T"/>s in the database but only the given properties are filled in
         /// </returns>
-        public virtual async Task<IActionResult> GetAsync()
+        /// <exception cref="WebArgumentException">When the properties could not be converted to selectors</exception>
+        public virtual async Task<IEnumerable<T>> GetAsync([FromQuery] string[] properties)
         {
-            try
-            {
-                // get the values from the data service
-                var items = await DataService.GetAsync(PropertiesToSendOnGet);
-                // return the values wrapped in a 200 response 
-                return Ok(items);
-            }
-            catch (Exception e)
-            {
-                // log the exception
-                Logger.Log(this, ELogLevel.Error, e);
-                // return a 500 error to the client
-                return StatusCode((int) HttpStatusCode.InternalServerError);
-            }
+            // the default selectors ar in the PropertiesToSendOnGetAll property
+            var selectors = PropertiesToSendOnGetAll;
+            if (!EnumerableExtensions.IsNullOrEmpty(properties))
+                // convert the property names to selectors
+                selectors = ConvertStringsToSelectors(properties);
+
+            // return the items got from the data service
+            return await DataService.GetAsync(selectors);
         }
 
+        /// <inheritdoc cref="IRestController{T}.CreateAsync" />
         /// <summary>
-        /// Create is the method corresonding to the POST method of the controller of the REST service.
-        /// <para/>
-        /// It saves the passed <see cref="T"/> to the database.
+        /// Create saves the passed <see cref="T"/> to the database.
         /// </summary>
         /// <param name="item">is the <see cref="T"/> to save in the database</param>
-        /// <returns>
-        /// - Status created (201) if succes
-        /// - Status internal server error (500) on error or not created
-        /// </returns>
-        public virtual async Task<IActionResult> CreateAsync([FromBody] T item)
+        /// <exception cref="NotFoundException">When the id cannot be parsed or <see cref="T"/> not found</exception>
+        public virtual async Task CreateAsync([FromBody] T item)
         {
-            try
-            {
-                // use the data service to create a new updater
-                return await DataService.CreateAsync(item) != null
-                    // if the updater was created return satus created
-                    ? StatusCode((int) HttpStatusCode.Created)
-                    // if the updater was not created return status not modified
-                    : StatusCode((int) HttpStatusCode.InternalServerError);
-            }
-            catch (Exception e)
-            {
-                // log the error
-                Logger.Log(this, ELogLevel.Error, e);
-                // return a 500 internal server error code
-                return StatusCode((int) HttpStatusCode.InternalServerError);
-            }
+            // use the data service to create a new item
+            var result = await DataService.CreateAsync(item);
+
+            // if the item was not created return throw exception
+            if (!result)
+                throw new Exception($"Could not create {typeof(T).Name} in the database");
         }
 
+        /// <inheritdoc cref="IRestController{T}.DeleteAsync" />
         /// <summary>
-        /// Delete is the method corresonding to the DELETE method of the controller of the REST service.
-        /// <para/>
-        /// It saves the passed <see cref="T"/> to the database.
+        /// Delete removes the <see cref="T"/> with the passed id from the database.
         /// </summary>
         /// <param name="id">is the id of the <see cref="T"/> to remove from the database</param>
-        /// <returns>
-        /// - Status created (201) if succes
-        /// - Status not found (40) if there was no erro but also no object to remove
-        /// - Status internal server error (500) on error
-        /// </returns>
-        public virtual async Task<IActionResult> DeleteAsync(string id)
+        /// <returns>Status created (201) if succes</returns>
+        /// <exception cref="NotFoundException">When the id cannot be parsed or <see cref="T"/> not found</exception>
+        public virtual async Task DeleteAsync(string id)
         {
-            // try to parse the id
+            // parse the id
             if (!ObjectId.TryParse(id, out var objectId))
-                // if it fails, return a 404 error
-                return StatusCode((int) HttpStatusCode.NotFound);
+                // if it fails, throw not found exception
+                throw new NotFoundException($"The {typeof(T).Name} with id {id} could not be found");
 
-            try
-            {
-                // use the data service to remove the updater
-                return await DataService.RemoveAsync(objectId)
-                    // if the updater was deleted return status ok
-                    ? StatusCode((int) HttpStatusCode.OK)
-                    // if the updater was not deleted return status no content
-                    : StatusCode((int) HttpStatusCode.NotFound);
-            }
-            catch (Exception e)
-            {
-                // log the error
-                Logger.Log(this, ELogLevel.Error, e);
-                // return a 500 internal server error code
-                return StatusCode((int) HttpStatusCode.InternalServerError);
-            }
+            // use the data service to remove the item
+            var result = await DataService.RemoveAsync(objectId);
+
+            // if the item could not be deleted, throw exception
+            if (!result)
+                throw new NotFoundException($"The {typeof(T).Name} with id {id} could not be found");
         }
 
+        /// <inheritdoc cref="IRestController{T}.UpdateAsync" />
         /// <summary>
-        /// Update is the method corresponding to the PUT method of the controller of the REST service.
-        /// <para/>
-        /// It updates the fields of the <see cref="T"/> in the updater.
-        /// If the Item doesn't exist, a new is created in the database.
-        /// </summary>
-        /// <param name="updater">contains the <see cref="T"/> to update and the properties that should be updated</param>
-        /// <returns>
-        /// - Status ok (200) if the <see cref="T"/> was updated
-        /// - Status created (201) if a new one was created
-        /// - Status bad request (400) if the passed updater is null
-        /// - Status internal server error (500) on error or not created
-        /// </returns>
-        [Obsolete]
-        public virtual async Task<IActionResult> UpdateAsync([FromBody] AUpdater<T> updater)
-        {
-            //create selectors
-            IEnumerable<Expression<Func<T, object>>> selectors = null;
-            // if there are no properties, they don't need to be converted
-            if (!EnumerableExtensions.IsNullOrEmpty(updater.PropertiesToUpdate))
-                try
-                {
-                    // try converting the propertie names to selectors
-                    selectors = ConvertStringsToSelectors(updater.PropertiesToUpdate);
-                }
-                catch (ArgumentException)
-                {
-                    // if it fails because of a bad argument (properties cannot be found)
-                    // return a 400 error
-                    return StatusCode((int) HttpStatusCode.BadRequest);
-                }
-
-            try
-            {
-                // check if the item to update exists
-                if (updater.Value == null)
-                    return new StatusCodeResult((int) HttpStatusCode.BadRequest);
-
-                T updatedResident;
-                if (EnumerableExtensions.IsNullOrEmpty(updater.PropertiesToUpdate))
-                    // if there are no properties to update, pass none to the data service
-                    updatedResident = await DataService.UpdateAsync(updater.Value);
-                else
-                {
-                    // update the item in the data service
-                    updatedResident = await DataService.UpdateAsync(updater.Value, selectors);
-                }
-
-                return Equals(updatedResident, default(T))
-                    // if the update failed, try creating a new item
-                    ? await CreateAsync(updater.Value)
-                    // if the update was a succes, reutrn 200
-                    : StatusCode((int) HttpStatusCode.OK);
-            }
-            catch (Exception e)
-            {
-                // log the error
-                Logger.Log(this, ELogLevel.Error, e);
-                // return a 500 internal server error code
-                return StatusCode((int) HttpStatusCode.InternalServerError);
-            }
-        }
-
-        /// <summary>
-        /// Update is the method corresponding to the PUT method of the controller of the REST service.
-        /// <para/>
-        /// It updates the fields of the <see cref="T"/> in the updater.
-        /// If the Item doesn't exist, a new is created in the database.
+        /// Update updates the fields of the <see cref="T"/> that are specified in the <see cref="properties"/> parameter.
+        /// If the item doesn't exist, a new is created in the database.
         /// </summary>
         /// <param name="item">is the <see cref="T"/> to update</param>
         /// <param name="properties">contains the properties that should be updated</param>
-        /// <returns>
-        /// - Status ok (200) if the <see cref="T"/> was updated
-        /// - Status created (201) if a new one was created
-        /// - Status bad request (400) if the passed properties are not found on <see cref="T"/>
-        /// - Status internal server error (500) on error or not created
-        /// </returns>
-        public virtual async Task<IActionResult> UpdateAsync([FromBody] T item, [FromQuery] string[] properties)
+        /// <returns>Status ok (200) if the <see cref="T"/> was updated</returns>
+        /// <exception cref="NotFoundException">When the id cannot be parsed or <see cref="T"/> not found</exception>
+        /// <exception cref="WebArgumentException">When the properties could not be converted to selectors</exception>
+        public virtual async Task UpdateAsync([FromBody] T item, [FromQuery] string[] properties)
         {
             //create selectors
             IEnumerable<Expression<Func<T, object>>> selectors = null;
             // if there are no properties, they don't need to be converted
             if (!EnumerableExtensions.IsNullOrEmpty(properties))
-                try
-                {
-                    // try converting the propertie names to selectors
-                    selectors = ConvertStringsToSelectors(properties);
-                }
-                catch (ArgumentException)
-                {
-                    // if it fails because of a bad argument (properties cannot be found)
-                    // return a 400 error
-                    return StatusCode((int) HttpStatusCode.BadRequest);
-                }
+                // convert the property names to selectors
+                selectors = ConvertStringsToSelectors(properties);
 
-            try
-            {
-                T updatedItem;
-                if (EnumerableExtensions.IsNullOrEmpty(properties))
-                    // if there are no properties to update, pass none to the data service
-                    updatedItem = await DataService.UpdateAsync(item);
-                else
-                    // update the item in the data service
-                    updatedItem = await DataService.UpdateAsync(item, selectors);
+            // boolean to indicate whether the item is updated
+            var itemUpdated = EnumerableExtensions.IsNullOrEmpty(properties)
+                // if there are no properties to update, pass none to the data service
+                ? await DataService.UpdateAsync(item)
+                // update the item in the data service
+                : await DataService.UpdateAsync(item, selectors);
 
-                return Equals(updatedItem, default(T))
-                    // if the update failed, try creating a new item
-                    ? await CreateAsync(item)
-                    // if the update was a succes, reutrn 200
-                    : StatusCode((int) HttpStatusCode.OK);
-            }
-            catch (Exception e)
-            {
-                // log the error
-                Logger.Log(this, ELogLevel.Error, e);
-                // return a 500 internal server error code
-                return StatusCode((int) HttpStatusCode.InternalServerError);
-            }
+            // if the update was a succes, reutrn 200
+            if (!itemUpdated)
+                await CreateAsync(item);
         }
 
         #endregion METHOD

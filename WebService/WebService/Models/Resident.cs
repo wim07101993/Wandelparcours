@@ -65,7 +65,7 @@ namespace WebService.Models
         /// In the database the value is stored under the field "tags"
         /// </summary>
         [BsonElement("tags")]
-        public IEnumerable<int> Tags { get; set; }
+        public List<int> Tags { get; set; }
 
         /// <summary>
         /// Music is the musiccollection of the Value
@@ -73,7 +73,7 @@ namespace WebService.Models
         /// In the database the value is stored under the field "music"
         /// </summary>
         [BsonElement("music")]
-        public IEnumerable<byte[]> Music { get; set; }
+        public List<MediaWithId> Music { get; set; }
 
         /// <summary>
         /// Videos is the videocollection of the Value
@@ -81,7 +81,7 @@ namespace WebService.Models
         /// In the database the value is stored under the field "videos"
         /// </summary>
         [BsonElement("videos")]
-        public IEnumerable<byte[]> Videos { get; set; }
+        public List<MediaWithId> Videos { get; set; }
 
         /// <summary>
         /// Images is the imagecollection of the Value
@@ -89,7 +89,7 @@ namespace WebService.Models
         /// In the database the value is stored under the field "images"
         /// </summary>
         [BsonElement("images")]
-        public IEnumerable<byte[]> Images { get; set; }
+        public List<MediaWithId> Images { get; set; }
 
         /// <summary>
         /// Colors are the favorite colors of the Value
@@ -97,7 +97,7 @@ namespace WebService.Models
         /// In the database the value is stored under the field "colors"
         /// </summary>
         [BsonElement("colors")]
-        public IEnumerable<byte[]> Colors { get; set; }
+        public List<MediaWithId> Colors { get; set; }
 
         /// <summary>
         /// LastRecordedPosition is position where the resident has last been tracked
@@ -113,6 +113,6 @@ namespace WebService.Models
         /// In the database the value is stored under the field "locations"
         /// </summary>
         [BsonElement("locations")]
-        public IEnumerable<Point> Locations { get; set; }
+        public List<Point> Locations { get; set; }
     }
 }
