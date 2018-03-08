@@ -35,6 +35,9 @@ namespace WebService.Services.Data.Mock
         public abstract T CreateNewItem(ObjectId id);
 
 
+        public virtual async Task<object> GetPropertyAsync(ObjectId id, Expression<Func<T, object>> propertyToSelect)
+            => MockData.Where(x => x.Id == id).Select(propertyToSelect.Compile()).FirstOrDefault();
+
         /// <inheritdoc cref="IDataService{T}.GetAsync(ObjectId,IEnumerable{Expression{Func{T,object}}})" />
         /// <summary>
         /// GetAsync returns the <see cref="!:T" /> with the given id from the database. 
@@ -216,6 +219,29 @@ namespace WebService.Services.Data.Mock
                     // if it does, add the selector and value to the updateDefinition
                     prop.SetValue(MockData[index], prop.GetValue(newItem));
             }
+
+            // return the updated item
+            return true;
+        }
+
+        public async Task<bool> UpdatePropertyAsync(ObjectId id, Expression<Func<T, object>> propertyToUpdate,
+            object value)
+        {
+            var index = MockData.FindIndex(x => x.Id == id);
+            if (index < 0)
+                return false;
+
+            // get the property
+            var prop = propertyToUpdate.Body is MemberExpression expression
+                // via member expression
+                ? expression.Member as PropertyInfo
+                // if that failse, unary expression
+                : ((MemberExpression) ((UnaryExpression) propertyToUpdate.Body).Operand).Member as PropertyInfo;
+
+            // check if the property exists
+            if (prop != null)
+                // if it does, add the selector and value to the updateDefinition
+                prop.SetValue(MockData[index], value);
 
             // return the updated item
             return true;

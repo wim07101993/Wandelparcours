@@ -25,6 +25,32 @@ namespace WebService.Services.Data.Mongo
 
         #region METHDOS
 
+        /// <inheritdoc cref="IDataService{T}.GetPropertyAsync"/>
+        /// <summary>
+        /// GetPropertyAsync is supposed to return a single property of the <see cref="T"/> with the given id
+        /// </summary>
+        /// <param name="id">is the id of the <see cref="T"/> to get the property from</param>
+        /// <param name="propertyToSelect">is the selector to select the property to return</param>
+        /// <returns>The value of the aksed property</returns>
+        public async Task<object> GetPropertyAsync(ObjectId id, Expression<Func<T, object>> propertyToSelect)
+        {
+            // get the item with the given id
+            var foundItem = MongoCollection.Find(x => x.Id == id);
+
+            // create a property filter
+            var selector = Builders<T>.Projection.Include(propertyToSelect);
+
+            // excecute the query
+            var items = await foundItem
+                .Project<T>(selector)
+                .ToListAsync();
+
+            // return the asked property
+            return items
+                .Select(propertyToSelect.Compile())
+                .FirstOrDefault();
+        }
+
         /// <inheritdoc cref="IDataService{T}.GetAsync(ObjectId,IEnumerable{Expression{System.Func{T,object}}})" />
         /// <summary>
         /// GetAsync returns the <see cref="T"/> with the given id from the database. 
@@ -37,7 +63,7 @@ namespace WebService.Services.Data.Mongo
         /// <returns>An <see cref="IEnumerable{T}"/> filled with all the ts in the database.</returns>
         public async Task<T> GetAsync(ObjectId id, IEnumerable<Expression<Func<T, object>>> propertiesToInclude = null)
         {
-            // get the item with the given mac address
+            // get the item with the given id
             var foundItem = MongoCollection.Find(x => x.Id == id);
 
             // convert the properties to include to a list (if not null)
@@ -150,7 +176,8 @@ namespace WebService.Services.Data.Mongo
         /// <param name="newItem">is the <see cref="T" /> to update</param>
         /// <param name="propertiesToUpdate">are the properties that need to be updated</param>
         /// <returns>The updated newItem</returns>
-        public async Task<bool> UpdateAsync(T newItem, IEnumerable<Expression<Func<T, object>>> propertiesToUpdate = null)
+        public async Task<bool> UpdateAsync(T newItem,
+            IEnumerable<Expression<Func<T, object>>> propertiesToUpdate = null)
         {
             // create list of the enumerable to prevent multiple enumerations of enumerable
             var propertiesToUpdateList = propertiesToUpdate?.ToList();
@@ -191,7 +218,31 @@ namespace WebService.Services.Data.Mongo
             // update the document
             var updateResult = await MongoCollection.UpdateOneAsync(filter, update);
 
-            // return if something was updated
+            // return whether something was updated
+            return updateResult.IsAcknowledged;
+        }
+
+        /// <summary>
+        /// GetPropertyAsync updates a single property of the <see cref="T"/> with the given id
+        /// </summary>
+        /// <param name="id">is the id of the <see cref="T"/> to get the property from</param>
+        /// <param name="propertyToUpdate">is the selector to select the property to update</param>
+        /// <param name="value">is the new value of the property</param>
+        /// <returns>
+        /// - true if the property was updated
+        /// - false if the property was not updated
+        /// </returns>
+        public async Task<bool> UpdatePropertyAsync(ObjectId id, Expression<Func<T, object>> propertyToUpdate, object value)
+        {
+            // create a filter that filters on id
+            var filter = Builders<T>.Filter.Eq(x => x.Id, id);
+            // create an update definition.
+            var update = Builders<T>.Update.Set(propertyToUpdate, value);
+
+            // update the document
+            var updateResult = await MongoCollection.UpdateOneAsync(filter, update);
+
+            // return whether something was updated
             return updateResult.IsAcknowledged;
         }
 

@@ -21,7 +21,8 @@
 }
 
 input.ng-invalid.ng-touched{
-    border: 1px solid crimson;
+    border: 1px dotted crimson;
+    border-radius: 4px;
 }
 
 .card-title{
@@ -44,11 +45,29 @@ input[type=text]:not(.browser-default){
     padding-left: 0px;
 }
 
-td.cardviewtd, th.cardviewtd{
+td.cardviewtd, th.cardviewth{
     padding-top:5px;
     padding-bottom: 5px;
 }
 
 .col:nth-child(odd) .card{
-    background-color: rgba(0,0,0, 0.1);
+    background: #edeae7; /* fallback for old browsers */
+    background: -webkit-linear-gradient(to right, #edeae7, #fdfdfd); /* Chrome 10-25, Safari 5.1-6 */
+    background: linear-gradient(to right, #edeae7, #fdfdfd);
+}
+
+#deleteModalResident.modal, #editModalResident.modal, #add-resident-modal.modal{
+    z-index: 99999999999 !important;
+}
+
+th:first-child.myth, td:first-child.mytd{
+    padding-left: 10px;
+}
+
+strong.attention{
+    color: crimson;
+    font-weight: bold;
+}
+H6{
+    margin-bottom: 10px;
 }

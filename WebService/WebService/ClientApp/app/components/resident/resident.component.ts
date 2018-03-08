@@ -79,9 +79,9 @@ export class ResidentComponent implements OnInit {
                 selectMonths: true, // Creates a dropdown to control month
                 selectYears: 120, // Creates a dropdown of 15 years to control year,
                 max: new Date(),
-                today: 'Today',
-                clear: 'Clear',
-                close: 'Ok',
+                today: 'Vandaag',
+                clear: 'Wissen',
+                close: 'Bevestigen',
                 closeOnSelect: false,
                 format: 'mm-dd-yyyy'
             });

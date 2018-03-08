@@ -1,6 +1,9 @@
 header {
-    padding: 10px;
+    padding-left: 4px;
     color: #fff;
+    background: #bbd2c5; /* fallback for old browsers */
+    background: -webkit-linear-gradient(to right, #bbd2c5, #536976); /* Chrome 10-25, Safari 5.1-6 */
+    background: linear-gradient(to right, #bbd2c5, #536976); 
 }
 
 .row{
