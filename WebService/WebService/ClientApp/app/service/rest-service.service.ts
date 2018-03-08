@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Http, HttpModule, Response } from '@angular/http';
+import { Http, HttpModule, Response} from '@angular/http';
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/catch';
 import { getBaseUrl } from '../app.module.browser';
@@ -103,6 +103,22 @@ export class RestServiceService {
         console.log(data);
         return new Promise(resolve => {
             this.http.post(this.restUrl + 'api/v1/residents', data).subscribe(response => {
+                console.log("updated");
+                resolve(true);
+            }, error => {
+                console.log("Could not update data!");
+                resolve(false);
+            });
+        });
+    }
+
+    /////////
+    //MEDIA//
+    /////////
+
+    addImagesToDatabase(uniqueIdentifier: any,images: any) {
+        return new Promise(resolve => {
+            this.http.post(this.restUrl + 'api/v1/residents/' + uniqueIdentifier + '/pictures', images).subscribe(response => {
                 console.log("updated");
                 resolve(true);
             }, error => {

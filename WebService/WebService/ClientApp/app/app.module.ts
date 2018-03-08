@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { HttpModule } from '@angular/http';
 import { RouterModule, Routes } from '@angular/router';
 
+import { FileUploadModule } from 'ng2-file-upload';
 
 import { AppComponent } from './components/app/app.component';
 import { NavMenuComponent } from './components/navmenu/navmenu.component';
@@ -64,7 +65,8 @@ const appRoutes: Routes = [
         Ng2SearchPipeModule,
         HttpModule,
         FormsModule,
-        RouterModule.forRoot(appRoutes)
+        FileUploadModule,
+        RouterModule.forRoot(appRoutes),
     ]
 })
 export class AppModuleShared {

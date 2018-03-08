@@ -157,7 +157,7 @@ export class ResidentComponent implements OnInit {
 
         $('#birthDay').val("");
 
-        let updateData = this.updateResident
+        let updateData = this.updateResident;
 
         await this.service.editResidentWithData(updateData, changedProperties);
 
