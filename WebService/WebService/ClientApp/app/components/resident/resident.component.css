@@ -68,6 +68,22 @@ strong.attention{
     color: crimson;
     font-weight: bold;
 }
-H6{
+h6{
     margin-bottom: 10px;
+}
+
+#content {
+    position: relative;
+}
+#content img {
+    border-radius: 50%;
+    width: 28%;
+    position: absolute;
+    top: -12px;
+    left: -12px;
+}
+.color-grad{
+    background: #fffc00; /* fallback for old browsers */
+    background: -webkit-linear-gradient(to right, #ffffff, #fffc00); /* Chrome 10-25, Safari 5.1-6 */
+    background: linear-gradient(to right,#ffffff , #fffc00);
 }
