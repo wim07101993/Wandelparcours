@@ -125,7 +125,7 @@ namespace WebService.Controllers
         /// <param name="musicData">is the music to add to the <see cref="Resident"/>'s music list</param>
         /// <exception cref="NotFoundException">When the <see cref="residentId"/> cannot be parsed or <see cref="Resident"/> not found</exception>
         /// <exception cref="Exception">When the item could not be added</exception>
-        [HttpPost("{residentId}/Music")]
+        [HttpPost("{residentId}/Music/data")]
         public async Task AddMusicAsync(string residentId, [FromBody] byte[] musicData)
             => await AddMediaAsync(residentId, musicData, EMediaType.Audio);
 
@@ -137,7 +137,7 @@ namespace WebService.Controllers
         /// <param name="url">is the url to the music to add to the <see cref="Resident"/>'s music list</param>
         /// <exception cref="NotFoundException">When the <see cref="residentId"/> cannot be parsed or <see cref="Resident"/> not found</exception>
         /// <exception cref="Exception">When the item could not be added</exception>
-        [HttpPost("{residentId}/Music")]
+        [HttpPost("{residentId}/Music/url")]
         public async Task AddMusicAsync(string residentId, [FromBody] string url)
             => await AddMediaAsync(residentId, url, EMediaType.Audio);
 
@@ -149,8 +149,8 @@ namespace WebService.Controllers
         /// <param name="videoData">is the video to add to the <see cref="Resident"/>'s video list</param>
         /// <exception cref="NotFoundException">When the <see cref="residentId"/> cannot be parsed or <see cref="Resident"/> not found</exception>
         /// <exception cref="Exception">When the item could not be added</exception>
-        [HttpPost("{residentId}/Videos")]
-        public async Task AddVideoAsync(string residentId, byte[] videoData)
+        [HttpPost("{residentId}/Videos/data")]
+        public async Task AddVideoAsync(string residentId, [FromBody] byte[] videoData)
             => await AddMediaAsync(residentId, videoData, EMediaType.Video);
 
         /// <inheritdoc cref="IResidentsController.AddVideoAsync(string,string)"/>
@@ -161,8 +161,8 @@ namespace WebService.Controllers
         /// <param name="url">is the url to the video to add to the <see cref="Resident"/>'s video list</param>
         /// <exception cref="NotFoundException">When the <see cref="residentId"/> cannot be parsed or <see cref="Resident"/> not found</exception>
         /// <exception cref="Exception">When the item could not be added</exception>
-        [HttpPost("{residentId}/Videos")]
-        public async Task AddVideoAsync(string residentId, string url)
+        [HttpPost("{residentId}/Videos/url")]
+        public async Task AddVideoAsync(string residentId, [FromBody] string url)
             => await AddMediaAsync(residentId, url, EMediaType.Video);
 
         /// <inheritdoc cref="IResidentsController.AddImageAsync(string,byte[])"/>
@@ -173,8 +173,8 @@ namespace WebService.Controllers
         /// <param name="imageData">is the image to add to the <see cref="Resident"/>'s image list</param>
         /// <exception cref="NotFoundException">When the <see cref="residentId"/> cannot be parsed or <see cref="Resident"/> not found</exception>
         /// <exception cref="Exception">When the item could not be added</exception>
-        [HttpPost("{residentId}/Images")]
-        public async Task AddImageAsync(string residentId, byte[] imageData)
+        [HttpPost("{residentId}/Images/data")]
+        public async Task AddImageAsync(string residentId, [FromBody] byte[] imageData)
             => await AddMediaAsync(residentId, imageData, EMediaType.Image);
 
         /// <inheritdoc cref="IResidentsController.AddImageAsync(string,string)"/>
@@ -185,8 +185,8 @@ namespace WebService.Controllers
         /// <param name="url">is the url to the image to add to the <see cref="Resident"/>'s image list</param>
         /// <exception cref="NotFoundException">When the <see cref="residentId"/> cannot be parsed or <see cref="Resident"/> not found</exception>
         /// <exception cref="Exception">When the item could not be added</exception>
-        [HttpPost("{residentId}/Images")]
-        public async Task AddImageAsync(string residentId, string url)
+        [HttpPost("{residentId}/Images/url")]
+        public async Task AddImageAsync(string residentId, [FromBody] string url)
             => await AddMediaAsync(residentId, url, EMediaType.Image);
 
         /// <inheritdoc cref="IResidentsController.AddColorAsync(string,byte[])"/>
@@ -197,8 +197,8 @@ namespace WebService.Controllers
         /// <param name="colorData">is the color to add to the <see cref="Resident"/>'s color list</param>
         /// <exception cref="NotFoundException">When the <see cref="residentId"/> cannot be parsed or <see cref="Resident"/> not found</exception>
         /// <exception cref="Exception">When the item could not be added</exception>
-        [HttpPost("{residentId}/Colors")]
-        public async Task AddColorAsync(string residentId, byte[] colorData)
+        [HttpPost("{residentId}/Colors/data")]
+        public async Task AddColorAsync(string residentId, [FromBody] byte[] colorData)
             => await AddMediaAsync(residentId, colorData, EMediaType.Color);
 
         /// <inheritdoc cref="IResidentsController.AddColorAsync(string,string)"/>
@@ -209,8 +209,8 @@ namespace WebService.Controllers
         /// <param name="url">is the url to the color to add to the <see cref="Resident"/>'s color list</param>
         /// <exception cref="NotFoundException">When the <see cref="residentId"/> cannot be parsed or <see cref="Resident"/> not found</exception>
         /// <exception cref="Exception">When the item could not be added</exception>
-        [HttpPost("{residentId}/Colors")]
-        public async Task AddColorAsync(string residentId, string url)
+        [HttpPost("{residentId}/Colors/url")]
+        public async Task AddColorAsync(string residentId, [FromBody] string url)
             => await AddMediaAsync(residentId, url, EMediaType.Color);
 
         /// <summary>
@@ -263,18 +263,35 @@ namespace WebService.Controllers
 
         #region get (read)
 
-        /// <inheritdoc cref="ARestControllerBase{T}.GetPropertyAsync" />
+        /// <inheritdoc cref="ARestControllerBase{T}.GetAsync(string[])" />
         /// <summary>
-        /// GetProperty returns the valu of the asked property of the asked <see cref="Resident"/>.
+        /// Get is supposed to return all the Items in the database wrapped in an <see cref="IActionResult"/>. 
+        /// To limit data traffic it is possible to select only a number of propertie.
+        /// <para/>
+        /// By default only the properties in the selector <see cref="PropertiesToSendOnGetAll"/> are returned.
         /// </summary>
-        /// <param name="id">is the id of the <see cref="Resident"/></param>
-        /// <param name="propertyName">is the name of the property to return</param>
-        /// <returns>The value of the asked property</returns>
+        /// <param name="propertiesToInclude">are the properties of which the values should be returned</param>
+        /// <returns>All <see cref="Resident"/>s in the database but only the given properties are filled in</returns>
+        /// <exception cref="WebArgumentException">When one ore more properties could not be converted to selectors</exception>
+        [HttpGet]
+        public override async Task<IEnumerable<Resident>> GetAsync([FromQuery] string[] propertiesToInclude)
+            => await base.GetAsync(propertiesToInclude);
+
+        /// <inheritdoc cref="ARestControllerBase{T}.GetAsync(string,string[])" />
+        /// <summary>
+        /// Get is supposed to return the <see cref="Resident"/> with the given id in the database. 
+        /// To limit data traffic it is possible to select only a number of properties.
+        /// <para/>
+        /// By default all properties are returned.
+        /// </summary>
+        /// <param name="id">is the id of the <see cref="Resident"/> to get</param>
+        /// <param name="propertiesToInclude">are the properties of which the values should be returned</param>
+        /// <returns>The <see cref="Resident"/> in the database that has the given id</returns>
         /// <exception cref="NotFoundException">When the id cannot be parsed or <see cref="Resident"/> not found</exception>
-        /// <exception cref="WebArgumentException">When the property could not be found on <see cref="Resident"/></exception>
-        [HttpGet("{id}/{propertyName}")]
-        public override async Task<object> GetPropertyAsync(string id, string propertyName)
-            => await base.GetPropertyAsync(id, propertyName);
+        /// <exception cref="WebArgumentException">When one ore more properties could not be converted to selectors</exception>
+        [HttpGet("{id}")]
+        public override async Task<Resident> GetAsync(string id, [FromQuery] string[] propertiesToInclude)
+            => await base.GetAsync(id, propertiesToInclude);
 
         /// <inheritdoc cref="IResidentsController.GetAsync(int, string[])" />
         /// <summary>
@@ -301,35 +318,18 @@ namespace WebService.Controllers
                    ?? throw new NotFoundException($"The {typeof(Resident).Name} with id {tag} could not be found");
         }
 
-        /// <inheritdoc cref="ARestControllerBase{T}.GetAsync(string,string[])" />
+        /// <inheritdoc cref="ARestControllerBase{T}.GetPropertyAsync" />
         /// <summary>
-        /// Get is supposed to return the <see cref="Resident"/> with the given id in the database. 
-        /// To limit data traffic it is possible to select only a number of properties.
-        /// <para/>
-        /// By default all properties are returned.
+        /// GetProperty returns the valu of the asked property of the asked <see cref="Resident"/>.
         /// </summary>
-        /// <param name="id">is the id of the <see cref="Resident"/> to get</param>
-        /// <param name="propertiesToInclude">are the properties of which the values should be returned</param>
-        /// <returns>The <see cref="Resident"/> in the database that has the given id</returns>
+        /// <param name="id">is the id of the <see cref="Resident"/></param>
+        /// <param name="propertyName">is the name of the property to return</param>
+        /// <returns>The value of the asked property</returns>
         /// <exception cref="NotFoundException">When the id cannot be parsed or <see cref="Resident"/> not found</exception>
-        /// <exception cref="WebArgumentException">When one ore more properties could not be converted to selectors</exception>
-        [HttpGet("{id}")]
-        public override async Task<Resident> GetAsync(string id, [FromQuery] string[] propertiesToInclude)
-            => await base.GetAsync(id, propertiesToInclude);
-
-        /// <inheritdoc cref="ARestControllerBase{T}.GetAsync(string[])" />
-        /// <summary>
-        /// Get is supposed to return all the Items in the database wrapped in an <see cref="IActionResult"/>. 
-        /// To limit data traffic it is possible to select only a number of propertie.
-        /// <para/>
-        /// By default only the properties in the selector <see cref="PropertiesToSendOnGetAll"/> are returned.
-        /// </summary>
-        /// <param name="propertiesToInclude">are the properties of which the values should be returned</param>
-        /// <returns>All <see cref="Resident"/>s in the database but only the given properties are filled in</returns>
-        /// <exception cref="WebArgumentException">When one ore more properties could not be converted to selectors</exception>
-        [HttpGet]
-        public override async Task<IEnumerable<Resident>> GetAsync([FromQuery] string[] propertiesToInclude)
-            => await base.GetAsync(propertiesToInclude);
+        /// <exception cref="WebArgumentException">When the property could not be found on <see cref="Resident"/></exception>
+        [HttpGet("{id}/{propertyName}")]
+        public override async Task<object> GetPropertyAsync(string id, string propertyName)
+            => await base.GetPropertyAsync(id, propertyName);
 
         #endregion get (read)
 
