@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
-using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using WebService.Controllers.Bases;
+using WebService.Helpers.Exceptions;
+using WebService.Helpers.Extensions;
 using WebService.Models;
-using WebService.Models.Bases;
 using WebService.Services.Data;
 using WebService.Services.Logging;
 
@@ -31,152 +31,155 @@ namespace WebService.Controllers
         #endregion CONSTRUCTOR
 
 
-        #region METHODS
+        #region PROPERTIES
 
+        /// <inheritdoc cref="ARestControllerBase{T}.PropertiesToSendOnGetAll" />
         /// <summary>
         /// SmallDataProperties is a collection of expressions to select the properties that
-        /// consume the least space (FirstName, LastName, Room Birthday and Doctor).
+        /// consume the least space (in this case all of them => value is null).
         /// </summary>
         public override IEnumerable<Expression<Func<ReceiverModule, object>>> PropertiesToSendOnGetAll { get; } = null;
 
+        #endregion PROPERTIES
 
+
+        #region METHODS
+
+        /// <inheritdoc cref="ARestControllerBase{T}.ConvertStringsToSelectors" />
+        /// <summary>
+        /// ConvertStringsToSelectors converts a collection of property names to their selector in the form of 
+        /// <see cref="Expression{TDelegate}"/> of type <see cref="Func{TInput,TResult}"/>
+        /// </summary>
+        /// <param name="strings">are the property names to convert to selectors</param>
+        /// <returns>An <see cref="IEnumerable{TDelegate}"/> that contains the converted selectors</returns>
+        /// <exception cref="WebArgumentException">When one ore more properties could not be converted to selectors</exception>
         public override IEnumerable<Expression<Func<ReceiverModule, object>>> ConvertStringsToSelectors(
             IEnumerable<string> strings)
         {
-            return null;
+            // create a new list of selectors
+            var selectors = new List<Expression<Func<ReceiverModule, object>>>();
+
+            // fill the list of selectors by iterating over the properties to update
+            foreach (var propertyName in strings)
+            {
+                // if the name of a properties matches a property of a Value, 
+                // add the corresponding selector
+                if (propertyName.EqualsWithCamelCasing(nameof(ReceiverModule.IsActive)))
+                    selectors.Add(x => x.IsActive);
+                else if (propertyName.EqualsWithCamelCasing(nameof(ReceiverModule.Mac)))
+                    selectors.Add(x => x.Mac);
+                else if (propertyName.EqualsWithCamelCasing(nameof(ReceiverModule.Position)))
+                    selectors.Add(x => x.Position);
+                else if (propertyName.EqualsWithCamelCasing(nameof(ReceiverModule.Id)))
+                    // the id is always passed on get and ignored on update
+                    // ReSharper disable once RedundantJumpStatement
+                    continue;
+                else
+                    throw new WebArgumentException(
+                        $"Property {propertyName} cannot be found on {typeof(ReceiverModule).Name}", nameof(strings));
+            }
+
+            return selectors;
         }
 
-        /// <inheritdoc cref="GetAsync()"/>
-        /// <summary>
-        /// Get is the method corresponding to the GET method of the controller of the REST service.
-        /// <para/>
-        /// It returns all the Items in the database wrapped in an <see cref="IActionResult"/>. To limit data traffic it is possible to
-        /// select only a number of properties by default. These properties are selected with the <see cref="PropertiesToSendOnGetAll"/> property.
-        /// </summary>
-        /// <returns>
-        /// - Status ok (200) with An IEnumerable of all the Items in the database on success
-        /// - Status internal server (500) error when an error occures
-        /// </returns>
-        [HttpGet]
-        public override async Task<IEnumerable<ReceiverModule>> GetAsync([FromQuery] string[] properties)
-            => await base.GetAsync(properties);
-
-        /// <summary>
-        /// Get is the method corresponding to the GET method of the controller of the REST service.
-        /// <para/>
-        /// It returns the Item with the given id in the database wrapped in an <see cref="IActionResult"/>.
-        /// </summary>
-        /// <param name="mac">is the mac address of the <see cref="ReceiverModule"/></param>
-        /// <returns>
-        /// - Status ok (200) with An IEnumerable of all the Items in the database on success
-        /// - Status bad request (400) when there are properties passed that do not exist in a <see cref="ReceiverModule"/>
-        /// - Status not found (404) when there is no <see cref="ReceiverModule"/> with the given id found
-        /// - Status internal server error (500) when an error occures
-        /// </returns>
-        [HttpGet("{mac}")]
-        public async Task<IActionResult> GetAsync(string mac)
-        {
-            try
-            {
-                // get the value from the data service
-                var item = await ((IReceiverModuleService) DataService).GetAsync(mac);
-                // return the value wrapped in a 200 response 
-                return Ok(item);
-            }
-            catch (Exception e)
-            {
-                // log the exception
-                Logger.Log(this, ELogLevel.Error, e);
-                // return a 500 error to the client
-                return StatusCode((int) HttpStatusCode.InternalServerError);
-            }
-        }
+        #region post (create)
 
         /// <inheritdoc cref="ARestControllerBase{T}.CreateAsync" />
         /// <summary>
-        /// Create is the method corresonding to the POST method of the controller of the REST service.
-        /// <para/>
-        /// It saves the passed <see cref="ReceiverModule"/> to the database.
+        /// Create is supposed to save the passed <see cref="ReceiverModule"/> to the database.
         /// </summary>
         /// <param name="item">is the <see cref="ReceiverModule"/> to save in the database</param>
-        /// <returns>
-        /// - Status created (201) if succes
-        /// - Status internal server error (500) on error or not created
-        /// </returns>
+        /// <exception cref="Exception">When the item could not be created</exception>
         [HttpPost]
         public override async Task CreateAsync([FromBody] ReceiverModule item)
             => await base.CreateAsync(item);
 
-        /// <inheritdoc cref="ARestControllerBase{T}.DeleteAsync" />
+        #endregion post (create)
+
+        #region get (read)
+
+        /// <inheritdoc cref="ARestControllerBase{T}.GetAsync(string, string[])" />
         /// <summary>
-        /// Delete is the method corresonding to the DELETE method of the controller of the REST service.
+        /// Get is supposed to return the <see cref="ReceiverModule"/> with the given MAC-address in the database. 
+        /// To limit data traffic it is possible to select only a number of properties.
         /// <para/>
-        /// It saves the passed <see cref="ReceiverModule"/> to the database.
+        /// By default all properties are returned.
         /// </summary>
-        /// <param name="mac">is the mac address of the <see cref="ReceiverModule"/> to remove from the database</param>
-        /// <returns>
-        /// - Status created (201) if succes
-        /// - Status not found (40) if there was no erro but also no object to remove
-        /// - Status internal server error (500) on error
-        /// </returns>
-        [HttpDelete("{mac}")]
-        public override async Task DeleteAsync(string mac)
+        /// <param name="mac">is the MAC-address of the <see cref="ReceiverModule"/> to get</param>
+        /// <param name="propertiesToInclude">are the properties of which the values should be returned</param>
+        /// <returns>The <see cref="ReceiverModule"/> in the database that has the given MAC-address</returns>
+        /// <exception cref="NotFoundException">When the MAC-address cannot be parsed or <see cref="ReceiverModule"/> not found</exception>
+        /// <exception cref="WebArgumentException">When one ore more properties could not be converted to selectors</exception>
+        [HttpGet("{mac}")]
+        public override async Task<ReceiverModule> GetAsync(string mac, [FromQuery] string[] propertiesToInclude)
         {
-            try
-            {
-                // use the data service to remove the updater
-                await ((IReceiverModuleService) DataService).RemoveAsync(mac);
-                //// if the updater was deleted return status ok
-                //? StatusCode((int) HttpStatusCode.OK)
-                //// if the updater was not deleted return status no content
-                //: StatusCode((int) HttpStatusCode.NotFound);
-            }
-            catch (Exception e)
-            {
-                // log the error
-                Logger.Log(this, ELogLevel.Error, e);
-                // return a 500 internal server error code
-                //return StatusCode((int) HttpStatusCode.InternalServerError);
-            }
+            // convert the property names to selectors, if there are any
+            var selectors = !EnumerableExtensions.IsNullOrEmpty(propertiesToInclude)
+                ? ConvertStringsToSelectors(propertiesToInclude)
+                : null;
+
+            // get the value from the data service
+            return await ((IReceiverModuleService) DataService).GetAsync(mac, selectors)
+                   ?? throw new NotFoundException(
+                       $"The {typeof(ReceiverModule).Name} with id {mac} could not be found");
         }
 
+        /// <inheritdoc cref="ARestControllerBase{T}.GetAsync(string[])" />
         /// <summary>
-        /// Update is the method corresponding to the PUT method of the controller of the REST service.
+        /// Get is supposed to return all the Items in the database. 
+        /// To limit data traffic it is possible to select only a number of propertie.
         /// <para/>
-        /// It updates the fields of the <see cref="ReceiverModule"/> in the updater.
-        /// If the Item doesn't exist, a new is created in the database.
+        /// By default only the properties in the selector <see cref="PropertiesToSendOnGetAll"/> are returned.
         /// </summary>
-        /// <param name="updater">containse the <see cref="ReceiverModule"/> to update ande the properties that should be updated</param>
-        /// <returns>
-        /// - Status ok (200) if the <see cref="ReceiverModule"/> was updated
-        /// - Status created (201) if a new one was created
-        /// - Status bad request (400) if the passed updater is null
-        /// - Status internal server error (500) on error or not created
-        /// </returns>
-        [HttpPut]
-        [Obsolete]
-        public async Task UpdateAsync([FromBody] AUpdater<ReceiverModule> updater)
-            => await UpdateAsync(updater.Value, updater.PropertiesToUpdate);
+        /// <param name="propertiesToInclude">are the properties of which the values should be returned</param>
+        /// <returns>All <see cref="ReceiverModule"/>s in the database but only the given properties are filled in</returns>
+        /// <exception cref="WebArgumentException">When one ore more properties could not be converted to selectors</exception>
+        [HttpGet]
+        public override async Task<IEnumerable<ReceiverModule>> GetAsync([FromQuery] string[] propertiesToInclude)
+            => await base.GetAsync(propertiesToInclude);
+
+        #endregion get (read)
+
+        #region put (update)
 
         /// <inheritdoc cref="ARestControllerBase{T}.UpdateAsync" />
         /// <summary>
-        /// Update is the method corresponding to the PUT method of the controller of the REST service.
-        /// <para />
-        /// It updates the fields of the <see cref="ReceiverModule" /> in the updater.
-        /// If the Item doesn't exist, a new is created in the database.
+        /// Update updates the fields of the <see cref="ReceiverModule"/> that are specified in the <see cref="propertiesToUpdate"/> parameter.
+        /// If the item doesn't exist, a new is created in the database.
+        /// <para/>
+        /// By default all properties are updated.
         /// </summary>
-        /// <param name="item">is the <see cref="ReceiverModule" /> to update</param>
-        /// <param name="properties">contains the properties that should be updated</param>
-        /// <returns>
-        /// - Status ok (200) if the <see cref="ReceiverModule" /> was updated
-        /// - Status created (201) if a new one was created
-        /// - Status bad request (400) if the passed properties are not found on <see cref="ReceiverModule" />
-        /// - Status internal server error (500) on error or not created
-        /// </returns>
+        /// <param name="item">is the <see cref="ReceiverModule"/> to update</param>
+        /// <param name="propertiesToUpdate">contains the properties that should be updated</param>
+        /// <exception cref="NotFoundException">When the id cannot be parsed or <see cref="ReceiverModule"/> not found</exception>
+        /// <exception cref="WebArgumentException">When one ore more properties could not be converted to selectors</exception>
         [HttpPut]
-        public override async Task UpdateAsync([FromBody] ReceiverModule item,
-            [FromQuery] string[] properties)
-            => await base.UpdateAsync(item, properties);
+        public override async Task UpdateAsync([FromBody] ReceiverModule item, [FromQuery] string[] propertiesToUpdate)
+            => await base.UpdateAsync(item, propertiesToUpdate);
+
+        #endregion put (update)
+
+        #region delete
+
+        /// <inheritdoc cref="ARestControllerBase{T}.DeleteAsync" />
+        /// <summary>
+        /// Delete is supposed to remove the <see cref="ReceiverModule"/> with the passed MAC-address from the database.
+        /// </summary>
+        /// <param name="mac">is the MAC-address of the <see cref="ReceiverModule"/> to remove from the database</param>
+        /// <exception cref="NotFoundException">When the MAC-address cannot be parsed or <see cref="ReceiverModule"/> not found</exception>
+        /// <exception cref="Exception">When the item could not be removed</exception>
+        [HttpDelete("{mac}")]
+        public override async Task DeleteAsync(string mac)
+        {
+            // use the data service to remove the item
+            var removed = await ((IReceiverModuleService)DataService).RemoveAsync(mac);
+
+            // if the item could not be deleted, throw exception
+            if (!removed)
+                throw new NotFoundException($"The {typeof(ReceiverModule).Name} with id {mac} could not be found");
+        }
+
+        #endregion delete
 
         #endregion METHODS
     }
