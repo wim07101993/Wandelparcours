@@ -34,7 +34,7 @@ const appRoutes: Routes = [
     { path: 'resident/:id/tracking', component: TrackingComponent },
     { path: 'counter', component: CounterComponent },
     { path: 'fetch-data', component: FetchDataComponent },
-    { path: 'stationmanagement', component: StationmanagementComponent },
+    { path: 'modules', component: StationmanagementComponent },
     { path: '**', redirectTo: 'resident' },
     { path: 'residents', component: ResidentsComponent },
     { path: '**', redirectTo: 'residents' }
