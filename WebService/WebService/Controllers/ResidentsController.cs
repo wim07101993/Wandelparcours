@@ -389,7 +389,7 @@ namespace WebService.Controllers
         /// When the <see cref="residentId"/>/<see cref="musicId"/> cannot be parsed or <see cref="Resident"/>/<see cref="MediaWithId"/> not found
         /// </exception>
         /// <exception cref="Exception">When the item could not be removed</exception>
-        [HttpPost("{residentId}/Music")]
+        [HttpDelete("{residentId}/Music")]
         public async Task RemoveVideoAsync(string residentId, string musicId)
             => await RemoveMediaAsync(residentId, musicId, EMediaType.Audio);
 
@@ -403,7 +403,7 @@ namespace WebService.Controllers
         /// When the <see cref="residentId"/>/<see cref="videoId"/> cannot be parsed or <see cref="Resident"/>/<see cref="MediaWithId"/> not found
         /// </exception>
         /// <exception cref="Exception">When the item could not be removed</exception>
-        [HttpPost("{residentId}/Videos")]
+        [HttpDelete("{residentId}/Videos")]
         public async Task RemoveMusicAsync(string residentId, string videoId)
             => await RemoveMediaAsync(residentId, videoId, EMediaType.Video);
 
@@ -417,7 +417,7 @@ namespace WebService.Controllers
         /// When the <see cref="residentId"/>/<see cref="imageId"/> cannot be parsed or <see cref="Resident"/>/<see cref="MediaWithId"/> not found
         /// </exception>
         /// <exception cref="Exception">When the item could not be removed</exception>
-        [HttpPost("{residentId}/Images")]
+        [HttpDelete("{residentId}/Images")]
         public async Task RemoveImageAsync(string residentId, string imageId)
             => await RemoveMediaAsync(residentId, imageId, EMediaType.Image);
 
@@ -431,7 +431,7 @@ namespace WebService.Controllers
         /// When the <see cref="residentId"/>/<see cref="colorId"/> cannot be parsed or <see cref="Resident"/>/<see cref="MediaWithId"/> not found
         /// </exception>
         /// <exception cref="Exception">When the item could not be removed</exception>
-        [HttpPost("{residentId}/Colors")]
+        [HttpDelete("{residentId}/Colors")]
         public async Task RemoveColorAsync(string residentId, string colorId)
             => await RemoveMediaAsync(residentId, colorId, EMediaType.Color);
 
