@@ -1,16 +1,13 @@
-import {Component, ElementRef, Inject, Injectable, OnInit, ViewChild} from '@angular/core';
-import {Http, ResponseContentType} from '@angular/http';
+import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
+import {Http} from '@angular/http';
 import {getBaseUrl} from "../../app.module.browser";
-import Result = jasmine.Result;
-import any = jasmine.any;
-import {letProto} from "rxjs/operator/let";
-import {Observable} from "rxjs/Observable";
-import {ThrowStmt} from "@angular/compiler";
 import {MouseEvents, Point} from "./MouseEvents"
-import {RenderBuffer,bufferelement} from "./RenderBuffer"
+import {Renderer} from "./Renderer"
+import {RenderBuffer,} from "./RenderBuffer"
 import {Station} from "../../models/station"
-declare var $: any
-declare var Materialize:any
+import {Sprites} from "./Sprites"
+declare var $: any;
+declare var Materialize:any;
 @Component({
   selector: 'app-stationmanagement',
   templateUrl: './stationmanagement.component.html',
@@ -22,10 +19,6 @@ declare var Materialize:any
 export class StationmanagementComponent implements OnInit {
     @ViewChild('myCanvas') canvasRef: ElementRef;
     
-    canvas:HTMLCanvasElement;
-    context: CanvasRenderingContext2D;
-    image:HTMLImageElement;
-    marker:HTMLImageElement;
     position: Point;
     renderBuffer:RenderBuffer;
     zoomFactor:number = 1;
@@ -35,10 +28,13 @@ export class StationmanagementComponent implements OnInit {
     markerUrl="";
     adMarker:boolean=false;
     collidingElement:any;
-    saveStation:Station;
+    saveStation:Station=new Station();
     menu:boolean=false;
-    stations:Station[]=[];
-    markersize=25;
+    stations=new Map<string,Point>();
+    stationMacAdresses:string[]=[];
+    markerscale=25;
+    renderer:Renderer;
+    markersize: number;
     async saveNewStation(){
         let reg=new RegExp("^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$");
         let mac =this.saveStation.mac;
@@ -46,7 +42,7 @@ export class StationmanagementComponent implements OnInit {
         if (reg.test(mac)){
             
             await this.saveStationToDatabase(this.saveStation);
-            this.stations = await this.loadStations();
+            await this.loadStations();
             this.saveStation=new Station();
             $("#markerModel").modal("close");
             this.adMarker=false;
@@ -56,63 +52,66 @@ export class StationmanagementComponent implements OnInit {
         
     }
    
-    constructor(private http: Http) {
-        this.saveStation=new Station();
-        console.log("sta");
-        console.log(this.stations);
-        console.log("sta");
-    }
+    constructor(private http: Http) {}
+
     async ngOnInit() {
-        
-      try{
-          
-            //load all available stations from db
-            this.stations = await this.loadStations();
-            //put the rendering canvas in a variable to draw
-            this.canvas=(<HTMLCanvasElement>this.canvasRef.nativeElement);
-            this.context=<CanvasRenderingContext2D> this.canvas.getContext("2d");
-            //set the imageurl
-            this.imageUrl= getBaseUrl()+"images/blueprint.jpg";
-            this.markerUrl=getBaseUrl()+"images/station.png";
-            //create class mouseevent(this class is responsible for all mouse events in the render canvas)
-            this.mouseEvents= new MouseEvents(this);
-            //create render buffer
-            this.renderBuffer=new RenderBuffer(this);
-            //load the blueprint of the building
-            await this.loadMap();
-            //load marker
-            await this.loadMarker();
-            //set the position of the map on the canvas
-            this.position={x:0,y:0};
-            $("#markerModel").modal();
-            
-            
-            //set a auto render of 5 fps
-            setInterval(()=>{this.tick()},1000/this.framerate);
-          this.tick();
-            
-      }catch (ex){
-          console.log("error");
-      }
+        //create renderer
+        this.renderer = new Renderer(this);
+        //set the imageurl
+        this.imageUrl= getBaseUrl()+"images/blueprint.jpg";
+        this.markerUrl=getBaseUrl()+"images/station.png";
+        this.renderBuffer=new RenderBuffer(this);
+        this.mouseEvents= new MouseEvents(this);
+        //load the blueprint of the building
+        await this.loadMap();
+        await this.DownloadMarker();
+        await this.loadStations();
+        await this.renderer.CleanAndUpdateRenderBuffer();
+        //load marker
+       
+        setInterval(()=>{this.tick()},1000/this.framerate);
+        /* try{
+              //load all available stations from db
+             this.stations = await this.loadStations();
+              //put the rendering canvas in a variable to draw 
+              this.canvas=(<HTMLCanvasElement>this.canvasRef.nativeElement);
+              
+              //get drawing context of canvas as 2d
+              this.context=<WebGLRenderingContext> this.canvas.getContext("webgl");
+              
+              //create class mouseevent(this class is responsible for all mouse events in the render canvas)
+              //create render buffer
+              
+              //set the position of the map on the canvas
+              this.position={x:0,y:0};
+              $("#markerModel").modal();
+              
+              
+              //set a auto render of 5 fps
+            this.tick();
+              
+        }catch (ex){
+            console.log("error");
+        }*/
     
     
     }
 
     
-    async closeModal(){
+    static async closeModal(){
         $("#markerModel").modal("close");
     }
     
     async deleteModal(id?:string){
         
         if (id!=undefined){
-            this.collidingElement = await this.renderBuffer.getElementById(id);    
-        }
-        
-        
-            
+            this.collidingElement =  id;
+            // noinspection JSJQueryEfficiency
             $("#deleteModal").modal();
+            // noinspection JSJQueryEfficiency
             $("#deleteModal").modal("open");
+        }
+          
         
     }
     //this function is needed to zoomin
@@ -136,105 +135,118 @@ export class StationmanagementComponent implements OnInit {
     //tick does the needed calculatations for the render, and draws the rendering on the canvas
     async tick(){
         try{
-            await this.renderBuffer.clear();
-            await this.drawMap();
-            await this.drawModules();
+            //await this.renderBuffer.clear();
+            await this.renderer.fixCanvas();
+            await this.RecalculateMap();
+            await this.RecalculateStations();
+            //await this.drawModules();
             await this.drawStationOnCursor();
             
-            await this.renderBuffer.render();
+            //await this.renderBuffer.render();
         }catch (ex){console.log(ex);}
     }     
   
     async drawStationOnCursor(){
         if (this.adMarker){
-            let renderBuffer:RenderBuffer=this.renderBuffer;
-            let image:HTMLImageElement=this.marker;
-            
-            let width=this.width/this.markersize;
+            let width=this.width/this.markerscale;
+            this.markersize= width;
             let x =this.mouseEvents.mousepos.x-(width/2);
             let y =this.mouseEvents.mousepos.y-(width);
-            await renderBuffer.add(this.marker,x, y,width,width,"marker","marker");
+            let station=this.renderBuffer.cursorStation;
+            station.x = x;
+            station.y = y;
+            station.width=width;
+            station.height=width;
+        
             
 
             
+        }else{
+            let station=this.renderBuffer.cursorStation;
+            station.x = -9999999999999;
+            station.y = -9999999999999;
+            station.width=0;
+            station.height=0;
         }
+        
     }
     async saveStationToDatabaseModal(stationPosition:Point){
         this.saveStation.position.x=stationPosition.x;
         this.saveStation.position.y=stationPosition.y;
+        $("#markerModel").modal();
         $("#markerModel").modal("open");
     }
   //this function loads the image of the building
   async loadMap(){
-        return new Promise(resolve => {
-                let image =new Image();
-                let parent = this;
-                image.onload=function () {
-                    parent.image=image;
-                    //return the promise
-                    resolve();
-                };
-                //trigger onload for the imagurl
-                image.src=this.imageUrl;
-                
-
-
-            }
-        );
+        //download the map
+      await this.renderer.LoadImages(this.imageUrl,Sprites.map);
+      //put it in a sprite
+      this.renderBuffer.map=await this.renderer.createSprite(Sprites.map);
+      //adjust height and width
+      this.renderBuffer.map.width=this.width;
+      this.renderBuffer.map.height=this.height;
+      
+      return;
       
     
   }
-  async loadMarker(){
-      return new Promise(resolve => {
-              let image =new Image();
-              let parent = this;
-              image.onload=function () {
-                  parent.marker=image;
-                  //return the promise
-                  resolve();
-              };
-              //trigger onload for the imagurl
-              image.src=this.markerUrl;
-
-
-
-          }
-      );
+  //load marker;
+  async DownloadMarker(){
+        await this.renderer.LoadImages(this.markerUrl,"marker");
+        this.renderBuffer.cursorStation=this.renderer.createSprite(Sprites.marker);
+        this.renderBuffer.cursorStation.width=0;
+      this.renderBuffer.cursorStation.height=0;
+      this.renderBuffer.cursorStation.x=-99999;
+      this.renderBuffer.cursorStation.y=-99999;
+        console.log(this.renderBuffer.cursorStation);
+        return;
   }
   //calculate width
   get width(){
-        let width=0;
-      if(window.innerHeight>window.innerWidth){
-          
-          width = window.innerHeight/this.image.height*this.image.width;
-      }else{
+        let width=1;
+        let map = this.renderer.createSprite(Sprites.map);
+        
+        if (map==undefined)return 0;
+        if(window.innerHeight>window.innerWidth){      
+          //todo uncomment
+            width = window.innerHeight/map.height*map.width;
+        }else{
           width = window.innerWidth;
-      }
-      return width;
+        }
+        return width;
   }
   //calculate height
   get height(){
         let height=0;
+      let map = this.renderer.createSprite(Sprites.map);
+      if (map==undefined)return 0;
       if(window.innerHeight>window.innerWidth){
           height=window.innerHeight;
           
       }else{
-          height= window.innerWidth/ this.image.width*this.image.height;
+          //todo uncomment
+          height= window.innerWidth/ map.width*map.height;
       }
       return height;
   }
   
-  async drawMap(){
+  async RecalculateMap(){
         try{
             
-            this.canvas.height=window.innerHeight;
-            this.canvas.width=window.innerWidth;
+            this.canvasRef.nativeElement.height=window.innerHeight;
+            this.canvasRef.nativeElement.width=window.innerWidth;
       
             //calculate zoom
             let height=this.height*this.zoomFactor;
             let width=this.width*this.zoomFactor;
             //render
-            this.renderBuffer.add(this.image,this.mouseEvents.position.x, this.mouseEvents.position.y,width,height,"map","map");
+            let map = this.renderBuffer.map;
+            map.width=width;
+            map.height=height;
+            map.x = this.mouseEvents.position.x;
+            map.y = this.mouseEvents.position.y;
+            //todo render with sprite
+            //this.renderBuffer.add(this.image,this.mouseEvents.position.x, this.mouseEvents.position.y,width,height,"map","map");
             
             //add the map location/size to the mouseevents for relative location calculation
             this.mouseEvents.mapPos={x:this.mouseEvents.position.x,y:this.mouseEvents.position.y, width:width,height:height};
@@ -245,18 +257,40 @@ export class StationmanagementComponent implements OnInit {
   }
   
   
-  async drawModules(){
-        for(let station of this.stations){
-          let renderBuffer:RenderBuffer=this.renderBuffer;
-          let image:HTMLImageElement=this.marker;
-          let width=this.width/this.markersize;
-          
-          let position= this.mouseEvents.calculateStationPosOnImage(station.position);
-          let x =position.x-(width/2);
-          let y =position.y-width;
+  async RecalculateStations(){
+        let refreshNeeded=false;
+        this.stations.forEach((location:any,key:any,map:any)=>{
             
-          await renderBuffer.add(this.marker,x, y,width,width, station.mac ,"marker");
+            let renderBuffer:RenderBuffer=this.renderBuffer;
+            let width=this.width/this.markerscale;
+            this.markersize=width;
+            let position= this.mouseEvents.calculateStationPosOnImage(location);
+            let x =position.x-(width/2);
+            let y =position.y-width;
+            let station = this.renderBuffer.buffer.get(key);
+            if (station ==undefined){
+                station=this.renderBuffer.AddSpriteToBufferById(key, Sprites.marker);
+                refreshNeeded=true;
+            }
+            if (station!=undefined){
+                station.x = x;
+                station.y = y;
+                station.width=width;
+                station.height=width;
+            }
+            
+        });
+        if (refreshNeeded){
+            this.renderer.CleanAndUpdateRenderBuffer();
         }
+        /*
+        for(let station of this.stations){
+          
+          
+      
+            //todo render with buffer
+          //await renderBuffer.add(this.marker,x, y,width,width, station.mac ,"marker");
+        }*/
         
   }
 
@@ -303,27 +337,39 @@ export class StationmanagementComponent implements OnInit {
 
 
 async loadStations(){
-        return new Promise<Station[]>(resolve => {
+    try{
+        this.stations.clear();
+        this.renderBuffer.buffer.clear();
+        this.stationMacAdresses=[];
+        return new Promise(resolve => {
             
            this.http.get("http://localhost:5000/api/v1/receivermodules").subscribe(response => {
-               try{
-                   let tryParse=response.json();
-                   resolve(<Station[]>tryParse);
-               }catch (e){
-                   resolve([]);
-               }
-               
+             
+                   let tryParse=<Array<Station>>(response.json());
+                   let station:Station;
+                   for (station of tryParse){
+                       this.stationMacAdresses.push(station.mac);
+                       this.stations.set(station.mac,station.position);
+                       
+                       
+                   }
+                   resolve(true);
+             
            },
             error =>{
-               resolve([]);
+               resolve(true);
             }
         )
         });
-  }
+    }catch (e){
+        console.log("can't load image");
+    }
+
+}
 
     async deleteCurrentStation() {
-        await this.deleteStation(this.collidingElement.id);
-        this.stations=await this.loadStations();
+        await this.deleteStation(this.collidingElement);
+        await this.loadStations();
         $("#deleteModal").modal("close");
     }
 }

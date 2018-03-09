@@ -23,6 +23,8 @@ namespace WebService
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddCors();
+
             services
                 .AddSingleton(typeof(ILogger), new LoggerCollection {new ConsoleLogger(), new FileLogger()})
                 .AddSingleton<IDataService<Resident>, ResidentsService>()
@@ -52,6 +54,9 @@ namespace WebService
                 app.UseExceptionHandler("/Home/Error");
             }
 
+            app.UseCors(options => options.WithOrigins("http://192.168.137.1:5000").AllowAnyMethod());
+            app.UseCors(options => options.WithOrigins("https://192.168.137.1:5000").AllowAnyMethod());
+            
             app.UseStaticFiles();
 
             app.UseMvc(routes =>

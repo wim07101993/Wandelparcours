@@ -10,10 +10,10 @@
         <h4 >Stations</h4>
         
         <ul>
-            <li *ngFor="let station of stations" (click)="deleteModal(station.mac);">
-                
-                <div>{{station.mac}} <i class="material-icons ">cancel</i> </div>
-                
+            <li *ngFor="let station  of stationMacAdresses"   >
+                <span (click)="deleteModal(station);">
+                <div >{{station}} <i class="material-icons ">cancel</i> </div>
+                </span>
             </li>
          
         </ul>
@@ -29,8 +29,8 @@
     <a id="zoomOutMap"  class="btn-floating waves-effect waves-light orange "                   (click)="zoomOut()"><i class="material-icons">  zoom_out</i></a>
 </div>
 
-<canvas #myCanvas id="map" >
-</canvas>
+<div  #myCanvas id="map" >
+</div>
 
 <div id="markerModel" class="modal">
     <div class="modal-content">
@@ -52,7 +52,7 @@
 
 <div id="deleteModal" class="modal">
     <div class="modal-content" *ngIf="collidingElement !=null">
-        <h4>{{collidingElement.id}}</h4> 
+        <h4>{{collidingElement}}</h4> 
 
     </div>
     <div class="modal-footer">
