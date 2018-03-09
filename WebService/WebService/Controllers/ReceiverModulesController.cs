@@ -37,12 +37,12 @@ namespace WebService.Controllers
 
         #region PROPERTIES
 
-        /// <inheritdoc cref="ARestControllerBase{T}.PropertiesToSendOnGetAll" />
+        /// <inheritdoc cref="ARestControllerBase{T}.PropertiesForSmallDataTraffic" />
         /// <summary>
         /// SmallDataProperties is a collection of expressions to select the properties that
         /// consume the least space (in this case all of them => value is null).
         /// </summary>
-        public override IEnumerable<Expression<Func<ReceiverModule, object>>> PropertiesToSendOnGetAll { get; } = null;
+        public override IEnumerable<Expression<Func<ReceiverModule, object>>> PropertiesForSmallDataTraffic { get; } = null;
 
         #endregion PROPERTIES
 
@@ -136,7 +136,7 @@ namespace WebService.Controllers
         /// Get is supposed to return all the Items in the database. 
         /// To limit data traffic it is possible to select only a number of propertie.
         /// <para/>
-        /// By default only the properties in the selector <see cref="PropertiesToSendOnGetAll"/> are returned.
+        /// By default only the properties in the selector <see cref="PropertiesForSmallDataTraffic"/> are returned.
         /// </summary>
         /// <param name="propertiesToInclude">are the properties of which the values should be returned</param>
         /// <returns>All <see cref="ReceiverModule"/>s in the database but only the given properties are filled in</returns>
