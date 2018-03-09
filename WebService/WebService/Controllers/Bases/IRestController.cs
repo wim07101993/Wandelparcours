@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using WebService.Helpers.Exceptions;
 using WebService.Models.Bases;
 
 namespace WebService.Controllers.Bases

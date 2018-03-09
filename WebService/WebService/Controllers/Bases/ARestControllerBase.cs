@@ -25,7 +25,7 @@ namespace WebService.Controllers.Bases
         #region FIELDS
 
         /// <summary>
-        /// _dataService is used to handle the data traffice to and from the database.
+        /// _dataService is used to handle the data traffic to and from the database.
         /// </summary>
         protected readonly IDataService<T> DataService;
 
@@ -43,7 +43,7 @@ namespace WebService.Controllers.Bases
         /// ARestControllerBase creates an instance of the <see cref="ARestControllerBase{T}"/> class. 
         /// </summary>
         /// <param name="dataService">is a service to handle the database connection</param>
-        /// <param name="logger">is a service to hanlde the logging of messages</param>
+        /// <param name="logger">is a service to handle the logging of messages</param>
         protected ARestControllerBase(IDataService<T> dataService, ILogger logger)
         {
             // initiate the services
@@ -119,7 +119,7 @@ namespace WebService.Controllers.Bases
         public virtual async Task<object> GetPropertyAsync(string id, string propertyName)
         {
             // check if the property exists on the item
-            if (typeof(T).GetProperty(propertyName) == null)
+            if (!typeof(T).GetProperties().Any(x => x.Name.EqualsWithCamelCasing(propertyName)))
                 throw new WebArgumentException(
                     $"Property {propertyName} cannot be found on {typeof(T).Name}", nameof(propertyName));
 
@@ -169,7 +169,7 @@ namespace WebService.Controllers.Bases
         /// <inheritdoc cref="IRestController{T}.GetAsync(string[])" />
         /// <summary>
         /// Get is supposed to return all the Items in the database. 
-        /// To limit data traffic it is possible to select only a number of propertie.
+        /// To limit data traffic it is possible to select only a number of properties.
         /// <para/>
         /// By default only the properties in the selector <see cref="PropertiesToSendOnGetAll"/> are returned.
         /// </summary>
@@ -248,7 +248,7 @@ namespace WebService.Controllers.Bases
             {
                 // if it fails, throw web argument exception
                 throw new WebArgumentException(
-                    $"The passed jsonValue is not assignableto the property {propertyName} of type {typeof(T).Name}", jsonValue);
+                    $"The passed jsonValue is not assignable to the property {propertyName} of type {typeof(T).Name}", jsonValue);
             }
 
 

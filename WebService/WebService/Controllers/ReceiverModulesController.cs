@@ -12,6 +12,10 @@ using WebService.Services.Logging;
 
 namespace WebService.Controllers
 {
+    /// <inheritdoc cref="ARestControllerBase{T}"/>
+    /// <summary>
+    /// ReceiverModulesController handles the reading and writing of receiver module data to the database.
+    /// </summary>
     [Route("api/v1/[controller]")]
     public class ReceiverModulesController : ARestControllerBase<ReceiverModule>, IReceiverModulesController
     {
