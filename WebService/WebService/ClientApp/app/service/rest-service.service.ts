@@ -118,8 +118,8 @@ export class RestServiceService {
 
     addImagesToDatabase(uniqueIdentifier: any,images: any) {
         return new Promise(resolve => {
-            this.http.post(this.restUrl + 'api/v1/residents/' + uniqueIdentifier + '/pictures', images).subscribe(response => {
-                console.log("updated");
+            this.http.post(this.restUrl + 'api/v1/residents/' + uniqueIdentifier + '/images/data', images).subscribe(response => {
+                console.log(images);
                 resolve(true);
             }, error => {
                 console.log("Could not update data!");

@@ -28,7 +28,7 @@ export class PictureComponent implements OnInit {
         const fd = new FormData();
         fd.append('image', this.selectedFile, this.selectedFile.name);
 
-        let images = await this.service.addImagesToDatabase(this.id, this.selectedFile);
+        let images = await this.service.addImagesToDatabase(this.id, fd);
         console.log(images);
     }
     
