@@ -1,6 +1,7 @@
 WebService/.vs/
 WebService/WebService/node_modules/
-
+WebService/.idea/
+WebService/WebService/.idea/
 
 
 /Properties/launchSettings.json
