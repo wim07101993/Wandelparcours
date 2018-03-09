@@ -47,17 +47,6 @@ export class RestServiceService {
         });
     }
 
-    getImagesOfResidentBasedOnId(uniqueIdentifier: string) {
-        return new Promise<Resident[]>(resolve => {
-            this.http.get(this.restUrl + 'api/v1/residents/' + uniqueIdentifier + '/images').subscribe(response => {
-                resolve(<Resident[]>response.json());
-            },
-                error => {
-                    resolve(undefined);
-                }
-            );
-        });
-    }
 
 
     /**
@@ -116,7 +105,7 @@ export class RestServiceService {
     //MEDIA//
     /////////
 
-    addImagesToDatabase(uniqueIdentifier: any,images: any) {
+    addImagesToDatabase(uniqueIdentifier: any,images: any, options: any = null) {
         return new Promise(resolve => {
             this.http.post(this.restUrl + 'api/v1/residents/' + uniqueIdentifier + '/images/data', images).subscribe(response => {
                 console.log(images);
@@ -125,6 +114,19 @@ export class RestServiceService {
                 console.log("Could not update data!");
                 resolve(false);
             });
+        });
+    }
+
+
+    getImagesOfResidentBasedOnId(uniqueIdentifier: string) {
+        return new Promise<Resident[]>(resolve => {
+            this.http.get(this.restUrl + 'api/v1/residents/' + uniqueIdentifier + '/images').subscribe(response => {
+                resolve(<Resident[]>response.json());
+            },
+                error => {
+                    resolve(undefined);
+                }
+            );
         });
     }
 }

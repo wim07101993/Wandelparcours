@@ -119,7 +119,7 @@ namespace WebService.Controllers.Bases
         public virtual async Task<object> GetPropertyAsync(string id, string propertyName)
         {
             // check if the property exists on the item
-            if (typeof(T).GetProperty(propertyName) == null)
+            if (!typeof(T).GetProperties().Any(x => x.Name.EqualsWithCamelCasing(propertyName)))
                 throw new WebArgumentException(
                     $"Property {propertyName} cannot be found on {typeof(T).Name}", nameof(propertyName));
 
