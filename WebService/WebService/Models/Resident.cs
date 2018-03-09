@@ -42,7 +42,6 @@ namespace WebService.Models
         [BsonElement("room")]
         public string Room { get; set; }
 
-        // TODO change back to dateTime
         /// <summary>
         /// Birthday is the birthday of the Value
         /// <para/>

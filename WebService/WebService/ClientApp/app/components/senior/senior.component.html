@@ -1,9 +1,9 @@
-<ul id="slide-out" class="side-nav fixed orange">
-    <li [routerLinkActive]="['link-active']"><a [routerLink]="['/resident']"><i class="material-icons">people</i> Overzicht bewoners </a></li>
-    <li><a [routerLink]="['/resident', id]"><i class="material-icons">>verified_user</i>Personlia</a></li>
-    <li><a [routerLink]="['/resident', id, 'picture']"><i class="material-icons">>verified_user</i> Afbeeldingen </a></li>
-    <li><a [routerLink]="['/resident', id, 'video']"><i class="material-icons">verified_user</i> Videos </a></li>
-    <li><a [routerLink]="['/resident', id, 'audio']"><i class="material-icons">verified_user</i> Audio </a></li>
-    <li><a [routerLink]="['/resident', id, 'game']"><i class="material-icons">verified_user</i> Spel </a></li>
-    <li><a [routerLink]="['/resident', id, 'tracking']"><i class="material-icons">verified_user</i> Tracking </a></li>
+<ul id="slide-out" class="side-nav fixed orange" style="z-index: 0">
+    <li><a [routerLink]="['/resident', id]"><i class="material-icons">person</i>Personlia</a></li>
+    <li><a [routerLink]="['/resident', id, 'picture']"><i class="material-icons">photo</i>Foto's </a></li>
+    <li><a [routerLink]="['/resident', id, 'video']"><i class="material-icons">ondemand_video</i>Videos </a></li>
+    <li><a [routerLink]="['/resident', id, 'audio']"><i class="material-icons">audiotrack</i>Audio </a></li>
+    <li><a [routerLink]="['/resident', id, 'game']"><i class="material-icons">videogame_asset</i>Spel </a></li>
+    <li><a [routerLink]="['/resident', id, 'tracking']"><i class="material-icons">location_on</i>Tracking </a></li>
+    <li [routerLinkActive]="['link-active']"><a [routerLink]="['/resident']"><i class="material-icons">keyboard_arrow_left</i>Terug </a></li>
 </ul>

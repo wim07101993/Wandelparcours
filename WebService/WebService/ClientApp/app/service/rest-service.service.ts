@@ -49,7 +49,7 @@ export class RestServiceService {
 
     getImagesOfResidentBasedOnId(uniqueIdentifier: string) {
         return new Promise<Resident[]>(resolve => {
-            this.http.get(this.restUrl + 'api/v1/residents/' + uniqueIdentifier + '?properties=images').subscribe(response => {
+            this.http.get(this.restUrl + 'api/v1/residents/' + uniqueIdentifier + '/images').subscribe(response => {
                 resolve(<Resident[]>response.json());
             },
                 error => {

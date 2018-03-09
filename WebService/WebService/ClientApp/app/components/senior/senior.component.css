@@ -2,3 +2,33 @@
 ul > li:first-child {
     margin-top: 79px;
 }
+.side-nav li > a, .side-nav li > a > i.material-icons {
+    color: #fff;
+}
+
+li:first-child {
+    margin-top: 79px;
+}
+
+.side-nav li > a {
+    padding:0 16px;
+    text-transform: uppercase;
+    letter-spacing: 1.25px;
+}
+
+ul#slide-out.sidenav{
+    width: 240px !important;
+    z-index: -1;
+}
+
+ul.side-nav{
+    background: #bbd2c5; /* fallback for old browsers */
+    background: -webkit-linear-gradient(to right, #bbd2c5, #536976); /* Chrome 10-25, Safari 5.1-6 */
+    background: linear-gradient(to right, #bbd2c5, #536976);
+}
+
+li:last-child{
+    position: relative;
+    width: 100%;
+    bottom: 0;
+}
