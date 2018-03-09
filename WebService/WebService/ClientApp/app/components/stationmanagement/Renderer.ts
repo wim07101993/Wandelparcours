@@ -9,14 +9,13 @@ export class Renderer{
     station:StationmanagementComponent;
     images=new Map<string, string>();
     constructor(station:StationmanagementComponent){
-        this.station=station;
-       
+            this.station=station;
             this.app=new PIXI.Application();
             (<HTMLDivElement>this.station.canvasRef.nativeElement).appendChild(this.app.view);
-            this.tick();
+            this.Clear();
     }
     CleanAndUpdateRenderBuffer(){
-        this.clear();
+        this.Clear();
         this.app.stage.addChild(this.station.renderBuffer.map);
         this.app.stage.addChild(this.station.renderBuffer.cursorStation);
         this.station.renderBuffer.buffer.forEach((sprite:Sprite,key:any,map:any)=>{
@@ -30,10 +29,11 @@ export class Renderer{
             
         });
     }
-    createSprite(key:string){
+    CreateSprite(key:string){
         let imageuri:string=<string>this.images.get(key);
         if (imageuri==null) throw "couldn't find image";
         return new Sprite(PIXI.loader.resources[imageuri].texture); 
+        
     }
     
     async LoadImages(image:string, key:string){
@@ -42,23 +42,23 @@ export class Renderer{
                 PIXI.loader.add(image).load(()=>{
                     this.images.set(key,image);
                     resolve()
-                });    
+                });  
             }catch (er){
-                
+                this.images.set(key,image);
                 resolve();
             }
         });
         
     }
     
-    clear(){
+    Clear(){
         while (this.app.stage.children[0]){
             this.app.stage.removeChild(this.app.stage.children[0]);
         }
     }
     
     
-    async fixCanvas(){
+    async FixCanvas(){
         let canvas=this.station.canvasRef.nativeElement;
         this.app.renderer.resize(canvas.offsetWidth,canvas.offsetHeight);
         this.app.renderer.autoResize=true;
@@ -66,10 +66,7 @@ export class Renderer{
         return;
     }
     
-    async tick(){
-        await this.fixCanvas();
-        
-    }
+ 
 
 
 }

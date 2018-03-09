@@ -29,28 +29,27 @@ export class MouseEvents{
         this.station=station;
         this.canvas=this.station.canvasRef.nativeElement;
         //ad listeners
-        this.canvas.addEventListener("mousemove",(ev => this.mouseMove(ev)));
-        this.canvas.addEventListener("contextmenu",ev =>  this.rightClick(ev));
-        this.canvas.addEventListener("mousedown", ev =>  this.mouseDown(ev));
-        this.canvas.addEventListener("mouseup",ev => this.mouseUp(ev));
-
+        this.canvas.addEventListener("mousemove",(ev => this.MouseMove(ev)));
+        this.canvas.addEventListener("contextmenu",ev =>  MouseEvents.RightClick(ev));
+        this.canvas.addEventListener("mousedown", ev =>  this.MouseDown(ev));
         this.canvas.addEventListener('mousewheel',function(event){    return false;}, false);
 
 
         //instantiate panner;
         let hammer = new Hammer(this.canvas);
         let parent = this;
-        hammer.on("panmove",function (e:any){MouseEvents.panning(e,parent);});
-        hammer.on("panend",function(){MouseEvents.panStop(parent);});
+        //add listener for panner
+        hammer.on("panmove",function (e:any){MouseEvents.Panning(e,parent);});
+        hammer.on("panend",function(){MouseEvents.PanStop(parent);});
         
         
         //hammer
     }
 
-    static async panStop( parent:MouseEvents){
+    static async PanStop( parent:MouseEvents){
         parent.panLastPos={x:0,y:0};
     }
-    static async panning(e:any, parent:MouseEvents){
+    static async Panning(e:any, parent:MouseEvents){
         
         
         
@@ -62,16 +61,16 @@ export class MouseEvents{
         
         parent.panLastPos.x=e.deltaX;
         parent.panLastPos.y=e.deltaY;
-        parent.station.tick();
+        await parent.station.Tick();
         
     }
     
 
-    async mouseMove(e:MouseEvent){
+    async MouseMove(e:MouseEvent){
         
         this.mousepos={x:e.x,y:e.y};
         if (this.station.adMarker){
-            this.station.tick();
+            await this.station.Tick();
         }
         
         
@@ -79,13 +78,13 @@ export class MouseEvents{
     
     
 
-    async calculateMousePosOnImage(mousePos:Point){
+    async CalculateMousePosOnImage(mousePos:Point){
         let x=(mousePos.x-this.mapPos.x)/this.mapPos.width;
         let y =(mousePos.y-this.mapPos.y)/this.mapPos.height;
         return {x: x, y: y};
     }
 
-     calculateStationPosOnImage(position:Point){
+     CalculateStationPosOnImage(position:Point){
          return {
             x: (position.x * this.station.renderBuffer.map.width) + this.mapPos.x,
             y: (position.y * this.station.renderBuffer.map.height) + this.mapPos.y
@@ -93,24 +92,18 @@ export class MouseEvents{
         
     }
     
-    async mouseUp(e:MouseEvent){
-        //disable tracking
-        //todo migrate to pan
-        //this.clicked=false;
-        
-        
-    }
-    async mouseDown(e:MouseEvent){
+  
+    async MouseDown(e:MouseEvent){
         if (this.station.adMarker){
-            let mouseposition = await this.calculateMousePosOnImage({x:e.x,y:e.y});
-            this.station.saveStationToDatabaseModal(mouseposition)
+            let mouseposition = await this.CalculateMousePosOnImage({x:e.x,y:e.y});
+            this.station.SaveStationToDatabaseModal(mouseposition)
             
         }else{
             this.mousepos={x:e.x,y:e.y};
         }
     }
     
-    async rightClick(e:MouseEvent){
+    static async RightClick(e:MouseEvent){
         //prevent right clicks on the map
         e.preventDefault();
     }

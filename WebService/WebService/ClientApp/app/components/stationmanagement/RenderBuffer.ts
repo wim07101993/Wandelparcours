@@ -21,7 +21,7 @@ export class RenderBuffer{
     
 
     AddSpriteToBufferById(mac:string,key:string){
-        let sprite=this.station.renderer.createSprite(key);
+        let sprite=this.station.renderer.CreateSprite(key);
         this.buffer.set(mac,sprite);
         return sprite;
     }

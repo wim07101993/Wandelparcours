@@ -4,6 +4,7 @@ import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/catch';
 import { getBaseUrl } from '../app.module.browser';
 import { Resident } from '../models/resident';
+import {Station} from "../models/station";
 
 @Injectable()
 export class RestServiceService {
@@ -110,5 +111,80 @@ export class RestServiceService {
                 resolve(false);
             });
         });
+    }
+
+
+
+    async SaveStationToDatabase(station:Station){
+        return new Promise(resolve => {
+
+            this.http.post(this.restUrl+"api/v1/receivermodules",station).subscribe(response => {
+                    try{
+                        resolve("success");
+                    }catch (e){
+                        resolve("error");
+                    }
+
+                },
+                error =>{
+                    console.log(error);
+                    resolve("error");
+                }
+            )
+        });
+    }
+
+    async DeleteStation(mac:string){
+        return new Promise(resolve => {
+
+            this.http.delete(this.restUrl+"api/v1/receivermodules/"+mac).subscribe(response => {
+                    try{
+                        resolve("success");
+                    }catch (e){
+                        resolve("error");
+                    }
+
+                },
+                error =>{
+                    console.log(error);
+                    resolve("error");
+                }
+            )
+        });
+
+    }
+
+
+    async LoadStations(parent:any){
+        try{
+            parent.stations.clear();
+            parent.renderBuffer.buffer.clear();
+            parent.stationMacAdresses=[];
+            return new Promise(resolve => {
+
+                this.http.get(this.restUrl+"api/v1/receivermodules").subscribe(response => {
+
+                        let tryParse=<Array<Station>>(response.json());
+
+                        let station:Station;
+                        if (tryParse!=undefined){
+                            for (station of tryParse){
+                                if (station==undefined)continue;
+                                parent.stationMacAdresses.push(station.mac);
+                                parent.stations.set(station.mac,station.position);
+                            }
+                        }
+                        resolve(true);
+                    },
+                    error =>{
+                        console.log(error);
+                        resolve(true);
+                    }
+                )
+            });
+        }catch (e){
+            console.log("can't load image");
+        }
+
     }
 }

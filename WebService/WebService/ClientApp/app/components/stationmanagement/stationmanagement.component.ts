@@ -6,6 +6,7 @@ import {Renderer} from "./Renderer"
 import {RenderBuffer,} from "./RenderBuffer"
 import {Station} from "../../models/station"
 import {Sprites} from "./Sprites"
+import {RestServiceService} from "../../service/rest-service.service"
 declare var $: any;
 declare var Materialize:any;
 @Component({
@@ -35,14 +36,14 @@ export class StationmanagementComponent implements OnInit {
     markerscale=25;
     renderer:Renderer;
     markersize: number;
-    async saveNewStation(){
+    async SaveNewStation(){
         let reg=new RegExp("^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$");
         let mac =this.saveStation.mac;
         console.log(mac);
         if (reg.test(mac)){
             
-            await this.saveStationToDatabase(this.saveStation);
-            await this.loadStations();
+            await this.service.SaveStationToDatabase(this.saveStation);
+            await this.service.LoadStations(this);
             this.saveStation=new Station();
             $("#markerModel").modal("close");
             this.adMarker=false;
@@ -51,8 +52,12 @@ export class StationmanagementComponent implements OnInit {
         }
         
     }
-   
-    constructor(private http: Http) {}
+    /**
+     * Create a point.
+     * @param {number}  - The x value.
+     * @param {number} y - The y value.
+     */
+    constructor(private service:RestServiceService) {}
 
     async ngOnInit() {
         //create renderer
@@ -63,42 +68,16 @@ export class StationmanagementComponent implements OnInit {
         this.renderBuffer=new RenderBuffer(this);
         this.mouseEvents= new MouseEvents(this);
         //load the blueprint of the building
-        await this.loadMap();
+        await this.LoadMap();
         await this.DownloadMarker();
-        await this.loadStations();
+        await this.service.LoadStations(this);
         await this.renderer.CleanAndUpdateRenderBuffer();
         //load marker
-       
-        setInterval(()=>{this.tick()},1000/this.framerate);
-        /* try{
-              //load all available stations from db
-             this.stations = await this.loadStations();
-              //put the rendering canvas in a variable to draw 
-              this.canvas=(<HTMLCanvasElement>this.canvasRef.nativeElement);
-              
-              //get drawing context of canvas as 2d
-              this.context=<WebGLRenderingContext> this.canvas.getContext("webgl");
-              
-              //create class mouseevent(this class is responsible for all mouse events in the render canvas)
-              //create render buffer
-              
-              //set the position of the map on the canvas
-              this.position={x:0,y:0};
-              $("#markerModel").modal();
-              
-              
-              //set a auto render of 5 fps
-            this.tick();
-              
-        }catch (ex){
-            console.log("error");
-        }*/
-    
-    
+        setInterval(()=>{this.Tick()},1000/this.framerate);    
     }
 
     
-    static async closeModal(){
+    static async CloseModal(){
         $("#markerModel").modal("close");
     }
     
@@ -115,38 +94,34 @@ export class StationmanagementComponent implements OnInit {
         
     }
     //this function is needed to zoomin
-    async zoomIn(){
+    async ZoomIn(){
             
             this.zoomFactor*=2;
             
             
             
-            this.tick();
+            await this.Tick();
     }
     //this function is needed to zoomout
-    async zoomOut(){
+    async ZoomOut(){
 
         this.zoomFactor/=2;
         
-        this.tick();
+        await this.Tick();
     }
     
     
     //tick does the needed calculatations for the render, and draws the rendering on the canvas
-    async tick(){
+    async Tick(){
         try{
-            //await this.renderBuffer.clear();
-            await this.renderer.fixCanvas();
+            await this.renderer.FixCanvas();
             await this.RecalculateMap();
             await this.RecalculateStations();
-            //await this.drawModules();
-            await this.drawStationOnCursor();
-            
-            //await this.renderBuffer.render();
+            await this.DrawStationOnCursor();
         }catch (ex){console.log(ex);}
     }     
   
-    async drawStationOnCursor(){
+    async DrawStationOnCursor(){
         if (this.adMarker){
             let width=this.width/this.markerscale;
             this.markersize= width;
@@ -170,18 +145,18 @@ export class StationmanagementComponent implements OnInit {
         }
         
     }
-    async saveStationToDatabaseModal(stationPosition:Point){
+    async SaveStationToDatabaseModal(stationPosition:Point){
         this.saveStation.position.x=stationPosition.x;
         this.saveStation.position.y=stationPosition.y;
         $("#markerModel").modal();
         $("#markerModel").modal("open");
     }
   //this function loads the image of the building
-  async loadMap(){
+  async LoadMap(){
         //download the map
       await this.renderer.LoadImages(this.imageUrl,Sprites.map);
       //put it in a sprite
-      this.renderBuffer.map=await this.renderer.createSprite(Sprites.map);
+      this.renderBuffer.map=await this.renderer.CreateSprite(Sprites.map);
       //adjust height and width
       this.renderBuffer.map.width=this.width;
       this.renderBuffer.map.height=this.height;
@@ -193,7 +168,7 @@ export class StationmanagementComponent implements OnInit {
   //load marker;
   async DownloadMarker(){
         await this.renderer.LoadImages(this.markerUrl,"marker");
-        this.renderBuffer.cursorStation=this.renderer.createSprite(Sprites.marker);
+        this.renderBuffer.cursorStation=this.renderer.CreateSprite(Sprites.marker);
         this.renderBuffer.cursorStation.width=0;
       this.renderBuffer.cursorStation.height=0;
       this.renderBuffer.cursorStation.x=-99999;
@@ -204,11 +179,10 @@ export class StationmanagementComponent implements OnInit {
   //calculate width
   get width(){
         let width=1;
-        let map = this.renderer.createSprite(Sprites.map);
+        let map = this.renderer.CreateSprite(Sprites.map);
         
         if (map==undefined)return 0;
         if(window.innerHeight>window.innerWidth){      
-          //todo uncomment
             width = window.innerHeight/map.height*map.width;
         }else{
           width = window.innerWidth;
@@ -218,13 +192,12 @@ export class StationmanagementComponent implements OnInit {
   //calculate height
   get height(){
         let height=0;
-      let map = this.renderer.createSprite(Sprites.map);
+      let map = this.renderer.CreateSprite(Sprites.map);
       if (map==undefined)return 0;
       if(window.innerHeight>window.innerWidth){
           height=window.innerHeight;
           
       }else{
-          //todo uncomment
           height= window.innerWidth/ map.width*map.height;
       }
       return height;
@@ -245,10 +218,6 @@ export class StationmanagementComponent implements OnInit {
             map.height=height;
             map.x = this.mouseEvents.position.x;
             map.y = this.mouseEvents.position.y;
-            //todo render with sprite
-            //this.renderBuffer.add(this.image,this.mouseEvents.position.x, this.mouseEvents.position.y,width,height,"map","map");
-            
-            //add the map location/size to the mouseevents for relative location calculation
             this.mouseEvents.mapPos={x:this.mouseEvents.position.x,y:this.mouseEvents.position.y, width:width,height:height};
             
         }catch (ex){
@@ -259,12 +228,10 @@ export class StationmanagementComponent implements OnInit {
   
   async RecalculateStations(){
         let refreshNeeded=false;
-        this.stations.forEach((location:any,key:any,map:any)=>{
-            
-            let renderBuffer:RenderBuffer=this.renderBuffer;
+        this.stations.forEach((location:Point,key:string,map:any)=>{
             let width=this.width/this.markerscale;
             this.markersize=width;
-            let position= this.mouseEvents.calculateStationPosOnImage(location);
+            let position= this.mouseEvents.CalculateStationPosOnImage(location);
             let x =position.x-(width/2);
             let y =position.y-width;
             let station = this.renderBuffer.buffer.get(key);
@@ -282,94 +249,15 @@ export class StationmanagementComponent implements OnInit {
         });
         if (refreshNeeded){
             this.renderer.CleanAndUpdateRenderBuffer();
-        }
-        /*
-        for(let station of this.stations){
-          
-          
-      
-            //todo render with buffer
-          //await renderBuffer.add(this.marker,x, y,width,width, station.mac ,"marker");
-        }*/
-        
+        }        
   }
 
 
 
 
-    async saveStationToDatabase(station:Station){
-        console.log(JSON.stringify(station));
-        return new Promise(resolve => {
-
-            this.http.post("http://localhost:5000/api/v1/receivermodules",station).subscribe(response => {
-                    try{
-                        resolve("success");
-                    }catch (e){
-                        resolve("error");
-                    }
-
-                },
-                error =>{
-                    resolve("error");
-                }
-            )
-        });
-    }
-
-    async deleteStation(mac:string){
-        return new Promise(resolve => {
-
-            this.http.delete("http://localhost:5000/api/v1/receivermodules/"+mac).subscribe(response => {
-                    try{
-                        resolve("success");
-                    }catch (e){
-                        resolve("error");
-                    }
-
-                },
-                error =>{
-                    resolve("error");
-                }
-            )
-        });
-        
-    }
-
-
-async loadStations(){
-    try{
-        this.stations.clear();
-        this.renderBuffer.buffer.clear();
-        this.stationMacAdresses=[];
-        return new Promise(resolve => {
-            
-           this.http.get("http://localhost:5000/api/v1/receivermodules").subscribe(response => {
-             
-                   let tryParse=<Array<Station>>(response.json());
-                   let station:Station;
-                   for (station of tryParse){
-                       this.stationMacAdresses.push(station.mac);
-                       this.stations.set(station.mac,station.position);
-                       
-                       
-                   }
-                   resolve(true);
-             
-           },
-            error =>{
-               resolve(true);
-            }
-        )
-        });
-    }catch (e){
-        console.log("can't load image");
-    }
-
-}
-
-    async deleteCurrentStation() {
-        await this.deleteStation(this.collidingElement);
-        await this.loadStations();
+    async DeleteCurrentStation() {
+        await this.service.DeleteStation(this.collidingElement);
+        await this.service.LoadStations(this);
         $("#deleteModal").modal("close");
     }
 }
