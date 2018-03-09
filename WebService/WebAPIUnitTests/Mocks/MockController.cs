@@ -15,7 +15,7 @@ namespace WebAPIUnitTests.Mocks
         {
         }
 
-        public override IEnumerable<Expression<Func<MockEntity, object>>> PropertiesForSmallDataTraffic { get; } = null;
+        public override IEnumerable<Expression<Func<MockEntity, object>>> PropertiesToSendOnGetAll { get; }
 
         public override Expression<Func<MockEntity, object>> ConvertStringToSelector(
             string propertyName)

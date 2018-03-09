@@ -39,10 +39,10 @@ thead{
     font-weight: bold;
 }
 input[type=text]:not(.browser-default){
-    margin-bottom: 0px;
+    margin-bottom: 0;
 }
 .myCol {
-    padding-left: 0px;
+    padding-left: 0;
 }
 
 td.cardviewtd, th.cardviewth{
