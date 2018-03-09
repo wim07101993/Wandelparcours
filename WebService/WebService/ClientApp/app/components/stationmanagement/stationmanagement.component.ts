@@ -16,7 +16,7 @@ declare var Materialize:any;
 })
 
 
-
+/** Class representing stationmanagement page. */
 export class StationmanagementComponent implements OnInit {
     @ViewChild('myCanvas') canvasRef: ElementRef;
     
@@ -36,29 +36,19 @@ export class StationmanagementComponent implements OnInit {
     markerscale=25;
     renderer:Renderer;
     markersize: number;
-    async SaveNewStation(){
-        let reg=new RegExp("^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$");
-        let mac =this.saveStation.mac;
-        console.log(mac);
-        if (reg.test(mac)){
-            
-            await this.service.SaveStationToDatabase(this.saveStation);
-            await this.service.LoadStations(this);
-            this.saveStation=new Station();
-            $("#markerModel").modal("close");
-            this.adMarker=false;
-        }else{
-            Materialize.toast('Station adres verkeerd', 4000);
-        }
-        
-    }
+
     /**
-     * Create a point.
-     * @param {number}  - The x value.
-     * @param {number} y - The y value.
+     * Creating stationmanagement page.
+     * @param {RestServiceService} service  - A constructer injected service holding the service for rest connection
      */
     constructor(private service:RestServiceService) {}
 
+    /**
+     *      ngOnInit get called after the page is loaded
+     *      Renderer, Renderbuffer and MouseEvent instances get instatieded
+     *      images and the station locations get loaded, and the render buffer get cleaned and updated
+     *      And an interval starts named tick
+     */
     async ngOnInit() {
         //create renderer
         this.renderer = new Renderer(this);
@@ -76,11 +66,16 @@ export class StationmanagementComponent implements OnInit {
         setInterval(()=>{this.Tick()},1000/this.framerate);    
     }
 
-    
+    /*
+    *   Closes the modal to add a station 
+    */
     static async CloseModal(){
         $("#markerModel").modal("close");
     }
     
+    /*
+    *   Opens modal to delete a station 
+    */
     async deleteModal(id?:string){
         
         if (id!=undefined){
@@ -93,16 +88,16 @@ export class StationmanagementComponent implements OnInit {
           
         
     }
-    //this function is needed to zoomin
+    /*
+    *   this function is needed to zoomin
+    */
     async ZoomIn(){
-            
             this.zoomFactor*=2;
-            
-            
-            
             await this.Tick();
     }
-    //this function is needed to zoomout
+    /*
+    *    this function is needed to zoomout
+    */
     async ZoomOut(){
 
         this.zoomFactor/=2;
@@ -111,7 +106,9 @@ export class StationmanagementComponent implements OnInit {
     }
     
     
-    //tick does the needed calculatations for the render, and draws the rendering on the canvas
+    /*
+    *  tick does the needed calculatations for the render, and draws the rendering on the canvas
+    */
     async Tick(){
         try{
             await this.renderer.FixCanvas();
@@ -121,6 +118,9 @@ export class StationmanagementComponent implements OnInit {
         }catch (ex){console.log(ex);}
     }     
   
+    /*
+     *  This function causes to draw a station on the cursor when add station button is clicked 
+     */
     async DrawStationOnCursor(){
         if (this.adMarker){
             let width=this.width/this.markerscale;
@@ -132,10 +132,6 @@ export class StationmanagementComponent implements OnInit {
             station.y = y;
             station.width=width;
             station.height=width;
-        
-            
-
-            
         }else{
             let station=this.renderBuffer.cursorStation;
             station.x = -9999999999999;
@@ -143,15 +139,20 @@ export class StationmanagementComponent implements OnInit {
             station.width=0;
             station.height=0;
         }
-        
     }
+    
+    /*
+    *   This function opens a modal to create a station 
+    */
     async SaveStationToDatabaseModal(stationPosition:Point){
         this.saveStation.position.x=stationPosition.x;
         this.saveStation.position.y=stationPosition.y;
         $("#markerModel").modal();
         $("#markerModel").modal("open");
     }
-  //this function loads the image of the building
+  /*
+  *   this function loads the image of the building
+  */
   async LoadMap(){
         //download the map
       await this.renderer.LoadImages(this.imageUrl,Sprites.map);
@@ -165,7 +166,9 @@ export class StationmanagementComponent implements OnInit {
       
     
   }
-  //load marker;
+  /*
+  *  load marker;
+  */
   async DownloadMarker(){
         await this.renderer.LoadImages(this.markerUrl,"marker");
         this.renderBuffer.cursorStation=this.renderer.CreateSprite(Sprites.marker);
@@ -176,7 +179,9 @@ export class StationmanagementComponent implements OnInit {
         console.log(this.renderBuffer.cursorStation);
         return;
   }
-  //calculate width
+  /*
+  *    Getter calculates relative the width of the image
+  */
   get width(){
         let width=1;
         let map = this.renderer.CreateSprite(Sprites.map);
@@ -189,7 +194,9 @@ export class StationmanagementComponent implements OnInit {
         }
         return width;
   }
-  //calculate height
+  /*
+  *    Getter calculates relative the height of the image
+  */
   get height(){
         let height=0;
       let map = this.renderer.CreateSprite(Sprites.map);
@@ -203,6 +210,9 @@ export class StationmanagementComponent implements OnInit {
       return height;
   }
   
+  /*
+  * Recalculates location and size of the image 
+  */
   async RecalculateMap(){
         try{
             
@@ -224,8 +234,10 @@ export class StationmanagementComponent implements OnInit {
             console.log(ex);
         }
   }
-  
-  
+
+  /*
+  * Recalculates location and size of all stations on the map 
+  */
   async RecalculateStations(){
         let refreshNeeded=false;
         this.stations.forEach((location:Point,key:string,map:any)=>{
@@ -254,10 +266,30 @@ export class StationmanagementComponent implements OnInit {
 
 
 
-
+        /*
+        *   This function will send request to the rest to delete station 
+        */
     async DeleteCurrentStation() {
         await this.service.DeleteStation(this.collidingElement);
         await this.service.LoadStations(this);
         $("#deleteModal").modal("close");
+    }
+    /*
+    *   This function will send request to the rest to save station 
+    */
+    async SaveNewStation(){
+        let reg=new RegExp("^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$");
+        let mac =this.saveStation.mac;
+        if (reg.test(mac)){
+
+            await this.service.SaveStationToDatabase(this.saveStation);
+            await this.service.LoadStations(this);
+            this.saveStation=new Station();
+            $("#markerModel").modal("close");
+            this.adMarker=false;
+        }else{
+            Materialize.toast('Station adres verkeerd', 4000);
+        }
+
     }
 }
