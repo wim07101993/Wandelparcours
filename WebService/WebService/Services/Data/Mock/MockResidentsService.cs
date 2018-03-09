@@ -5,12 +5,13 @@ using System.Linq.Expressions;
 using System.Reflection;
 using System.Threading.Tasks;
 using MongoDB.Bson;
+using WebService.Helpers.Exceptions;
 using WebService.Helpers.Extensions;
 using WebService.Models;
 
 namespace WebService.Services.Data.Mock
 {
-#pragma warning disable 1998 // diable warning async method without await
+#pragma warning disable 1998 // disable warning async method without await
     /// <inheritdoc cref="IDataService{T}"/>
     /// <summary>
     /// MockResidentsService is a class that implements the <see cref="IDataService{T}"/> interface.
@@ -92,10 +93,15 @@ namespace WebService.Services.Data.Mock
         /// </returns>
         public async Task<bool> AddMediaAsync(ObjectId residentId, byte[] data, EMediaType mediaType)
         {
+            if (data == null)
+                throw new ArgumentNullException(nameof(data), "data to add cannot be null");
+
             var index = MockData.FindIndex(x => x.Id == residentId);
 
-            return index >= 0 && AddMedia(index, new MediaWithId {Id = ObjectId.GenerateNewId(), Data = data},
-                       mediaType);
+            if (index < 0)
+                throw new NotFoundException($"{typeof(Resident).Name} with id {residentId} was not found");
+
+            return AddMedia(index, new MediaWithId {Id = ObjectId.GenerateNewId(), Data = data}, mediaType);
         }
 
         /// <inheritdoc cref="IResidentsService.AddMediaAsync(ObjectId,string,EMediaType)"/>

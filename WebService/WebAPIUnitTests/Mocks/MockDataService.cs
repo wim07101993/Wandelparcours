@@ -8,7 +8,7 @@ namespace WebAPIUnitTests.Mocks
     {
         public override List<MockEntity> MockData { get; } = new List<MockEntity>
         {
-            new MockEntity {B = false, I = 64, Id = ObjectId.GenerateNewId(), S = "Hello"},
+            new MockEntity {B = true, I = 64, Id = ObjectId.GenerateNewId(), S = "Hello"},
             new MockEntity {B = true, I = 44, Id = ObjectId.GenerateNewId(), S = "Bumbabelu"},
             new MockEntity {B = false, I = 42, Id = ObjectId.GenerateNewId(), S = "Bam"},
         };
