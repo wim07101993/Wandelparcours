@@ -2,7 +2,7 @@
 using MongoDB.Bson;
 using WebService.Services.Data.Mock;
 
-namespace WebAPIUnitTests.Mocks
+namespace WebAPIUnitTests.TestMocks
 {
     public class MockDataService : AMockDataService<MockEntity>
     {

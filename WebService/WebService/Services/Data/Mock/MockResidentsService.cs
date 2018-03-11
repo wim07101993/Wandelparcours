@@ -16,9 +16,7 @@ namespace WebService.Services.Data.Mock
     /// <summary>
     /// MockResidentsService is a class that implements the <see cref="IDataService{T}"/> interface.
     /// <para/>
-    /// It handles the saving and retreiving data to and from a list of Residents in memory. It does not store anything in a database.
-    /// <para/>
-    /// The connectionstring, db name and collections that are used are stored in the IConfiguration dependency under the Database object.
+    /// It handles the saving and retrieving data to and from a list of Residents in memory. It does not store anything in a database.
     /// </summary>
     public partial class MockResidentsService : AMockDataService<Resident>, IResidentsService
     {
@@ -53,7 +51,7 @@ namespace WebService.Services.Data.Mock
                 if (mockItem.Tags == null || !mockItem.Tags.Contains(tag))
                     continue;
 
-                // create new newItem to return with the ide filled in
+                // create new newItem to return with the id filled in
                 var itemToReturn = CreateNewItem(mockItem.Id);
 
                 // ReSharper disable once PossibleNullReferenceException
@@ -118,7 +116,13 @@ namespace WebService.Services.Data.Mock
         /// </returns>
         public async Task<bool> AddMediaAsync(ObjectId residentId, string url, EMediaType mediaType)
         {
+            if (url == null)
+                throw new ArgumentNullException(nameof(url), "url to add cannot be null");
+
             var index = MockData.FindIndex(x => x.Id == residentId);
+
+            if (index < 0)
+                throw new NotFoundException($"{typeof(Resident).Name} with id {residentId} was not found");
 
             return index >= 0 && AddMedia(index, new MediaWithId {Id = ObjectId.GenerateNewId(), Url = url}, mediaType);
         }
@@ -161,7 +165,7 @@ namespace WebService.Services.Data.Mock
         /// </summary>
         /// <param name="residentId">is the id of the <see cref="Resident"/> to remove the media from</param>
         /// <param name="mediaId">is the id to the media to remove</param>
-        /// <param name="mediaType">is the type fo media to remove</param>
+        /// <param name="mediaType">is the type of media to remove</param>
         /// <returns>
         /// - true if the media was removed
         /// - false if the media was not removed
@@ -171,48 +175,52 @@ namespace WebService.Services.Data.Mock
             var residentIndex = MockData.FindIndex(x => x.Id == residentId);
 
             if (residentIndex < 0)
-                return false;
+                throw new NotFoundException($"{typeof(Resident).Name} with id {residentId} was not found");
 
-            var mediaIndex = -1;
+            int mediaIndex;
             switch (mediaType)
             {
                 case EMediaType.Audio:
                     if (MockData[residentIndex].Music == null)
-                        return false;
+                        throw new NotFoundException(
+                            $"the {typeof(Resident).Name} with id {residentId} has no {mediaType.ToString()}");
 
                     mediaIndex = MockData[residentIndex].Music.FindIndex(x => x.Id == mediaId);
                     if (mediaIndex < 0)
-                        return false;
+                        throw new NotFoundException($"{mediaType.ToString()} with id {mediaId} was not found");
 
                     MockData[residentIndex].Music.RemoveAt(mediaIndex);
                     return true;
                 case EMediaType.Video:
                     if (MockData[residentIndex].Videos == null)
-                        return false;
+                        throw new NotFoundException(
+                            $"the {typeof(Resident).Name} with id {residentId} has no {mediaType.ToString()}");
 
                     mediaIndex = MockData[residentIndex].Music.FindIndex(x => x.Id == mediaId);
                     if (mediaIndex < 0)
-                        return false;
+                        throw new NotFoundException($"{mediaType.ToString()} with id {mediaId} was not found");
 
                     MockData[residentIndex].Videos.RemoveAt(mediaIndex);
                     break;
                 case EMediaType.Image:
                     if (MockData[residentIndex].Images == null)
-                        return false;
+                        throw new NotFoundException(
+                            $"the {typeof(Resident).Name} with id {residentId} has no {mediaType.ToString()}");
 
                     mediaIndex = MockData[residentIndex].Music.FindIndex(x => x.Id == mediaId);
                     if (mediaIndex < 0)
-                        return false;
+                        throw new NotFoundException($"{mediaType.ToString()} with id {mediaId} was not found");
 
                     MockData[residentIndex].Images.RemoveAt(mediaIndex);
                     break;
                 case EMediaType.Color:
                     if (MockData[residentIndex].Colors == null)
-                        return false;
+                        throw new NotFoundException(
+                            $"the {typeof(Resident).Name} with id {residentId} has no {mediaType.ToString()}");
 
                     mediaIndex = MockData[residentIndex].Music.FindIndex(x => x.Id == mediaId);
                     if (mediaIndex < 0)
-                        return false;
+                        throw new NotFoundException($"{mediaType.ToString()} with id {mediaId} was not found");
 
                     MockData[residentIndex].Colors.RemoveAt(mediaIndex);
                     break;

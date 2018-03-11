@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MongoDB.Bson;
 using Moq;
-using WebAPIUnitTests.Mocks;
+using WebAPIUnitTests.TestMocks;
 using WebService.Helpers.Extensions;
 using WebService.Services.Data;
 using WebService.Services.Logging;

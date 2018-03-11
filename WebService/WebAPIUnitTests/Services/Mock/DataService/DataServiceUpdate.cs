@@ -4,14 +4,14 @@ using System.Linq.Expressions;
 using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MongoDB.Bson;
-using WebAPIUnitTests.Mocks;
+using WebAPIUnitTests.TestMocks;
 using WebService.Helpers.Exceptions;
 using WebService.Helpers.Extensions;
 
 // ReSharper disable once CheckNamespace
-namespace WebAPIUnitTests.Services
+namespace WebAPIUnitTests.Services.Mock
 {
-    public partial class MockDataService
+    public partial class DataService
     {
         #region ONE UpdateAsync(T newItem, IEnumerable<Expression<Func<T, object>>> propertiesToUpdate = null)
 
@@ -20,7 +20,7 @@ namespace WebAPIUnitTests.Services
         {
             try
             {
-                var _ = new Mocks.MockDataService().UpdateAsync(null);
+                var _ = new MockDataService().UpdateAsync(null);
             }
             catch (AggregateException e)
             {
@@ -37,7 +37,7 @@ namespace WebAPIUnitTests.Services
         {
             try
             {
-                var _ = new Mocks.MockDataService().UpdateAsync(new MockEntity());
+                var _ = new MockDataService().UpdateAsync(new MockEntity());
             }
             catch (AggregateException e)
             {
@@ -52,7 +52,7 @@ namespace WebAPIUnitTests.Services
         [TestMethod]
         public void UpdateWithKnownEntity()
         {
-            var dataService = new Mocks.MockDataService();
+            var dataService = new MockDataService();
             var originalEntity = dataService.MockData[0].Clone();
             var entity = new MockEntity {Id = dataService.MockData[0].Id};
 
@@ -86,7 +86,7 @@ namespace WebAPIUnitTests.Services
         [TestMethod]
         public void UpdateOneField()
         {
-            var dataService = new Mocks.MockDataService();
+            var dataService = new MockDataService();
             var originalEntity = dataService.MockData[0].Clone();
             var entity = new MockEntity {Id = dataService.MockData[0].Id, B = false, I = 1234, S = "abcd"};
 
@@ -120,7 +120,7 @@ namespace WebAPIUnitTests.Services
         [TestMethod]
         public void UpdateMultipleFields()
         {
-            var dataService = new Mocks.MockDataService();
+            var dataService = new MockDataService();
             var originalEntity = dataService.MockData[0].Clone();
             var entity = new MockEntity {Id = dataService.MockData[0].Id, B = false, I = 1234, S = "abcd"};
 
@@ -161,7 +161,7 @@ namespace WebAPIUnitTests.Services
         {
             try
             {
-                var _ = new Mocks.MockDataService()
+                var _ = new MockDataService()
                     .UpdatePropertyAsync(ObjectId.GenerateNewId(), x => x.B, true)
                     .Result;
 
@@ -180,7 +180,7 @@ namespace WebAPIUnitTests.Services
         [TestMethod]
         public void UpdateKnownProperty()
         {
-            var dataService = new Mocks.MockDataService();
+            var dataService = new MockDataService();
 
             dataService
                 .UpdatePropertyAsync(dataService.MockData[0].Id, x => x.I, 123).Result
@@ -191,7 +191,7 @@ namespace WebAPIUnitTests.Services
         [TestMethod]
         public void UpdateKnownPropertyWithInvalidValue()
         {
-            var dataService = new Mocks.MockDataService();
+            var dataService = new MockDataService();
 
             try
             {
@@ -214,7 +214,7 @@ namespace WebAPIUnitTests.Services
         [TestMethod]
         public void UpdateNullProperty()
         {
-            var dataService = new Mocks.MockDataService();
+            var dataService = new MockDataService();
 
             try
             {

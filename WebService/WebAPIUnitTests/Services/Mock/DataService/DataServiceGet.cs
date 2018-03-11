@@ -4,20 +4,20 @@ using System.Linq.Expressions;
 using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MongoDB.Bson;
-using WebAPIUnitTests.Mocks;
+using WebAPIUnitTests.TestMocks;
 using WebService.Helpers.Exceptions;
 
 // ReSharper disable once CheckNamespace
-namespace WebAPIUnitTests.Services
+namespace WebAPIUnitTests.Services.Mock
 {
-    public partial class MockDataService
+    public partial class DataService
     {
         #region ALL GetAsync(IEnumerable<Expression<Func<T, object>>> propertiesToInclude = null)
 
         [TestMethod]
         public void GetWithOutPropertiesToInclude()
         {
-            var dataService = new Mocks.MockDataService();
+            var dataService = new MockDataService();
 
             dataService.GetAsync().Result
                 .Should()
@@ -27,7 +27,7 @@ namespace WebAPIUnitTests.Services
         [TestMethod]
         public void GetWithIdPropertyToInclude()
         {
-            var dataService = new Mocks.MockDataService();
+            var dataService = new MockDataService();
 
             var mockEntities = dataService
                 .GetAsync(new Expression<Func<MockEntity, object>>[] {x => x.Id})
@@ -63,7 +63,7 @@ namespace WebAPIUnitTests.Services
         [TestMethod]
         public void GetWithSomeFields()
         {
-            var dataService = new Mocks.MockDataService();
+            var dataService = new MockDataService();
 
             var mockEntities = dataService
                 .GetAsync(new Expression<Func<MockEntity, object>>[] {x => x.S, x => x.I})
@@ -106,7 +106,7 @@ namespace WebAPIUnitTests.Services
         {
             try
             {
-                var _ = new Mocks.MockDataService()
+                var _ = new MockDataService()
                     .GetAsync(ObjectId.GenerateNewId())
                     .Result;
 
@@ -127,7 +127,7 @@ namespace WebAPIUnitTests.Services
         {
             try
             {
-                var _ = new Mocks.MockDataService()
+                var _ = new MockDataService()
                     .GetAsync(ObjectId.GenerateNewId(), new Expression<Func<MockEntity, object>>[] {x => x.Id}).Result;
 
                 Assert.Fail("the id could not be found so an exception should be thrown");
@@ -147,7 +147,7 @@ namespace WebAPIUnitTests.Services
         {
             try
             {
-                var _ = new Mocks.MockDataService()
+                var _ = new MockDataService()
                     .GetAsync(ObjectId.GenerateNewId(), new Expression<Func<MockEntity, object>>[] {x => x.S, x => x.I})
                     .Result;
 
@@ -166,7 +166,7 @@ namespace WebAPIUnitTests.Services
         [TestMethod]
         public void GetOneWithOutPropertiesToInclude()
         {
-            var dataService = new Mocks.MockDataService();
+            var dataService = new MockDataService();
 
             dataService
                 .GetAsync(dataService.MockData[0].Id).Result
@@ -177,7 +177,7 @@ namespace WebAPIUnitTests.Services
         [TestMethod]
         public void GetOneWithIdPropertyToInclude()
         {
-            var dataService = new Mocks.MockDataService();
+            var dataService = new MockDataService();
 
             var mockEntity = dataService
                 .GetAsync(dataService.MockData[0].Id, new Expression<Func<MockEntity, object>>[] {x => x.Id})
@@ -209,7 +209,7 @@ namespace WebAPIUnitTests.Services
         [TestMethod]
         public void GetOneWithSomeFields()
         {
-            var dataService = new Mocks.MockDataService();
+            var dataService = new MockDataService();
 
             var mockEntity = dataService
                 .GetAsync(dataService.MockData[0].Id, new Expression<Func<MockEntity, object>>[] {x => x.S, x => x.I})
@@ -248,7 +248,7 @@ namespace WebAPIUnitTests.Services
         {
             try
             {
-                var _ = new Mocks.MockDataService()
+                var _ = new MockDataService()
                     .GetPropertyAsync(ObjectId.GenerateNewId(), x => x.B)
                     .Result;
 
@@ -267,7 +267,7 @@ namespace WebAPIUnitTests.Services
         [TestMethod]
         public void GetPropertyWithoutSelector()
         {
-            var dataService = new Mocks.MockDataService();
+            var dataService = new MockDataService();
 
             try
             {
@@ -288,7 +288,7 @@ namespace WebAPIUnitTests.Services
         [TestMethod]
         public void GetProperty()
         {
-            var dataService = new Mocks.MockDataService();
+            var dataService = new MockDataService();
 
             dataService
                 .GetPropertyAsync(dataService.MockData[0].Id, x => x.B).Result

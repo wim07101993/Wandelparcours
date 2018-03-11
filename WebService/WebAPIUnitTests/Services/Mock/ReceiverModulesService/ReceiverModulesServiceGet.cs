@@ -5,18 +5,19 @@ using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using WebService.Helpers.Exceptions;
 using WebService.Models;
+using WebService.Services.Data.Mock;
 
 // ReSharper disable once CheckNamespace
-namespace WebAPIUnitTests.Services
+namespace WebAPIUnitTests.Services.Mock
 {
-    public partial class MockReceiverModulesService
+    public partial class ReceiverModulesService
     {
         [TestMethod]
         public void GetOneWithNullMac()
         {
             try
             {
-                var _ = new WebService.Services.Data.Mock.MockReceiverModulesService().GetAsync(null).Result;
+                var _ = new MockReceiverModulesService().GetAsync(null).Result;
 
                 Assert.Fail("there can't be any receiver modules with a null mac");
             }
@@ -35,7 +36,7 @@ namespace WebAPIUnitTests.Services
         {
             try
             {
-                var _ = new WebService.Services.Data.Mock.MockReceiverModulesService()
+                var _ = new MockReceiverModulesService()
                     .GetAsync("")
                     .Result;
 
@@ -56,7 +57,7 @@ namespace WebAPIUnitTests.Services
         {
             try
             {
-                var _ = new WebService.Services.Data.Mock.MockReceiverModulesService()
+                var _ = new MockReceiverModulesService()
                     .GetAsync("", new Expression<Func<ReceiverModule, object>>[] {x => x.Mac}).Result;
 
                 Assert.Fail("the mac could not be found so an exception should be thrown");
@@ -76,7 +77,7 @@ namespace WebAPIUnitTests.Services
         {
             try
             {
-                var _ = new WebService.Services.Data.Mock.MockReceiverModulesService()
+                var _ = new MockReceiverModulesService()
                     .GetAsync("", new Expression<Func<ReceiverModule, object>>[] {x => x.IsActive, x => x.Mac})
                     .Result;
 
@@ -95,7 +96,7 @@ namespace WebAPIUnitTests.Services
         [TestMethod]
         public void GetOneWithOutPropertiesToInclude()
         {
-            var dataService = new WebService.Services.Data.Mock.MockReceiverModulesService();
+            var dataService = new MockReceiverModulesService();
 
             dataService
                 .GetAsync(dataService.MockData[0].Mac).Result
@@ -106,7 +107,7 @@ namespace WebAPIUnitTests.Services
         [TestMethod]
         public void GetOneWithMacPropertyToInclude()
         {
-            var dataService = new WebService.Services.Data.Mock.MockReceiverModulesService();
+            var dataService = new MockReceiverModulesService();
 
             var mockEntity = dataService
                 .GetAsync(dataService.MockData[0].Mac, new Expression<Func<ReceiverModule, object>>[] {x => x.Mac})
@@ -133,7 +134,7 @@ namespace WebAPIUnitTests.Services
         [TestMethod]
         public void GetOneWithSomeFields()
         {
-            var dataService = new WebService.Services.Data.Mock.MockReceiverModulesService();
+            var dataService = new MockReceiverModulesService();
 
             var mockEntity = dataService
                 .GetAsync(dataService.MockData[0].Mac,

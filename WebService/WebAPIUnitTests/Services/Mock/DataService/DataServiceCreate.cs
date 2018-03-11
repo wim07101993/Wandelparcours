@@ -3,12 +3,12 @@ using System.Linq;
 using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MongoDB.Bson;
-using WebAPIUnitTests.Mocks;
+using WebAPIUnitTests.TestMocks;
 
 // ReSharper disable once CheckNamespace
-namespace WebAPIUnitTests.Services
+namespace WebAPIUnitTests.Services.Mock
 {
-    public partial class MockDataService
+    public partial class DataService
     {
         #region ONE CreateAsync(T item)
 
@@ -17,7 +17,7 @@ namespace WebAPIUnitTests.Services
         {
             try
             {
-                var _ = new Mocks.MockDataService().CreateAsync(null).Result;
+                var _ = new MockDataService().CreateAsync(null).Result;
 
                 Assert.Fail("cannot create element null");
             }
@@ -34,7 +34,7 @@ namespace WebAPIUnitTests.Services
         [TestMethod]
         public void CreateEmptyMockEntity()
         {
-            new Mocks.MockDataService().CreateAsync(new MockEntity()).Result
+            new MockDataService().CreateAsync(new MockEntity()).Result
                 .Should()
                 .BeTrue("it is assigned in the create method of the service");
         }
@@ -50,7 +50,7 @@ namespace WebAPIUnitTests.Services
                 B = true
             };
 
-            var dataService = new Mocks.MockDataService();
+            var dataService = new MockDataService();
 
             dataService.CreateAsync(entity).Result
                 .Should()

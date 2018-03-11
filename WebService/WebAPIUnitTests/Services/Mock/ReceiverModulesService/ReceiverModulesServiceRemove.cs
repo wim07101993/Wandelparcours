@@ -4,18 +4,19 @@ using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using WebService.Helpers.Exceptions;
 using WebService.Models;
+using WebService.Services.Data.Mock;
 
 // ReSharper disable once CheckNamespace
-namespace WebAPIUnitTests.Services
+namespace WebAPIUnitTests.Services.Mock
 {
-   public partial class MockReceiverModulesService
+   public partial class ReceiverModulesService
     {
         [TestMethod]
         public void RemoveMockEntityWithNullID()
         {
             try
             {
-                var _ = new WebService.Services.Data.Mock.MockReceiverModulesService().RemoveAsync(null).Result;
+                var _ = new MockReceiverModulesService().RemoveAsync(null).Result;
 
                 Assert.Fail("there can't be any receiver modules with a null mac");
             }
@@ -34,7 +35,7 @@ namespace WebAPIUnitTests.Services
         {
             try
             {
-                var _ = new WebService.Services.Data.Mock.MockReceiverModulesService().RemoveAsync("").Result;
+                var _ = new MockReceiverModulesService().RemoveAsync("").Result;
 
                 Assert.Fail($"There is no {typeof(ReceiverModule).Name} with the given mac, so it should not be removed");
             }
@@ -51,7 +52,7 @@ namespace WebAPIUnitTests.Services
         [TestMethod]
         public void RemoveMockEntityWithExistingID()
         {
-            var dataService = new WebService.Services.Data.Mock.MockReceiverModulesService();
+            var dataService = new MockReceiverModulesService();
 
             dataService
                 .RemoveAsync(dataService.MockData[0].Id).Result

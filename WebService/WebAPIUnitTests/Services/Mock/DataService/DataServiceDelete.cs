@@ -3,12 +3,13 @@ using System.Linq;
 using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MongoDB.Bson;
+using WebAPIUnitTests.TestMocks;
 using WebService.Helpers.Exceptions;
 
 // ReSharper disable once CheckNamespace
-namespace WebAPIUnitTests.Services
+namespace WebAPIUnitTests.Services.Mock
 {
-    public partial class MockDataService
+    public partial class DataService
     {
         #region Remove
 
@@ -17,7 +18,7 @@ namespace WebAPIUnitTests.Services
         {
             try
             {
-                var _ = new Mocks.MockDataService().RemoveAsync(ObjectId.GenerateNewId()).Result;
+                var _ = new MockDataService().RemoveAsync(ObjectId.GenerateNewId()).Result;
 
                 Assert.Fail("There is no entity with the given id, so it should not be removed");
             }
@@ -34,7 +35,7 @@ namespace WebAPIUnitTests.Services
         [TestMethod]
         public void RemoveMockEntityWithExistingID()
         {
-            var dataService = new Mocks.MockDataService();
+            var dataService = new MockDataService();
 
             dataService
                 .RemoveAsync(dataService.MockData[0].Id).Result
