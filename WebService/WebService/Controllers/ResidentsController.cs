@@ -174,7 +174,7 @@ namespace WebService.Controllers
         /// <exception cref="NotFoundException">When the <see cref="residentId"/> cannot be parsed or <see cref="Resident"/> not found</exception>
         /// <exception cref="Exception">When the item could not be added</exception>
         [HttpPost("{residentId}/Images/data")]
-        public async Task AddImageAsync(string residentId, [FromBody] byte[] imageData)
+        public async Task AddImageAsync(string residentId, [FromBody] dynamic imageData)
             => await AddMediaAsync(residentId, imageData, EMediaType.Image);
 
         /// <inheritdoc cref="IResidentsController.AddImageAsync(string,string)"/>

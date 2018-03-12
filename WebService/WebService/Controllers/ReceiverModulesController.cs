@@ -42,22 +42,14 @@ namespace WebService.Controllers
         /// SmallDataProperties is a collection of expressions to select the properties that
         /// consume the least space (in this case all of them => value is null).
         /// </summary>
-<<<<<<< HEAD
        
         public override IEnumerable<Expression<Func<ReceiverModule, object>>> PropertiesToSendOnGetAll { get; }
-=======
-        public override IEnumerable<Expression<Func<ReceiverModule, object>>> PropertiesToSendOnGetAll { get; } = null;
->>>>>>> REST_Service
+
 
         #endregion PROPERTIES
 
 
         #region METHODS
-
-<<<<<<< HEAD
-=======
-        
->>>>>>> REST_Service
 
         /// <inheritdoc cref="ARestControllerBase{T}.ConvertStringToSelector" />
         /// <summary>

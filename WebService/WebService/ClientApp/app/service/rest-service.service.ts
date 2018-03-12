@@ -12,14 +12,12 @@ export class RestServiceService {
 
     restUrl = "http://localhost:5000/";
 
-    constructor(private http: Http) {
-        
-        
-    }
+    constructor(private http: Http) {}
 
     /**
-     * Get all residents from database
-     */
+    * Get all residents from database
+    * @returns {Resident} residents of type Resident or undefined
+    */
     getAllResidents() {
       return new Promise<Resident[]>(resolve => {
           this.http.get(this.restUrl +'api/v1/residents').subscribe(response => {
@@ -33,9 +31,10 @@ export class RestServiceService {
     }
 
     /**
-     * get one resident and only the needed properties
-     * @param uniqueIdentifier
-     */
+    * get one resident and only the needed properties
+    * @param uniqueIdentifier unique id of resident
+    * @returns {Resident} one resident of type Resident with only the requested properties or undefined   
+    */
     getResidentBasedOnId(uniqueIdentifier: string) {
         return new Promise<Resident[]>(resolve => {
             this.http.get(this.restUrl + 'api/v1/residents/' + uniqueIdentifier + '?properties=firstName&properties=lastName&properties=room&properties=birthday&properties=doctor').subscribe(response => {
@@ -51,9 +50,10 @@ export class RestServiceService {
 
 
     /**
-     * delete resident from database based on id
-     * @param uniqueIdentifier
-     */
+    * delete resident from database based on id
+    * @param uniqueIdentifier unique id of resident
+    * @returns message "Deleted" on succes or "Something went wrong" on error
+    */
 
     deleteResidentByUniqueId(uniqueIdentifier: string) {
         return new Promise(resolve => {
@@ -66,10 +66,13 @@ export class RestServiceService {
             });
         });
     }
+
     /**
-     * Update resident in database
-     * @param dataToUpdate
-     */
+    * Edit resident in database based on Resident object with properties and only the properties that have been changed
+    * @param dataToUpdate Object Resident with all properties
+    * @param changedProperties properties != dataToUpdate
+    * @returns message "updated" on succes or "Could not update data!" on error.
+    */
     editResidentWithData(dataToUpdate: any, changedProperties: any) {
         console.log(dataToUpdate);
         let s: string = "";
@@ -88,15 +91,20 @@ export class RestServiceService {
             });
         });
     }
-    
+
+    /**
+    * Add resident to database
+    * @param data Object resident with all saved properties
+    * @returns Message "Saved resident to database" on succes or "Could not save resident to database" on error.
+    */
     addResident(data: any){
         console.log(data);
         return new Promise(resolve => {
             this.http.post(this.restUrl + 'api/v1/residents', data).subscribe(response => {
-                console.log("updated");
+                console.log("Saved resident to database");
                 resolve(true);
             }, error => {
-                console.log("Could not update data!");
+                console.log("Could not save resident to database!");
                 resolve(false);
             });
         });
@@ -129,6 +137,7 @@ export class RestServiceService {
                 }
             );
         });
+    }
 
 
     async SaveStationToDatabase(station:Station){

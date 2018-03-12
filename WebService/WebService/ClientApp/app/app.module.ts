@@ -4,8 +4,6 @@ import { FormsModule } from '@angular/forms';
 import { HttpModule } from '@angular/http';
 import { RouterModule, Routes } from '@angular/router';
 
-import { FileUploadModule } from 'ng2-file-upload';
-
 import { AppComponent } from './components/app/app.component';
 import { NavMenuComponent } from './components/navmenu/navmenu.component';
 import { HomeComponent } from './components/home/home.component';
@@ -65,7 +63,6 @@ const appRoutes: Routes = [
         Ng2SearchPipeModule,
         HttpModule,
         FormsModule,
-        FileUploadModule,
         RouterModule.forRoot(appRoutes),
     ]
 })
