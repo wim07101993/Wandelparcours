@@ -6,7 +6,6 @@ using System.Reflection;
 using System.Threading.Tasks;
 using MongoDB.Bson;
 using WebService.Helpers.Exceptions;
-using WebService.Helpers.Extensions;
 using WebService.Models.Bases;
 
 namespace WebService.Services.Data.Mock
@@ -80,7 +79,7 @@ namespace WebService.Services.Data.Mock
             IEnumerable<Expression<Func<T, object>>> propertiesToInclude = null)
         {
             var propertiesToIncludeList = propertiesToInclude?.ToList();
-            return EnumerableExtensions.IsNullOrEmpty(propertiesToIncludeList)
+            return propertiesToIncludeList == null
                 // if the properties to include are null, return the complete list
                 ? MockData
                 // else return a list with only the asked properties filled
@@ -122,7 +121,7 @@ namespace WebService.Services.Data.Mock
         public async Task<T> GetAsync(ObjectId id, IEnumerable<Expression<Func<T, object>>> propertiesToInclude = null)
         {
             var propertiesToIncludeList = propertiesToInclude?.ToList();
-            if (EnumerableExtensions.IsNullOrEmpty(propertiesToIncludeList))
+            if (propertiesToIncludeList == null)
             {
                 var t = MockData.FirstOrDefault(x => x.Id == id);
                 return t == null
@@ -195,7 +194,7 @@ namespace WebService.Services.Data.Mock
             IEnumerable<Expression<Func<T, object>>> propertiesToUpdate = null)
         {
             if (newItem == null)
-                throw new ArgumentNullException(nameof(newItem));
+                throw new ArgumentNullException(nameof(newItem), "the item to update cannot be null");
 
             // create list of the enumerable to prevent multiple enumerations of enumerable
             var propertiesToUpdateList = propertiesToUpdate?.ToList();
@@ -205,7 +204,7 @@ namespace WebService.Services.Data.Mock
                 throw new NotFoundException($"no item with the id {newItem.Id} could be found");
 
             // check if there are properties to update.
-            if (EnumerableExtensions.IsNullOrEmpty(propertiesToUpdateList))
+            if (propertiesToUpdateList == null)
             {
                 // update the item;
                 MockData[index] = newItem;
@@ -251,10 +250,6 @@ namespace WebService.Services.Data.Mock
             if (propertyToUpdate == null)
                 throw new ArgumentNullException(nameof(propertyToUpdate));
 
-            var index = MockData.FindIndex(x => x.Id == id);
-            if (index < 0)
-                throw new NotFoundException($"no item with the id {id} could be found");
-
             // get the property
             var prop = propertyToUpdate.Body is MemberExpression expression
                 // via member expression
@@ -270,6 +265,10 @@ namespace WebService.Services.Data.Mock
             if (!prop.PropertyType.IsInstanceOfType(value))
                 throw new ArgumentException($"the value {value} cannot be assigned to the property {prop.Name}",
                     nameof(value));
+
+            var index = MockData.FindIndex(x => x.Id == id);
+            if (index < 0)
+                throw new NotFoundException($"no item with the id {id} could be found");
 
             prop.SetValue(MockData[index], value);
             return true;

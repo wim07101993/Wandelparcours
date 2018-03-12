@@ -1,4 +1,7 @@
-﻿using System.Linq;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MongoDB.Bson;
@@ -7,9 +10,9 @@ using WebAPIUnitTests.TestMocks.Mock;
 using WebAPIUnitTests.TestMocks.Mongo;
 
 // ReSharper disable once CheckNamespace
-namespace WebAPIUnitTests.Services.Mongo
+namespace WebAPIUnitTests.ServiceTests
 {
-    public partial class DataService
+    public abstract partial class ADataService
     {
         #region ONE CreateAsync(T item)
 
@@ -18,7 +21,7 @@ namespace WebAPIUnitTests.Services.Mongo
         {
             ActionExtensions.ShouldCatchArgumentNullException(() =>
                 {
-                    var _ = new MongoDataService().CreateAsync(null).Result;
+                    var _ = CreateNewDataService().CreateAsync(null).Result;
                 },
                 "item",
                 "the item to create cannot be null");
@@ -35,7 +38,7 @@ namespace WebAPIUnitTests.Services.Mongo
                 B = true
             };
 
-            var dataService = new MongoDataService();
+            var dataService = CreateNewDataService();
 
             dataService.CreateAsync(entity).Result
                 .Should()

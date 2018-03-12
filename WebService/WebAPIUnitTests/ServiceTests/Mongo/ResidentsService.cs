@@ -2,7 +2,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MongoDB.Bson;
 
-namespace WebAPIUnitTests.Services.Mongo
+namespace WebAPIUnitTests.ServiceTests.Mongo
 {
     [TestClass]
     public partial class ResidentsService

@@ -1,4 +1,4 @@
-﻿namespace WebAPIUnitTests.Services
+﻿namespace WebAPIUnitTests.TestMocks
 {
     public interface IDataService
     {

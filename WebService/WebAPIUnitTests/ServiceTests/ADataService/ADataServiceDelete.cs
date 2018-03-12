@@ -2,12 +2,11 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MongoDB.Bson;
 using WebAPIUnitTests.TestHelpers.Extensions;
-using WebAPIUnitTests.TestMocks.Mongo;
 
 // ReSharper disable once CheckNamespace
-namespace WebAPIUnitTests.Services.Mongo
+namespace WebAPIUnitTests.ServiceTests
 {
-    public partial class DataService
+    public abstract partial class ADataService
     {
         #region Remove
 
@@ -16,7 +15,7 @@ namespace WebAPIUnitTests.Services.Mongo
         {
             ActionExtensions.ShouldCatchNotFoundException(() =>
                 {
-                    var _ = new MongoDataService().RemoveAsync(ObjectId.GenerateNewId()).Result;
+                    var _ = CreateNewDataService().RemoveAsync(ObjectId.GenerateNewId()).Result;
                 },
                 "the given id doesn't exist");
         }
@@ -24,7 +23,7 @@ namespace WebAPIUnitTests.Services.Mongo
         [TestMethod]
         public void RemoveKnownItem()
         {
-            var dataService = new MongoDataService();
+            var dataService = CreateNewDataService();
 
             dataService
                 .RemoveAsync(dataService.GetFirst().Id).Result

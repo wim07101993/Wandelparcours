@@ -6,7 +6,7 @@ using WebService.Services.Data.Mongo;
 
 namespace WebAPIUnitTests.TestMocks.Mongo
 {
-    public class MongoDataService : AMongoDataService<MockEntity>
+    public class MongoDataService : AMongoDataService<MockEntity>, IMockDataService
     {
         public MongoDataService()
         {

@@ -5,19 +5,18 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MongoDB.Bson;
 using WebAPIUnitTests.TestHelpers.Extensions;
 using WebAPIUnitTests.TestMocks.Mock;
-using WebAPIUnitTests.TestMocks.Mongo;
 
 // ReSharper disable once CheckNamespace
-namespace WebAPIUnitTests.Services.Mongo
+namespace WebAPIUnitTests.ServiceTests
 {
-    public partial class DataService
+    public abstract partial class ADataService
     {
         #region ONE UpdateAsync(T newItem, IEnumerable<Expression<Func<T, object>>> propertiesToUpdate = null)
 
         [TestMethod]
         public void UpdateNullItemAndNoProperties()
         {
-            var dataService = new MongoDataService();
+            var dataService = CreateNewDataService();
             ActionExtensions.ShouldCatchArgumentNullException(() =>
                 {
                     var _ = dataService.UpdateAsync(null).Result;
@@ -29,7 +28,7 @@ namespace WebAPIUnitTests.Services.Mongo
         [TestMethod]
         public void UpdateNullItemAndEmptyProperties()
         {
-            var dataService = new MongoDataService();
+            var dataService = CreateNewDataService();
             ActionExtensions.ShouldCatchArgumentNullException(() =>
                 {
                     var _ = dataService
@@ -42,7 +41,7 @@ namespace WebAPIUnitTests.Services.Mongo
         [TestMethod]
         public void UpdateNullItemAndSomeProperties()
         {
-            var dataService = new MongoDataService();
+            var dataService = CreateNewDataService();
             ActionExtensions.ShouldCatchArgumentNullException(() =>
                 {
                     var _ = dataService
@@ -58,7 +57,7 @@ namespace WebAPIUnitTests.Services.Mongo
         {
             ActionExtensions.ShouldCatchNotFoundException(() =>
                 {
-                    var _ = new MongoDataService().UpdateAsync(new MockEntity()).Result;
+                    var _ = CreateNewDataService().UpdateAsync(new MockEntity()).Result;
                 },
                 "the given entity doesn't exists");
         }
@@ -68,7 +67,7 @@ namespace WebAPIUnitTests.Services.Mongo
         {
             ActionExtensions.ShouldCatchNotFoundException(() =>
                 {
-                    var _ = new MongoDataService()
+                    var _ = CreateNewDataService()
                         .UpdateAsync(new MockEntity(), new Expression<Func<MockEntity, object>>[] { }).Result;
                 },
                 "the given entity doesn't exists");
@@ -79,7 +78,7 @@ namespace WebAPIUnitTests.Services.Mongo
         {
             ActionExtensions.ShouldCatchNotFoundException(() =>
                 {
-                    var _ = new MongoDataService()
+                    var _ = CreateNewDataService()
                         .UpdateAsync(
                             new MockEntity(),
                             new Expression<Func<MockEntity, object>>[] {x => x.I, x => x.B})
@@ -92,7 +91,7 @@ namespace WebAPIUnitTests.Services.Mongo
         [TestMethod]
         public void UpdateKnownItemAndNoProperties()
         {
-            var dataService = new MongoDataService();
+            var dataService = CreateNewDataService();
             var id = dataService.GetFirst().Id;
             var originalEntity = dataService.GetAsync(id).Result;
             var entity = new MockEntity {Id = id};
@@ -129,7 +128,7 @@ namespace WebAPIUnitTests.Services.Mongo
         [TestMethod]
         public void UpdateKnownItemAndEmptyProperties()
         {
-            var dataService = new MongoDataService();
+            var dataService = CreateNewDataService();
             var id = dataService.GetFirst().Id;
             var originalEntity = dataService.GetAsync(id, new Expression<Func<MockEntity, object>>[] { }).Result;
             var entity = new MockEntity {Id = id};
@@ -166,7 +165,7 @@ namespace WebAPIUnitTests.Services.Mongo
         [TestMethod]
         public void UpdateKnownItemAndSomeProperties()
         {
-            var dataService = new MongoDataService();
+            var dataService = CreateNewDataService();
             var id = dataService.GetFirst().Id;
             var originalEntity = dataService.GetAsync(id).Result;
             var entity = new MockEntity {Id = id, B = false, I = 1234, S = "abcd"};
@@ -210,7 +209,7 @@ namespace WebAPIUnitTests.Services.Mongo
         {
             ActionExtensions.ShouldCatchNotFoundException(() =>
                 {
-                    var _ = new MongoDataService()
+                    var _ = CreateNewDataService()
                         .UpdatePropertyAsync(ObjectId.GenerateNewId(), x => x.B, true)
                         .Result;
                 },
@@ -222,7 +221,7 @@ namespace WebAPIUnitTests.Services.Mongo
         {
             ActionExtensions.ShouldCatchArgumentNullException(() =>
                 {
-                    var _ = new MongoDataService()
+                    var _ = CreateNewDataService()
                         .UpdatePropertyAsync(ObjectId.GenerateNewId(), null, true)
                         .Result;
                 },
@@ -235,7 +234,7 @@ namespace WebAPIUnitTests.Services.Mongo
         {
             ActionExtensions.ShouldCatchArgumentException(() =>
                 {
-                    var _ = new MongoDataService()
+                    var _ = CreateNewDataService()
                         .UpdatePropertyAsync(ObjectId.GenerateNewId(), x => x.I, new {X = "not a real property"})
                         .Result;
                 },
@@ -247,7 +246,7 @@ namespace WebAPIUnitTests.Services.Mongo
         [TestMethod]
         public void UpdatePropertyOfKnownIdAndCorrectValue()
         {
-            var dataService = new MongoDataService();
+            var dataService = CreateNewDataService();
 
             dataService
                 .UpdatePropertyAsync(dataService.GetFirst().Id, x => x.I, 123).Result
@@ -258,7 +257,7 @@ namespace WebAPIUnitTests.Services.Mongo
         [TestMethod]
         public void UpdateNullPropertyOfKnownId()
         {
-            var dataService = new MongoDataService();
+            var dataService = CreateNewDataService();
 
             ActionExtensions.ShouldCatchArgumentNullException(() =>
                 {
@@ -271,7 +270,7 @@ namespace WebAPIUnitTests.Services.Mongo
         [TestMethod]
         public void UpdatePropertyOfKnownIdAndIncorrectValue()
         {
-            var dataService = new MongoDataService();
+            var dataService = CreateNewDataService();
 
             ActionExtensions.ShouldCatchArgumentException(() =>
                 {
