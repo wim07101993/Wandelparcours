@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using MongoDB.Bson;
 using MongoDB.Driver;
+using WebService.Helpers.Exceptions;
 using WebService.Helpers.Extensions;
 using WebService.Models.Bases;
 
@@ -31,17 +32,24 @@ namespace WebService.Services.Data.Mongo
         /// </summary>
         /// <param name="id">is the id of the <see cref="T"/> to get the property from</param>
         /// <param name="propertyToSelect">is the selector to select the property to return</param>
-        /// <returns>The value of the aksed property</returns>
+        /// <returns>The value of the asked property</returns>
         public async Task<object> GetPropertyAsync(ObjectId id, Expression<Func<T, object>> propertyToSelect)
         {
+            if (propertyToSelect == null)
+                throw new ArgumentNullException(nameof(propertyToSelect),
+                    "the property to select selector cannot be null");
+
             // get the item with the given id
-            var foundItem = MongoCollection.Find(x => x.Id == id);
+            var foundItems = MongoCollection.Find(x => x.Id == id);
+
+            if (foundItems.Count() <= 0)
+                throw new NotFoundException($"no {typeof(T).Name} could be found with the id {id}");
 
             // create a property filter
             var selector = Builders<T>.Projection.Include(propertyToSelect);
 
-            // excecute the query
-            var items = await foundItem
+            // execute the query
+            var items = await foundItems
                 .Project<T>(selector)
                 .ToListAsync();
 
@@ -66,13 +74,16 @@ namespace WebService.Services.Data.Mongo
             // get the item with the given id
             var foundItem = MongoCollection.Find(x => x.Id == id);
 
+            if (foundItem.Count() <= 0)
+                throw new NotFoundException($"there is no {typeof(T).Name} with the id {id}");
+
             // convert the properties to include to a list (if not null)
             var properties = propertiesToInclude?.ToList();
-            // if the proeprties are null or there are none, return all the properties
+            // if the properties are null or there are none, return all the properties
             if (EnumerableExtensions.IsNullOrEmpty(properties))
                 return await foundItem.FirstOrDefaultAsync();
 
-            // create a propertyfilter
+            // create a property filter
             var selector = Builders<T>.Projection.Include(x => x.Id);
 
             //ReSharper disable once PossibleNullReferenceException
@@ -105,11 +116,11 @@ namespace WebService.Services.Data.Mongo
 
             // convert the properties to include to a list (if not null)
             var properties = propertiesToInclude?.ToList();
-            // if the proeprties are null or there are none, return all the properties
+            // if the properties are null or there are none, return all the properties
             if (EnumerableExtensions.IsNullOrEmpty(properties))
                 return await foundItems.ToListAsync();
 
-            // create a propertyfilter
+            // create a property filter
             var selector = Builders<T>.Projection.Include(x => x.Id);
 
             //ReSharper disable once PossibleNullReferenceException
@@ -138,6 +149,9 @@ namespace WebService.Services.Data.Mongo
         /// </returns>
         public async Task<bool> CreateAsync(T item)
         {
+            if (item == null)
+                throw new ArgumentNullException(nameof(item), "the item to create cannot be null");
+
             // create a new id for the new item
             item.Id = ObjectId.GenerateNewId();
             // save the new item to the database
@@ -162,8 +176,14 @@ namespace WebService.Services.Data.Mongo
         {
             // remove the document from the database with the given id
             var result = await MongoCollection.DeleteOneAsync(x => x.Id == id);
-            // return true if something acutaly happened
-            return result.IsAcknowledged && result.DeletedCount > 0;
+
+            if (!result.IsAcknowledged)
+                throw new MongoException("the delete request could not be acknowledged by the database");
+
+            if (result.DeletedCount <= 0)
+                throw new NotFoundException($"there is no {typeof(T).Name} id {id}");
+
+            return true;
         }
 
         /// <inheritdoc cref="IDataService{T}.UpdateAsync" />
@@ -179,16 +199,27 @@ namespace WebService.Services.Data.Mongo
         public async Task<bool> UpdateAsync(T newItem,
             IEnumerable<Expression<Func<T, object>>> propertiesToUpdate = null)
         {
+            if (newItem == null)
+                throw new ArgumentNullException(nameof(newItem), "the item to update cannot be null");
+
             // create list of the enumerable to prevent multiple enumerations of enumerable
             var propertiesToUpdateList = propertiesToUpdate?.ToList();
 
-            // check if thereare properties to update.
+            // check if there are properties to update.
             if (EnumerableExtensions.IsNullOrEmpty(propertiesToUpdateList))
             {
-                // if there are no properties in the liest, replace the document
+                // if there are no properties in the list, replace the document
                 var replaceOneResult = await MongoCollection.ReplaceOneAsync(x => x.Id == newItem.Id, newItem);
-                // return if something was replaced
-                return replaceOneResult.IsAcknowledged;
+             
+                if (!replaceOneResult.IsAcknowledged)
+                    throw new MongoException(
+                        $"the database could not update property of the {typeof(T).Name} with id {newItem.Id}");
+
+                if (replaceOneResult.MatchedCount <= 0)
+                    throw new NotFoundException($"the {typeof(T).Name} with id {newItem.Id} could not be found");
+
+                // return whether something was updated
+                return true;
             }
 
             // create a filter that filters on id
@@ -206,7 +237,7 @@ namespace WebService.Services.Data.Mongo
                 var prop = selector.Body is MemberExpression expression
                     // via member expression
                     ? expression.Member as PropertyInfo
-                    // if that failse, unary expression
+                    // if that fails, unary expression
                     : ((MemberExpression) ((UnaryExpression) selector.Body).Operand).Member as PropertyInfo;
 
                 // check if the property exists
@@ -218,10 +249,18 @@ namespace WebService.Services.Data.Mongo
             // update the document
             var updateResult = await MongoCollection.UpdateOneAsync(filter, update);
 
+            if (!updateResult.IsAcknowledged)
+                throw new MongoException(
+                    $"the database could not update property of the {typeof(T).Name} with id {newItem.Id}");
+
+            if (updateResult.MatchedCount <= 0)
+                throw new NotFoundException($"the {typeof(T).Name} with id {newItem.Id} could not be found");
+
             // return whether something was updated
-            return updateResult.IsAcknowledged;
+            return true;
         }
 
+        /// <inheritdoc cref="IDataService{T}.UpdatePropertyAsync" />
         /// <summary>
         /// GetPropertyAsync updates a single property of the <see cref="T"/> with the given id
         /// </summary>
@@ -232,8 +271,28 @@ namespace WebService.Services.Data.Mongo
         /// - true if the property was updated
         /// - false if the property was not updated
         /// </returns>
-        public async Task<bool> UpdatePropertyAsync(ObjectId id, Expression<Func<T, object>> propertyToUpdate, object value)
+        public async Task<bool> UpdatePropertyAsync(ObjectId id, Expression<Func<T, object>> propertyToUpdate,
+            object value)
         {
+            if (propertyToUpdate == null)
+                throw new ArgumentNullException(nameof(propertyToUpdate),
+                    "the property to update selector cannot be null");
+
+            var property = propertyToUpdate.Body is MemberExpression expression
+                // via member expression
+                ? expression.Member as PropertyInfo
+                // via unary expression
+                : ((MemberExpression) ((UnaryExpression) propertyToUpdate.Body).Operand).Member as PropertyInfo;
+
+            if (property == null)
+                throw new ArgumentException($"the property could nod be found on object {typeof(T).Name}",
+                    nameof(propertyToUpdate));
+
+            if (!property.PropertyType.IsInstanceOfType(value))
+                throw new ArgumentException(
+                    $"the value of type {value.GetType().Name} cannot be assigned to the property of type {property.PropertyType}",
+                    nameof(value));
+
             // create a filter that filters on id
             var filter = Builders<T>.Filter.Eq(x => x.Id, id);
             // create an update definition.
@@ -242,8 +301,15 @@ namespace WebService.Services.Data.Mongo
             // update the document
             var updateResult = await MongoCollection.UpdateOneAsync(filter, update);
 
+            if (!updateResult.IsAcknowledged)
+                throw new MongoException(
+                    $"the database could not update property of the {typeof(T).Name} with id {id}");
+
+            if (updateResult.MatchedCount <= 0)
+                throw new NotFoundException($"the {typeof(T).Name} with id {id} could not be found");
+
             // return whether something was updated
-            return updateResult.IsAcknowledged;
+            return true;
         }
 
         #endregion METHODS

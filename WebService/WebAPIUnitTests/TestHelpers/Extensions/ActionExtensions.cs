@@ -49,5 +49,27 @@ namespace WebAPIUnitTests.TestHelpers.Extensions
                 // IGNORED => this should happen
             }
         }
+
+        public static void ShouldCatchArgumentException(this Action action, string paramName, string because)
+        {
+            try
+            {
+                action();
+                Assert.Fail($"a argument exception should have been thrown because {because}");
+            }
+            catch (AggregateException e)
+            {
+                e.InnerExceptions
+                    .Any(x => (x as ArgumentException)?.ParamName == paramName)
+                    .Should()
+                    .BeTrue($"at least one exception should be an argument exception since {because}");
+            }
+            catch (ArgumentException e)
+            {
+                e.ParamName
+                    .Should()
+                    .Be(paramName, because);
+            }
+        }
     }
 }

@@ -6,7 +6,7 @@ using WebService.Helpers.Extensions;
 using WebService.Services.Data;
 using WebService.Services.Logging;
 
-namespace WebAPIUnitTests.TestMocks
+namespace WebAPIUnitTests.TestMocks.Mock
 {
     public class MockController : ARestControllerBase<MockEntity>
     {

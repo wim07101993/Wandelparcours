@@ -1,19 +1,16 @@
 ﻿using System.Collections.Generic;
 using MongoDB.Bson;
-using WebService.Services.Data.Mock;
+using WebAPIUnitTests.TestMocks.Mock;
 
 namespace WebAPIUnitTests.TestMocks
 {
-    public class MockDataService : AMockDataService<MockEntity>
+    public static class MockData
     {
-        public override List<MockEntity> MockData { get; } = new List<MockEntity>
+        public static List<MockEntity> MockEntities { get; } = new List<MockEntity>
         {
             new MockEntity {B = true, I = 64, Id = ObjectId.GenerateNewId(), S = "Hello"},
             new MockEntity {B = true, I = 44, Id = ObjectId.GenerateNewId(), S = "Bumbabelu"},
             new MockEntity {B = false, I = 42, Id = ObjectId.GenerateNewId(), S = "Bam"},
         };
-
-        public override MockEntity CreateNewItem(ObjectId id)
-            => new MockEntity {Id = id};
     }
 }

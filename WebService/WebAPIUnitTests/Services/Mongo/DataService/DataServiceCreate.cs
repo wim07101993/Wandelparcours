@@ -1,13 +1,13 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MongoDB.Bson;
-using WebAPIUnitTests.TestMocks;
+using WebAPIUnitTests.TestHelpers.Extensions;
 using WebAPIUnitTests.TestMocks.Mock;
+using WebAPIUnitTests.TestMocks.Mongo;
 
 // ReSharper disable once CheckNamespace
-namespace WebAPIUnitTests.Services.Mock
+namespace WebAPIUnitTests.Services.Mongo
 {
     public partial class DataService
     {
@@ -16,26 +16,18 @@ namespace WebAPIUnitTests.Services.Mock
         [TestMethod]
         public void CreateNullMockEntity()
         {
-            try
-            {
-                var _ = new MockDataService().CreateAsync(null).Result;
-
-                Assert.Fail("cannot create element null");
-            }
-            catch (AggregateException e)
-            {
-                e.InnerExceptions
-                    .Any(x => (x as ArgumentNullException)?.ParamName == "item")
-                    .Should()
-                    .BeTrue(
-                        "because at least one exception should be an argument null exception and have the item parameter, that is the parameter that is null");
-            }
+            ActionExtensions.ShouldCatchArgumentNullException(() =>
+                {
+                    var _ = new MongoDataService().CreateAsync(null).Result;
+                },
+                "item",
+                "the item to create cannot be null");
         }
 
         [TestMethod]
         public void CreateEmptyMockEntity()
         {
-            new MockDataService().CreateAsync(new MockEntity()).Result
+            new MongoDataService().CreateAsync(new MockEntity()).Result
                 .Should()
                 .BeTrue("it is assigned in the create method of the service");
         }
@@ -51,13 +43,13 @@ namespace WebAPIUnitTests.Services.Mock
                 B = true
             };
 
-            var dataService = new MockDataService();
+            var dataService = new MongoDataService();
 
             dataService.CreateAsync(entity).Result
                 .Should()
                 .BeTrue("it is assigned in the create method of the service");
 
-            dataService.MockData
+            dataService.GetAll()
                 .First(x => x.S == entity.S && x.B == entity.B && x.I == entity.I)
                 .Id
                 .Should()
