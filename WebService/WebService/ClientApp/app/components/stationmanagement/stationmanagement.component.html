@@ -24,9 +24,9 @@
     <a id="addPiButton" class="btn-floating  waves-effect waves-light red"  *ngIf="!adMarker"   (click)="adMarker=true"><i class="material-icons">    add</i></a>
     <a id="moveButton"  class="btn-floating  waves-effect waves-light red"  *ngIf="adMarker"    (click)="adMarker=false"><i class="material-icons"> open_with</i></a>
     <br>
-<a id="zoomInMap"   class="btn-floating waves-effect waves-light green"                         (click)="zoomIn()"><i class="material-icons">   zoom_in</i></a>
+<a id="zoomInMap"   class="btn-floating waves-effect waves-light green"                         (click)="ZoomIn()"><i class="material-icons">   zoom_in</i></a>
     <br>
-    <a id="zoomOutMap"  class="btn-floating waves-effect waves-light orange "                   (click)="zoomOut()"><i class="material-icons">  zoom_out</i></a>
+    <a id="zoomOutMap"  class="btn-floating waves-effect waves-light orange "                   (click)="ZoomOut()"><i class="material-icons">  zoom_out</i></a>
 </div>
 
 <div  #myCanvas id="map" >

@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import {Injectable, resolveForwardRef} from '@angular/core';
 import { Http, HttpModule, Response } from '@angular/http';
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/catch';
@@ -120,15 +120,15 @@ export class RestServiceService {
 
             this.http.post(this.restUrl+"api/v1/receivermodules",station).subscribe(response => {
                     try{
-                        resolve("success");
+                        resolve(true);
                     }catch (e){
-                        resolve("error");
+                        resolve(false);
                     }
 
                 },
                 error =>{
                     console.log(error);
-                    resolve("error");
+                    resolve(false);
                 }
             )
         });
@@ -139,15 +139,15 @@ export class RestServiceService {
 
             this.http.delete(this.restUrl+"api/v1/receivermodules/"+mac).subscribe(response => {
                     try{
-                        resolve("success");
+                        resolve(true);
                     }catch (e){
-                        resolve("error");
+                        resolve(false);
                     }
 
                 },
                 error =>{
                     console.log(error);
-                    resolve("error");
+                    resolve(false);
                 }
             )
         });
@@ -155,11 +155,13 @@ export class RestServiceService {
     }
 
 
-    async LoadStations(parent:any){
-        try{
-            parent.stations.clear();
-            parent.renderBuffer.buffer.clear();
-            parent.stationMacAdresses=[];
+    LoadStations(parent:any){
+            if (parent.stations!=undefined)
+                parent.stations.clear();
+            if (parent.renderBuffer.buffer!=undefined)
+                parent.renderBuffer.buffer.clear();
+            if (parent.stationMacAdresses!=undefined)
+                parent.stationMacAdresses=[];
             return new Promise(resolve => {
 
                 this.http.get(this.restUrl+"api/v1/receivermodules").subscribe(response => {
@@ -177,14 +179,13 @@ export class RestServiceService {
                         resolve(true);
                     },
                     error =>{
+                        console.log("can't load stations");
                         console.log(error);
-                        resolve(true);
+                        resolve(false);
                     }
                 )
             });
-        }catch (e){
-            console.log("can't load image");
         }
 
-    }
+    
 }
