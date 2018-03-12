@@ -37,14 +37,13 @@
     </div>
 
     <div id="markerModel" class="modal">
-
         <div class="modal-content">
             <h4>Station toevoegen</h4>
             <div class="row">
 
                 <div class="input-field col s12">
                     <input id="mac" placeholder="xx:xx:xx:xx:xx:xx" type="text" [(ngModel)]="saveStation.mac">
-                    <label data-error="wrong" data-success="right">Station Adres</label>
+                    <label data-error="wrong" data-success="right" class="active">Station Adres</label>
                 </div>
 
             </div>
@@ -58,14 +57,11 @@
     <div id="deleteModal" class="modal">
         <div class="modal-content" *ngIf="collidingElement !=null">
             <h4>{{collidingElement}}</h4>
-
         </div>
         <div class="modal-footer">
             <a (click)="CloseModal()" class="modal-action modal-close waves-effect waves-green btn-flat">Close</a>
             <a (click)="DeleteCurrentStation()" class=" waves-effect waves-red btn-flat">Verwijder</a>
         </div>
     </div>
-
-
 </div>
 
