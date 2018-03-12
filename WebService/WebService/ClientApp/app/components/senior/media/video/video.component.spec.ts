@@ -6,20 +6,20 @@ describe('VideoComponent', () => {
   let component: VideoComponent;
   let fixture: ComponentFixture<VideoComponent>;
 
-  beforeEach(async(() => {
-    TestBed.configureTestingModule({
-      declarations: [ VideoComponent ]
-    })
-    .compileComponents();
-  }));
-
-  beforeEach(() => {
-    fixture = TestBed.createComponent(VideoComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
-
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+  // beforeEach(async(() => {
+  //   TestBed.configureTestingModule({
+  //     declarations: [ VideoComponent ]
+  //   })
+  //   .compileComponents();
+  // }));
+  //
+  // beforeEach(() => {
+  //   fixture = TestBed.createComponent(VideoComponent);
+  //   component = fixture.componentInstance;
+  //   fixture.detectChanges();
+  // });
+  //
+  // it('should create', () => {
+  //   expect(component).toBeTruthy();
+  // });
 });

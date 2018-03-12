@@ -7,41 +7,44 @@ import {RenderBuffer,} from "./RenderBuffer"
 import {Station} from "../../models/station"
 import {Sprites} from "./Sprites"
 import {RestServiceService} from "../../service/rest-service.service"
+
 declare var $: any;
-declare var Materialize:any;
+declare var Materialize: any;
+
 @Component({
-  selector: 'app-stationmanagement',
-  templateUrl: './stationmanagement.component.html',
-  styleUrls: ['./stationmanagement.component.css']
+    selector: 'app-stationmanagement',
+    templateUrl: './stationmanagement.component.html',
+    styleUrls: ['./stationmanagement.component.css']
 })
 
 
 /** Class representing stationmanagement page. */
 export class StationmanagementComponent implements OnInit {
     @ViewChild('myCanvas') canvasRef: ElementRef;
-    
+
     position: Point;
-    renderBuffer:RenderBuffer;
-    zoomFactor:number = 1;
-    mouseEvents:MouseEvents;
-    framerate=5;
-    imageUrl="";
-    markerUrl="";
-    adMarker:boolean=false;
-    collidingElement:any;
-    saveStation:Station=new Station();
-    menu:boolean=false;
-    stations=new Map<string,Point>();
-    stationMacAdresses:string[]=[];
-    markerscale=25;
-    renderer:Renderer;
+    renderBuffer: RenderBuffer;
+    zoomFactor: number = 1;
+    mouseEvents: MouseEvents;
+    framerate = 5;
+    imageUrl = "";
+    markerUrl = "";
+    adMarker: boolean = false;
+    collidingElement: any;
+    saveStation: Station = new Station();
+    menu: boolean = false;
+    stations = new Map<string, Point>();
+    stationMacAdresses: string[] = [];
+    markerscale = 25;
+    renderer: Renderer;
     markersize: number;
 
     /**
      * Creating stationmanagement page.
      * @param {RestServiceService} service  - A constructer injected service holding the service for rest connection
      */
-    constructor(private service:RestServiceService) {}
+    constructor(private service: RestServiceService) {
+    }
 
     /**
      *      ngOnInit get called after the page is loaded
@@ -53,241 +56,256 @@ export class StationmanagementComponent implements OnInit {
         //create renderer
         this.renderer = new Renderer(this);
         //set the imageurl
-        this.imageUrl= getBaseUrl()+"images/blueprint.jpg";
-        this.markerUrl=getBaseUrl()+"images/station.png";
-        this.renderBuffer=new RenderBuffer(this);
-        this.mouseEvents= new MouseEvents(this);
+        this.imageUrl = getBaseUrl() + "images/blueprint.jpg";
+        this.markerUrl = getBaseUrl() + "images/station.png";
+        this.renderBuffer = new RenderBuffer(this);
+        this.mouseEvents = new MouseEvents(this);
         //load the blueprint of the building
         await this.LoadMap();
         await this.DownloadMarker();
         await this.service.LoadStations(this);
         await this.renderer.CleanAndUpdateRenderBuffer();
         //load marker
-        setInterval(()=>{this.Tick()},1000/this.framerate);    
+        setInterval(() => {
+            this.Tick()
+        }, 1000 / this.framerate);
     }
 
     /*
     *   Closes the modal to add a station 
     */
-    static async CloseModal(){
+    static async CloseModal() {
         $("#markerModel").modal("close");
     }
-    
+
     /*
     *   Opens modal to delete a station 
     */
-    async deleteModal(id?:string){
-        
-        if (id!=undefined){
-            this.collidingElement =  id;
+    async deleteModal(id?: string) {
+
+        if (id != undefined) {
+            this.collidingElement = id;
             // noinspection JSJQueryEfficiency
             $("#deleteModal").modal();
             // noinspection JSJQueryEfficiency
             $("#deleteModal").modal("open");
         }
-          
-        
+
+
     }
+
     /*
     *   this function is needed to zoomin
     */
-    async ZoomIn(){
-            this.zoomFactor*=2;
-            await this.Tick();
+    async ZoomIn() {
+        this.zoomFactor *= 2;
+        await this.Tick();
     }
+
     /*
     *    this function is needed to zoomout
     */
-    async ZoomOut(){
+    async ZoomOut() {
 
-        this.zoomFactor/=2;
-        
+        this.zoomFactor /= 2;
+
         await this.Tick();
     }
-    
-    
+
+
     /*
     *  tick does the needed calculatations for the render, and draws the rendering on the canvas
     */
-    async Tick(){
-        try{
+    async Tick() {
+        try {
             await this.renderer.FixCanvas();
             await this.RecalculateMap();
             await this.RecalculateStations();
             await this.DrawStationOnCursor();
-        }catch (ex){console.log(ex);}
-    }     
-  
+        } catch (ex) {
+            console.log(ex);
+        }
+    }
+
     /*
      *  This function causes to draw a station on the cursor when add station button is clicked 
      */
-    async DrawStationOnCursor(){
-        if (this.adMarker){
-            let width=this.width/this.markerscale;
-            this.markersize= width;
-            let x =this.mouseEvents.mousepos.x-(width/2);
-            let y =this.mouseEvents.mousepos.y-(width);
-            let station=this.renderBuffer.cursorStation;
+    async DrawStationOnCursor() {
+        if (this.adMarker) {
+            let width = this.width / this.markerscale;
+            this.markersize = width;
+            let x = this.mouseEvents.mousepos.x - (width / 2);
+            let y = this.mouseEvents.mousepos.y - (width);
+            let station = this.renderBuffer.cursorStation;
             station.x = x;
             station.y = y;
-            station.width=width;
-            station.height=width;
-        }else{
-            let station=this.renderBuffer.cursorStation;
+            station.width = width;
+            station.height = width;
+        } else {
+            let station = this.renderBuffer.cursorStation;
             station.x = -9999999999999;
             station.y = -9999999999999;
-            station.width=0;
-            station.height=0;
+            station.width = 0;
+            station.height = 0;
         }
     }
-    
+
     /*
     *   This function opens a modal to create a station 
     */
-    async SaveStationToDatabaseModal(stationPosition:Point){
-        this.saveStation.position.x=stationPosition.x;
-        this.saveStation.position.y=stationPosition.y;
+    async SaveStationToDatabaseModal(stationPosition: Point) {
+        this.saveStation.position.x = stationPosition.x;
+        this.saveStation.position.y = stationPosition.y;
         $("#markerModel").modal();
         $("#markerModel").modal("open");
     }
-  /*
-  *   this function loads the image of the building
-  */
-  async LoadMap(){
+
+    /*
+    *   this function loads the image of the building
+    */
+    async LoadMap() {
         //download the map
-      await this.renderer.LoadImages(this.imageUrl,Sprites.map);
-      //put it in a sprite
-      this.renderBuffer.map=await this.renderer.CreateSprite(Sprites.map);
-      //adjust height and width
-      this.renderBuffer.map.width=this.width;
-      this.renderBuffer.map.height=this.height;
-      
-      return;
-      
-    
-  }
-  /*
-  *  load marker;
-  */
-  async DownloadMarker(){
-        await this.renderer.LoadImages(this.markerUrl,"marker");
-        this.renderBuffer.cursorStation=this.renderer.CreateSprite(Sprites.marker);
-        this.renderBuffer.cursorStation.width=0;
-      this.renderBuffer.cursorStation.height=0;
-      this.renderBuffer.cursorStation.x=-99999;
-      this.renderBuffer.cursorStation.y=-99999;
+        await this.renderer.LoadImages(this.imageUrl, Sprites.map);
+        //put it in a sprite
+        this.renderBuffer.map = await this.renderer.CreateSprite(Sprites.map);
+        //adjust height and width
+        this.renderBuffer.map.width = this.width;
+        this.renderBuffer.map.height = this.height;
+
+        return;
+
+
+    }
+
+    /*
+    *  load marker;
+    */
+    async DownloadMarker() {
+        await this.renderer.LoadImages(this.markerUrl, "marker");
+        this.renderBuffer.cursorStation = this.renderer.CreateSprite(Sprites.marker);
+        this.renderBuffer.cursorStation.width = 0;
+        this.renderBuffer.cursorStation.height = 0;
+        this.renderBuffer.cursorStation.x = -99999;
+        this.renderBuffer.cursorStation.y = -99999;
         console.log(this.renderBuffer.cursorStation);
         return;
-  }
-  /*
-  *    Getter calculates relative the width of the image
-  */
-  get width(){
-        let width=1;
+    }
+
+    /*
+    *    Getter calculates relative the width of the image
+    */
+    get width() {
+        let width = 1;
         let map = this.renderer.CreateSprite(Sprites.map);
-        
-        if (map==undefined)return 0;
-        if(window.innerHeight>window.innerWidth){      
-            width = window.innerHeight/map.height*map.width;
-        }else{
-          width = window.innerWidth;
+
+        if (map == undefined) return 0;
+        if (window.innerHeight > window.innerWidth) {
+            width = window.innerHeight / map.height * map.width;
+        } else {
+            width = window.innerWidth;
         }
         return width;
-  }
-  /*
-  *    Getter calculates relative the height of the image
-  */
-  get height(){
-        let height=0;
-      let map = this.renderer.CreateSprite(Sprites.map);
-      if (map==undefined)return 0;
-      if(window.innerHeight>window.innerWidth){
-          height=window.innerHeight;
-          
-      }else{
-          height= window.innerWidth/ map.width*map.height;
-      }
-      return height;
-  }
-  
-  /*
-  * Recalculates location and size of the image 
-  */
-  async RecalculateMap(){
-        try{
-            
-            this.canvasRef.nativeElement.height=window.innerHeight;
-            this.canvasRef.nativeElement.width=window.innerWidth;
-      
+    }
+
+    /*
+    *    Getter calculates relative the height of the image
+    */
+    get height() {
+        let height = 0;
+        let map = this.renderer.CreateSprite(Sprites.map);
+        if (map == undefined) return 0;
+        if (window.innerHeight > window.innerWidth) {
+            height = window.innerHeight;
+
+        } else {
+            height = window.innerWidth / map.width * map.height;
+        }
+        return height;
+    }
+
+    /*
+    * Recalculates location and size of the image 
+    */
+    async RecalculateMap() {
+        try {
+
+            this.canvasRef.nativeElement.height = window.innerHeight;
+            this.canvasRef.nativeElement.width = window.innerWidth;
+
             //calculate zoom
-            let height=this.height*this.zoomFactor;
-            let width=this.width*this.zoomFactor;
+            let height = this.height * this.zoomFactor;
+            let width = this.width * this.zoomFactor;
             //render
             let map = this.renderBuffer.map;
-            map.width=width;
-            map.height=height;
+            map.width = width;
+            map.height = height ;
             map.x = this.mouseEvents.position.x;
             map.y = this.mouseEvents.position.y;
-            this.mouseEvents.mapPos={x:this.mouseEvents.position.x,y:this.mouseEvents.position.y, width:width,height:height};
-            
-        }catch (ex){
+            this.mouseEvents.mapPos = {
+                x: this.mouseEvents.position.x,
+                y: this.mouseEvents.position.y,
+                width: width,
+                height: height
+            };
+
+        } catch (ex) {
             console.log(ex);
         }
-  }
+    }
 
-  /*
-  * Recalculates location and size of all stations on the map 
-  */
-  async RecalculateStations(){
-        let refreshNeeded=false;
-        this.stations.forEach((location:Point,key:string,map:any)=>{
-            let width=this.width/this.markerscale;
-            this.markersize=width;
-            let position= this.mouseEvents.CalculateStationPosOnImage(location);
-            let x =position.x-(width/2);
-            let y =position.y-width;
+    /*
+    * Recalculates location and size of all stations on the map 
+    */
+    async RecalculateStations() {
+        let refreshNeeded = false;
+        this.stations.forEach((location: Point, key: string, map: any) => {
+            let width = this.width / this.markerscale;
+            this.markersize = width;
+            let position = this.mouseEvents.CalculateStationPosOnImage(location);
+            let x = position.x - (width / 2);
+            let y = position.y - width;
             let station = this.renderBuffer.buffer.get(key);
-            if (station ==undefined){
-                station=this.renderBuffer.AddSpriteToBufferById(key, Sprites.marker);
-                refreshNeeded=true;
+            if (station == undefined) {
+                station = this.renderBuffer.AddSpriteToBufferById(key, Sprites.marker);
+                refreshNeeded = true;
             }
-            if (station!=undefined){
+            if (station != undefined) {
                 station.x = x;
                 station.y = y;
-                station.width=width;
-                station.height=width;
+                station.width = width;
+                station.height = width;
             }
-            
+
         });
-        if (refreshNeeded){
+        if (refreshNeeded) {
             this.renderer.CleanAndUpdateRenderBuffer();
-        }        
-  }
+        }
+    }
 
 
-
-        /*
-        *   This function will send request to the rest to delete station 
-        */
+    /*
+    *   This function will send request to the rest to delete station 
+    */
     async DeleteCurrentStation() {
         await this.service.DeleteStation(this.collidingElement);
         await this.service.LoadStations(this);
         $("#deleteModal").modal("close");
     }
+
     /*
     *   This function will send request to the rest to save station 
     */
-    async SaveNewStation(){
-        let reg=new RegExp("^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$");
-        let mac =this.saveStation.mac;
-        if (reg.test(mac)){
+    async SaveNewStation() {
+        let reg = new RegExp("^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$");
+        let mac = this.saveStation.mac;
+        if (reg.test(mac)) {
 
             await this.service.SaveStationToDatabase(this.saveStation);
             await this.service.LoadStations(this);
-            this.saveStation=new Station();
+            this.saveStation = new Station();
             $("#markerModel").modal("close");
-            this.adMarker=false;
-        }else{
+            this.adMarker = false;
+        } else {
             Materialize.toast('Station adres verkeerd', 4000);
         }
 
