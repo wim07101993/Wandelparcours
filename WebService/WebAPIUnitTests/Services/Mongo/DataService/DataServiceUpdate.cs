@@ -15,7 +15,7 @@ namespace WebAPIUnitTests.Services.Mongo
         #region ONE UpdateAsync(T newItem, IEnumerable<Expression<Func<T, object>>> propertiesToUpdate = null)
 
         [TestMethod]
-        public void UpdateNull()
+        public void UpdateNullItemAndNoProperties()
         {
             var dataService = new MongoDataService();
             ActionExtensions.ShouldCatchArgumentNullException(() =>
@@ -27,7 +27,34 @@ namespace WebAPIUnitTests.Services.Mongo
         }
 
         [TestMethod]
-        public void UpdateWithUnknownEntity()
+        public void UpdateNullItemAndEmptyProperties()
+        {
+            var dataService = new MongoDataService();
+            ActionExtensions.ShouldCatchArgumentNullException(() =>
+                {
+                    var _ = dataService
+                        .UpdateAsync(null, new Expression<Func<MockEntity, object>>[] { }).Result;
+                },
+                "newItem",
+                "the item to update cannot be null");
+        }
+
+        [TestMethod]
+        public void UpdateNullItemAndSomeProperties()
+        {
+            var dataService = new MongoDataService();
+            ActionExtensions.ShouldCatchArgumentNullException(() =>
+                {
+                    var _ = dataService
+                        .UpdateAsync(null, new Expression<Func<MockEntity, object>>[] {x => x.I, x => x.B}).Result;
+                },
+                "newItem",
+                "the item to update cannot be null");
+        }
+
+
+        [TestMethod]
+        public void UpdateUnknownItemAndNoProperties()
         {
             ActionExtensions.ShouldCatchNotFoundException(() =>
                 {
@@ -37,21 +64,33 @@ namespace WebAPIUnitTests.Services.Mongo
         }
 
         [TestMethod]
-        public void UpdateWithUnknownEntityAndSomeFields()
+        public void UpdateUnknownItemAndEmptyProperties()
+        {
+            ActionExtensions.ShouldCatchNotFoundException(() =>
+                {
+                    var _ = new MongoDataService()
+                        .UpdateAsync(new MockEntity(), new Expression<Func<MockEntity, object>>[] { }).Result;
+                },
+                "the given entity doesn't exists");
+        }
+
+        [TestMethod]
+        public void UpdateUnKnownItemAndSomeProperties()
         {
             ActionExtensions.ShouldCatchNotFoundException(() =>
                 {
                     var _ = new MongoDataService()
                         .UpdateAsync(
                             new MockEntity(),
-                            new Expression<Func<MockEntity, object>>[] {x => x.I})
+                            new Expression<Func<MockEntity, object>>[] {x => x.I, x => x.B})
                         .Result;
                 },
                 "the given entity doesn't exists");
         }
 
+
         [TestMethod]
-        public void UpdateWithKnownEntity()
+        public void UpdateKnownItemAndNoProperties()
         {
             var dataService = new MongoDataService();
             var id = dataService.GetFirst().Id;
@@ -88,15 +127,15 @@ namespace WebAPIUnitTests.Services.Mongo
         }
 
         [TestMethod]
-        public void UpdateOneField()
+        public void UpdateKnownItemAndEmptyProperties()
         {
             var dataService = new MongoDataService();
             var id = dataService.GetFirst().Id;
-            var originalEntity = dataService.GetAsync(id).Result;
-            var entity = new MockEntity {Id = id, B = false, I = 1234, S = "abcd"};
+            var originalEntity = dataService.GetAsync(id, new Expression<Func<MockEntity, object>>[] { }).Result;
+            var entity = new MockEntity {Id = id};
 
             dataService
-                .UpdateAsync(entity, new Expression<Func<MockEntity, object>>[] {x => x.I})
+                .UpdateAsync(entity)
                 .Result
                 .Should()
                 .BeTrue("the entity should be able to update");
@@ -116,7 +155,7 @@ namespace WebAPIUnitTests.Services.Mongo
             newEntity
                 .I
                 .Should()
-                .Be(entity.I, "that is the updated value");
+                .Be(originalEntity.I, "that is the updated value");
 
             newEntity
                 .S
@@ -125,7 +164,7 @@ namespace WebAPIUnitTests.Services.Mongo
         }
 
         [TestMethod]
-        public void UpdateMultipleFields()
+        public void UpdateKnownItemAndSomeProperties()
         {
             var dataService = new MongoDataService();
             var id = dataService.GetFirst().Id;
@@ -167,7 +206,7 @@ namespace WebAPIUnitTests.Services.Mongo
         #region PROPERTY UpdatePropertyAsync(ObjectId id, Expression<Func<T, object>> propertyToUpdate, object value)
 
         [TestMethod]
-        public void UpdateUnknownEntity()
+        public void UpdatePropertyOfUnknownIdAndCorrectValue()
         {
             ActionExtensions.ShouldCatchNotFoundException(() =>
                 {
@@ -179,7 +218,34 @@ namespace WebAPIUnitTests.Services.Mongo
         }
 
         [TestMethod]
-        public void UpdateKnownProperty()
+        public void UpdateNullPropertyOfUnknownId()
+        {
+            ActionExtensions.ShouldCatchArgumentNullException(() =>
+                {
+                    var _ = new MongoDataService()
+                        .UpdatePropertyAsync(ObjectId.GenerateNewId(), null, true)
+                        .Result;
+                },
+                "propertyToUpdate",
+                "the property to update cannot be null");
+        }
+
+        [TestMethod]
+        public void UpdatePropertyOfUnknownIdAndIncorrectValue()
+        {
+            ActionExtensions.ShouldCatchArgumentException(() =>
+                {
+                    var _ = new MongoDataService()
+                        .UpdatePropertyAsync(ObjectId.GenerateNewId(), x => x.I, new {X = "not a real property"})
+                        .Result;
+                },
+                "value",
+                "the value cannot be assigned to the property because it if of a wrong type");
+        }
+
+
+        [TestMethod]
+        public void UpdatePropertyOfKnownIdAndCorrectValue()
         {
             var dataService = new MongoDataService();
 
@@ -190,7 +256,20 @@ namespace WebAPIUnitTests.Services.Mongo
         }
 
         [TestMethod]
-        public void UpdateKnownPropertyWithInvalidValue()
+        public void UpdateNullPropertyOfKnownId()
+        {
+            var dataService = new MongoDataService();
+
+            ActionExtensions.ShouldCatchArgumentNullException(() =>
+                {
+                    var _ = dataService.UpdatePropertyAsync(dataService.GetFirst().Id, null, false).Result;
+                },
+                "propertyToUpdate",
+                "the property to update cannot be null");
+        }
+
+        [TestMethod]
+        public void UpdatePropertyOfKnownIdAndIncorrectValue()
         {
             var dataService = new MongoDataService();
 
@@ -202,19 +281,6 @@ namespace WebAPIUnitTests.Services.Mongo
                 },
                 "value",
                 "the value cannot be assigned to the property");
-        }
-
-        [TestMethod]
-        public void UpdateNullProperty()
-        {
-            var dataService = new MongoDataService();
-
-            ActionExtensions.ShouldCatchArgumentNullException(() =>
-                {
-                    var _ = dataService.UpdatePropertyAsync(dataService.GetFirst().Id, null, true).Result;
-                },
-                "propertyToUpdate",
-                "the property to update cannot be null");
         }
 
         #endregion PROPERTY

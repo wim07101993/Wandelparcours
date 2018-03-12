@@ -14,7 +14,7 @@ namespace WebAPIUnitTests.Services.Mongo
         #region ONE CreateAsync(T item)
 
         [TestMethod]
-        public void CreateNullMockEntity()
+        public void CreateNullItem()
         {
             ActionExtensions.ShouldCatchArgumentNullException(() =>
                 {
@@ -25,15 +25,7 @@ namespace WebAPIUnitTests.Services.Mongo
         }
 
         [TestMethod]
-        public void CreateEmptyMockEntity()
-        {
-            new MongoDataService().CreateAsync(new MockEntity()).Result
-                .Should()
-                .BeTrue("it is assigned in the create method of the service");
-        }
-
-        [TestMethod]
-        public void CreateNormalMockEntity()
+        public void CreateItem()
         {
             var id = ObjectId.GenerateNewId();
             var entity = new MockEntity

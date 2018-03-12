@@ -12,17 +12,17 @@ namespace WebAPIUnitTests.Services.Mongo
         #region Remove
 
         [TestMethod]
-        public void RemoveMockEntityWithNonExistingID()
+        public void RemoveUnknownItem()
         {
             ActionExtensions.ShouldCatchNotFoundException(() =>
-            {
-                var _ = new MongoDataService().RemoveAsync(ObjectId.GenerateNewId()).Result;
-            },
+                {
+                    var _ = new MongoDataService().RemoveAsync(ObjectId.GenerateNewId()).Result;
+                },
                 "the given id doesn't exist");
         }
 
         [TestMethod]
-        public void RemoveMockEntityWithExistingID()
+        public void RemoveKnownItem()
         {
             var dataService = new MongoDataService();
 

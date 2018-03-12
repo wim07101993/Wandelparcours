@@ -3,7 +3,7 @@
 namespace WebAPIUnitTests.Services.Mongo
 {
     [TestClass]
-    public partial class DataService
+    public partial class DataService : IDataService
     {
         // All test are in the other partial classes (under folder DataService: Create, Delete, Get, Update)
     }

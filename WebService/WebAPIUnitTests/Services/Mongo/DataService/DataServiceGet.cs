@@ -11,12 +11,12 @@ using WebAPIUnitTests.TestMocks.Mongo;
 // ReSharper disable once CheckNamespace
 namespace WebAPIUnitTests.Services.Mongo
 {
-    public partial class DataService
+    public partial class DataService 
     {
         #region ALL GetAsync(IEnumerable<Expression<Func<T, object>>> propertiesToInclude = null)
 
         [TestMethod]
-        public void GetWithOutPropertiesToInclude()
+        public void GetAllWithoutPropertiesToInclude()
         {
             var dataService = new MongoDataService();
 
@@ -26,12 +26,12 @@ namespace WebAPIUnitTests.Services.Mongo
         }
 
         [TestMethod]
-        public void GetWithIdPropertyToInclude()
+        public void GetAllWithEmptyPropertiesToInclude()
         {
             var dataService = new MongoDataService();
 
             var mockEntities = dataService
-                .GetAsync(new Expression<Func<MockEntity, object>>[] {x => x.Id})
+                .GetAsync(new Expression<Func<MockEntity, object>>[] { })
                 .Result
                 .ToList();
 
@@ -63,7 +63,7 @@ namespace WebAPIUnitTests.Services.Mongo
         }
 
         [TestMethod]
-        public void GetWithSomeFields()
+        public void GetAllWithSomePropertiesToInclude()
         {
             var dataService = new MongoDataService();
 
@@ -102,11 +102,10 @@ namespace WebAPIUnitTests.Services.Mongo
 
         #endregion ALL
 
-
         #region ONE GetAsync(ObjectId id, IEnumerable<Expression<Func<T, object>>> propertiesToInclude = null)
 
         [TestMethod]
-        public void GetOneWithUnknownIdAndNoPropertiesToInclude()
+        public void GetOneWithUnknownIdAndNullPropertiesToInclude()
         {
             ActionExtensions.ShouldCatchNotFoundException(() =>
                 {
@@ -116,19 +115,19 @@ namespace WebAPIUnitTests.Services.Mongo
         }
 
         [TestMethod]
-        public void GetOneWithUnknownIdAndIdPropertiesToInclude()
+        public void GetOneWithUnknownIdAndEmptyPropertiesToInclude()
         {
             ActionExtensions.ShouldCatchNotFoundException(() =>
                 {
                     var _ = new MongoDataService()
-                        .GetAsync(ObjectId.GenerateNewId(), new Expression<Func<MockEntity, object>>[] {x => x.Id})
+                        .GetAsync(ObjectId.GenerateNewId(), new Expression<Func<MockEntity, object>>[] { })
                         .Result;
                 },
                 "there is no entity with the given id");
         }
 
         [TestMethod]
-        public void GetOneWithUnknownIdAndSomeFields()
+        public void GetOneWithUnknownIdAndSomePropertiesToInclude()
         {
             ActionExtensions.ShouldCatchNotFoundException(() =>
                 {
@@ -141,7 +140,7 @@ namespace WebAPIUnitTests.Services.Mongo
         }
 
         [TestMethod]
-        public void GetOneWithOutPropertiesToInclude()
+        public void GetOneWithKnownIdAndNoPropertiesToInclude()
         {
             var dataService = new MongoDataService();
 
@@ -152,12 +151,12 @@ namespace WebAPIUnitTests.Services.Mongo
         }
 
         [TestMethod]
-        public void GetOneWithIdPropertyToInclude()
+        public void GetOneWithKnownIdAndEmptyPropertiesToInclude()
         {
             var dataService = new MongoDataService();
-
+            
             var mockEntity = dataService
-                .GetAsync(dataService.GetFirst().Id, new Expression<Func<MockEntity, object>>[] {x => x.Id})
+                .GetAsync(dataService.GetFirst().Id, new Expression<Func<MockEntity, object>>[] { })
                 .Result;
 
             var emptyEntity = new MockEntity();
@@ -184,12 +183,13 @@ namespace WebAPIUnitTests.Services.Mongo
         }
 
         [TestMethod]
-        public void GetOneWithSomeFields()
+        public void GetOneWithKnownIdAndSomePropertiesToInclude()
         {
             var dataService = new MongoDataService();
 
             var mockEntity = dataService
-                .GetAsync(dataService.GetFirst().Id, new Expression<Func<MockEntity, object>>[] {x => x.S, x => x.I})
+                .GetAsync(dataService.GetFirst().Id,
+                    new Expression<Func<MockEntity, object>>[] {x => x.S, x => x.I})
                 .Result;
 
             var emptyEntity = new MockEntity();
@@ -217,11 +217,23 @@ namespace WebAPIUnitTests.Services.Mongo
 
         #endregion ONE
 
-
         #region PROPERTY GetPropertyAsync(ObjectId id, Expression<Func<T, object>> propertyToSelect)
 
         [TestMethod]
-        public void GetPropertyWithUnKnownId()
+        public void GetPropertyWithUnknownIdAndNoProperty()
+        {
+            ActionExtensions.ShouldCatchArgumentNullException(() =>
+                {
+                    var _ = new MongoDataService()
+                        .GetPropertyAsync(ObjectId.GenerateNewId(), null)
+                        .Result;
+                },
+                "propertyToSelect",
+                "there must be a property to select");
+        }
+
+        [TestMethod]
+        public void GetKnownPropertyWithUnknownId()
         {
             ActionExtensions.ShouldCatchNotFoundException(() =>
                 {
@@ -233,7 +245,7 @@ namespace WebAPIUnitTests.Services.Mongo
         }
 
         [TestMethod]
-        public void GetPropertyWithoutSelector()
+        public void GetNullPropertyWithKnownId()
         {
             var dataService = new MongoDataService();
 
@@ -246,7 +258,7 @@ namespace WebAPIUnitTests.Services.Mongo
         }
 
         [TestMethod]
-        public void GetProperty()
+        public void GetPropertyWithKnownId()
         {
             var dataService = new MongoDataService();
 
