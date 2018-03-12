@@ -14,7 +14,7 @@ import { CounterComponent } from './components/counter/counter.component';
 import { StationmanagementComponent } from './components/stationmanagement/stationmanagement.component';
 import { HeaderComponent } from './components/header/header.component';
 import { SidenavComponent } from './components/sidenav/sidenav.component';
-import { ResidentComponent } from './components/resident/resident.component';
+import { ResidentsComponent } from './components/residents/residents.component';
 import { Ng2SearchPipeModule } from 'ng2-search-filter';
 import { SeniorComponent } from './components/senior/senior.component';
 import { PictureComponent } from './components/senior/media/picture/picture.component';
@@ -25,8 +25,8 @@ import { TrackingComponent } from './components/senior/tracking/tracking.compone
 import { PersonaliaComponent } from './components/senior/personalia/personalia.component';
 
 const appRoutes: Routes = [
-    { path: '', redirectTo: 'resident', pathMatch: 'full' },
-    { path: 'resident', component: ResidentComponent },
+    { path: '', redirectTo: 'residents', pathMatch: 'full' },
+    { path: 'residents', component: ResidentsComponent },
     { path: 'resident/:id', component: PersonaliaComponent },
     { path: 'resident/:id/picture', component: PictureComponent },
     { path: 'resident/:id/video', component: VideoComponent },
@@ -35,10 +35,10 @@ const appRoutes: Routes = [
     { path: 'resident/:id/tracking', component: TrackingComponent },
     { path: 'counter', component: CounterComponent },
     { path: 'fetch-data', component: FetchDataComponent },
-    { path: 'stationmanagement', component: StationmanagementComponent },
+    { path: 'modules', component: StationmanagementComponent },
     { path: '**', redirectTo: 'resident' },
-    { path: 'resident', component: ResidentComponent },
-    { path: '**', redirectTo: 'home' }
+    { path: 'residents', component: ResidentsComponent },
+    { path: '**', redirectTo: 'residents' }
 ];
 
 @NgModule({
@@ -50,7 +50,7 @@ const appRoutes: Routes = [
         SidenavComponent,
         HomeComponent,
         HeaderComponent,
-        ResidentComponent,
+        ResidentsComponent,
         StationmanagementComponent,
         SeniorComponent,
         PictureComponent,

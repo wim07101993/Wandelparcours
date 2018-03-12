@@ -10,10 +10,10 @@
         <h4 >Stations</h4>
         
         <ul>
-            <li *ngFor="let station of stations" (click)="deleteModal(station.mac);">
-                
-                <div>{{station.mac}} <i class="material-icons ">cancel</i> </div>
-                
+            <li *ngFor="let station  of stationMacAdresses"   >
+                <span (click)="deleteModal(station);">
+                <div >{{station}} <i class="material-icons ">cancel</i> </div>
+                </span>
             </li>
          
         </ul>
@@ -29,35 +29,36 @@
     <a id="zoomOutMap"  class="btn-floating waves-effect waves-light orange "                   (click)="zoomOut()"><i class="material-icons">  zoom_out</i></a>
 </div>
 
-<canvas #myCanvas id="map" >
-</canvas>
+<div  #myCanvas id="map" >
+</div>
 
 <div id="markerModel" class="modal">
+
     <div class="modal-content">
         <h4>Station toevoegen</h4>
         <div class="row">
             
                 <div class="input-field col s12"  >
-                    <input id="mac" type="text"  [(ngModel)]="saveStation.mac">
-                    <label for="mac" data-error="wrong" data-success="right">Station Adres</label>
+                    <input id="mac" placeholder="xx:xx:xx:xx:xx:xx" type="text"  [(ngModel)]="saveStation.mac">
+                    <label data-error="wrong" data-success="right">Station Adres</label>
                 </div>
             
         </div>
     </div>
     <div class="modal-footer">
-        <a (click)="closeModal()" class="modal-action modal-close waves-effect waves-green btn-flat">Close</a>
-        <a (click)="saveNewStation()" class=" waves-effect waves-green btn-flat">Voeg toe</a>
+        <a (click)="CloseModal()" class="modal-action modal-close waves-effect waves-green btn-flat">Close</a>
+        <a (click)="SaveNewStation()" class=" waves-effect waves-green btn-flat">Voeg toe</a>
     </div>
 </div>
 
 <div id="deleteModal" class="modal">
     <div class="modal-content" *ngIf="collidingElement !=null">
-        <h4>{{collidingElement.id}}</h4> 
+        <h4>{{collidingElement}}</h4> 
 
     </div>
     <div class="modal-footer">
-        <a (click)="closeModal()" class="modal-action modal-close waves-effect waves-green btn-flat">Close</a>
-        <a (click)="deleteCurrentStation()" class=" waves-effect waves-green btn-flat">Verwijder</a>
+        <a (click)="CloseModal()" class="modal-action modal-close waves-effect waves-green btn-flat">Close</a>
+        <a (click)="DeleteCurrentStation()" class=" waves-effect waves-green btn-flat">Verwijder</a>
     </div>
 </div>
 

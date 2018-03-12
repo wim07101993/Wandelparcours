@@ -39,10 +39,10 @@ thead{
     font-weight: bold;
 }
 input[type=text]:not(.browser-default){
-    margin-bottom: 0px;
+    margin-bottom: 0;
 }
 .myCol {
-    padding-left: 0px;
+    padding-left: 0;
 }
 
 td.cardviewtd, th.cardviewth{
@@ -81,6 +81,7 @@ h6{
     position: absolute;
     top: -12px;
     left: -12px;
+    box-shadow: 1px 1px 1px 1px rgba(0,0,0,0.15);
 }
 .color-grad{
     background: #fffc00; /* fallback for old browsers */

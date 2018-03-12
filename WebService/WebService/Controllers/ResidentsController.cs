@@ -26,10 +26,10 @@ namespace WebService.Controllers
 
         /// <inheritdoc cref="ARestControllerBase{T}" />
         /// <summary>
-        /// Residentscontroller creates an instance of the <see cref="T:WebService.Controllers.ResidentsController" /> class. 
+        /// ResidentsController creates an instance of the <see cref="T:WebService.Controllers.ResidentsController" /> class. 
         /// </summary>
         /// <param name="dataService">is a service to handle the database connection</param>
-        /// <param name="logger">is a service to hanlde the logging of messages</param>
+        /// <param name="logger">is a service to handle the logging of messages</param>
         public ResidentsController(IDataService<Resident> dataService, ILogger logger)
             : base(dataService, logger)
         {
@@ -266,7 +266,7 @@ namespace WebService.Controllers
         /// <inheritdoc cref="ARestControllerBase{T}.GetAsync(string[])" />
         /// <summary>
         /// Get is supposed to return all the Items in the database wrapped in an <see cref="IActionResult"/>. 
-        /// To limit data traffic it is possible to select only a number of propertie.
+        /// To limit data traffic it is possible to select only a number of properties.
         /// <para/>
         /// By default only the properties in the selector <see cref="PropertiesToSendOnGetAll"/> are returned.
         /// </summary>
@@ -320,7 +320,7 @@ namespace WebService.Controllers
 
         /// <inheritdoc cref="ARestControllerBase{T}.GetPropertyAsync" />
         /// <summary>
-        /// GetProperty returns the valu of the asked property of the asked <see cref="Resident"/>.
+        /// GetProperty returns the value of the asked property of the asked <see cref="Resident"/>.
         /// </summary>
         /// <param name="id">is the id of the <see cref="Resident"/></param>
         /// <param name="propertyName">is the name of the property to return</param>
@@ -389,7 +389,7 @@ namespace WebService.Controllers
         /// When the <see cref="residentId"/>/<see cref="musicId"/> cannot be parsed or <see cref="Resident"/>/<see cref="MediaWithId"/> not found
         /// </exception>
         /// <exception cref="Exception">When the item could not be removed</exception>
-        [HttpPost("{residentId}/Music")]
+        [HttpDelete("{residentId}/Music")]
         public async Task RemoveVideoAsync(string residentId, string musicId)
             => await RemoveMediaAsync(residentId, musicId, EMediaType.Audio);
 
@@ -403,7 +403,7 @@ namespace WebService.Controllers
         /// When the <see cref="residentId"/>/<see cref="videoId"/> cannot be parsed or <see cref="Resident"/>/<see cref="MediaWithId"/> not found
         /// </exception>
         /// <exception cref="Exception">When the item could not be removed</exception>
-        [HttpPost("{residentId}/Videos")]
+        [HttpDelete("{residentId}/Videos")]
         public async Task RemoveMusicAsync(string residentId, string videoId)
             => await RemoveMediaAsync(residentId, videoId, EMediaType.Video);
 
@@ -417,7 +417,7 @@ namespace WebService.Controllers
         /// When the <see cref="residentId"/>/<see cref="imageId"/> cannot be parsed or <see cref="Resident"/>/<see cref="MediaWithId"/> not found
         /// </exception>
         /// <exception cref="Exception">When the item could not be removed</exception>
-        [HttpPost("{residentId}/Images")]
+        [HttpDelete("{residentId}/Images")]
         public async Task RemoveImageAsync(string residentId, string imageId)
             => await RemoveMediaAsync(residentId, imageId, EMediaType.Image);
 
@@ -431,13 +431,13 @@ namespace WebService.Controllers
         /// When the <see cref="residentId"/>/<see cref="colorId"/> cannot be parsed or <see cref="Resident"/>/<see cref="MediaWithId"/> not found
         /// </exception>
         /// <exception cref="Exception">When the item could not be removed</exception>
-        [HttpPost("{residentId}/Colors")]
+        [HttpDelete("{residentId}/Colors")]
         public async Task RemoveColorAsync(string residentId, string colorId)
             => await RemoveMediaAsync(residentId, colorId, EMediaType.Color);
 
         /// <inheritdoc cref="IResidentsController.RemoveColorAsync" />
         /// <summary>
-        /// RemoveColorAsync removes a media ietm from the respectively list of a <see cref="Resident"/>.
+        /// RemoveColorAsync removes a media item from the respectively list of a <see cref="Resident"/>.
         /// </summary>
         /// <param name="residentId">is the id of the <see cref="Resident"/></param>
         /// <param name="mediaId">is the id of the color to remove from the <see cref="Resident"/>'s list</param>

@@ -1,59 +1,40 @@
 
 import {StationmanagementComponent} from "./stationmanagement.component"
-import {Point} from "./MouseEvents"
+
+
+import * as PIXI from 'pixi.js'
+import Sprite = PIXI.Sprite;
+import {Sprites} from "./Sprites";
+
+/** Class to buffer the elements wich need to get rendered */
 export class RenderBuffer{
     station:StationmanagementComponent;
-    buffer:bufferelement[];
-    
+    map:Sprite;
+    cursorStation:Sprite;
+    buffer=new Map<string, Sprite>();
+
+    /**
+     * Creating RenderBuffer object.
+     * @param {StationmanagementComponent} station - This is the parent variable holding all the needed variables
+     */
     constructor(station:StationmanagementComponent){
         this.station=station;
-        this.buffer=[];
+     
     }
-    
-    async render() {
-        return new Promise(resolve => {
-            
-            for ( let element of this.buffer){
-                this.station.context.drawImage(element.image,element.x, element.y, element.width,element.height);
-            }
-        });
-        
 
+
+    /**
+     * Creating RenderBuffer object.
+     * @param {string} id - this is the for which the object is uploaded
+     * @param {string} key - this is the key to create a sprite
+     * @return {Sprite} sprite- the sprite for this id alse gets returned back
+     */
+    AddSpriteToBufferById(id:string,key:string){
+        let sprite=this.station.renderer.CreateSprite(key);
+        this.buffer.set(id,sprite);
+        return sprite;
     }
-    
-    async getElementById(id:string){
-        let be=null;
-        for (be of this.buffer){
-            if (be.id==id){
-                
-                return be;
-                
-            }
-        }
-    }
-    
-    async addAnonym(image:HTMLImageElement,x:number,y:number,width:number,heigth:number){
-        return new Promise(resolve => {
-            let element:bufferelement={image:image,x:x, y:y ,width:width,height:heigth,id:"",className:""};
-            this.buffer.push(element);
-            resolve();
-        });
-    }
-    async add(image:HTMLImageElement,x:number,y:number,width:number,heigth:number,id:string,className:string ){
-        return new Promise(resolve => {
-            let element:bufferelement={image:image,x:x, y:y ,width:width,height:heigth,id:id,className:className};
-            this.buffer.push(element);
-            resolve();
-        });
-    }
-    async clear(){
-        return new Promise(resolve => {
-            this.buffer=[];
-            
-            this.station.context.clearRect(0,0,this.station.canvas.width,this.station.canvas.height);
-            resolve();
-        })
-    }
+
 }
 export interface bufferelement{
     image:HTMLImageElement;

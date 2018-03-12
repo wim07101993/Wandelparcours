@@ -10,13 +10,13 @@ declare var $:any;
 declare var Materialize:any;
 
 @Component({
-    selector: 'app-resident',
-    templateUrl: './resident.component.html',
-    styleUrls: ['./resident.component.css'],
+    selector: 'app-residents',
+    templateUrl: './residents.component.html',
+    styleUrls: ['./residents.component.css'],
     providers: [RestServiceService]
 })
 
-export class ResidentComponent implements OnInit {
+export class ResidentsComponent implements OnInit {
     ngOnInit(): void {
     }
 
