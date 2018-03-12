@@ -5,6 +5,7 @@ import 'rxjs/add/operator/catch';
 import { getBaseUrl } from '../app.module.browser';
 import { Resident } from '../models/resident';
 import {Station} from "../models/station";
+import { CustomErrorHandler } from './customErrorHandler';
 
 @Injectable()
 export class RestServiceService {
@@ -12,22 +13,26 @@ export class RestServiceService {
 
     restUrl = "http://localhost:5000/";
 
-    constructor(private http: Http) {}
+    constructor(private http: Http, private customErrorHandler: CustomErrorHandler) {}
 
     /**
     * Get all residents from database
     * @returns {Resident} residents of type Resident or undefined
     */
     getAllResidents() {
-      return new Promise<Resident[]>(resolve => {
-          this.http.get(this.restUrl +'api/v1/residents').subscribe(response => {
-              resolve(<Resident[]>response.json());
-          },
-              error => {
-                  resolve(undefined);
-              }
-          );
-      });   
+            return new Promise<Resident[]>(resolve => {
+                this.http.get(this.restUrl + 'api/v1/residents').subscribe(response => {
+                    resolve(<Resident[]>response.json());
+                },
+                    error => {
+                        
+                        this.customErrorHandler.updateMessage(error);
+                        resolve(undefined);
+                        
+                    }
+                );
+            });
+        
     }
 
     /**
@@ -41,6 +46,7 @@ export class RestServiceService {
                 resolve(<Resident[]>response.json());
             },
                 error => {
+                    this.customErrorHandler.updateMessage(error);
                     resolve(undefined);
                 }
             );
@@ -62,6 +68,7 @@ export class RestServiceService {
                 resolve();
             }, error => {
                 console.log("Something went wrong");
+                this.customErrorHandler.updateMessage(error);
                 resolve();
             });
         });
@@ -87,6 +94,7 @@ export class RestServiceService {
                 resolve();
             }, error => {
                 console.log("Could not update data!");
+                this.customErrorHandler.updateMessage(error);
                 resolve();
             });
         });
@@ -105,6 +113,7 @@ export class RestServiceService {
                 resolve(true);
             }, error => {
                 console.log("Could not save resident to database!");
+                this.customErrorHandler.updateMessage(error);
                 resolve(false);
             });
         });
@@ -121,6 +130,7 @@ export class RestServiceService {
                 resolve(true);
             }, error => {
                 console.log("Could not update data!");
+                this.customErrorHandler.updateMessage(error);
                 resolve(false);
             });
         });
@@ -133,6 +143,7 @@ export class RestServiceService {
                 resolve(<Resident[]>response.json());
             },
                 error => {
+                    this.customErrorHandler.updateMessage(error);
                     resolve(undefined);
                 }
             );

@@ -21,6 +21,7 @@ import { VideoComponent } from './components/senior/media/video/video.component'
 import { GameComponent } from './components/senior/media/game/game.component';
 import { TrackingComponent } from './components/senior/tracking/tracking.component';
 import { PersonaliaComponent } from './components/senior/personalia/personalia.component';
+import { ErrorPageComponent } from './components/error-page/error-page.component';
 
 const appRoutes: Routes = [
     { path: '', redirectTo: 'residents', pathMatch: 'full' },
@@ -34,9 +35,10 @@ const appRoutes: Routes = [
     { path: 'counter', component: CounterComponent },
     { path: 'fetch-data', component: FetchDataComponent },
     { path: 'modules', component: StationmanagementComponent },
-    { path: '**', redirectTo: 'resident' },
+    { path: 'error', component: ErrorPageComponent},
     { path: 'residents', component: ResidentsComponent },
     { path: '**', redirectTo: 'residents' }
+    
 ];
 
 @NgModule({
@@ -57,6 +59,7 @@ const appRoutes: Routes = [
         GameComponent,
         TrackingComponent,
         PersonaliaComponent,
+        ErrorPageComponent,
     ],
     imports: [
         CommonModule,

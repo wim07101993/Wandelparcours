@@ -4,8 +4,9 @@ import { RestServiceService } from '../../service/rest-service.service'
 import { Response } from '@angular/http'
 import { Ng2SearchPipeModule } from 'ng2-search-filter'
 import { async } from '@angular/core/testing';
-import {NgForm} from "@angular/forms";
+import { NgForm } from "@angular/forms";
 import { Router } from '@angular/router';
+import { CustomErrorHandler } from '../../service/customErrorHandler';
 declare var $:any;
 declare var Materialize:any;
 
@@ -32,7 +33,7 @@ export class ResidentsComponent implements OnInit {
      * @param service Restservice
      * @param router Router
      */
-    constructor(private service: RestServiceService, private router: Router) {
+    constructor(private service: RestServiceService, private router: Router, private customErrorHandler: CustomErrorHandler) {
         this.showAllResidents();
         this.residents = [];
 
@@ -103,13 +104,16 @@ export class ResidentsComponent implements OnInit {
      * get all residents async from service
      */
     async showAllResidents() {
-        let residents: any = await this.service.getAllResidents();
-        console.log(residents);
-        if (residents != undefined)
-            this.residents = residents;
-        else {
-            alert("oops! :( looks like something went wrong :(");
-        }
+            let residents: any = await this.service.getAllResidents();
+            console.log(residents);
+            if (residents != undefined)
+                this.residents = residents;
+            else {
+
+                //alert("oops! :( looks like something went wrong :(");
+                this.router.navigate(["/error"]);
+            }
+       
     }
 
     /**
@@ -205,6 +209,7 @@ export class ResidentsComponent implements OnInit {
             Materialize.toast(`bewoner: ${data.firstName} ${data.lastName} succesvol toegevoegd`, 5000);
         }else{
             Materialize.toast(`niet gelukt lan`, 5000);
+            this.router.navigate(["/error"]);
         }
 
 
