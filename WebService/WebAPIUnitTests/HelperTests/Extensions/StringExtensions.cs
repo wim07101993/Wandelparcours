@@ -2,7 +2,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using WebService.Helpers.Extensions;
 
-namespace WebAPIUnitTests.Helpers.Extensions
+namespace WebAPIUnitTests.HelperTests.Extensions
 {
     [TestClass]
     public class StringExtensions

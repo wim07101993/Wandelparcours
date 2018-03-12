@@ -18,7 +18,7 @@ namespace WebService.Services.Data.Mock
     /// <para/>
     /// It handles the saving and retrieving data to and from a list of Residents in memory. It does not store anything in a database.
     /// </summary>
-    public partial class MockReceiverModulesService : AMockDataService<ReceiverModule>, IReceiverModuleService
+    public partial class MockReceiverModulesesService : AMockDataService<ReceiverModule>, IReceiverModulesService
     {
         /// <inheritdoc cref="AMockDataService{T}" />
         /// <summary>
@@ -29,7 +29,7 @@ namespace WebService.Services.Data.Mock
         public override ReceiverModule CreateNewItem(ObjectId id)
             => new ReceiverModule {Id = id};
 
-        /// <inheritdoc cref="IReceiverModuleService.GetAsync(string, IEnumerable{Expression{Func{ReceiverModule, object}}})" />
+        /// <inheritdoc cref="IReceiverModulesService.GetAsync(string, IEnumerable{Expression{Func{ReceiverModule, object}}})" />
         /// <summary>
         /// GetAsync should return the receiver module with the given mac.
         /// </summary>
@@ -46,7 +46,7 @@ namespace WebService.Services.Data.Mock
                 throw new NotFoundException($"cannot find {typeof(ReceiverModule).Name} with MAC-address {mac}");
 
             var propertiesToIncludeList = propertiesToInclude?.ToList();
-            if (EnumerableExtensions.IsNullOrEmpty(propertiesToIncludeList))
+            if (propertiesToIncludeList == null)
                 return MockData.FirstOrDefault(x => x.Mac == mac)
                        ?? throw new NotFoundException(
                            $"cannot find {typeof(ReceiverModule).Name} with MAC-address {mac}");
@@ -57,7 +57,7 @@ namespace WebService.Services.Data.Mock
                     continue;
 
                 // create new newItem to return with the id filled in
-                var itemToReturn = CreateNewItem(mockItem.Id);
+                var itemToReturn = new ReceiverModule {Mac = mockItem.Mac};
 
                 // ReSharper disable once PossibleNullReferenceException
                 // go over each property selector that should be included
@@ -82,7 +82,7 @@ namespace WebService.Services.Data.Mock
             throw new NotFoundException($"cannot find {typeof(ReceiverModule).Name} with MAC-address {mac}");
         }
 
-        /// <inheritdoc cref="IReceiverModuleService.RemoveAsync(string)" />
+        /// <inheritdoc cref="IReceiverModulesService.RemoveAsync(string)" />
         /// <summary>
         /// Remove removes the <see cref="ReceiverModule"/> with the given mac from the database.
         /// </summary>

@@ -128,7 +128,7 @@ namespace WebService.Controllers
                 : null;
 
             // get the value from the data service
-            return await ((IReceiverModuleService) DataService).GetAsync(mac, selectors)
+            return await ((IReceiverModulesService) DataService).GetAsync(mac, selectors)
                    ?? throw new NotFoundException(
                        $"The {typeof(ReceiverModule).Name} with id {mac} could not be found");
         }
@@ -195,7 +195,7 @@ namespace WebService.Controllers
         public override async Task DeleteAsync(string mac)
         {
             // use the data service to remove the item
-            var removed = await ((IReceiverModuleService) DataService).RemoveAsync(mac);
+            var removed = await ((IReceiverModulesService) DataService).RemoveAsync(mac);
 
             // if the item could not be deleted, throw exception
             if (!removed)

@@ -8,13 +8,13 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MongoDB.Bson;
 using Moq;
-using WebAPIUnitTests.TestMocks;
 using WebAPIUnitTests.TestMocks.Mock;
+using WebAPIUnitTests.TestServices.Abstract;
 using WebService.Helpers.Extensions;
 using WebService.Services.Data;
 using WebService.Services.Logging;
 
-namespace WebAPIUnitTests.Controllers
+namespace WebAPIUnitTests.ControllerTests
 {
     [TestClass]
     public class RestServiceController
@@ -24,15 +24,15 @@ namespace WebAPIUnitTests.Controllers
         [TestMethod]
         public void GetWithDataServiceWorking()
         {
-            var dataService = new MockDataService();
+            var dataService = new TestDataService();
 
-            new MockController(dataService, new ConsoleLogger())
+            new TestController(dataService, new ConsoleLogger())
                 .GetAsync(null).Result
                 .Should()
                 .BeOfType<OkObjectResult>("the controller should return a 200 ok to the client").Subject
                 .Value
                 .Should()
-                .BeAssignableTo<IEnumerable<MockEntity>>("a collection of entities is asked").Subject
+                .BeAssignableTo<IEnumerable<TestEntity>>("a collection of entities is asked").Subject
                 .Count()
                 .Should()
                 .Be(dataService.MockData.Count, "all the items in the db should be returned");
@@ -41,26 +41,26 @@ namespace WebAPIUnitTests.Controllers
         [TestMethod]
         public void GetByIdNormal()
         {
-            var dataService = new MockDataService();
+            var dataService = new TestDataService();
             var id = dataService.MockData[0].Id.ToString();
             var selector = new[] {"s"};
 
-            var entity = new MockController(dataService, new ConsoleLogger())
+            var entity = new TestController(dataService, new ConsoleLogger())
                 .GetAsync(id, selector).Result
                 .Should()
                 .BeOfType<OkObjectResult>("the controller should return a 200 ok to the client").Subject
                 .Value
                 .Should()
-                .BeAssignableTo<MockEntity>("a collection of entities is asked").Subject;
+                .BeAssignableTo<TestEntity>("a collection of entities is asked").Subject;
 
             entity
                 .S
                 .Should()
                 .Be(dataService.MockData[0].S, "that is the S value of the entity with the given id");
 
-            var properties = typeof(MockEntity)
+            var properties = typeof(TestEntity)
                 .GetProperties()
-                .Where(x => x.Name != nameof(MockEntity.S) && x.Name != nameof(MockEntity.Id));
+                .Where(x => x.Name != nameof(TestEntity.S) && x.Name != nameof(TestEntity.Id));
 
             foreach (var property in properties)
                 property
@@ -72,10 +72,10 @@ namespace WebAPIUnitTests.Controllers
         [TestMethod]
         public void GetByIdBadIdFormat()
         {
-            var dataService = new MockDataService();
+            var dataService = new TestDataService();
             var selector = new[] {"s"};
 
-            new MockController(dataService, new ConsoleLogger())
+            new TestController(dataService, new ConsoleLogger())
                 .GetAsync("bad id", selector).Result
                 .Should()
                 .BeOfType<StatusCodeResult>("all controller methods should return a status code as confirmation")
@@ -88,10 +88,10 @@ namespace WebAPIUnitTests.Controllers
         [TestMethod]
         public void GetByIdNonExistingID()
         {
-            var dataService = new MockDataService();
+            var dataService = new TestDataService();
             var selector = new[] {"s"};
 
-            new MockController(dataService, new ConsoleLogger())
+            new TestController(dataService, new ConsoleLogger())
                 .GetAsync(ObjectId.GenerateNewId().ToString(), selector).Result
                 .Should()
                 .BeOfType<StatusCodeResult>("all controller methods should return a status code as confirmation")
@@ -104,11 +104,11 @@ namespace WebAPIUnitTests.Controllers
         [TestMethod]
         public void GetByIdBadProperties()
         {
-            var dataService = new MockDataService();
+            var dataService = new TestDataService();
             var id = dataService.MockData[0].Id.ToString();
             var selector = new[] {"a"};
 
-            new MockController(dataService, new ConsoleLogger())
+            new TestController(dataService, new ConsoleLogger())
                 .GetAsync(id, selector).Result
                 .Should()
                 .BeOfType<StatusCodeResult>("all controller methods should return a status code as confirmation")
@@ -121,17 +121,17 @@ namespace WebAPIUnitTests.Controllers
         [TestMethod]
         public void GetByIdNoProperties()
         {
-            var dataService = new MockDataService();
+            var dataService = new TestDataService();
             var id = dataService.MockData[0].Id.ToString();
-            var entity = new MockController(dataService, new ConsoleLogger())
+            var entity = new TestController(dataService, new ConsoleLogger())
                 .GetAsync(id, null).Result
                 .Should()
                 .BeOfType<OkObjectResult>("the controller should return a 200 ok to the client").Subject
                 .Value
                 .Should()
-                .BeAssignableTo<MockEntity>("a collection of entities is asked").Subject;
+                .BeAssignableTo<TestEntity>("a collection of entities is asked").Subject;
 
-            var properties = typeof(MockEntity).GetProperties();
+            var properties = typeof(TestEntity).GetProperties();
 
             foreach (var property in properties)
                 property
@@ -150,14 +150,14 @@ namespace WebAPIUnitTests.Controllers
         [TestMethod]
         public void CreateNewTestEntity()
         {
-            var entity = new MockEntity();
+            var entity = new TestEntity();
 
-            var dataService = new Mock<IDataService<MockEntity>>();
+            var dataService = new Mock<IDataService<TestEntity>>();
             dataService
                 .Setup(x => x.CreateAsync(entity))
                 .Returns(() => Task.FromResult(true));
 
-            new MockController(dataService.Object, new ConsoleLogger())
+            new TestController(dataService.Object, new ConsoleLogger())
                 .CreateAsync(entity)
                 .Should()
                 .BeOfType<StatusCodeResult>("all controller methods should return a status code as confirmation")
@@ -171,14 +171,14 @@ namespace WebAPIUnitTests.Controllers
         [TestMethod]
         public void CreateTestEntityDoesNotExecute()
         {
-            var entity = new MockEntity();
+            var entity = new TestEntity();
 
-            var dataService = new Mock<IDataService<MockEntity>>();
+            var dataService = new Mock<IDataService<TestEntity>>();
             dataService
                 .Setup(x => x.CreateAsync(entity))
                 .Returns(() => Task.FromResult(false));
 
-            new MockController(dataService.Object, new ConsoleLogger())
+            new TestController(dataService.Object, new ConsoleLogger())
                 .CreateAsync(entity)
                 .Should()
                 .BeOfType<StatusCodeResult>("all controller methods should return a status code as confirmation")
@@ -191,14 +191,14 @@ namespace WebAPIUnitTests.Controllers
         [TestMethod]
         public void CreateTestEntityThrowsException()
         {
-            var entity = new MockEntity();
+            var entity = new TestEntity();
 
-            var dataService = new Mock<IDataService<MockEntity>>();
+            var dataService = new Mock<IDataService<TestEntity>>();
             dataService
                 .Setup(x => x.CreateAsync(entity))
                 .Returns(() => throw new Exception());
 
-            new MockController(dataService.Object, new ConsoleLogger())
+            new TestController(dataService.Object, new ConsoleLogger())
                 .CreateAsync(entity)
                 
                 .Should()
@@ -220,10 +220,10 @@ namespace WebAPIUnitTests.Controllers
         {
             var id = new ObjectId();
 
-            var dataService = new Mock<IDataService<MockEntity>>();
+            var dataService = new Mock<IDataService<TestEntity>>();
             dataService.Setup(x => x.RemoveAsync(id)).Returns(() => Task.FromResult(true));
 
-            new MockController(dataService.Object, new ConsoleLogger())
+            new TestController(dataService.Object, new ConsoleLogger())
                 .DeleteAsync(id.ToString())
                 .Should()
                 .BeOfType<StatusCodeResult>("all controller methods should return a status code as confirmation")
@@ -238,10 +238,10 @@ namespace WebAPIUnitTests.Controllers
         {
             var id = new ObjectId();
 
-            var dataService = new Mock<IDataService<MockEntity>>();
+            var dataService = new Mock<IDataService<TestEntity>>();
             dataService.Setup(x => x.RemoveAsync(id)).Returns(() => Task.FromResult(false));
 
-            new MockController(dataService.Object, new ConsoleLogger())
+            new TestController(dataService.Object, new ConsoleLogger())
                 .DeleteAsync(id.ToString())
                 .Should()
                 .BeOfType<StatusCodeResult>("all controller methods should return a status code as confirmation")
@@ -255,8 +255,8 @@ namespace WebAPIUnitTests.Controllers
         [TestMethod]
         public void DeleteNonParsableId()
         {
-            new MockController(
-                    new Mock<IDataService<MockEntity>>().Object,
+            new TestController(
+                    new Mock<IDataService<TestEntity>>().Object,
                     new ConsoleLogger())
                 .DeleteAsync("abc")
                 .Should()
@@ -273,10 +273,10 @@ namespace WebAPIUnitTests.Controllers
         {
             var id = new ObjectId();
 
-            var dataService = new Mock<IDataService<MockEntity>>();
+            var dataService = new Mock<IDataService<TestEntity>>();
             dataService.Setup(x => x.RemoveAsync(id)).Returns(() => throw new Exception());
 
-            new MockController(dataService.Object, new ConsoleLogger())
+            new TestController(dataService.Object, new ConsoleLogger())
                 .DeleteAsync(id.ToString())
                 .Should()
                 .BeOfType<StatusCodeResult>("all controller methods should return a status code as confirmation")
@@ -295,12 +295,12 @@ namespace WebAPIUnitTests.Controllers
         [TestMethod]
         public void UpdateWithNormalConditions()
         {
-            var dataService = new MockDataService();
+            var dataService = new TestDataService();
 
-            new MockController(dataService, new ConsoleLogger())
+            new TestController(dataService, new ConsoleLogger())
                 .UpdateAsync(
-                    new MockEntity {Id = dataService.MockData[0].Id, S = "Test", B = true},
-                    new[] {nameof(MockEntity.S), nameof(MockEntity.B)})
+                    new TestEntity {Id = dataService.MockData[0].Id, S = "Test", B = true},
+                    new[] {nameof(TestEntity.S), nameof(TestEntity.B)})
                 
                 .Should()
                 .BeOfType<StatusCodeResult>("all controller methods should return a status code as confirmation")
@@ -313,11 +313,11 @@ namespace WebAPIUnitTests.Controllers
         [TestMethod]
         public void UpdateNonExistingTestEntity()
         {
-            var dataService = new MockDataService();
-            new MockController(dataService, new ConsoleLogger())
+            var dataService = new TestDataService();
+            new TestController(dataService, new ConsoleLogger())
                 .UpdateAsync(
-                    new MockEntity {Id = new ObjectId(), S = "Test", B = false},
-                    new[] {nameof(MockEntity.S), nameof(MockEntity.B)})
+                    new TestEntity {Id = new ObjectId(), S = "Test", B = false},
+                    new[] {nameof(TestEntity.S), nameof(TestEntity.B)})
                 
                 .Should()
                 .BeOfType<StatusCodeResult>("all controller methods should return a status code as confirmation")
@@ -330,9 +330,9 @@ namespace WebAPIUnitTests.Controllers
         [TestMethod]
         public void UpdateWithoutPropertiesToUpdate()
         {
-            var dataService = new MockDataService();
-            new MockController(dataService, new ConsoleLogger())
-                .UpdateAsync(new MockEntity {Id = dataService.MockData[0].Id, S = "Test", B = false}, null)
+            var dataService = new TestDataService();
+            new TestController(dataService, new ConsoleLogger())
+                .UpdateAsync(new TestEntity {Id = dataService.MockData[0].Id, S = "Test", B = false}, null)
                 .Should()
                 .BeOfType<StatusCodeResult>("all controller methods should return a status code as confirmation")
                 .Subject

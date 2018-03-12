@@ -1,20 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using System.Net;
-using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using MongoDB.Bson;
-using Moq;
 using WebService.Helpers.Extensions;
 using WebService.Models;
-using WebService.Services.Data;
 using WebService.Services.Data.Mock;
 using WebService.Services.Logging;
 
-namespace WebAPIUnitTests.Controllers
+namespace WebAPIUnitTests.ControllerTests
 {
     [TestClass]
     public class ResidentsController

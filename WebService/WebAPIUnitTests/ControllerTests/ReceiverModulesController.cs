@@ -5,11 +5,10 @@ using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
-using WebService.Models;
 using WebService.Services.Data;
 using WebService.Services.Logging;
 
-namespace WebAPIUnitTests.Controllers
+namespace WebAPIUnitTests.ControllerTests
 {
     [TestClass]
     public class ReceiverModulesController
@@ -25,7 +24,7 @@ namespace WebAPIUnitTests.Controllers
             //    IsActive = false
             //};
 
-            //var dataService = new Mock<IReceiverModuleService>();
+            //var dataService = new Mock<IReceiverModulesService>();
             //dataService
             //    .Setup(x => x.GetAsync(receiverModule.Mac))
             //    .Returns(() => Task.FromResult(receiverModule));
@@ -50,7 +49,7 @@ namespace WebAPIUnitTests.Controllers
         {
             const string mac = "aa:aa:aa:aa:aa:aa";
 
-            var dataService = new Mock<IReceiverModuleService>();
+            var dataService = new Mock<IReceiverModulesService>();
             dataService.Setup(x => x.RemoveAsync(mac)).Returns(() => Task.FromResult(true));
 
             new WebService.Controllers.ReceiverModulesController(dataService.Object, new ConsoleLogger())
@@ -68,7 +67,7 @@ namespace WebAPIUnitTests.Controllers
         {
             const string mac = "aa:aa:aa:aa:aa:aa";
 
-            var dataService = new Mock<IReceiverModuleService>();
+            var dataService = new Mock<IReceiverModulesService>();
             dataService.Setup(x => x.RemoveAsync(mac)).Returns(() => Task.FromResult(false));
 
             new WebService.Controllers.ReceiverModulesController(dataService.Object, new ConsoleLogger())
@@ -87,7 +86,7 @@ namespace WebAPIUnitTests.Controllers
         {
             const string mac = "aa:aa:aa:aa:aa:aa";
 
-            var dataService = new Mock<IReceiverModuleService>();
+            var dataService = new Mock<IReceiverModulesService>();
             dataService.Setup(x => x.RemoveAsync(mac)).Returns(() => throw new Exception());
 
             new WebService.Controllers.ReceiverModulesController(dataService.Object, new ConsoleLogger())

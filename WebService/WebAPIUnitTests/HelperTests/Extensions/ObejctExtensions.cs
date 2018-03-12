@@ -3,7 +3,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
 using WebService.Helpers.Extensions;
 
-namespace WebAPIUnitTests.Helpers.Extensions
+namespace WebAPIUnitTests.HelperTests.Extensions
 {
     [TestClass]
     public class ObejctExtensions
