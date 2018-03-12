@@ -18,8 +18,7 @@ declare var Materialize:any;
 
 export class ResidentsComponent implements OnInit {
     ngOnInit(): void {
-    }
-
+    }       
     view: string = "card-view";
     data: any = null;
     residents: Resident[];
@@ -63,8 +62,10 @@ export class ResidentsComponent implements OnInit {
         $("#deleteModalResident").modal("open");
     }
     /**
+     * 
      * Open modal in edit mode and fill modal with resident
      * @param modalResident
+     *     
      */
     openEditModal(modalResident: Resident) {
         this.modalResident = modalResident;
