@@ -30,7 +30,7 @@ namespace WebService.Services.Data.Mongo
         /// <param name="config"></param>
         public ResidentsService(IConfiguration config)
         {
-            // create a new client and get the databas from it
+            // create a new client and get the database from it
             var db = new MongoClient(config["Database:ConnectionString"]).GetDatabase(config["Database:DatabaseName"]);
 
             // get the residents mongo collection

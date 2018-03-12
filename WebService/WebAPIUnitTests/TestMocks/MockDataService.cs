@@ -2,13 +2,13 @@
 using MongoDB.Bson;
 using WebService.Services.Data.Mock;
 
-namespace WebAPIUnitTests.Mocks
+namespace WebAPIUnitTests.TestMocks
 {
     public class MockDataService : AMockDataService<MockEntity>
     {
         public override List<MockEntity> MockData { get; } = new List<MockEntity>
         {
-            new MockEntity {B = false, I = 64, Id = ObjectId.GenerateNewId(), S = "Hello"},
+            new MockEntity {B = true, I = 64, Id = ObjectId.GenerateNewId(), S = "Hello"},
             new MockEntity {B = true, I = 44, Id = ObjectId.GenerateNewId(), S = "Bumbabelu"},
             new MockEntity {B = false, I = 42, Id = ObjectId.GenerateNewId(), S = "Bam"},
         };

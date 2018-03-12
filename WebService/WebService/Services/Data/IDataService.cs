@@ -17,7 +17,7 @@ namespace WebService.Services.Data
         /// </summary>
         /// <param name="id">is the id of the <see cref="T"/> to get the property from</param>
         /// <param name="propertyToSelect">is the selector to select the property to return</param>
-        /// <returns>The value of the aksed property</returns>
+        /// <returns>The value of the asked property</returns>
         Task<object> GetPropertyAsync(ObjectId id, Expression<Func<T, object>> propertyToSelect);
 
         /// <summary>

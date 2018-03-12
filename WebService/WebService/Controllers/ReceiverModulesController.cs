@@ -23,10 +23,10 @@ namespace WebService.Controllers
 
         /// <inheritdoc cref="ARestControllerBase{T}" />
         /// <summary>
-        /// Residentscontroller creates an instance of the <see cref="ReceiverModulesController" /> class. 
+        /// ReceiverModulesController creates an instance of the <see cref="ReceiverModulesController" /> class. 
         /// </summary>
         /// <param name="dataService">is a service to handle the database connection</param>
-        /// <param name="logger">is a service to hanlde the logging of messages</param>
+        /// <param name="logger">is a service to handle the logging of messages</param>
         public ReceiverModulesController(IDataService<ReceiverModule> dataService, ILogger logger)
             : base(dataService, logger)
         {
@@ -37,19 +37,27 @@ namespace WebService.Controllers
 
         #region PROPERTIES
 
-        /// <inheritdoc cref="ARestControllerBase{T}.PropertiesForSmallDataTraffic" />
+        /// <inheritdoc cref="ARestControllerBase{T}.PropertiesToSendOnGetAll" />
         /// <summary>
         /// SmallDataProperties is a collection of expressions to select the properties that
         /// consume the least space (in this case all of them => value is null).
         /// </summary>
+<<<<<<< HEAD
        
         public override IEnumerable<Expression<Func<ReceiverModule, object>>> PropertiesToSendOnGetAll { get; }
+=======
+        public override IEnumerable<Expression<Func<ReceiverModule, object>>> PropertiesToSendOnGetAll { get; } = null;
+>>>>>>> REST_Service
 
         #endregion PROPERTIES
 
 
         #region METHODS
 
+<<<<<<< HEAD
+=======
+        
+>>>>>>> REST_Service
 
         /// <inheritdoc cref="ARestControllerBase{T}.ConvertStringToSelector" />
         /// <summary>

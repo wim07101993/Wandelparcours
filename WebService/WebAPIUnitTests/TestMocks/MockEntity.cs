@@ -1,6 +1,6 @@
 ﻿using WebService.Models.Bases;
 
-namespace WebAPIUnitTests.Mocks
+namespace WebAPIUnitTests.TestMocks
 {
     public class MockEntity : AModelWithID
     {

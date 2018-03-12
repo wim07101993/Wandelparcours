@@ -6,7 +6,7 @@ using WebService.Helpers.Extensions;
 using WebService.Services.Data;
 using WebService.Services.Logging;
 
-namespace WebAPIUnitTests.Mocks
+namespace WebAPIUnitTests.TestMocks
 {
     public class MockController : ARestControllerBase<MockEntity>
     {
@@ -15,7 +15,17 @@ namespace WebAPIUnitTests.Mocks
         {
         }
 
+<<<<<<< HEAD:WebService/WebAPIUnitTests/Mocks/MockController.cs
         public override IEnumerable<Expression<Func<MockEntity, object>>> PropertiesToSendOnGetAll { get; }
+=======
+        public override IEnumerable<Expression<Func<MockEntity, object>>> PropertiesToSendOnGetAll { get; } =
+            new Expression<Func<MockEntity, object>>[]
+            {
+                x => x.B,
+                x => x.I,
+                x => x.Id
+            };
+>>>>>>> REST_Service:WebService/WebAPIUnitTests/TestMocks/MockController.cs
 
         public override Expression<Func<MockEntity, object>> ConvertStringToSelector(
             string propertyName)
