@@ -33,7 +33,7 @@ export class ResidentsComponent implements OnInit {
      * @param service Restservice
      * @param router Router
      */
-    constructor(private service: RestServiceService, private router: Router, private customErrorHandler: CustomErrorHandler) {
+    constructor(private service: RestServiceService, private router: Router) {
         this.showAllResidents();
         this.residents = [];
 
