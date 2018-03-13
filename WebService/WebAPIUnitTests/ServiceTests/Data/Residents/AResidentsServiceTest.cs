@@ -2,7 +2,7 @@
 
 namespace WebAPIUnitTests.ServiceTests.Data.Residents
 {
-    public abstract class AResidentsServiceTest
+    public abstract partial class AResidentsServiceTest : IResidentsServiceTest
     {
         public abstract ITestResidentsService CreateNewDataService();
     }

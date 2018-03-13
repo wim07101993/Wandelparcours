@@ -42,7 +42,7 @@ namespace WebAPIUnitTests.TestHelpers.Extensions
                 e.InnerExceptions
                     .Any(x => x is NotFoundException)
                     .Should()
-                    .BeTrue($"at least one exception should be an argument null exception since {because}");
+                    .BeTrue($"at least one exception should be a not found exception since {because}");
             }
             catch (NotFoundException)
             {

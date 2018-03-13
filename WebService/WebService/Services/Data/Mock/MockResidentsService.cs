@@ -42,39 +42,37 @@ namespace WebService.Services.Data.Mock
         public async Task<Resident> GetAsync(int tag,
             IEnumerable<Expression<Func<Resident, object>>> propertiesToInclude = null)
         {
+            var residentIndex = MockData.FindIndex(x => x.Tags != null && x.Tags.Contains(tag));
+
+            if (residentIndex < 0)
+                throw new NotFoundException($"{typeof(Resident).Name} with tag {tag} was not found");
+
+            var resident = MockData[residentIndex];
+
             var propertiesToIncludeList = propertiesToInclude?.ToList();
-            if (EnumerableExtensions.IsNullOrEmpty(propertiesToIncludeList))
-                return MockData.FirstOrDefault(x => x.Tags != null && x.Tags.Contains(tag));
+            if (propertiesToIncludeList == null)
+                return resident;
 
-            foreach (var mockItem in MockData)
+            // create new newItem to return with the id filled in
+            var itemToReturn = CreateNewItem(resident.Id);
+
+            // ReSharper disable once PossibleNullReferenceException
+            // go over each property selector that should be included
+            foreach (var selector in propertiesToIncludeList)
             {
-                if (mockItem.Tags == null || !mockItem.Tags.Contains(tag))
-                    continue;
+                // get property
+                var prop = selector.Body is MemberExpression expression
+                    // via member expression
+                    ? expression.Member as PropertyInfo
+                    // via unary expression
+                    : ((MemberExpression) ((UnaryExpression) selector.Body).Operand).Member as PropertyInfo;
 
-                // create new newItem to return with the id filled in
-                var itemToReturn = CreateNewItem(mockItem.Id);
-
-                // ReSharper disable once PossibleNullReferenceException
-                // go over each property selector that should be included
-                foreach (var selector in propertiesToIncludeList)
-                {
-                    // get property
-                    var prop = selector.Body is MemberExpression expression
-                        // via member expression
-                        ? expression.Member as PropertyInfo
-                        // via unary expression
-                        : ((MemberExpression) ((UnaryExpression) selector.Body).Operand).Member as PropertyInfo;
-
-                    // set the value of the property with the value of the mockItem
-                    prop?.SetValue(itemToReturn, prop.GetValue(mockItem));
-                }
-
-                // return the newItem
-                return itemToReturn;
+                // set the value of the property with the value of the mockItem
+                prop?.SetValue(itemToReturn, prop.GetValue(resident));
             }
 
-            // if no item is found, return the default value
-            return default(Resident);
+            // return the newItem
+            return itemToReturn;
         }
 
         /// <inheritdoc cref="IResidentsService.AddMediaAsync(ObjectId,byte[],EMediaType)"/>
@@ -196,7 +194,7 @@ namespace WebService.Services.Data.Mock
                         throw new NotFoundException(
                             $"the {typeof(Resident).Name} with id {residentId} has no {mediaType.ToString()}");
 
-                    mediaIndex = MockData[residentIndex].Music.FindIndex(x => x.Id == mediaId);
+                    mediaIndex = MockData[residentIndex].Videos.FindIndex(x => x.Id == mediaId);
                     if (mediaIndex < 0)
                         throw new NotFoundException($"{mediaType.ToString()} with id {mediaId} was not found");
 
@@ -207,7 +205,7 @@ namespace WebService.Services.Data.Mock
                         throw new NotFoundException(
                             $"the {typeof(Resident).Name} with id {residentId} has no {mediaType.ToString()}");
 
-                    mediaIndex = MockData[residentIndex].Music.FindIndex(x => x.Id == mediaId);
+                    mediaIndex = MockData[residentIndex].Images.FindIndex(x => x.Id == mediaId);
                     if (mediaIndex < 0)
                         throw new NotFoundException($"{mediaType.ToString()} with id {mediaId} was not found");
 
@@ -218,7 +216,7 @@ namespace WebService.Services.Data.Mock
                         throw new NotFoundException(
                             $"the {typeof(Resident).Name} with id {residentId} has no {mediaType.ToString()}");
 
-                    mediaIndex = MockData[residentIndex].Music.FindIndex(x => x.Id == mediaId);
+                    mediaIndex = MockData[residentIndex].Colors.FindIndex(x => x.Id == mediaId);
                     if (mediaIndex < 0)
                         throw new NotFoundException($"{mediaType.ToString()} with id {mediaId} was not found");
 
