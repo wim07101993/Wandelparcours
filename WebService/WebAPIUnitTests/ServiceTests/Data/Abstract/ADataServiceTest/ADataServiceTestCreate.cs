@@ -17,10 +17,7 @@ namespace WebAPIUnitTests.ServiceTests.Data.Abstract
         {
             var dataService = CreateNewDataService();
 
-            ActionExtensions.ShouldCatchArgumentNullException(() =>
-                {
-                    dataService.CreateAsync(null).Wait();
-                },
+            ActionExtensions.ShouldCatchArgumentNullException(() => { dataService.CreateAsync(null).Wait(); },
                 "item",
                 "the item to create cannot be null");
 
@@ -32,6 +29,27 @@ namespace WebAPIUnitTests.ServiceTests.Data.Abstract
 
         [TestMethod]
         public void CreateItem()
+        {
+            var entity = new TestEntity
+            {
+                S = "Anna",
+                B = true
+            };
+
+            var dataService = CreateNewDataService();
+            var originalCount = dataService.GetAll().Count();
+
+            dataService.CreateAsync(entity).Wait();
+
+            dataService
+                .GetAll()
+                .Count()
+                .Should()
+                .NotBe(originalCount, "an item should have been added");
+        }
+
+        [TestMethod]
+        public void CreateItemWithId()
         {
             var id = ObjectId.GenerateNewId();
             var entity = new TestEntity
@@ -46,10 +64,9 @@ namespace WebAPIUnitTests.ServiceTests.Data.Abstract
             dataService.CreateAsync(entity).Wait();
 
             dataService.GetAll()
-                .First(x => x.S == entity.S && x.B == entity.B && x.I == entity.I)
-                .Id
+                .Where(x => x.S == entity.S && x.B == entity.B && x.I == entity.I)
                 .Should()
-                .NotBe(id);
+                .NotContain(x => x.Id == id, "the id should have changed");
         }
 
         #endregion ONE
