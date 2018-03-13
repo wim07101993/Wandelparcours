@@ -337,7 +337,7 @@ namespace WebService.Controllers
 
         /// <inheritdoc cref="ARestControllerBase{T}.UpdateAsync" />
         /// <summary>
-        /// Update updates the fields of the <see cref="Resident"/> that are specified in the <see cref="propertiesToUpdate"/> parameter.
+        /// Update updates the fields of the <see cref="Resident"/> that are specified in the <see cref="properties"/> parameter.
         /// If the item doesn't exist, a new is created in the database.
         /// <para/>
         /// By default all properties are updated.
@@ -347,8 +347,8 @@ namespace WebService.Controllers
         /// <exception cref="NotFoundException">When the id cannot be parsed or <see cref="Resident"/> not found</exception>
         /// <exception cref="WebArgumentException">When one ore more properties could not be converted to selectors</exception>
         [HttpPut]
-        public override async Task UpdateAsync([FromBody] Resident item, [FromQuery] string[] propertiesToUpdate)
-            => await base.UpdateAsync(item, propertiesToUpdate);
+        public override async Task UpdateAsync([FromBody] Resident item, [FromQuery] string[] properties)
+            => await base.UpdateAsync(item, properties);
 
         /// <inheritdoc cref="IRestController{T}.UpdatePropertyAsync"/>
         /// <summary>
