@@ -4,6 +4,7 @@ using System.Linq;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Primitives;
 using MongoDB.Driver;
+using WebAPIUnitTests.TestModels;
 using WebService.Helpers.Extensions;
 using WebService.Models;
 using WebService.Services.Data.Mongo;

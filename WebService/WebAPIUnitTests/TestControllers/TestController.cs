@@ -1,16 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
+using WebAPIUnitTests.TestModels;
 using WebService.Controllers.Bases;
 using WebService.Helpers.Extensions;
 using WebService.Services.Data;
 using WebService.Services.Logging;
 
-namespace WebAPIUnitTests.Mocks
+namespace WebAPIUnitTests.TestControllers
 {
-    public class MockController : ARestControllerBase<TestEntity>
+    public class TestController : ARestControllerBase<TestEntity>
     {
-        public MockController(IDataService<TestEntity> dataService, ILogger logger)
+        public TestController(IDataService<TestEntity> dataService, ILogger logger)
             : base(dataService, logger)
         {
         }
