@@ -137,22 +137,22 @@ namespace WebAPIUnitTests.ServiceTests.Data.Abstract
             newEntity
                 .Id
                 .Should()
-                .Be(originalEntity.Id, "the id of the item should not change");
+                .Be(entity.Id, "the id of the item should not change");
 
             newEntity
                 .B
                 .Should()
-                .Be(originalEntity.B, "that is the updated value");
+                .Be(entity.B, "that is the updated value");
 
             newEntity
                 .I
                 .Should()
-                .Be(originalEntity.I, "that is the updated value");
+                .Be(entity.I, "that is the updated value");
 
             newEntity
                 .S
                 .Should()
-                .Be(originalEntity.S, "that is the updated value");
+                .Be(entity.S, "that is the updated value");
         }
 
         [TestMethod]
