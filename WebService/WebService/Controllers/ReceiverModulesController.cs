@@ -42,7 +42,7 @@ namespace WebService.Controllers
         /// SmallDataProperties is a collection of expressions to select the properties that
         /// consume the least space (in this case all of them => value is null).
         /// </summary>
-       
+
         public override IEnumerable<Expression<Func<ReceiverModule, object>>> PropertiesToSendOnGetAll { get; }
 
         #endregion PROPERTIES
@@ -85,8 +85,8 @@ namespace WebService.Controllers
         [HttpPost]
         public override async Task CreateAsync([FromBody] ReceiverModule item)
         {
-            item.Position.TimeStamp=DateTime.Now;
-            await base.CreateAsync(item);    
+            item.Position.TimeStamp = DateTime.Now;
+            await base.CreateAsync(item);
         }
 
         #endregion post (create)
@@ -194,11 +194,7 @@ namespace WebService.Controllers
         public override async Task DeleteAsync(string mac)
         {
             // use the data service to remove the item
-            var removed = await ((IReceiverModulesService) DataService).RemoveAsync(mac);
-
-            // if the item could not be deleted, throw exception
-            if (!removed)
-                throw new NotFoundException($"The {typeof(ReceiverModule).Name} with id {mac} could not be found");
+            await ((IReceiverModulesService) DataService).RemoveAsync(mac);
         }
 
         #endregion delete

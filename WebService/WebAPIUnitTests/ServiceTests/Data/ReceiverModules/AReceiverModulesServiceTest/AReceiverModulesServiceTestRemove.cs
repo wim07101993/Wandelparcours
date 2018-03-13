@@ -11,7 +11,7 @@ namespace WebAPIUnitTests.ServiceTests.Data.ReceiverModules
         {
             ActionExtensions.ShouldCatchArgumentNullException(() =>
                 {
-                    var _ = CreateNewDataService().RemoveAsync(null).Result;
+                    CreateNewDataService().RemoveAsync(null).Wait();
                 },
                 "mac",
                 "the mac address cannot be null");
@@ -22,7 +22,7 @@ namespace WebAPIUnitTests.ServiceTests.Data.ReceiverModules
         {
             ActionExtensions.ShouldCatchNotFoundException(() =>
                 {
-                    var _ = CreateNewDataService().RemoveAsync("").Result;
+                    CreateNewDataService().RemoveAsync("").Wait();
                 },
                 "there is no module with that mac in the database");
         }

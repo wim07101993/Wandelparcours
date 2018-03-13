@@ -76,8 +76,7 @@ namespace WebService.Services.Data.Mongo
             var selector = Builders<Resident>.Projection.Include(x => x.Id);
 
             // iterate over all the properties to include and add them to the filter
-            foreach (var property in propertiesToInclude)
-                selector = selector.Include(property);
+            selector = propertiesToInclude.Aggregate(selector, (current, property) => current.Include(property));
 
             // return the item
             return await findResult
