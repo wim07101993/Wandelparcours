@@ -3,7 +3,6 @@ using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MongoDB.Bson;
 using WebAPIUnitTests.TestHelpers.Extensions;
-using WebAPIUnitTests.TestMocks.Mock;
 
 // ReSharper disable once CheckNamespace
 namespace WebAPIUnitTests.ServiceTests.Data.Abstract
@@ -17,7 +16,7 @@ namespace WebAPIUnitTests.ServiceTests.Data.Abstract
         {
             ActionExtensions.ShouldCatchArgumentNullException(() =>
                 {
-                    var _ = CreateNewDataService().CreateAsync(null).Result;
+                    CreateNewDataService().CreateAsync(null).Wait();
                 },
                 "item",
                 "the item to create cannot be null");
@@ -36,9 +35,7 @@ namespace WebAPIUnitTests.ServiceTests.Data.Abstract
 
             var dataService = CreateNewDataService();
 
-            dataService.CreateAsync(entity).Result
-                .Should()
-                .BeTrue("it is assigned in the create method of the service");
+            dataService.CreateAsync(entity).Wait();
 
             dataService.GetAll()
                 .First(x => x.S == entity.S && x.B == entity.B && x.I == entity.I)

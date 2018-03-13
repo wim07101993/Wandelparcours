@@ -96,11 +96,7 @@ namespace WebService.Controllers.Bases
         public virtual async Task CreateAsync([FromBody] T item)
         {
             // use the data service to create a new item
-            var created = await DataService.CreateAsync(item);
-
-            // if the item was not created return throw exception
-            if (!created)
-                throw new Exception($"Could not create {typeof(T).Name} in the database");
+            await DataService.CreateAsync(item);
         }
 
         #endregion create
@@ -210,11 +206,7 @@ namespace WebService.Controllers.Bases
                 : null;
 
             // update the item in the database
-            var updated = await DataService.UpdateAsync(item, selectors);
-
-            // if the update did not happen, try to create a new item.
-            if (!updated)
-                await CreateAsync(item);
+            await DataService.UpdateAsync(item, selectors);
         }
 
         /// <inheritdoc cref="IRestController{T}.UpdatePropertyAsync"/>
@@ -257,11 +249,7 @@ namespace WebService.Controllers.Bases
                 throw new NotFoundException($"The {typeof(T).Name} with id {id} could not be found");
 
             // update the property int the database
-            var updated = await DataService.UpdatePropertyAsync(objectId, ConvertStringToSelector(propertyName), value);
-
-            // if the update did not happen, try to create a new item.
-            if (!updated)
-                throw new Exception($"Could not update property {propertyName} of {typeof(T).Name}");
+            await DataService.UpdatePropertyAsync(objectId, ConvertStringToSelector(propertyName), value);
         }
 
         #endregion update
@@ -282,11 +270,7 @@ namespace WebService.Controllers.Bases
                 throw new NotFoundException($"The {typeof(T).Name} with id {id} could not be found");
 
             // use the data service to remove the item
-            var removed = await DataService.RemoveAsync(objectId);
-
-            // if the item could not be deleted, throw exception
-            if (!removed)
-                throw new NotFoundException($"The {typeof(T).Name} with id {id} could not be found");
+           await DataService.RemoveAsync(objectId);
         }
 
         #endregion delete

@@ -147,7 +147,7 @@ namespace WebService.Services.Data.Mongo
         /// - the new id if the <see cref="T"/> was created in the database
         /// - null if the new item was not created
         /// </returns>
-        public async Task<bool> CreateAsync(T item)
+        public async Task CreateAsync(T item)
         {
             if (item == null)
                 throw new ArgumentNullException(nameof(item), "the item to create cannot be null");
@@ -156,11 +156,6 @@ namespace WebService.Services.Data.Mongo
             item.Id = ObjectId.GenerateNewId();
             // save the new item to the database
             await MongoCollection.InsertOneAsync(item);
-
-            // check if the new item was created
-            return MongoCollection
-                .Find(x => x.Id == item.Id)
-                .Any();
         }
 
         /// <inheritdoc cref="IDataService{T}.RemoveAsync" />
@@ -172,7 +167,7 @@ namespace WebService.Services.Data.Mongo
         /// - true if the <see cref="T"/> was removed from the database
         /// - false if the item was not removed
         /// </returns>
-        public async Task<bool> RemoveAsync(ObjectId id)
+        public async Task RemoveAsync(ObjectId id)
         {
             // remove the document from the database with the given id
             var result = await MongoCollection.DeleteOneAsync(x => x.Id == id);
@@ -182,8 +177,6 @@ namespace WebService.Services.Data.Mongo
 
             if (result.DeletedCount <= 0)
                 throw new NotFoundException($"there is no {typeof(T).Name} id {id}");
-
-            return true;
         }
 
         /// <inheritdoc cref="IDataService{T}.UpdateAsync" />
@@ -196,7 +189,7 @@ namespace WebService.Services.Data.Mongo
         /// <param name="newItem">is the <see cref="T" /> to update</param>
         /// <param name="propertiesToUpdate">are the properties that need to be updated</param>
         /// <returns>The updated newItem</returns>
-        public async Task<bool> UpdateAsync(T newItem,
+        public async Task UpdateAsync(T newItem,
             IEnumerable<Expression<Func<T, object>>> propertiesToUpdate = null)
         {
             if (newItem == null)
@@ -217,9 +210,6 @@ namespace WebService.Services.Data.Mongo
 
                 if (replaceOneResult.MatchedCount <= 0)
                     throw new NotFoundException($"the {typeof(T).Name} with id {newItem.Id} could not be found");
-
-                // return whether something was updated
-                return true;
             }
 
             // create a filter that filters on id
@@ -255,9 +245,6 @@ namespace WebService.Services.Data.Mongo
 
             if (updateResult.MatchedCount <= 0)
                 throw new NotFoundException($"the {typeof(T).Name} with id {newItem.Id} could not be found");
-
-            // return whether something was updated
-            return true;
         }
 
         /// <inheritdoc cref="IDataService{T}.UpdatePropertyAsync" />
@@ -271,7 +258,7 @@ namespace WebService.Services.Data.Mongo
         /// - true if the property was updated
         /// - false if the property was not updated
         /// </returns>
-        public async Task<bool> UpdatePropertyAsync(ObjectId id, Expression<Func<T, object>> propertyToUpdate,
+        public async Task UpdatePropertyAsync(ObjectId id, Expression<Func<T, object>> propertyToUpdate,
             object value)
         {
             if (propertyToUpdate == null)
@@ -307,9 +294,6 @@ namespace WebService.Services.Data.Mongo
 
             if (updateResult.MatchedCount <= 0)
                 throw new NotFoundException($"the {typeof(T).Name} with id {id} could not be found");
-
-            // return whether something was updated
-            return true;
         }
 
         #endregion METHODS

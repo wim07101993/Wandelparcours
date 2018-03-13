@@ -46,7 +46,7 @@ namespace WebService.Services.Data.Mock
         /// - the new id if the <see cref="T"/> was created in the list
         /// - null if the newItem was not created
         /// </returns>
-        public virtual async Task<bool> CreateAsync(T item)
+        public virtual async Task CreateAsync(T item)
         {
             if (item == null)
                 throw new ArgumentNullException(nameof(item));
@@ -55,9 +55,6 @@ namespace WebService.Services.Data.Mock
             item.Id = ObjectId.GenerateNewId();
             // add the new item to the list
             MockData.Add(item);
-
-            // check if the item was created
-            return MockData.Any(x => x.Id == item.Id);
         }
 
         #endregion CREATE
@@ -190,7 +187,7 @@ namespace WebService.Services.Data.Mock
         /// <param name="newItem">is the <see cref="T" /> to update</param>
         /// <param name="propertiesToUpdate">are the properties that need to be updated</param>
         /// <returns>The updated newItem</returns>
-        public virtual async Task<bool> UpdateAsync(T newItem,
+        public virtual async Task UpdateAsync(T newItem,
             IEnumerable<Expression<Func<T, object>>> propertiesToUpdate = null)
         {
             if (newItem == null)
@@ -208,8 +205,6 @@ namespace WebService.Services.Data.Mock
             {
                 // update the item;
                 MockData[index] = newItem;
-                // return the updated item
-                return true;
             }
 
             // ReSharper disable once PossibleNullReferenceException
@@ -228,9 +223,6 @@ namespace WebService.Services.Data.Mock
                     // if it does, add the selector and value to the updateDefinition
                     prop.SetValue(MockData[index], prop.GetValue(newItem));
             }
-
-            // return the updated item
-            return true;
         }
 
         /// <inheritdoc cref="IDataService{T}.UpdatePropertyAsync" />
@@ -244,7 +236,7 @@ namespace WebService.Services.Data.Mock
         /// - true if the property was updated
         /// - false if the property was not updated
         /// </returns>
-        public async Task<bool> UpdatePropertyAsync(ObjectId id, Expression<Func<T, object>> propertyToUpdate,
+        public async Task UpdatePropertyAsync(ObjectId id, Expression<Func<T, object>> propertyToUpdate,
             object value)
         {
             if (propertyToUpdate == null)
@@ -271,7 +263,6 @@ namespace WebService.Services.Data.Mock
                 throw new NotFoundException($"no item with the id {id} could be found");
 
             prop.SetValue(MockData[index], value);
-            return true;
         }
 
         #endregion UPDATE
@@ -288,7 +279,7 @@ namespace WebService.Services.Data.Mock
         /// - true if the <see cref="T"/> was removed from the list
         /// - false if the newItem was not removed
         /// </returns>
-        public virtual async Task<bool> RemoveAsync(ObjectId id)
+        public virtual async Task RemoveAsync(ObjectId id)
         {
             // get the index of the newItem with the given id
             var index = MockData.FindIndex(x => x.Id == id);
@@ -299,7 +290,6 @@ namespace WebService.Services.Data.Mock
 
             // remove the newItem
             MockData.RemoveAt(index);
-            return true;
         }
 
         #endregion DELETE
