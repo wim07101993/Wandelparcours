@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using MongoDB.Bson;
 using MongoDB.Driver;
+using WebService.Helpers.Exceptions;
 using WebService.Helpers.Extensions;
 using WebService.Models;
 
@@ -30,7 +31,7 @@ namespace WebService.Services.Data.Mongo
         /// <param name="config"></param>
         public ResidentsService(IConfiguration config)
         {
-            // create a new client and get the databas from it
+            // create a new client and get the database from it
             var db = new MongoClient(config["Database:ConnectionString"]).GetDatabase(config["Database:DatabaseName"]);
 
             // get the residents mongo collection
@@ -58,15 +59,18 @@ namespace WebService.Services.Data.Mongo
             IEnumerable<Expression<Func<Resident, object>>> propertiesToInclude = null)
         {
             // get the resident with the given mac address
-            var resident = MongoCollection.Find(x => x.Tags != null && x.Tags.Contains(tag));
+            var findResult = MongoCollection.Find(x => x.Tags != null && x.Tags.Contains(tag));
+
+            if (findResult.Count() <= 0)
+                throw new NotFoundException($"no {typeof(Resident).Name} found with tag {tag}");
 
             // convert the properties to include to a list (if not null)
             var properties = propertiesToInclude?.ToList();
-            // if the proeprties are null or there are none, return all the properties
-            if (EnumerableExtensions.IsNullOrEmpty(properties))
-                return await resident.FirstOrDefaultAsync();
+            // if the properties are null or there are none, return all the properties
+            if (properties == null)
+                return await findResult.FirstOrDefaultAsync();
 
-            // create a propertyfilter
+            // create a property filter
             var selector = Builders<Resident>.Projection.Include(x => x.Id);
 
             //ReSharper disable once PossibleNullReferenceException
@@ -75,7 +79,7 @@ namespace WebService.Services.Data.Mongo
                 selector = selector.Include(property);
 
             // return the item
-            return await resident
+            return await findResult
                 // filter the properties
                 .Project<Resident>(selector)
                 // execute the query
@@ -96,10 +100,15 @@ namespace WebService.Services.Data.Mongo
         /// - false if the media was not added
         /// </returns>
         public async Task<bool> AddMediaAsync(ObjectId residentId, byte[] data, EMediaType mediaType)
-            => await AddMediaAsync(
+        {
+            if (data == null)
+                throw new ArgumentNullException(nameof(data), "data cannot be null");
+
+            return await AddMediaAsync(
                 residentId,
                 new MediaWithId {Id = ObjectId.GenerateNewId(), Data = data},
                 mediaType);
+        }
 
         /// <inheritdoc cref="IResidentsService.AddMediaAsync(ObjectId,string,EMediaType)" />
         /// <summary>
@@ -114,10 +123,15 @@ namespace WebService.Services.Data.Mongo
         /// - false if the media was not added
         /// </returns>
         async Task<bool> IResidentsService.AddMediaAsync(ObjectId residentId, string url, EMediaType mediaType)
-            => await AddMediaAsync(
+        {
+            if (url == null)
+                throw new ArgumentNullException(nameof(url), "url cannot be null");
+
+            return await AddMediaAsync(
                 residentId,
                 new MediaWithId {Id = ObjectId.GenerateNewId(), Url = url},
                 mediaType);
+        }
 
         /// <summary>
         /// AddMediaAsync adds the <see cref="media"/> of the type <see cref="mediaType"/> to the <see cref="Resident"/>
@@ -132,22 +146,16 @@ namespace WebService.Services.Data.Mongo
         /// </returns>
         private async Task<bool> AddMediaAsync(ObjectId residentId, MediaWithId media, EMediaType mediaType)
         {
-            Resident resident;
-
             switch (mediaType)
             {
                 case EMediaType.Audio:
-                    resident = await AddMediaAsync(residentId, x => x.Music, media);
-                    return resident.Music.Any(x => x.Id == media.Id);
+                    return await AddMediaAsync(residentId, x => x.Music, media) != null;
                 case EMediaType.Video:
-                    resident = await AddMediaAsync(residentId, x => x.Videos, media);
-                    return resident.Videos.Any(x => x.Id == media.Id);
+                    return await AddMediaAsync(residentId, x => x.Videos, media) != null;
                 case EMediaType.Image:
-                    resident = await AddMediaAsync(residentId, x => x.Images, media);
-                    return resident.Images.Any(x => x.Id == media.Id);
+                    return await AddMediaAsync(residentId, x => x.Images, media) != null;
                 case EMediaType.Color:
-                    resident = await AddMediaAsync(residentId, x => x.Colors, media);
-                    return resident.Colors.Any(x => x.Id == media.Id);
+                    return await AddMediaAsync(residentId, x => x.Colors, media) != null;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(mediaType), mediaType, null);
             }
@@ -169,10 +177,16 @@ namespace WebService.Services.Data.Mongo
         private async Task<Resident> AddMediaAsync(ObjectId residentId,
             Expression<Func<Resident, IEnumerable<MediaWithId>>> selector, MediaWithId media)
         {
+            var findResult = MongoCollection.Find(x => x.Id == residentId);
+
+            if (findResult.Count() <= 0)
+                throw new NotFoundException($"no {typeof(Resident).Name} found with id {residentId}");
+
             var filter = Builders<Resident>.Filter.Eq(x => x.Id, residentId);
 
             var updater = Builders<Resident>.Update.Push(selector, media);
-            return await MongoCollection.FindOneAndUpdateAsync(filter, updater);
+            var ret = await MongoCollection.FindOneAndUpdateAsync(filter, updater);
+            return ret;
         }
 
         /// <inheritdoc cref="IResidentsService.RemoveMediaAsync" />
@@ -198,13 +212,13 @@ namespace WebService.Services.Data.Mongo
                     return resident.Music.Any(x => x.Id == mediaId);
                 case EMediaType.Video:
                     resident = await RemoveMediaAsync(residentId, x => x.Videos, mediaId);
-                    return resident.Music.Any(x => x.Id == mediaId);
+                    return resident.Videos.Any(x => x.Id == mediaId);
                 case EMediaType.Image:
                     resident = await RemoveMediaAsync(residentId, x => x.Images, mediaId);
-                    return resident.Music.Any(x => x.Id == mediaId);
+                    return resident.Images.Any(x => x.Id == mediaId);
                 case EMediaType.Color:
                     resident = await RemoveMediaAsync(residentId, x => x.Colors, mediaId);
-                    return resident.Music.Any(x => x.Id == mediaId);
+                    return resident.Colors.Any(x => x.Id == mediaId);
                 default:
                     throw new ArgumentOutOfRangeException(nameof(mediaType), mediaType, null);
             }
@@ -230,7 +244,13 @@ namespace WebService.Services.Data.Mongo
 
             var updater = Builders<Resident>.Update.PullFilter(
                 selector, Builders<MediaWithId>.Filter.Eq(x => x.Id, mediaId));
-            return await MongoCollection.FindOneAndUpdateAsync(filter, updater);
+
+            var resident = await MongoCollection.FindOneAndUpdateAsync(filter, updater);
+
+            if (resident == null)
+                throw new NotFoundException($"no {typeof(Resident).Name} found with id {residentId}");
+
+            return resident;
         }
     }
 }

@@ -4,7 +4,7 @@ using WebService.Models;
 
 namespace WebService.Services.Data.Mock
 {
-    public partial class MockReceiverModulesService
+    public partial class MockReceiverModulesesService
     {
         /// <inheritdoc cref="AMockDataService{T}" />
         /// <summary>

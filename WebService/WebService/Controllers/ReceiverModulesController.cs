@@ -23,10 +23,10 @@ namespace WebService.Controllers
 
         /// <inheritdoc cref="ARestControllerBase{T}" />
         /// <summary>
-        /// Residentscontroller creates an instance of the <see cref="ReceiverModulesController" /> class. 
+        /// ReceiverModulesController creates an instance of the <see cref="ReceiverModulesController" /> class. 
         /// </summary>
         /// <param name="dataService">is a service to handle the database connection</param>
-        /// <param name="logger">is a service to hanlde the logging of messages</param>
+        /// <param name="logger">is a service to handle the logging of messages</param>
         public ReceiverModulesController(IDataService<ReceiverModule> dataService, ILogger logger)
             : base(dataService, logger)
         {
@@ -37,19 +37,17 @@ namespace WebService.Controllers
 
         #region PROPERTIES
 
-        /// <inheritdoc cref="ARestControllerBase{T}.PropertiesForSmallDataTraffic" />
+        /// <inheritdoc cref="ARestControllerBase{T}.PropertiesToSendOnGetAll" />
         /// <summary>
         /// SmallDataProperties is a collection of expressions to select the properties that
         /// consume the least space (in this case all of them => value is null).
         /// </summary>
-       
         public override IEnumerable<Expression<Func<ReceiverModule, object>>> PropertiesToSendOnGetAll { get; }
-
+        
         #endregion PROPERTIES
 
 
         #region METHODS
-
 
         /// <inheritdoc cref="ARestControllerBase{T}.ConvertStringToSelector" />
         /// <summary>
@@ -96,7 +94,7 @@ namespace WebService.Controllers
 
         /// <inheritdoc cref="ARestControllerBase{T}.GetPropertyAsync" />
         /// <summary>
-        /// GetProperty returns the valu of the asked property of the asked <see cref="ReceiverModule"/>.
+        /// GetProperty returns the value of the asked property of the asked <see cref="ReceiverModule"/>.
         /// </summary>
         /// <param name="id">is the id of the <see cref="ReceiverModule"/></param>
         /// <param name="propertyName">is the name of the property to return</param>
@@ -128,7 +126,7 @@ namespace WebService.Controllers
                 : null;
 
             // get the value from the data service
-            return await ((IReceiverModuleService) DataService).GetAsync(mac, selectors)
+            return await ((IReceiverModulesService) DataService).GetAsync(mac, selectors)
                    ?? throw new NotFoundException(
                        $"The {typeof(ReceiverModule).Name} with id {mac} could not be found");
         }
@@ -136,7 +134,7 @@ namespace WebService.Controllers
         /// <inheritdoc cref="ARestControllerBase{T}.GetAsync(string[])" />
         /// <summary>
         /// Get is supposed to return all the Items in the database. 
-        /// To limit data traffic it is possible to select only a number of propertie.
+        /// To limit data traffic it is possible to select only a number of property.
         /// <para/>
         /// By default only the properties in the selector <see cref="PropertiesForSmallDataTraffic"/> are returned.
         /// </summary>
@@ -195,7 +193,7 @@ namespace WebService.Controllers
         public override async Task DeleteAsync(string mac)
         {
             // use the data service to remove the item
-            var removed = await ((IReceiverModuleService) DataService).RemoveAsync(mac);
+            var removed = await ((IReceiverModulesService) DataService).RemoveAsync(mac);
 
             // if the item could not be deleted, throw exception
             if (!removed)

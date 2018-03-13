@@ -5,6 +5,7 @@ using System.Linq.Expressions;
 using System.Reflection;
 using System.Threading.Tasks;
 using MongoDB.Bson;
+using WebService.Helpers.Exceptions;
 using WebService.Helpers.Extensions;
 using WebService.Models;
 
@@ -15,11 +16,9 @@ namespace WebService.Services.Data.Mock
     /// <summary>
     /// MockResidentsService is a class that implements the <see cref="IDataService{T}"/> interface.
     /// <para/>
-    /// It handles the saving and retreiving data to and from a list of Residents in memory. It does not store anything in a database.
-    /// <para/>
-    /// The connectionstring, db name and collections that are used are stored in the IConfiguration dependency under the Database object.
+    /// It handles the saving and retrieving data to and from a list of Residents in memory. It does not store anything in a database.
     /// </summary>
-    public partial class MockReceiverModulesService : AMockDataService<ReceiverModule>, IReceiverModuleService
+    public partial class MockReceiverModulesesService : AMockDataService<ReceiverModule>, IReceiverModulesService
     {
         /// <inheritdoc cref="AMockDataService{T}" />
         /// <summary>
@@ -30,26 +29,35 @@ namespace WebService.Services.Data.Mock
         public override ReceiverModule CreateNewItem(ObjectId id)
             => new ReceiverModule {Id = id};
 
-        /// <inheritdoc cref="IReceiverModuleService.GetAsync(string, IEnumerable{Expression{Func{ReceiverModule, object}}})" />
+        /// <inheritdoc cref="IReceiverModulesService.GetAsync(string, IEnumerable{Expression{Func{ReceiverModule, object}}})" />
         /// <summary>
         /// GetAsync should return the receiver module with the given mac.
         /// </summary>
         /// <param name="mac">is the mac address of the receiver module to fetch</param>
         /// <param name="propertiesToInclude">are the properties of which the values should be returned</param>
         /// <returns>The receiver module with the given mac</returns>
-        public async Task<ReceiverModule> GetAsync(string mac, IEnumerable<Expression<Func<ReceiverModule, object>>> propertiesToInclude = null)
+        public async Task<ReceiverModule> GetAsync(string mac,
+            IEnumerable<Expression<Func<ReceiverModule, object>>> propertiesToInclude = null)
         {
+            if (mac == null)
+                throw new ArgumentNullException(nameof(mac), "a mac address must be passed");
+
+            if (string.IsNullOrEmpty(mac))
+                throw new NotFoundException($"cannot find {typeof(ReceiverModule).Name} with MAC-address {mac}");
+
             var propertiesToIncludeList = propertiesToInclude?.ToList();
-            if (EnumerableExtensions.IsNullOrEmpty(propertiesToIncludeList))
-                return MockData.FirstOrDefault(x => x.Mac == mac);
+            if (propertiesToIncludeList == null)
+                return MockData.FirstOrDefault(x => x.Mac == mac)
+                       ?? throw new NotFoundException(
+                           $"cannot find {typeof(ReceiverModule).Name} with MAC-address {mac}");
 
             foreach (var mockItem in MockData)
             {
                 if (mockItem.Mac != mac)
                     continue;
 
-                // create new newItem to return with the ide filled in
-                var itemToReturn = CreateNewItem(mockItem.Id);
+                // create new newItem to return with the id filled in
+                var itemToReturn = new ReceiverModule {Mac = mockItem.Mac};
 
                 // ReSharper disable once PossibleNullReferenceException
                 // go over each property selector that should be included
@@ -60,7 +68,7 @@ namespace WebService.Services.Data.Mock
                         // via member expression
                         ? expression.Member as PropertyInfo
                         // via unary expression
-                        : ((MemberExpression)((UnaryExpression)selector.Body).Operand).Member as PropertyInfo;
+                        : ((MemberExpression) ((UnaryExpression) selector.Body).Operand).Member as PropertyInfo;
 
                     // set the value of the property with the value of the mockItem
                     prop?.SetValue(itemToReturn, prop.GetValue(mockItem));
@@ -71,10 +79,10 @@ namespace WebService.Services.Data.Mock
             }
 
             // if no item is found, return the default value
-            return default(ReceiverModule);
+            throw new NotFoundException($"cannot find {typeof(ReceiverModule).Name} with MAC-address {mac}");
         }
 
-        /// <inheritdoc cref="IReceiverModuleService.RemoveAsync(string)" />
+        /// <inheritdoc cref="IReceiverModulesService.RemoveAsync(string)" />
         /// <summary>
         /// Remove removes the <see cref="ReceiverModule"/> with the given mac from the database.
         /// </summary>
@@ -85,12 +93,15 @@ namespace WebService.Services.Data.Mock
         /// </returns>
         public async Task<bool> RemoveAsync(string mac)
         {
+            if (mac == null)
+                throw new ArgumentNullException(nameof(mac), "a mac address must be passed");
+
             // get the index of the newItem with the given id
             var index = MockData.FindIndex(x => x.Mac == mac);
 
             // if the index is -1 there was no item found
             if (index == -1)
-                return false;
+                throw new NotFoundException($"the {typeof(ReceiverModule).Name} with mac {mac} could not be found");
 
             // remove the newItem
             MockData.RemoveAt(index);

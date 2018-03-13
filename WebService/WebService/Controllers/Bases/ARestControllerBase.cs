@@ -193,20 +193,20 @@ namespace WebService.Controllers.Bases
 
         /// <inheritdoc cref="IRestController{T}.UpdateAsync" />
         /// <summary>
-        /// Update updates the fields of the <see cref="T"/> that are specified in the <see cref="propertiesToUpdate"/> parameter.
+        /// Update updates the fields of the <see cref="T"/> that are specified in the <see cref="properties"/> parameter.
         /// If the item doesn't exist, a new is created in the database.
         /// <para/>
         /// By default all properties are updated.
         /// </summary>
         /// <param name="item">is the <see cref="T"/> to update</param>
-        /// <param name="propertiesToUpdate">contains the properties that should be updated</param>
+        /// <param name="properties">contains the properties that should be updated</param>
         /// <exception cref="NotFoundException">When the id cannot be parsed or <see cref="T"/> not found</exception>
         /// <exception cref="WebArgumentException">When one ore more properties could not be converted to selectors</exception>
-        public virtual async Task UpdateAsync([FromBody] T item, [FromQuery] string[] propertiesToUpdate)
+        public virtual async Task UpdateAsync([FromBody] T item, [FromQuery] string[] properties)
         {
             // convert the property names to selectors, if there are any
-            var selectors = !EnumerableExtensions.IsNullOrEmpty(propertiesToUpdate)
-                ? ConvertStringsToSelectors(propertiesToUpdate)
+            var selectors = !EnumerableExtensions.IsNullOrEmpty(properties)
+                ? ConvertStringsToSelectors(properties)
                 : null;
 
             // update the item in the database
