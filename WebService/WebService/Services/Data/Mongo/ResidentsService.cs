@@ -7,7 +7,6 @@ using Microsoft.Extensions.Configuration;
 using MongoDB.Bson;
 using MongoDB.Driver;
 using WebService.Helpers.Exceptions;
-using WebService.Helpers.Extensions;
 using WebService.Models;
 
 namespace WebService.Services.Data.Mongo
@@ -17,16 +16,16 @@ namespace WebService.Services.Data.Mongo
     /// ResidentsService is a class that extends from the <see cref="AMongoDataService{T}"/> class
     /// and by doing that implements the <see cref="IDataService{T}"/> interface.
     /// <para/>
-    /// It handles the saving and retreiving residents to and from the mongo database.
+    /// It handles the saving and retrieving residents to and from the mongo database.
     /// <para/>
-    /// The connectionstring, db name and collections that are used are stored in the IConfiguration dependency under the Database object.
+    /// The connection string, db name and collections that are used are stored in the IConfiguration dependency under the Database object.
     /// </summary>
     public class ResidentsService : AMongoDataService<Resident>, IResidentsService
     {
         /// <summary>
-        /// ResidentsService is the contsructor to create an instance of the <see cref="ResidentsService"/> class.
+        /// ResidentsService is the constructor to create an instance of the <see cref="ResidentsService"/> class.
         /// <para/>
-        /// The connectionstring, db name and collections that are used are stored in the IConfiguration dependency under the Database object.
+        /// The connection string, db name and collections that are used are stored in the IConfiguration dependency under the Database object.
         /// </summary>
         /// <param name="config"></param>
         public ResidentsService(IConfiguration config)
@@ -165,11 +164,11 @@ namespace WebService.Services.Data.Mongo
         /// AddMediaAsync is supposed to add the <see cref="media"/> to the <see cref="Resident"/> with as <see cref="Resident.Id"/> 
         /// the passed <see cref="residentId"/>.
         /// <para/>
-        /// The propertie to add the media to is selected using the <see cref="selector"/>.
+        /// The property to add the media to is selected using the <see cref="selector"/>.
         /// </summary>
         /// <param name="residentId">is the id of the <see cref="Resident"/> add the media to</param>
         /// <param name="selector">is the selector to select what property the media should be added to</param>
-        /// <param name="media">is the media to dadd</param>
+        /// <param name="media">is the media to add</param>
         /// <returns>
         /// - true if the media was added
         /// - false if the media was not added
@@ -196,7 +195,7 @@ namespace WebService.Services.Data.Mongo
         /// </summary>
         /// <param name="residentId">is the id of the <see cref="Resident"/> to remove the media from</param>
         /// <param name="mediaId">is the id to the media to remove</param>
-        /// <param name="mediaType">is the type fo media to remove</param>
+        /// <param name="mediaType">is the type of media to remove</param>
         /// <returns>
         /// - true if the media was removed
         /// - false if the media was not removed
@@ -204,31 +203,41 @@ namespace WebService.Services.Data.Mongo
         public async Task<bool> RemoveMediaAsync(ObjectId residentId, ObjectId mediaId, EMediaType mediaType)
         {
             Resident resident;
+            bool containsMedia;
 
             switch (mediaType)
             {
                 case EMediaType.Audio:
                     resident = await RemoveMediaAsync(residentId, x => x.Music, mediaId);
-                    return resident.Music.Any(x => x.Id == mediaId);
+                    containsMedia = resident.Music.Any(x => x.Id == mediaId);
+                    break;
                 case EMediaType.Video:
                     resident = await RemoveMediaAsync(residentId, x => x.Videos, mediaId);
-                    return resident.Videos.Any(x => x.Id == mediaId);
+                    containsMedia = resident.Videos.Any(x => x.Id == mediaId);
+                    break;
                 case EMediaType.Image:
                     resident = await RemoveMediaAsync(residentId, x => x.Images, mediaId);
-                    return resident.Images.Any(x => x.Id == mediaId);
+                    containsMedia = resident.Images.Any(x => x.Id == mediaId);
+                    break;
                 case EMediaType.Color:
                     resident = await RemoveMediaAsync(residentId, x => x.Colors, mediaId);
-                    return resident.Colors.Any(x => x.Id == mediaId);
+                    containsMedia = resident.Colors.Any(x => x.Id == mediaId);
+                    break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(mediaType), mediaType, null);
             }
+
+            if (!containsMedia)
+                throw new NotFoundException($"there is no media found with id {mediaId}");
+
+            return true;
         }
 
         /// <inheritdoc cref="IResidentsService.RemoveMediaAsync" />
         /// <summary>
         /// RemoveMediaAsync to removes the media with as id <see cref="mediaId"/> of the <see cref="Resident"/> with as id <see cref="residentId"/>.
         /// <para/>
-        /// The propertie to remove the media from is selected using the <see cref="selector"/>.
+        /// The property to remove the media from is selected using the <see cref="selector"/>.
         /// </summary>
         /// <param name="residentId">is the id of the <see cref="Resident"/> to remove the media from</param>
         /// <param name="selector">is the selector to select what property the media should be removed from</param>
