@@ -47,7 +47,7 @@ namespace WebAPIUnitTests.ServiceTests.Data.Residents
                 .GetFirst()
                 .Colors
                 .Should()
-                .Contain(x => x.Data != null && x.Data[0] == 13 && x.Data[1] == 123 && x.Data[2] == 234);
+                .Contain(x => x.Data != null && x.Data[0] == 13 && x.Data[1] == 123 && x.Data[2] == 234, "that color has just been added");
         }
 
         [TestMethod]
@@ -103,7 +103,7 @@ namespace WebAPIUnitTests.ServiceTests.Data.Residents
                 .GetFirst()
                 .Colors
                 .Should()
-                .Contain(x => x.Url == "abcd");
+                .Contain(x => x.Url == "abcd", "that color has just been added");
         }
 
         [TestMethod]
