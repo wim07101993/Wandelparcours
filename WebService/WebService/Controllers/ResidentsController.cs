@@ -343,7 +343,7 @@ namespace WebService.Controllers
         /// By default all properties are updated.
         /// </summary>
         /// <param name="item">is the <see cref="Resident"/> to update</param>
-        /// <param name="propertiesToUpdate">contains the properties that should be updated</param>
+        /// <param name="properties">contains the properties that should be updated</param>
         /// <exception cref="NotFoundException">When the id cannot be parsed or <see cref="Resident"/> not found</exception>
         /// <exception cref="WebArgumentException">When one ore more properties could not be converted to selectors</exception>
         [HttpPut]
