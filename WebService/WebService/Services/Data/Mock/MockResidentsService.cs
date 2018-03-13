@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Threading.Tasks;
 using MongoDB.Bson;
 using WebService.Helpers.Exceptions;
-using WebService.Helpers.Extensions;
 using WebService.Models;
+using WebService.Models.Bases;
 
 namespace WebService.Services.Data.Mock
 {
@@ -22,7 +21,7 @@ namespace WebService.Services.Data.Mock
     {
         /// <inheritdoc cref="AMockDataService{T}" />
         /// <summary>
-        /// CreateNewItems should return a new item of the given type <see cref="Resident" /> with as Id, <see cref="id" />.
+        /// CreateNewItems returns a new item of the type <see cref="Resident" /> with as Id, <see cref="id" />.
         /// </summary>
         /// <param name="id">is the id for the new object</param>
         /// <returns>A new object of type <see cref="Resident" /></returns>
@@ -31,34 +30,38 @@ namespace WebService.Services.Data.Mock
 
         /// <inheritdoc cref="IResidentsService.GetAsync(int,IEnumerable{Expression{Func{Resident,object}}})" />
         /// <summary>
-        /// GetAsync returns the <see cref="Resident" /> with the given id from the database. 
-        /// <para />
-        /// It should only fill the properties passed in the <see cref="!:propertiesToInclude" /> parameter. The id is always passed and 
-        /// if the <see cref="!:propertiesToInclude" /> parameter is null (which it is by default), all the properties are included. 
+        /// GetAsync returns the <see cref="Resident"/> with the given tag from the database. 
+        /// <para/>
+        /// It only fills the properties passed in the <see cref="propertiesToInclude"/> parameter. The id is always passed and 
+        /// if the <see cref="propertiesToInclude"/> parameter is null (which it is by default), all the properties are included. 
         /// </summary>
-        /// <param name="tag">is the id of the item that needs to be fetched</param>
+        /// <param name="tag">is the tag of the <see cref="Resident"/> that needs to be fetched</param>
         /// <param name="propertiesToInclude">are the properties that should be included in the objects</param>
-        /// <returns>An <see cref="T:System.Collections.Generic.IEnumerable`1" /> filled with all the ts in the database.</returns>
+        /// <returns>The <see cref="Resident"/> with the given id</returns>
+        /// <exception cref="NotFoundException">when there is no <see cref="Resident"/> that holds the given tag</exception>
         public async Task<Resident> GetAsync(int tag,
             IEnumerable<Expression<Func<Resident, object>>> propertiesToInclude = null)
         {
+            // search for the resident index
             var residentIndex = MockData.FindIndex(x => x.Tags != null && x.Tags.Contains(tag));
 
+            // if there is no resident with the given id, throw exception
             if (residentIndex < 0)
                 throw new NotFoundException($"{typeof(Resident).Name} with tag {tag} was not found");
 
+            // get the resident
             var resident = MockData[residentIndex];
 
-            var propertiesToIncludeList = propertiesToInclude?.ToList();
-            if (propertiesToIncludeList == null)
+            // if the properties to include are null, return all properties
+            if (propertiesToInclude == null)
                 return resident;
 
-            // create new newItem to return with the id filled in
+            // create new item to return with the id filled in
             var itemToReturn = CreateNewItem(resident.Id);
 
             // ReSharper disable once PossibleNullReferenceException
             // go over each property selector that should be included
-            foreach (var selector in propertiesToIncludeList)
+            foreach (var selector in propertiesToInclude)
             {
                 // get property
                 var prop = selector.Body is MemberExpression expression
@@ -71,36 +74,32 @@ namespace WebService.Services.Data.Mock
                 prop?.SetValue(itemToReturn, prop.GetValue(resident));
             }
 
-            // return the newItem
+            // return the item
             return itemToReturn;
         }
 
-        /// <inheritdoc cref="IResidentsService.AddMediaAsync(ObjectId,byte[],EMediaType)"/>
+        /// <inheritdoc cref="IResidentsService.AddMediaAsync(ObjectId,byte[],EMediaType)" />
         /// <summary>
         /// AddMediaAsync adds the <see cref="data"/> as media of the type <see cref="mediaType"/> to the <see cref="Resident"/>
-        ///  with as <see cref="Resident.Id"/> the passed <see cref="residentId"/>.
+        /// with as <see cref="Resident.Id"/> the passed <see cref="residentId"/>.
         /// </summary>
         /// <param name="residentId">is the id of the <see cref="Resident"/></param>
         /// <param name="data">is the data of the media to add</param>
         /// <param name="mediaType">is the type of media to add</param>
-        /// <returns>
-        /// - true if the media was added
-        /// - false if the media was not added
-        /// </returns>
-        public async Task<bool> AddMediaAsync(ObjectId residentId, byte[] data, EMediaType mediaType)
+        /// <exception cref="ArgumentNullException">when the data is null</exception>
+        /// <exception cref="NotFoundException">when there is no <see cref="Resident"/> found with the given <see cref="AModelWithID.Id"/></exception>
+        /// <exception cref="ArgumentOutOfRangeException">when the media type doesn't exist</exception>
+        public async Task AddMediaAsync(ObjectId residentId, byte[] data, EMediaType mediaType)
         {
+            // if the data is null, throw an exception
             if (data == null)
                 throw new ArgumentNullException(nameof(data), "data to add cannot be null");
 
-            var index = MockData.FindIndex(x => x.Id == residentId);
-
-            if (index < 0)
-                throw new NotFoundException($"{typeof(Resident).Name} with id {residentId} was not found");
-
-            return AddMedia(index, new MediaWithId {Id = ObjectId.GenerateNewId(), Data = data}, mediaType);
+            // add the media
+            AddMedia(residentId, new MediaWithId {Id = ObjectId.GenerateNewId(), Data = data}, mediaType);
         }
 
-        /// <inheritdoc cref="IResidentsService.AddMediaAsync(ObjectId,string,EMediaType)"/>
+        /// <inheritdoc cref="IResidentsService.AddMediaAsync(ObjectId,string,EMediaType)" />
         /// <summary>
         /// AddMediaAsync adds the <see cref="url"/> as media of the type <see cref="mediaType"/> to the <see cref="Resident"/>
         /// with as <see cref="Resident.Id"/> the passed <see cref="residentId"/>.
@@ -108,25 +107,38 @@ namespace WebService.Services.Data.Mock
         /// <param name="residentId">is the id of the <see cref="Resident"/> add the media to</param>
         /// <param name="url">is the url to the media to add</param>
         /// <param name="mediaType">is the type of media to add</param>
-        /// <returns>
-        /// - true if the media was added
-        /// - false if the media was not added
-        /// </returns>
-        public async Task<bool> AddMediaAsync(ObjectId residentId, string url, EMediaType mediaType)
+        /// <exception cref="ArgumentNullException">when the url is null</exception>
+        /// <exception cref="NotFoundException">when there is no <see cref="Resident"/> found with the given <see cref="AModelWithID.Id"/></exception>
+        /// <exception cref="ArgumentOutOfRangeException">when the media type doesn't exist</exception>
+        public async Task AddMediaAsync(ObjectId residentId, string url, EMediaType mediaType)
         {
+            // if the url is null, throw an exception
             if (url == null)
                 throw new ArgumentNullException(nameof(url), "url to add cannot be null");
 
+            // add the media
+            AddMedia(residentId, new MediaWithId {Id = ObjectId.GenerateNewId(), Url = url}, mediaType);
+        }
+
+        /// <summary>
+        /// AddMediaAsync adds the <see cref="media"/> of the type <see cref="mediaType"/> to the <see cref="Resident"/>
+        /// with as <see cref="Resident.Id"/> the passed <see cref="residentId"/>.
+        /// </summary>
+        /// <param name="residentId">is the id of the <see cref="Resident"/> add the media to</param>
+        /// <param name="media">is the media to add</param>
+        /// <param name="mediaType">is the type of media to add</param>
+        /// <exception cref="NotFoundException">when there is no <see cref="Resident"/> found with the given <see cref="AModelWithID.Id"/></exception>
+        /// <exception cref="ArgumentOutOfRangeException">when the media type doesn't exist</exception>
+        private void AddMedia(ObjectId residentId, MediaWithId media, EMediaType mediaType)
+        {
+            // search for the resident index
             var index = MockData.FindIndex(x => x.Id == residentId);
 
+            // if there is no resident with the given id, throw exception
             if (index < 0)
                 throw new NotFoundException($"{typeof(Resident).Name} with id {residentId} was not found");
 
-            return index >= 0 && AddMedia(index, new MediaWithId {Id = ObjectId.GenerateNewId(), Url = url}, mediaType);
-        }
-
-        private bool AddMedia(int index, MediaWithId media, EMediaType mediaType)
-        {
+            // check the media type and add the respectively media.
             switch (mediaType)
             {
                 case EMediaType.Audio:
@@ -152,43 +164,46 @@ namespace WebService.Services.Data.Mock
                 default:
                     throw new ArgumentOutOfRangeException(nameof(mediaType), mediaType, null);
             }
-
-            return true;
         }
 
-        /// <inheritdoc cref="IResidentsService.RemoveMediaAsync"/>
+        /// <inheritdoc cref="IResidentsService.RemoveMediaAsync" />
         /// <summary>
         /// RemoveMediaAsync removes the media of type <see cref="mediaType"/> with as id <see cref="mediaId"/> of the
         /// <see cref="Resident"/> with as id <see cref="residentId"/>.
         /// </summary>
         /// <param name="residentId">is the id of the <see cref="Resident"/> to remove the media from</param>
-        /// <param name="mediaId">is the id to the media to remove</param>
+        /// <param name="mediaId">is the id of media to remove</param>
         /// <param name="mediaType">is the type of media to remove</param>
-        /// <returns>
-        /// - true if the media was removed
-        /// - false if the media was not removed
-        /// </returns>
-        public async Task<bool> RemoveMediaAsync(ObjectId residentId, ObjectId mediaId, EMediaType mediaType)
+        /// <exception cref="NotFoundException">when there is no <see cref="Resident"/> found with the given <see cref="AModelWithID.Id"/></exception>
+        /// <exception cref="NotFoundException">when there is no <see cref="MediaWithId"/> found with the given <see cref="AModelWithID.Id"/></exception>
+        /// <exception cref="ArgumentOutOfRangeException">when the media type doesn't exist</exception>
+        public async Task RemoveMediaAsync(ObjectId residentId, ObjectId mediaId, EMediaType mediaType)
         {
+            // search for the resident index
             var residentIndex = MockData.FindIndex(x => x.Id == residentId);
 
+            // if there is no resident with the given id, throw exception
             if (residentIndex < 0)
                 throw new NotFoundException($"{typeof(Resident).Name} with id {residentId} was not found");
 
             int mediaIndex;
+            // check the media type and remove the respectively media.
             switch (mediaType)
             {
                 case EMediaType.Audio:
+                    // if the music is null, there is no music with the given id => exception
                     if (MockData[residentIndex].Music == null)
                         throw new NotFoundException(
                             $"the {typeof(Resident).Name} with id {residentId} has no {mediaType.ToString()}");
 
+                    // check if there is music with the given id, if there isn't, throw exception
                     mediaIndex = MockData[residentIndex].Music.FindIndex(x => x.Id == mediaId);
                     if (mediaIndex < 0)
                         throw new NotFoundException($"{mediaType.ToString()} with id {mediaId} was not found");
 
+                    // remove the media
                     MockData[residentIndex].Music.RemoveAt(mediaIndex);
-                    return true;
+                    break;
                 case EMediaType.Video:
                     if (MockData[residentIndex].Videos == null)
                         throw new NotFoundException(
@@ -225,8 +240,6 @@ namespace WebService.Services.Data.Mock
                 default:
                     throw new ArgumentOutOfRangeException(nameof(mediaType), mediaType, null);
             }
-
-            return true;
         }
     }
 #pragma warning restore 1998

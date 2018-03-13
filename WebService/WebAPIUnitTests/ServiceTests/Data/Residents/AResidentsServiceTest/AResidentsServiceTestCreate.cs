@@ -1,6 +1,4 @@
-﻿using System;
-using System.Linq;
-using FluentAssertions;
+﻿using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MongoDB.Bson;
 using WebAPIUnitTests.TestHelpers.Extensions;
@@ -16,8 +14,9 @@ namespace WebAPIUnitTests.ServiceTests.Data.Residents
         {
             ActionExtensions.ShouldCatchNotFoundException(() =>
                 {
-                    var _ = CreateNewDataService()
-                        .AddMediaAsync(ObjectId.GenerateNewId(), new byte[] {13, 123, 234}, EMediaType.Color).Result;
+                    CreateNewDataService()
+                        .AddMediaAsync(ObjectId.GenerateNewId(), new byte[] {13, 123, 234}, EMediaType.Color)
+                        .Wait();
                 },
                 "there is no resident with the given id");
         }
@@ -27,8 +26,9 @@ namespace WebAPIUnitTests.ServiceTests.Data.Residents
         {
             ActionExtensions.ShouldCatchArgumentNullException(() =>
                 {
-                    var _ = CreateNewDataService()
-                        .AddMediaAsync(ObjectId.GenerateNewId(), null as byte[], EMediaType.Color).Result;
+                   CreateNewDataService()
+                        .AddMediaAsync(ObjectId.GenerateNewId(), null as byte[], EMediaType.Color)
+                        .Wait();
                 },
                 "data",
                 "data cannot be null");
@@ -40,9 +40,8 @@ namespace WebAPIUnitTests.ServiceTests.Data.Residents
             var dataService = CreateNewDataService();
 
             dataService
-                .AddMediaAsync(dataService.GetFirst().Id, new byte[] {13, 123, 234}, EMediaType.Color).Result
-                .Should()
-                .BeTrue("the item should have been added");
+                .AddMediaAsync(dataService.GetFirst().Id, new byte[] {13, 123, 234}, EMediaType.Color)
+                .Wait();
 
             dataService
                 .GetFirst()
@@ -58,8 +57,9 @@ namespace WebAPIUnitTests.ServiceTests.Data.Residents
 
             ActionExtensions.ShouldCatchArgumentNullException(() =>
                 {
-                    var _ = dataService
-                        .AddMediaAsync(dataService.GetFirst().Id, null as byte[], EMediaType.Color).Result;
+                    dataService
+                        .AddMediaAsync(dataService.GetFirst().Id, null as byte[], EMediaType.Color)
+                        .Wait();
                 },
                 "data",
                 "the data cannot be null");
@@ -70,8 +70,9 @@ namespace WebAPIUnitTests.ServiceTests.Data.Residents
         {
             ActionExtensions.ShouldCatchNotFoundException(() =>
                 {
-                    var _ = CreateNewDataService()
-                        .AddMediaAsync(ObjectId.GenerateNewId(), "abcd", EMediaType.Color).Result;
+                   CreateNewDataService()
+                        .AddMediaAsync(ObjectId.GenerateNewId(), "abcd", EMediaType.Color)
+                        .Wait();
                 },
                 "there is no resident with the given id");
         }
@@ -81,8 +82,9 @@ namespace WebAPIUnitTests.ServiceTests.Data.Residents
         {
             ActionExtensions.ShouldCatchArgumentNullException(() =>
                 {
-                    var _ = CreateNewDataService()
-                        .AddMediaAsync(ObjectId.GenerateNewId(), null as string, EMediaType.Color).Result;
+                   CreateNewDataService()
+                        .AddMediaAsync(ObjectId.GenerateNewId(), null as string, EMediaType.Color)
+                       .Wait();
                 },
                 "url",
                 "the url cannot be null");
@@ -94,9 +96,8 @@ namespace WebAPIUnitTests.ServiceTests.Data.Residents
             var dataService = CreateNewDataService();
 
             dataService
-                .AddMediaAsync(dataService.GetFirst().Id, "abcd", EMediaType.Color).Result
-                .Should()
-                .BeTrue("the item should have been added");
+                .AddMediaAsync(dataService.GetFirst().Id, "abcd", EMediaType.Color)
+                .Wait();
 
             dataService
                 .GetFirst()
@@ -112,8 +113,9 @@ namespace WebAPIUnitTests.ServiceTests.Data.Residents
 
             ActionExtensions.ShouldCatchArgumentNullException(() =>
                 {
-                    var _ = dataService
-                        .AddMediaAsync(dataService.GetFirst().Id, null as string, EMediaType.Color).Result;
+                   dataService
+                        .AddMediaAsync(dataService.GetFirst().Id, null as string, EMediaType.Color)
+                        .Wait();
                 },
                 "url",
                 "the url cannot be null");

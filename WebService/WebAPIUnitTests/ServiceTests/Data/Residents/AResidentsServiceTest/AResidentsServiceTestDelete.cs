@@ -14,9 +14,9 @@ namespace WebAPIUnitTests.ServiceTests.Data.Residents
         {
             ActionExtensions.ShouldCatchNotFoundException(() =>
                 {
-                    var _ = CreateNewDataService()
+                    CreateNewDataService()
                         .RemoveMediaAsync(ObjectId.GenerateNewId(), ObjectId.GenerateNewId(), EMediaType.Color)
-                        .Result;
+                        .Wait();
                 },
                 "there is no resident with that id");
         }
@@ -40,8 +40,8 @@ namespace WebAPIUnitTests.ServiceTests.Data.Residents
 
             ActionExtensions.ShouldCatchNotFoundException(() =>
                 {
-                    var _ = dataService.RemoveMediaAsync(original.Id, ObjectId.GenerateNewId(), EMediaType.Color)
-                        .Result;
+                    dataService.RemoveMediaAsync(original.Id, ObjectId.GenerateNewId(), EMediaType.Color)
+                        .Wait();
                 },
                 "there is no media with the given id");
         }

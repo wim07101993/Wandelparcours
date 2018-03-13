@@ -229,11 +229,7 @@ namespace WebService.Controllers
                 throw new NotFoundException($"The {typeof(Resident).Name} with id {residentId} could not be found");
 
             // use the data service to create a new updater
-            var updated = await ((IResidentsService) DataService).AddMediaAsync(residentObjectId, data, mediaType);
-
-            if (!updated)
-                throw new Exception(
-                    $"Could not add data media of type {mediaType.ToString()} to resident with id {residentId}");
+            await ((IResidentsService) DataService).AddMediaAsync(residentObjectId, data, mediaType);
         }
 
         /// <summary>
@@ -252,11 +248,7 @@ namespace WebService.Controllers
                 throw new NotFoundException($"The {typeof(Resident).Name} with id {residentId} could not be found");
 
             // use the data service to create a new updater
-            var updated = await ((IResidentsService) DataService).AddMediaAsync(residentObjectId, url, mediaType);
-
-            if (!updated)
-                throw new Exception(
-                    $"Could not add url media of type {mediaType.ToString()} to resident with id {residentId}");
+            await ((IResidentsService) DataService).AddMediaAsync(residentObjectId, url, mediaType);
         }
 
         #endregion post (create)
@@ -459,12 +451,7 @@ namespace WebService.Controllers
                 throw new NotFoundException($"The {mediaType.ToString()} with id {mediaId} could not be found");
 
             // remove the media from the database
-            var removed =
-                await ((IResidentsService) DataService).RemoveMediaAsync(residentObjectId, mediaObjectId, mediaType);
-
-            // use the data service to create a new updater
-            if (!removed)
-                throw new Exception($"The {mediaType.ToString()} with id {mediaId} could not be removed");
+            await ((IResidentsService) DataService).RemoveMediaAsync(residentObjectId, mediaObjectId, mediaType);
         }
 
         #endregion delete
