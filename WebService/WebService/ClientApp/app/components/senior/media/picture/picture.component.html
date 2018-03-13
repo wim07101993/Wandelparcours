@@ -1,4 +1,3 @@
 <app-senior></app-senior>
-<p>
-  picture works!
-</p>
+<input type="file" (change)="onFileSelected($event)" />
+<button class="btn btn-primary" (click)="onUpload()">Upload</button>

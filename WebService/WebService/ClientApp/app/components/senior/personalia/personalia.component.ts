@@ -13,11 +13,11 @@ export class PersonaliaComponent implements OnInit {
     updateResident: any;
     id: string = this.route.snapshot.params['id'];
     resident: Resident;
-    router: Router;
+    //router: Router;
 
-    constructor(private service: RestServiceService, private route: ActivatedRoute) {
-        this.showOneResident();
+    constructor(private service: RestServiceService, private route: ActivatedRoute, private router: Router) {
         this.resident = <Resident>{ firstName: "", lastName: "", room: "", id: "", birthday: new Date(), doctor: { name: "", phoneNumber: "" } };
+        this.showOneResident();
     }
 
     async showOneResident() {
@@ -26,7 +26,7 @@ export class PersonaliaComponent implements OnInit {
         if (resident != undefined)
             this.resident = resident;
         else {
-            console.log("oops! :( looks like something went wrong :(");
+            this.router.navigate(['/error']);
         }
     }
 }

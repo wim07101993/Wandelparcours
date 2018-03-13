@@ -4,8 +4,9 @@ import { RestServiceService } from '../../service/rest-service.service'
 import { Response } from '@angular/http'
 import { Ng2SearchPipeModule } from 'ng2-search-filter'
 import { async } from '@angular/core/testing';
-import {NgForm} from "@angular/forms";
+import { NgForm } from "@angular/forms";
 import { Router } from '@angular/router';
+import { CustomErrorHandler } from '../../service/customErrorHandler';
 declare var $:any;
 declare var Materialize:any;
 
@@ -26,10 +27,16 @@ export class ResidentsComponent implements OnInit {
     updateResident: any;
     search: boolean = false;
 
+    /**
+     * Injects the service and router
+     * @param service Restservice
+     * @param router Router
+     */
     constructor(private service: RestServiceService, private router: Router) {
         this.showAllResidents();
         this.residents = [];
 
+        /*Creates empty modals to avoid collision with previous existing modals should they not be deleted*/
         this.modalResident = <Resident>{
             firstName: "", lastName: "", room: "", id: "", birthday: new Date(), doctor: { name: "", phoneNumber: "" }
         };
@@ -40,8 +47,8 @@ export class ResidentsComponent implements OnInit {
     }
 
     /**
-     * Focus to input
-     */
+    * Focus to input for the searchbar --> input will be active if event 'button' has been pressed
+    */
     focusInput() {
         let a: any;
         setTimeout(() => {
@@ -51,9 +58,8 @@ export class ResidentsComponent implements OnInit {
     }
 
     /**
-     * 
+     * Opens modal
      * @param modalResident
-     * Open Modal 
      */
     openModal(modalResident: Resident) {
         //alert(uniqueIdentifier);
@@ -90,6 +96,7 @@ export class ResidentsComponent implements OnInit {
     /**
      * Close modal
      */
+
     closeModal() {
         $().modal("close");
     }
@@ -98,13 +105,16 @@ export class ResidentsComponent implements OnInit {
      * get all residents async from service
      */
     async showAllResidents() {
-        let residents: any = await this.service.getAllResidents();
-        console.log(residents);
-        if (residents != undefined)
-            this.residents = residents;
-        else {
-            alert("oops! :( looks like something went wrong :(");
-        }
+            let residents: any = await this.service.getAllResidents();
+            console.log(residents);
+            if (residents != undefined)
+                this.residents = residents;
+            else {
+
+                //alert("oops! :( looks like something went wrong :(");
+                this.router.navigate(["/error"]);
+            }
+       
     }
 
     /**
@@ -119,17 +129,17 @@ export class ResidentsComponent implements OnInit {
 
     /**
      * Edit and save resident from service
-     * @param resident
+     * @param resident of type Resident
      */
 
-
-
     async editResident(resident: Resident) {
+        //get correct ID
         this.updateResident.id = resident.id;
         let birthDay = $("#birthDay").val();
 
         console.log(birthDay);
 
+        //if birthday hasn't been entered make sure birthday is of type Date
         if (birthDay != "") {
             //console.log("update birthday");
             let a = new Date(birthDay);
@@ -166,15 +176,16 @@ export class ResidentsComponent implements OnInit {
             firstName: "", lastName: "", room: "", id: "", birthday: "", doctor: { name: "", phoneNumber: "" }
         };
 
+        //get all residents again after updating
         this.showAllResidents();
     }
 
-    cleanForm(){
-
-    }
+    cleanForm(){}
         
-   // Function to add new resident
-    
+   /**
+    * Add resident to database
+    * @param form of type NgForm
+    */   
    async addResident(form: NgForm){
 
         // Workaround for dateformat
@@ -199,6 +210,7 @@ export class ResidentsComponent implements OnInit {
             Materialize.toast(`bewoner: ${data.firstName} ${data.lastName} succesvol toegevoegd`, 5000);
         }else{
             Materialize.toast(`niet gelukt lan`, 5000);
+            this.router.navigate(["/error"]);
         }
 
 
@@ -211,7 +223,10 @@ export class ResidentsComponent implements OnInit {
         this.showAllResidents();
 
     }
-
+    /**
+     * Reset the form on close
+     * @param form of type NgForm
+     */
     resetForm(form: NgForm){form.reset();}
 
     openResidentAddModal(){
@@ -236,6 +251,10 @@ export class ResidentsComponent implements OnInit {
 
     }
 
+    /**
+     * Navigate to deffrent page with Object resident (only ID is enough) --> this will set the URL for that resident which makes it possible to Get said resident
+     * @param resident of type Resident
+     */
     navigateTo(resident: Resident) {
         console.log(resident.id);
         this.router.navigate(['/resident/' + resident.id]);
