@@ -13,12 +13,10 @@ namespace WebAPIUnitTests.ServiceTests.Data.Residents
         [TestMethod]
         public void RemoveKnownMediaWithUnknownId()
         {
-            ActionExtensions.ShouldCatchNotFoundException(() =>
-                {
-                    CreateNewDataService()
-                        .RemoveMediaAsync(ObjectId.GenerateNewId(), ObjectId.GenerateNewId(), EMediaType.Color)
-                        .Wait();
-                },
+            ActionExtensions.ShouldCatchNotFoundException(
+                () => CreateNewDataService()
+                    .RemoveMediaAsync(ObjectId.GenerateNewId(), ObjectId.GenerateNewId(), EMediaType.Color)
+                    .Wait(),
                 "there is no resident with that id");
         }
 
@@ -47,11 +45,9 @@ namespace WebAPIUnitTests.ServiceTests.Data.Residents
 
             var original = dataService.GetFirst();
 
-            ActionExtensions.ShouldCatchNotFoundException(() =>
-                {
-                    dataService.RemoveMediaAsync(original.Id, ObjectId.GenerateNewId(), EMediaType.Color)
-                        .Wait();
-                },
+            ActionExtensions.ShouldCatchNotFoundException(
+                () => dataService.RemoveMediaAsync(original.Id, ObjectId.GenerateNewId(), EMediaType.Color)
+                    .Wait(),
                 "there is no media with the given id");
         }
     }

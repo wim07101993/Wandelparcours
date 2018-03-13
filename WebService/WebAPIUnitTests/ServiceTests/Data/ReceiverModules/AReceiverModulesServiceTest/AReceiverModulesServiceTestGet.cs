@@ -13,10 +13,8 @@ namespace WebAPIUnitTests.ServiceTests.Data.ReceiverModules
         [TestMethod]
         public void GetOneWithNullMacAndNoPropertiestToInclude()
         {
-            ActionExtensions.ShouldCatchArgumentNullException(() =>
-                {
-                    var _ = CreateNewDataService().GetAsync(null).Result;
-                },
+            ActionExtensions.ShouldCatchArgumentNullException(
+                () => CreateNewDataService().GetAsync(null).Wait(),
                 "mac",
                 "the mac address cannot be null");
         }
@@ -24,11 +22,9 @@ namespace WebAPIUnitTests.ServiceTests.Data.ReceiverModules
         [TestMethod]
         public void GetOneWithNullMacAndEmptyPropertiesToInclude()
         {
-            ActionExtensions.ShouldCatchArgumentNullException(() =>
-                {
-                    var _ = CreateNewDataService().GetAsync(null, new Expression<Func<ReceiverModule, object>>[] { })
-                        .Result;
-                },
+            ActionExtensions.ShouldCatchArgumentNullException(
+                () => CreateNewDataService().GetAsync(null, new Expression<Func<ReceiverModule, object>>[] { })
+                    .Wait(),
                 "mac",
                 "the mac address cannot be null");
         }
@@ -36,12 +32,10 @@ namespace WebAPIUnitTests.ServiceTests.Data.ReceiverModules
         [TestMethod]
         public void GetOneWithNullMacAndPropertiesToInclude()
         {
-            ActionExtensions.ShouldCatchArgumentNullException(() =>
-                {
-                    var _ = CreateNewDataService()
-                        .GetAsync(null, new Expression<Func<ReceiverModule, object>>[] {x => x.Position})
-                        .Result;
-                },
+            ActionExtensions.ShouldCatchArgumentNullException(
+                () => CreateNewDataService()
+                    .GetAsync(null, new Expression<Func<ReceiverModule, object>>[] {x => x.Position})
+                    .Wait(),
                 "mac",
                 "the mac address cannot be null");
         }
@@ -49,33 +43,27 @@ namespace WebAPIUnitTests.ServiceTests.Data.ReceiverModules
         [TestMethod]
         public void GetOneWithUnknownMacAndNoPropertiestToInclude()
         {
-            ActionExtensions.ShouldCatchNotFoundException(() =>
-                {
-                    var _ = CreateNewDataService().GetAsync("").Result;
-                },
+            ActionExtensions.ShouldCatchNotFoundException(
+                () => CreateNewDataService().GetAsync("").Wait(),
                 "the given mac address doesn't exist in the database");
         }
 
         [TestMethod]
         public void GetOneWithUnknownMacAndEmptyPropertiesToInclude()
         {
-            ActionExtensions.ShouldCatchNotFoundException(() =>
-                {
-                    var _ = CreateNewDataService().GetAsync("", new Expression<Func<ReceiverModule, object>>[] { })
-                        .Result;
-                },
+            ActionExtensions.ShouldCatchNotFoundException(
+                () => CreateNewDataService().GetAsync("", new Expression<Func<ReceiverModule, object>>[] { })
+                    .Wait(),
                 "the given mac address doesn't exist in the database");
         }
 
         [TestMethod]
         public void GetOneWithUnknownMacAndPropertiesToInclude()
         {
-            ActionExtensions.ShouldCatchNotFoundException(() =>
-                {
-                    var _ = CreateNewDataService()
-                        .GetAsync("", new Expression<Func<ReceiverModule, object>>[] {x => x.Position})
-                        .Result;
-                },
+            ActionExtensions.ShouldCatchNotFoundException(
+                () => CreateNewDataService()
+                    .GetAsync("", new Expression<Func<ReceiverModule, object>>[] {x => x.Position})
+                    .Wait(),
                 "the given mac address doesn't exist in the database");
         }
 

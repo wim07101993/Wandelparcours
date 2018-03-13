@@ -14,7 +14,7 @@ namespace WebAPIUnitTests.ServiceTests.Data.Abstract
         public void RemoveUnknownItem()
         {
             ActionExtensions.ShouldCatchNotFoundException(
-                () => { CreateNewDataService().RemoveAsync(ObjectId.GenerateNewId()).Wait(); },
+                () => CreateNewDataService().RemoveAsync(ObjectId.GenerateNewId()).Wait(),
                 "the given id doesn't exist");
         }
 

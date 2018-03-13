@@ -67,7 +67,7 @@ namespace WebAPIUnitTests.ServiceTests.Data.Abstract
             var dataService = CreateNewDataService();
 
             var mockEntities = dataService
-                .GetAsync(new Expression<Func<TestEntity, object>>[] { x => x.S, x => x.I })
+                .GetAsync(new Expression<Func<TestEntity, object>>[] {x => x.S, x => x.I})
                 .Result
                 .ToList();
 
@@ -106,35 +106,29 @@ namespace WebAPIUnitTests.ServiceTests.Data.Abstract
         [TestMethod]
         public void GetOneWithUnknownIdAndNullPropertiesToInclude()
         {
-            ActionExtensions.ShouldCatchNotFoundException(() =>
-            {
-                var _ = CreateNewDataService().GetAsync(ObjectId.GenerateNewId()).Result;
-            },
+            ActionExtensions.ShouldCatchNotFoundException(
+                () => CreateNewDataService().GetAsync(ObjectId.GenerateNewId()).Wait(),
                 "the given id doesn't exist");
         }
 
         [TestMethod]
         public void GetOneWithUnknownIdAndEmptyPropertiesToInclude()
         {
-            ActionExtensions.ShouldCatchNotFoundException(() =>
-            {
-                var _ = CreateNewDataService()
+            ActionExtensions.ShouldCatchNotFoundException(
+                () => CreateNewDataService()
                     .GetAsync(ObjectId.GenerateNewId(), new Expression<Func<TestEntity, object>>[] { })
-                    .Result;
-            },
+                    .Wait(),
                 "there is no entity with the given id");
         }
 
         [TestMethod]
         public void GetOneWithUnknownIdAndSomePropertiesToInclude()
         {
-            ActionExtensions.ShouldCatchNotFoundException(() =>
-            {
-                var _ = CreateNewDataService()
+            ActionExtensions.ShouldCatchNotFoundException(
+                () => CreateNewDataService()
                     .GetAsync(ObjectId.GenerateNewId(),
-                        new Expression<Func<TestEntity, object>>[] { x => x.S, x => x.I })
-                    .Result;
-            },
+                        new Expression<Func<TestEntity, object>>[] {x => x.S, x => x.I})
+                    .Wait(),
                 "there is no entity with the given id");
         }
 
@@ -188,7 +182,7 @@ namespace WebAPIUnitTests.ServiceTests.Data.Abstract
 
             var mockEntity = dataService
                 .GetAsync(dataService.GetFirst().Id,
-                    new Expression<Func<TestEntity, object>>[] { x => x.S, x => x.I })
+                    new Expression<Func<TestEntity, object>>[] {x => x.S, x => x.I})
                 .Result;
 
             var emptyEntity = new TestEntity();
@@ -221,12 +215,10 @@ namespace WebAPIUnitTests.ServiceTests.Data.Abstract
         [TestMethod]
         public void GetPropertyWithUnknownIdAndNoProperty()
         {
-            ActionExtensions.ShouldCatchArgumentNullException(() =>
-            {
-                var _ = CreateNewDataService()
+            ActionExtensions.ShouldCatchArgumentNullException(
+                () => CreateNewDataService()
                     .GetPropertyAsync(ObjectId.GenerateNewId(), null)
-                    .Result;
-            },
+                    .Wait(),
                 "propertyToSelect",
                 "there must be a property to select");
         }
@@ -234,12 +226,10 @@ namespace WebAPIUnitTests.ServiceTests.Data.Abstract
         [TestMethod]
         public void GetKnownPropertyWithUnknownId()
         {
-            ActionExtensions.ShouldCatchNotFoundException(() =>
-            {
-                var _ = CreateNewDataService()
+            ActionExtensions.ShouldCatchNotFoundException(
+                () => CreateNewDataService()
                     .GetPropertyAsync(ObjectId.GenerateNewId(), x => x.B)
-                    .Result;
-            },
+                    .Wait(),
                 "the given id doesn't exist");
         }
 
@@ -248,10 +238,8 @@ namespace WebAPIUnitTests.ServiceTests.Data.Abstract
         {
             var dataService = CreateNewDataService();
 
-            ActionExtensions.ShouldCatchArgumentNullException(() =>
-            {
-                var _ = dataService.GetPropertyAsync(dataService.GetFirst().Id, null).Result;
-            },
+            ActionExtensions.ShouldCatchArgumentNullException(
+                () => dataService.GetPropertyAsync(dataService.GetFirst().Id, null).Wait(),
                 "propertyToSelect",
                 "the selector cannot be null");
         }

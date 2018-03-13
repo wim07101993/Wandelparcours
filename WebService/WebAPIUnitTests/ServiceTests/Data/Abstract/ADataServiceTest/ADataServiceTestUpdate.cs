@@ -17,7 +17,8 @@ namespace WebAPIUnitTests.ServiceTests.Data.Abstract
         public void UpdateNullItemAndNoProperties()
         {
             var dataService = CreateNewDataService();
-            ActionExtensions.ShouldCatchArgumentNullException(() => { dataService.UpdateAsync(null).Wait(); },
+            ActionExtensions.ShouldCatchArgumentNullException(
+                () => dataService.UpdateAsync(null).Wait(),
                 "newItem",
                 "the item to update cannot be null");
         }
@@ -27,7 +28,7 @@ namespace WebAPIUnitTests.ServiceTests.Data.Abstract
         {
             var dataService = CreateNewDataService();
             ActionExtensions.ShouldCatchArgumentNullException(
-                () => { dataService.UpdateAsync(null, new Expression<Func<TestEntity, object>>[] { }).Wait(); },
+                () => dataService.UpdateAsync(null, new Expression<Func<TestEntity, object>>[] { }).Wait(),
                 "newItem",
                 "the item to update cannot be null");
         }
@@ -36,11 +37,11 @@ namespace WebAPIUnitTests.ServiceTests.Data.Abstract
         public void UpdateNullItemAndSomeProperties()
         {
             var dataService = CreateNewDataService();
-            ActionExtensions.ShouldCatchArgumentNullException(() =>
-                {
-                    dataService
-                        .UpdateAsync(null, new Expression<Func<TestEntity, object>>[] {x => x.I, x => x.B}).Wait();
-                },
+            ActionExtensions.ShouldCatchArgumentNullException(
+                () => dataService
+                    .UpdateAsync(null, new Expression<Func<TestEntity, object>>[] {x => x.I, x => x.B})
+                    .Wait()
+                ,
                 "newItem",
                 "the item to update cannot be null");
         }
@@ -50,32 +51,30 @@ namespace WebAPIUnitTests.ServiceTests.Data.Abstract
         public void UpdateUnknownItemAndNoProperties()
         {
             ActionExtensions.ShouldCatchNotFoundException(
-                () => { CreateNewDataService().UpdateAsync(new TestEntity()).Wait(); },
+                () => CreateNewDataService().UpdateAsync(new TestEntity()).Wait(),
                 "the given entity doesn't exists");
         }
 
         [TestMethod]
         public void UpdateUnknownItemAndEmptyProperties()
         {
-            ActionExtensions.ShouldCatchNotFoundException(() =>
-                {
-                    CreateNewDataService()
-                        .UpdateAsync(new TestEntity(), new Expression<Func<TestEntity, object>>[] { }).Wait();
-                },
+            ActionExtensions.ShouldCatchNotFoundException(
+                () => CreateNewDataService()
+                    .UpdateAsync(new TestEntity(), new Expression<Func<TestEntity, object>>[] { })
+                    .Wait()
+                ,
                 "the given entity doesn't exists");
         }
 
         [TestMethod]
         public void UpdateUnKnownItemAndSomeProperties()
         {
-            ActionExtensions.ShouldCatchNotFoundException(() =>
-                {
-                    CreateNewDataService()
-                        .UpdateAsync(
-                            new TestEntity(),
-                            new Expression<Func<TestEntity, object>>[] {x => x.I, x => x.B})
-                        .Wait();
-                },
+            ActionExtensions.ShouldCatchNotFoundException(
+                () => CreateNewDataService()
+                    .UpdateAsync(
+                        new TestEntity(),
+                        new Expression<Func<TestEntity, object>>[] {x => x.I, x => x.B})
+                    .Wait(),
                 "the given entity doesn't exists");
         }
 
@@ -190,24 +189,20 @@ namespace WebAPIUnitTests.ServiceTests.Data.Abstract
         [TestMethod]
         public void UpdatePropertyOfUnknownIdAndCorrectValue()
         {
-            ActionExtensions.ShouldCatchNotFoundException(() =>
-                {
-                    CreateNewDataService()
-                        .UpdatePropertyAsync(ObjectId.GenerateNewId(), x => x.B, true)
-                        .Wait();
-                },
+            ActionExtensions.ShouldCatchNotFoundException(
+                () => CreateNewDataService()
+                    .UpdatePropertyAsync(ObjectId.GenerateNewId(), x => x.B, true)
+                    .Wait(),
                 "the given entity doesn't exist");
         }
 
         [TestMethod]
         public void UpdateNullPropertyOfUnknownId()
         {
-            ActionExtensions.ShouldCatchArgumentNullException(() =>
-                {
-                    CreateNewDataService()
-                        .UpdatePropertyAsync(ObjectId.GenerateNewId(), null, true)
-                        .Wait();
-                },
+            ActionExtensions.ShouldCatchArgumentNullException(
+                () => CreateNewDataService()
+                    .UpdatePropertyAsync(ObjectId.GenerateNewId(), null, true)
+                    .Wait(),
                 "propertyToUpdate",
                 "the property to update cannot be null");
         }
@@ -215,12 +210,10 @@ namespace WebAPIUnitTests.ServiceTests.Data.Abstract
         [TestMethod]
         public void UpdatePropertyOfUnknownIdAndIncorrectValue()
         {
-            ActionExtensions.ShouldCatchArgumentException(() =>
-                {
-                    CreateNewDataService()
-                        .UpdatePropertyAsync(ObjectId.GenerateNewId(), x => x.I, new {X = "not a real property"})
-                        .Wait();
-                },
+            ActionExtensions.ShouldCatchArgumentException(
+                () => CreateNewDataService()
+                    .UpdatePropertyAsync(ObjectId.GenerateNewId(), x => x.I, new {X = "not a real property"})
+                    .Wait(),
                 "value",
                 "the value cannot be assigned to the property because it if of a wrong type");
         }
@@ -233,7 +226,7 @@ namespace WebAPIUnitTests.ServiceTests.Data.Abstract
 
             var item = dataService.GetFirst();
             var newValue = 123;
-            
+
             dataService.UpdatePropertyAsync(item.Id, x => x.I, newValue).Wait();
 
             dataService
@@ -249,7 +242,7 @@ namespace WebAPIUnitTests.ServiceTests.Data.Abstract
             var dataService = CreateNewDataService();
 
             ActionExtensions.ShouldCatchArgumentNullException(
-                () => { dataService.UpdatePropertyAsync(dataService.GetFirst().Id, null, false).Wait(); },
+                () => dataService.UpdatePropertyAsync(dataService.GetFirst().Id, null, false).Wait(),
                 "propertyToUpdate",
                 "the property to update cannot be null");
         }
@@ -259,12 +252,10 @@ namespace WebAPIUnitTests.ServiceTests.Data.Abstract
         {
             var dataService = CreateNewDataService();
 
-            ActionExtensions.ShouldCatchArgumentException(() =>
-                {
-                    dataService
-                        .UpdatePropertyAsync(dataService.GetFirst().Id, x => x.I, new {X = "not a real property"})
-                        .Wait();
-                },
+            ActionExtensions.ShouldCatchArgumentException(
+                () => dataService
+                    .UpdatePropertyAsync(dataService.GetFirst().Id, x => x.I, new {X = "not a real property"})
+                    .Wait(),
                 "value",
                 "the value cannot be assigned to the property");
         }
