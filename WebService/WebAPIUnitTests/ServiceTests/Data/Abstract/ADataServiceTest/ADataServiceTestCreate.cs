@@ -14,12 +14,19 @@ namespace WebAPIUnitTests.ServiceTests.Data.Abstract
         [TestMethod]
         public void CreateNullItem()
         {
+            var dataService = CreateNewDataService();
+
             ActionExtensions.ShouldCatchArgumentNullException(() =>
                 {
-                    CreateNewDataService().CreateAsync(null).Wait();
+                    dataService.CreateAsync(null).Wait();
                 },
                 "item",
                 "the item to create cannot be null");
+
+            dataService
+                .GetAll()
+                .Should()
+                .NotContainNulls("that should not happen");
         }
 
         [TestMethod]

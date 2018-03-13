@@ -1,4 +1,5 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using FluentAssertions;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MongoDB.Bson;
 using WebAPIUnitTests.TestHelpers.Extensions;
 
@@ -22,8 +23,14 @@ namespace WebAPIUnitTests.ServiceTests.Data.Abstract
         {
             var dataService = CreateNewDataService();
 
+            var id = dataService.GetFirst().Id;
+
+            dataService.RemoveAsync(id).Wait();
+
             dataService
-                .RemoveAsync(dataService.GetFirst().Id).Wait();
+                .GetAll()
+                .Should()
+                .NotContain(x => x.Id == id, "it has just been deleted");
         }
 
         #endregion Remove

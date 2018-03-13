@@ -5,7 +5,6 @@ using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MongoDB.Bson;
 using WebAPIUnitTests.TestHelpers.Extensions;
-using WebAPIUnitTests.TestMocks.Mock;
 
 // ReSharper disable once CheckNamespace
 namespace WebAPIUnitTests.ServiceTests.Data.Abstract
