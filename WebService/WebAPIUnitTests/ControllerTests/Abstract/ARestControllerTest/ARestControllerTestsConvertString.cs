@@ -4,6 +4,7 @@ using WebAPIUnitTests.TestHelpers.Extensions;
 // ReSharper disable once CheckNamespace
 namespace WebAPIUnitTests.ControllerTests.Abstract
 {
+    // ReSharper disable once UnusedTypeParameter
     public partial class ARestControllerTests<T>
     {
         #region ConvertStringToSelector
@@ -11,32 +12,34 @@ namespace WebAPIUnitTests.ControllerTests.Abstract
         [TestMethod]
         public void ConvertNullStringToSelector()
         {
-            throw new System.NotImplementedException();
+            ActionExtensions.ShouldCatchWebArgumentException(
+                () => CreateNewController().ConvertStringToSelector(null),
+                "propertyName",
+                "the propertyNames cannot be null");
         }
 
         [TestMethod]
         public void ConvertUnknownStringToSelector()
         {
-            throw new System.NotImplementedException();
+            ActionExtensions.ShouldCatchWebArgumentException(
+                () => CreateNewController().ConvertStringToSelector("1randomProperty"),
+                "propertyName",
+                "the property doesn't exist");
         }
 
         [TestMethod]
-        public void ConvertStringToSelector()
-        {
-            throw new System.NotImplementedException();
-        }
+        public abstract void ConvertStringToSelector();
 
         #endregion ConvertStringToSelector
+
 
         #region ConvertStringsToSelectors
 
         [TestMethod]
         public void ConvertNullStringsToSelectors()
         {
-            var controller = CreateNewController();
-
-            ActionExtensions.ShouldCatchArgumentNullException(
-                () => controller.ConvertStringsToSelectors(null),
+            ActionExtensions.ShouldCatchWebArgumentException(
+                () => CreateNewController().ConvertStringsToSelectors(null),
                 "propertyNames",
                 "the propertyNames cannot be null");
         }
@@ -44,26 +47,20 @@ namespace WebAPIUnitTests.ControllerTests.Abstract
         [TestMethod]
         public void ConvertEmptyStringsToSelectors()
         {
-            throw new System.NotImplementedException();
+            ActionExtensions.ShouldCatchWebArgumentException(
+                () => CreateNewController().ConvertStringsToSelectors(new string[] { }),
+                "propertyNames",
+                "the propertyNames cannot be empty");
         }
 
         [TestMethod]
-        public void ConvertUnknownStringsToSelectors()
-        {
-            throw new System.NotImplementedException();
-        }
+        public abstract void ConvertUnknownStringsToSelectors();
 
         [TestMethod]
-        public void ConvertStringsToSelectorsWithSomeUnknownStrings()
-        {
-            throw new System.NotImplementedException();
-        }
+        public abstract void ConvertStringsToSelectorsWithSomeUnknownStrings();
 
         [TestMethod]
-        public void ConvertStringsToSelectors()
-        {
-            throw new System.NotImplementedException();
-        }
+        public abstract void ConvertStringsToSelectors();
 
         #endregion ConvertStringsToSelectors
     }

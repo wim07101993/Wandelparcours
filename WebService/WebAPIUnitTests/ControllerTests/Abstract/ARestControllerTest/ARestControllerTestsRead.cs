@@ -1,27 +1,44 @@
 ﻿using System;
+using System.Linq;
+using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 // ReSharper disable once CheckNamespace
 namespace WebAPIUnitTests.ControllerTests.Abstract
 {
+    // ReSharper disable once UnusedTypeParameter
     public abstract partial class ARestControllerTests<T>
     {
+        #region GetAll
+
         [TestMethod]
         public void GetAllWithoutPropertiesToInclude()
         {
-            throw new NotImplementedException();
+            var controller = CreateNewController();
+            var items = controller.GetAsync(null).Result;
+            items
+                .Should()
+                .BeEquivalentTo(controller.GetAll());
         }
 
         [TestMethod]
         public void GetAllWithEmptyPropertiesToInclude()
         {
-            throw new NotImplementedException();
+            var controller = CreateNewController();
+            var items = controller.GetAsync(new string[] { }).Result;
+            items
+                .Should()
+                .BeEquivalentTo(controller.GetAll().Select(x => x.Id));
         }
 
         [TestMethod]
         public void GetAllWithKnownPropertiesToInclude()
         {
-            throw new NotImplementedException();
+            var controller = CreateNewController();
+            var items = controller.GetAsync(new string[]{}).Result;
+            items
+                .Should()
+                .BeEquivalentTo(controller.GetAll());
         }
 
         [TestMethod]
@@ -29,6 +46,11 @@ namespace WebAPIUnitTests.ControllerTests.Abstract
         {
             throw new NotImplementedException();
         }
+
+        #endregion GetAll
+
+
+        #region GetByID
 
         [TestMethod]
         public void GetByNullIdAndNoPropertiesToInclude()
@@ -126,6 +148,11 @@ namespace WebAPIUnitTests.ControllerTests.Abstract
             throw new NotImplementedException();
         }
 
+        #endregion GetByID
+
+
+        #region GetProperty
+
         [TestMethod]
         public void GetNullPropertyByNullId()
         {
@@ -198,5 +225,6 @@ namespace WebAPIUnitTests.ControllerTests.Abstract
             throw new NotImplementedException();
         }
 
+        #endregion GetProperty
     }
 }

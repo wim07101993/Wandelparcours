@@ -1,28 +1,18 @@
-﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 // ReSharper disable once CheckNamespace
 namespace WebAPIUnitTests.ControllerTests.Abstract
 {
+    // ReSharper disable once UnusedTypeParameter
     public abstract partial class ARestControllerTests<T>
     {
         [TestMethod]
-        public void CreateNull()
-        {
-            throw new NotImplementedException();
-        }
+        public abstract void CreateNull();
 
         [TestMethod]
-        public void CreateEmpty()
-        {
-            throw new NotImplementedException();
-        }
+        public abstract void CreateEmpty();
 
         [TestMethod]
-        public void Create()
-        {
-            throw new NotImplementedException();
-        }
-
+        public abstract void Create();
     }
 }

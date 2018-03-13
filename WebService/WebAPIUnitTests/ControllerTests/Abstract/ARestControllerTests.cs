@@ -1,5 +1,5 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using WebService.Controllers.Bases;
+using WebAPIUnitTests.TestControllers;
 using WebService.Models.Bases;
 using WebService.Services.Logging;
 
@@ -10,6 +10,6 @@ namespace WebAPIUnitTests.ControllerTests.Abstract
     {
         public ILogger Logger { get; set; } = new ConsoleLogger();
 
-        public abstract ARestControllerBase<T> CreateNewController();
+        public abstract ATestRestController<T> CreateNewController();
     }
 }

@@ -2,17 +2,16 @@
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using WebAPIUnitTests.TestModels;
-using WebService.Controllers.Bases;
+using WebAPIUnitTests.TestServices.Abstract;
 using WebService.Helpers.Extensions;
-using WebService.Services.Data;
 using WebService.Services.Logging;
 
 namespace WebAPIUnitTests.TestControllers
 {
-    public class TestController : ARestControllerBase<TestEntity>
+    public class TestRestController : ATestRestController<TestEntity>
     {
-        public TestController(IDataService<TestEntity> dataService, ILogger logger)
-            : base(dataService, logger)
+        public TestRestController()
+            : base(new TestDataService(), new ConsoleLogger())
         {
         }
 
@@ -37,5 +36,13 @@ namespace WebAPIUnitTests.TestControllers
             throw new ArgumentException(nameof(propertyName),
                 $"Property {propertyName} cannot be found on {typeof(TestEntity).Name}");
         }
+
+        public IDictionary<string, Expression<Func<TestEntity, object>>> Selectors { get; set; } =
+            new Dictionary<string, Expression<Func<TestEntity, object>>>
+            {
+                {nameof(TestEntity.S), x => x.S},
+                {nameof(TestEntity.I), x => x.I},
+                {nameof(TestEntity.B), x => x.B},
+            };
     }
 }
