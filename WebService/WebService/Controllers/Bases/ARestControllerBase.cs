@@ -103,29 +103,25 @@ namespace WebService.Controllers.Bases
 
         #region read
 
-        /// <inheritdoc cref="IRestController{T}.GetPropertyAsync" />
+        /// <inheritdoc cref="IRestController{T}.GetAsync(string[])" />
         /// <summary>
-        /// GetProperty returns the jsonValue of the asked property of the asked <see cref="T"/>.
+        /// Get is supposed to return all the Items in the database. 
+        /// To limit data traffic it is possible to select only a number of properties.
+        /// <para/>
+        /// By default only the properties in the selector <see cref="PropertiesToSendOnGetAll"/> are returned.
         /// </summary>
-        /// <param name="id">is the id of the <see cref="T"/></param>
-        /// <param name="propertyName">is the name of the property to return</param>
-        /// <returns>The jsonValue of the asked property</returns>
-        /// <exception cref="NotFoundException">When the id cannot be parsed or <see cref="T"/> not found</exception>
-        /// <exception cref="WebArgumentException">When the property could not be found on <see cref="T"/></exception>
-        public virtual async Task<object> GetPropertyAsync(string id, string propertyName)
+        /// <param name="propertiesToInclude">are the properties of which the values should be returned</param>
+        /// <returns>All <see cref="T"/>s in the database but only the given properties are filled in</returns>
+        /// <exception cref="WebArgumentException">When one ore more properties could not be converted to selectors</exception>
+        public virtual async Task<IEnumerable<T>> GetAsync([FromQuery] string[] propertiesToInclude)
         {
-            // check if the property exists on the item
-            if (!typeof(T).GetProperties().Any(x => x.Name.EqualsWithCamelCasing(propertyName)))
-                throw new WebArgumentException(
-                    $"Property {propertyName} cannot be found on {typeof(T).Name}", nameof(propertyName));
+            // convert the property names to selectors, if there are any
+            var selectors = !EnumerableExtensions.IsNullOrEmpty(propertiesToInclude)
+                ? ConvertStringsToSelectors(propertiesToInclude)
+                : null;
 
-            // parse the id
-            if (!ObjectId.TryParse(id, out var objectId))
-                // if it fails, throw not found exception
-                throw new NotFoundException($"The {typeof(T).Name} with id {id} could not be found");
-
-            // get the property from the database
-            return await DataService.GetPropertyAsync(objectId, ConvertStringToSelector(propertyName));
+            // return the items got from the data service
+            return await DataService.GetAsync(selectors);
         }
 
         /// <inheritdoc cref="IRestController{T}.GetAsync(string, string[])" />
@@ -162,25 +158,29 @@ namespace WebService.Controllers.Bases
                 : item;
         }
 
-        /// <inheritdoc cref="IRestController{T}.GetAsync(string[])" />
+        /// <inheritdoc cref="IRestController{T}.GetPropertyAsync" />
         /// <summary>
-        /// Get is supposed to return all the Items in the database. 
-        /// To limit data traffic it is possible to select only a number of properties.
-        /// <para/>
-        /// By default only the properties in the selector <see cref="PropertiesToSendOnGetAll"/> are returned.
+        /// GetProperty returns the jsonValue of the asked property of the asked <see cref="T"/>.
         /// </summary>
-        /// <param name="propertiesToInclude">are the properties of which the values should be returned</param>
-        /// <returns>All <see cref="T"/>s in the database but only the given properties are filled in</returns>
-        /// <exception cref="WebArgumentException">When one ore more properties could not be converted to selectors</exception>
-        public virtual async Task<IEnumerable<T>> GetAsync([FromQuery] string[] propertiesToInclude)
+        /// <param name="id">is the id of the <see cref="T"/></param>
+        /// <param name="propertyName">is the name of the property to return</param>
+        /// <returns>The jsonValue of the asked property</returns>
+        /// <exception cref="NotFoundException">When the id cannot be parsed or <see cref="T"/> not found</exception>
+        /// <exception cref="WebArgumentException">When the property could not be found on <see cref="T"/></exception>
+        public virtual async Task<object> GetPropertyAsync(string id, string propertyName)
         {
-            // convert the property names to selectors, if there are any
-            var selectors = !EnumerableExtensions.IsNullOrEmpty(propertiesToInclude)
-                ? ConvertStringsToSelectors(propertiesToInclude)
-                : null;
+            // check if the property exists on the item
+            if (!typeof(T).GetProperties().Any(x => x.Name.EqualsWithCamelCasing(propertyName)))
+                throw new WebArgumentException(
+                    $"Property {propertyName} cannot be found on {typeof(T).Name}", nameof(propertyName));
 
-            // return the items got from the data service
-            return await DataService.GetAsync(selectors);
+            // parse the id
+            if (!ObjectId.TryParse(id, out var objectId))
+                // if it fails, throw not found exception
+                throw new NotFoundException($"The {typeof(T).Name} with id {id} could not be found");
+
+            // get the property from the database
+            return await DataService.GetPropertyAsync(objectId, ConvertStringToSelector(propertyName));
         }
 
         #endregion read

@@ -18,8 +18,4 @@
     <ProjectReference Include="..\WebService\WebService.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="ControllerTests\" />
-  </ItemGroup>
-
 </Project>
