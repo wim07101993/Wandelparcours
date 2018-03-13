@@ -16,8 +16,8 @@ export class PersonaliaComponent implements OnInit {
     //router: Router;
 
     constructor(private service: RestServiceService, private route: ActivatedRoute, private router: Router) {
-        this.showOneResident();
         this.resident = <Resident>{ firstName: "", lastName: "", room: "", id: "", birthday: new Date(), doctor: { name: "", phoneNumber: "" } };
+        this.showOneResident();
     }
 
     async showOneResident() {

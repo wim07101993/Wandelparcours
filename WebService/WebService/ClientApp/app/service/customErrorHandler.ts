@@ -10,7 +10,8 @@ export class CustomErrorHandler {
     update$: Observable<string> = this.updateSubject.asObservable();
 
     updateMessage(message: any) {
-        this.updateSubject.next(message.status + " : " + message.statusText + "\n" + message["_body"]);
+        let a: string = "Status : " + message.status + " : " + message.statusText + " / ERRORMESSAGE: ";
+        this.updateSubject.next(a + message["_body"]);
         console.log(message);
     }
 }
