@@ -8,33 +8,33 @@ using WebService.Services.Logging;
 
 namespace WebAPIUnitTests.Mocks
 {
-    public class MockController : ARestControllerBase<MockEntity>
+    public class MockController : ARestControllerBase<TestEntity>
     {
-        public MockController(IDataService<MockEntity> dataService, ILogger logger)
+        public MockController(IDataService<TestEntity> dataService, ILogger logger)
             : base(dataService, logger)
         {
         }
 
-        public override IEnumerable<Expression<Func<MockEntity, object>>> PropertiesToSendOnGetAll { get; } =
-            new Expression<Func<MockEntity, object>>[]
+        public override IEnumerable<Expression<Func<TestEntity, object>>> PropertiesToSendOnGetAll { get; } =
+            new Expression<Func<TestEntity, object>>[]
             {
                 x => x.B,
                 x => x.I,
                 x => x.Id
             };
 
-        public override Expression<Func<MockEntity, object>> ConvertStringToSelector(
+        public override Expression<Func<TestEntity, object>> ConvertStringToSelector(
             string propertyName)
         {
-            if (propertyName.EqualsWithCamelCasing(nameof(MockEntity.S)))
+            if (propertyName.EqualsWithCamelCasing(nameof(TestEntity.S)))
                 return x => x.S;
-            if (propertyName.EqualsWithCamelCasing(nameof(MockEntity.I)))
+            if (propertyName.EqualsWithCamelCasing(nameof(TestEntity.I)))
                 return x => x.I;
-            if (propertyName.EqualsWithCamelCasing(nameof(MockEntity.B)))
+            if (propertyName.EqualsWithCamelCasing(nameof(TestEntity.B)))
                 return x => x.B;
 
             throw new ArgumentException(nameof(propertyName),
-                $"Property {propertyName} cannot be found on {typeof(MockEntity).Name}");
+                $"Property {propertyName} cannot be found on {typeof(TestEntity).Name}");
         }
     }
 }
