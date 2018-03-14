@@ -8,7 +8,9 @@ import { ActivatedRoute } from '@angular/router';
 })
 export class SeniorComponent implements OnInit {
     id: string = this.route.snapshot.params['id'];
-    ngOnInit() { }
+
+
+    ngOnInit() {}
 
     constructor(private route: ActivatedRoute) {}
 }
