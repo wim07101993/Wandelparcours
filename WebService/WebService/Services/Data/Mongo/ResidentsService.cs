@@ -123,7 +123,7 @@ namespace WebService.Services.Data.Mongo
             await _mediaService.CreateAsync(new MediaData {Id = mediaId, Data = data});
 
             // add the mediaData
-            await AddMediaAsync(residentId, new MediaUrl {Id = ObjectId.GenerateNewId()}, mediaType);
+            await AddMediaAsync(residentId, new MediaUrl {Id = mediaId}, mediaType);
         }
 
         /// <inheritdoc cref="IResidentsService.AddMediaAsync(ObjectId,string,EMediaType)" />
