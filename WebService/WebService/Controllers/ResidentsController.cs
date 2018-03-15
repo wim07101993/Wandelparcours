@@ -102,7 +102,7 @@ namespace WebService.Controllers
         /// <exception cref="Exception">When the item could not be added</exception>
         [HttpPost("{residentId}/Music/data")]
         public async Task AddMusicAsync(string residentId, [FromForm] FormFile musicData)
-            => await AddMediaAsync(residentId, musicData, EMediaType.Audio, (int)20e6);
+            => await AddMediaAsync(residentId, musicData, EMediaType.Audio, (int) 20e6);
 
         /// <inheritdoc cref="IResidentsController.AddMusicAsync(string,string)"/>
         /// <summary>
@@ -126,7 +126,7 @@ namespace WebService.Controllers
         /// <exception cref="Exception">When the item could not be added</exception>
         [HttpPost("{residentId}/Videos/data")]
         public async Task AddVideoAsync(string residentId, [FromForm] FormFile videoData)
-            => await AddMediaAsync(residentId, videoData, EMediaType.Video, (int)1e9);
+            => await AddMediaAsync(residentId, videoData, EMediaType.Video, (int) 1e9);
 
         /// <inheritdoc cref="IResidentsController.AddVideoAsync(string,string)"/>
         /// <summary>
@@ -150,7 +150,7 @@ namespace WebService.Controllers
         /// <exception cref="Exception">When the item could not be added</exception>
         [HttpPost("{residentId}/Images/data")]
         public async Task AddImageAsync(string residentId, [FromForm] FormFile imageData)
-            => await AddMediaAsync(residentId, imageData, EMediaType.Image, (int)20e6);
+            => await AddMediaAsync(residentId, imageData, EMediaType.Image, (int) 20e6);
 
         /// <inheritdoc cref="IResidentsController.AddImageAsync(string,string)"/>
         /// <summary>
@@ -207,6 +207,9 @@ namespace WebService.Controllers
         private async Task AddMediaAsync(string residentId, FormFile data, EMediaType mediaType,
             int maxFileSize = int.MaxValue)
         {
+            if (data?.File == null)
+                throw new WebArgumentException($"the file cannot be null", nameof(data));
+
             // parse the id
             if (!ObjectId.TryParse(residentId, out var residentObjectId))
                 // if it fails, throw not found exception
