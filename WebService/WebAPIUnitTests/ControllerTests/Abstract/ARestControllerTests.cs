@@ -1,5 +1,6 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using WebAPIUnitTests.TestControllers;
+using WebAPIUnitTests.TestControllers.bases;
 using WebService.Models.Bases;
 using WebService.Services.Logging;
 

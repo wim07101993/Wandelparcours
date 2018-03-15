@@ -1,5 +1,6 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using WebAPIUnitTests.TestControllers;
+using WebAPIUnitTests.TestControllers.bases;
 using WebAPIUnitTests.TestModels;
 
 namespace WebAPIUnitTests.ControllerTests.Abstract
@@ -42,6 +43,16 @@ namespace WebAPIUnitTests.ControllerTests.Abstract
         }
 
         public override void Create()
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public override void GetAllWithKnownPropertiesToInclude()
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public override void GetAllWithUnknownPropertiesToInclude()
         {
             throw new System.NotImplementedException();
         }

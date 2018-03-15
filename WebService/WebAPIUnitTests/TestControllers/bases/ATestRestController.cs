@@ -6,7 +6,7 @@ using WebService.Models.Bases;
 using WebService.Services.Data;
 using WebService.Services.Logging;
 
-namespace WebAPIUnitTests.TestControllers
+namespace WebAPIUnitTests.TestControllers.bases
 {
     public abstract class ATestRestController<T> : ARestControllerBase<T>, ITestController<T> where T : IModelWithID
     {

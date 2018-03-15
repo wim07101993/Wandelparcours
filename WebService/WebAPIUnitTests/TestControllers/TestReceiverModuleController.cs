@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using WebAPIUnitTests.TestControllers.bases;
 using WebAPIUnitTests.TestServices.ReceiverModules;
 using WebService.Controllers;
 using WebService.Helpers.Extensions;

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
+using WebAPIUnitTests.TestControllers.bases;
 using WebAPIUnitTests.TestModels;
 using WebAPIUnitTests.TestServices.Abstract;
 using WebService.Services.Logging;
