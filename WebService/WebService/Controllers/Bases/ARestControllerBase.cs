@@ -115,7 +115,7 @@ namespace WebService.Controllers.Bases
             // convert the property names to selectors, if there are any
             var selectors = !EnumerableExtensions.IsNullOrEmpty(propertiesToInclude)
                 ? ConvertStringsToSelectors(propertiesToInclude)
-                : null;
+                : PropertiesToSendOnGetAll;
 
             // return the items got from the data service
             return await DataService.GetAsync(selectors);
