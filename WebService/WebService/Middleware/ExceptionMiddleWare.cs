@@ -49,13 +49,13 @@ namespace WebService.Middleware
         /// <summary>
         /// Invoke invokes the next item in the pipeline and handles all exceptions thrown.
         /// </summary>
-        /// <param name="context">is the context containing all http elements (response, request,...)</param>
-        /// <returns>A task to exceute</returns>
+        /// <param name="context">is the context containing all HTTP elements (response, request,...)</param>
+        /// <returns>A task to execute</returns>
         public async Task Invoke(HttpContext context)
         {
             try
             {
-                // invoke the nex element in the pipeline
+                // invoke the next element in the pipeline
                 await _next.Invoke(context);
             }
             // check for bad arguments by the client
@@ -92,7 +92,7 @@ namespace WebService.Middleware
                 _logger.Log(this, ELogLevel.Error, e);
 
                 // respond with fancy gif
-                await context.Response.WriteAsync("http://http;//gph.is/1s201Ez");
+                await context.Response.WriteAsync("http://gph.is/1s201Ez");
             }
         }
 
