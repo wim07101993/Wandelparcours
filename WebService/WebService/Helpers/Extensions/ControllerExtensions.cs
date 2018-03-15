@@ -51,7 +51,7 @@ namespace WebService.Helpers.Extensions
                 urlSuffix = parameters.Aggregate(
                     urlSuffix,
                     (current, parameter) => current
-                        .Replace(string.Format("/{{0}/}", parameter.Key), parameter.Value));
+                        .Replace("{" + parameter.Key + "}", parameter.Value));
 
             return $"{GetControllerUrl<TParent>()}/{urlSuffix}";
         }

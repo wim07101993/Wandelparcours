@@ -99,10 +99,10 @@ namespace WebService.Models
         /// <para/>
         /// In the database the value is stored under the field "colors"
         /// </summary>
-        [BsonElement("colors")]
-        [JsonConverter(typeof(ColorConverter))]
-        [BsonSerializer(typeof(ColorSerializer))]
-        public List<Color> Colors { get; set; } = new List<Color>();
+        //[BsonElement("colors")]
+        //[JsonConverter(typeof(ColorConverter))]
+        //[BsonSerializer(typeof(ColorSerializer))]
+        //public List<Color> Colors { get; set; } = new List<Color>();
 
         /// <summary>
         /// LastRecordedPosition is position where the resident has last been tracked
