@@ -29,6 +29,9 @@ namespace WebService.Services.Exceptions
         public void NotFound<T>(ObjectId id)
             => NotFound<T>(id.ToString());
 
+        public void MediaTypeNotFound<T>(string passedValue)
+            => throw new NotFoundException($"{passedValue} was not found in {typeof(T).Name}");
+
         public void Database<T>(EDatabaseMethod databaseMethod)
             => throw new DatabaseException(
                 $"The database could not {databaseMethod.ToString().ToLower()} a {typeof(T).Name}", databaseMethod);

@@ -107,6 +107,8 @@ namespace WebService.Controllers.Bases
         /// <exception cref="WebArgumentException">When one ore more properties could not be converted to selectors</exception>
         Task<Resident> GetAsync(int tag, string[] propertiesToInclude);
 
+        Task<string> GetRandomMedia(int tag, string mediaType);
+
         #endregion READ
 
 

@@ -25,7 +25,7 @@ namespace WebService.Controllers
     {
         #region CONSTRUCTOR
 
-         public ResidentsController(IThrow iThrow, IDataService<Resident> dataService, ILogger logger)
+        public ResidentsController(IThrow iThrow, IDataService<Resident> dataService, ILogger logger)
             : base(iThrow, dataService, logger)
         {
         }
@@ -50,7 +50,7 @@ namespace WebService.Controllers
             new Dictionary<string, Expression<Func<Resident, object>>>
             {
                 {nameof(Resident.Birthday), x => x.Birthday},
-               // {nameof(Resident.Colors), x => x.Colors},
+                // {nameof(Resident.Colors), x => x.Colors},
                 {nameof(Resident.Doctor), x => x.Doctor},
                 {nameof(Resident.FirstName), x => x.FirstName},
                 {nameof(Resident.Images), x => x.Images},
@@ -193,6 +193,38 @@ namespace WebService.Controllers
             }
 
             return resident;
+        }
+
+        [HttpGet("{tag}/{mediaType}/random")]
+        public async Task<string> GetRandomMedia(int tag, string mediaType)
+        {
+            if (!Enum.TryParse<EMediaType>(mediaType, out var eMediaType))
+            {
+                Throw.MediaTypeNotFound<EMediaType>(mediaType);
+                return null;
+            }
+
+            IList<MediaUrl> media;
+
+            switch (eMediaType)
+            {
+                case EMediaType.Audio:
+                    media = (await ((IResidentsService) DataService).GetAsync(tag,
+                        new Expression<Func<Resident, object>>[] {x => x.Music})).Music;
+                    break;
+                case EMediaType.Video:
+                    media = (await ((IResidentsService) DataService).GetAsync(tag,
+                        new Expression<Func<Resident, object>>[] {x => x.Videos})).Videos;
+                    break;
+                case EMediaType.Image:
+                    media = (await ((IResidentsService) DataService).GetAsync(tag,
+                        new Expression<Func<Resident, object>>[] {x => x.Images})).Images;
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+
+            return media.RandomItem().Url;
         }
 
         [HttpGet("{id}/{propertyName}")]
