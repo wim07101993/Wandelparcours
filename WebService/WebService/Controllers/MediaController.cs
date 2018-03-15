@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -28,8 +29,8 @@ namespace WebService.Controllers
                 {nameof(MediaData.Data), x => x.Data}
             };
 
-        [HttpGet]
-        public override Task<MediaData> GetAsync(string id, string[] propertiesToInclude)
-            => base.GetAsync(id, propertiesToInclude);
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetAsync(string id) 
+            => File((await base.GetAsync(id, null)).Data, "image/jpg");
     }
 }

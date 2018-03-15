@@ -24,7 +24,7 @@ namespace WebService.Services.Data.Mongo
     /// </summary>
     public class ResidentsService : AMongoDataService<Resident>, IResidentsService
     {
-        private readonly IMediaService _mediaService;
+        private readonly IDataService<MediaData> _mediaService;
 
         /// <inheritdoc cref="AMongoDataService{T}"/>
         /// <summary>
@@ -35,7 +35,7 @@ namespace WebService.Services.Data.Mongo
         /// <param name="config">are the configurations to get the database details from</param>
         /// <param name="iThrow">is the object to throw exceptions</param>
         /// <param name="mediaService"></param>
-        public ResidentsService(IConfiguration config, IThrow iThrow, IMediaService mediaService)
+        public ResidentsService(IConfiguration config, IThrow iThrow, IDataService<MediaData> mediaService)
             : base(iThrow)
         {
             _mediaService = mediaService;
