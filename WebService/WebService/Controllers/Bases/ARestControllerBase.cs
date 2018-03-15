@@ -183,7 +183,7 @@ namespace WebService.Controllers.Bases
                 throw new NotFoundException($"The {typeof(T).Name} with id {id} could not be found");
 
             // get the property from the database
-            return await DataService.GetPropertyAsync(objectId, PropertySelectors[propertyName]);
+            return await DataService.GetPropertyAsync(objectId, PropertySelectors[propertyName.ToUpperCamelCase()]);
         }
 
         #endregion read
