@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using MongoDB.Bson;
 using WebService.Models;
 
-namespace WebAPIUnitTests
+namespace WebAPIUnitTests.TestModels
 {
     public static class TestData
     {

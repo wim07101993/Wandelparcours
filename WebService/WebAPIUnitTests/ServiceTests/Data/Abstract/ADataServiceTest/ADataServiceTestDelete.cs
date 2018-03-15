@@ -13,10 +13,8 @@ namespace WebAPIUnitTests.ServiceTests.Data.Abstract
         [TestMethod]
         public void RemoveUnknownItem()
         {
-            ActionExtensions.ShouldCatchNotFoundException(() =>
-                {
-                    var _ = CreateNewDataService().RemoveAsync(ObjectId.GenerateNewId()).Result;
-                },
+            ActionExtensions.ShouldCatchNotFoundException(
+                () => CreateNewDataService().RemoveAsync(ObjectId.GenerateNewId()).Wait(),
                 "the given id doesn't exist");
         }
 
@@ -25,10 +23,14 @@ namespace WebAPIUnitTests.ServiceTests.Data.Abstract
         {
             var dataService = CreateNewDataService();
 
+            var id = dataService.GetFirst().Id;
+
+            dataService.RemoveAsync(id).Wait();
+
             dataService
-                .RemoveAsync(dataService.GetFirst().Id).Result
+                .GetAll()
                 .Should()
-                .BeTrue("the item exist");
+                .NotContain(x => x.Id == id, "it has just been deleted");
         }
 
         #endregion Remove

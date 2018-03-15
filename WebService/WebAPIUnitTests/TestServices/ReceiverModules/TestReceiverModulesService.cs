@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using MongoDB.Bson;
+using WebAPIUnitTests.TestModels;
 using WebAPIUnitTests.TestServices.Abstract;
 using WebService.Helpers.Extensions;
 using WebService.Models;
@@ -9,7 +10,7 @@ namespace WebAPIUnitTests.TestServices.ReceiverModules
 {
     public class TestReceiverModulesService : MockReceiverModulesesService, ITestReceiverModulesService
     {
-        public override List<ReceiverModule> MockData { get; } = WebAPIUnitTests.TestData.TestReceiverModules.Clone();
+        public override List<ReceiverModule> MockData { get; } = TestData.TestReceiverModules.Clone();
 
         public override ReceiverModule CreateNewItem(ObjectId id)
             => new ReceiverModule { Id = id };

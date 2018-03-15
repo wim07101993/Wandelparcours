@@ -15,7 +15,7 @@ namespace WebService.Services.Data.Mongo
     /// ReceiverModulesService is a class that extends from the <see cref="AMongoDataService{T}"/> class
     /// and by doing that implements the <see cref="IDataService{T}"/> interface.
     /// <para/>
-    /// It handles the saving and retrieving residents to and from the mongo database.
+    /// It handles the saving and retrieving receiverModules to and from the mongo database.
     /// <para/>
     /// The connection string, db name and collections that are used are stored in the IConfiguration dependency under the Database object.
     /// </summary>
@@ -29,11 +29,13 @@ namespace WebService.Services.Data.Mongo
         /// <param name="config"></param>
         public ReceiverModulesService(IConfiguration config)
         {
-            // create a new client and get the database from it
-            var db = new MongoClient(config["Database:ConnectionString"]).GetDatabase(config["Database:DatabaseName"]);
-
-            // get the residents mongo collection
-            MongoCollection = db.GetCollection<ReceiverModule>(config["Database:ReceiverModulesCollectionName"]);
+            MongoCollection =
+                // create a new client
+                new MongoClient(config["Database:ConnectionString"])
+                    // get the database from the client
+                    .GetDatabase(config["Database:DatabaseName"])
+                    // get the residents mongo collection
+                    .GetCollection<ReceiverModule>(config["Database:ReceiverModulesCollectionName"]);
         }
 
 
@@ -46,39 +48,39 @@ namespace WebService.Services.Data.Mongo
 
         /// <inheritdoc cref="IReceiverModulesService.GetAsync(string,IEnumerable{Expression{Func{ReceiverModule,object}}})" />
         /// <summary>
-        /// GetAsync should return the receiver module with the given mac.
+        /// GetAsync returns the receiver module with the given mac.
         /// </summary>
         /// <param name="mac">is the mac address of the receiver module to fetch</param>
         /// <param name="propertiesToInclude">are the properties that should be included in the objects</param>
         /// <returns>The receiver module with the given mac</returns>
+        /// <exception cref="ArgumentNullException">when the mac address is null</exception>
+        /// <exception cref="NotFoundException">when there is no item found with the given mac address</exception>
         public async Task<ReceiverModule> GetAsync(string mac,
             IEnumerable<Expression<Func<ReceiverModule, object>>> propertiesToInclude = null)
         {
+            // if the mac is null, throw exception
             if (mac == null)
                 throw new ArgumentNullException(nameof(mac), "the mac address cannot be null");
 
             // get the item with the given id
-            var result = MongoCollection.Find(x => x.Mac == mac);
+            var find = MongoCollection.Find(x => x.Mac == mac);
 
-            if (result.Count() <= 0)
+            // if there is no resident with the given id, throw exception
+            if (find.Count() <= 0)
                 throw new NotFoundException($"the {typeof(ReceiverModule).Name} with mac address {mac} was not found");
 
-            // convert the properties to include to a list (if not null)
-            var properties = propertiesToInclude?.ToList();
             // if the properties are null or there are none, return all the properties
-            if (properties == null)
-                return await result.FirstOrDefaultAsync();
+            if (propertiesToInclude == null)
+                return await find.FirstOrDefaultAsync();
 
-            // create a property filter
+            // create a property filter and always include the mac address
             var selector = Builders<ReceiverModule>.Projection.Include(x => x.Mac);
 
-            //ReSharper disable once PossibleNullReferenceException
             // iterate over all the properties and add them to the filter
-            foreach (var property in properties)
-                selector = selector.Include(property);
+            selector = propertiesToInclude.Aggregate(selector, (current, property) => current.Include(property));
 
             // return the item
-            return await result
+            return await find
                 // filter the properties
                 .Project<ReceiverModule>(selector)
                 // execute the query
@@ -90,27 +92,26 @@ namespace WebService.Services.Data.Mongo
         /// Remove removes the <see cref="ReceiverModule"/> with the given mac from the database.
         /// </summary>
         /// <param name="mac">is the mac of the <see cref="ReceiverModule"/> to remove in the database</param>
-        /// <returns>
-        /// - true if the <see cref="ReceiverModule"/> was removed from the database
-        /// - false if the item was not removed
-        /// </returns>
-        public async Task<bool> RemoveAsync(string mac)
+        /// <exception cref="ArgumentNullException">when the mac is null</exception>
+        /// <exception cref="MongoException">when the query was not acknowledged</exception>
+        /// <exception cref="NotFoundException">when there was no item removed</exception>
+        public async Task RemoveAsync(string mac)
         {
+            // if the mac address is null, throw exception
             if (mac == null)
                 throw new ArgumentNullException(nameof(mac), "the mac address cannot be null");
 
             // remove the receiver module with the given mac from the database
             var result = await MongoCollection.DeleteOneAsync(x => x.Mac == mac);
 
+            // if the query is not acknowledged, throw exception
             if (!result.IsAcknowledged)
                 throw new MongoException(
                     $"the {typeof(ReceiverModule).Name} with mac address {mac} could not be removed from the db");
 
+            // if there is no item removed, throw exception
             if (result.DeletedCount <= 0)
                 throw new NotFoundException($"the {typeof(ReceiverModule).Name} with mac address {mac} was not found");
-
-            // return true if something actually happened
-            return true;
         }
     }
 }

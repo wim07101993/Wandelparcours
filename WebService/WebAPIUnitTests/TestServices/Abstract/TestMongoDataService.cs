@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using MongoDB.Driver;
+using WebAPIUnitTests.TestModels;
 using WebService.Services.Data.Mongo;
 
 namespace WebAPIUnitTests.TestServices.Abstract

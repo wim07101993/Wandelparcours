@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using WebService.Helpers.Exceptions;
 using WebService.Models;
 
 namespace WebService.Services.Data
@@ -9,24 +10,22 @@ namespace WebService.Services.Data
     public interface IReceiverModulesService : IDataService<ReceiverModule>
     {
         /// <summary>
-        /// GetAsync is supposed to return the <see cref="ReceiverModule"/> with the given MAC-address from the database. 
-        /// <para/>
-        /// It should only fill the properties passed in the <see cref="propertiesToInclude"/> parameter. The MAC-address is always passed and 
-        /// if the <see cref="propertiesToInclude"/> parameter is null (which it is by default), all the properties are included. 
+        /// GetAsync is supposed to return the receiver module with the given mac.
         /// </summary>
-        /// <param name="mac">is the MAC-address of the item that needs to be fetched</param>
+        /// <param name="mac">is the mac address of the receiver module to fetch</param>
         /// <param name="propertiesToInclude">are the properties that should be included in the objects</param>
-        /// <returns>An <see cref="IEnumerable{T}"/> filled with all the ts in the database.</returns>
+        /// <returns>The receiver module with the given mac</returns>
+        /// <exception cref="ArgumentNullException">when the mac address is null</exception>
+        /// <exception cref="NotFoundException">when there is no item found with the given mac address</exception>
         Task<ReceiverModule> GetAsync(string mac, IEnumerable<Expression<Func<ReceiverModule, object>>> propertiesToInclude = null);
 
         /// <summary>
-        /// RemoveAsync is supposed to remove the <see cref="ReceiverModule"/> with the given mac from the database.
+        /// Remove is supposed to remove the <see cref="ReceiverModule"/> with the given mac from the database.
         /// </summary>
         /// <param name="mac">is the mac of the <see cref="ReceiverModule"/> to remove in the database</param>
-        /// <returns>
-        /// - true if the <see cref="ReceiverModule"/> was removed from the database
-        /// - false if the item was not removed
-        /// </returns>
-        Task<bool> RemoveAsync(string mac);
+        /// <exception cref="ArgumentNullException">when the mac is null</exception>
+        /// <exception cref="Exception">when the query was not acknowledged</exception>
+        /// <exception cref="NotFoundException">when there was no item removed</exception>
+        Task RemoveAsync(string mac);
     }
 }

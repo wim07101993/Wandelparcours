@@ -1,5 +1,5 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using WebAPIUnitTests.TestServices;
+using WebAPIUnitTests.TestModels;
 using WebAPIUnitTests.TestServices.Abstract;
 
 namespace WebAPIUnitTests.ServiceTests.Data.Abstract

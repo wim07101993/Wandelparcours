@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Linq.Expressions;
 using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using WebService.Helpers.Exceptions;
@@ -55,7 +56,7 @@ namespace WebAPIUnitTests.TestHelpers.Extensions
             try
             {
                 action();
-                Assert.Fail($"a argument exception should have been thrown because {because}");
+                Assert.Fail($"an argument exception should have been thrown because {because}");
             }
             catch (AggregateException e)
             {
@@ -65,6 +66,28 @@ namespace WebAPIUnitTests.TestHelpers.Extensions
                     .BeTrue($"at least one exception should be an argument exception since {because}");
             }
             catch (ArgumentException e)
+            {
+                e.ParamName
+                    .Should()
+                    .Be(paramName, because);
+            }
+        }
+
+        public static void ShouldCatchWebArgumentException(this Action action, string paramName, string because)
+        {
+            try
+            {
+                action();
+                Assert.Fail($"a web argument exception should have been thrown because {because}");
+            }
+            catch (AggregateException e)
+            {
+                e.InnerExceptions
+                    .Any(x => (x as WebArgumentException)?.ParamName == paramName)
+                    .Should()
+                    .BeTrue($"at least one exception should be a web argument exception since {because}");
+            }
+            catch (WebArgumentException e)
             {
                 e.ParamName
                     .Should()

@@ -14,32 +14,26 @@ namespace WebAPIUnitTests.ServiceTests.Data.Residents
         [TestMethod]
         public void GetOneByUnknownTagAndNoPropertiestToInclude()
         {
-            ActionExtensions.ShouldCatchNotFoundException(() =>
-                {
-                    var _ = CreateNewDataService().GetAsync(-1).Result;
-                },
+            ActionExtensions.ShouldCatchNotFoundException(
+                () => CreateNewDataService().GetAsync(-1).Wait(),
                 "the given tag address doesn't exist in the database");
         }
 
         [TestMethod]
         public void GetOneByUnknownTagAndEmptyPropertiesToInclude()
         {
-            ActionExtensions.ShouldCatchNotFoundException(() =>
-                {
-                    var _ = CreateNewDataService().GetAsync(-1, new Expression<Func<Resident, object>>[] { }).Result;
-                },
+            ActionExtensions.ShouldCatchNotFoundException(
+                () => CreateNewDataService().GetAsync(-1, new Expression<Func<Resident, object>>[] { }).Wait(),
                 "the given tag address doesn't exist in the database");
         }
 
         [TestMethod]
         public void GetOneByUnknownTagAndPropertiesToInclude()
         {
-            ActionExtensions.ShouldCatchNotFoundException(() =>
-                {
-                    var _ = CreateNewDataService()
-                        .GetAsync(-1, new Expression<Func<Resident, object>>[] {x => x.FirstName, x => x.LastName})
-                        .Result;
-                },
+            ActionExtensions.ShouldCatchNotFoundException(
+                () => CreateNewDataService()
+                    .GetAsync(-1, new Expression<Func<Resident, object>>[] {x => x.FirstName, x => x.LastName})
+                    .Wait(),
                 "the given tag address doesn't exist in the database");
         }
 

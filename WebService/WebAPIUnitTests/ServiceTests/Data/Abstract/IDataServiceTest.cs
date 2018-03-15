@@ -25,6 +25,7 @@
 
         void CreateNullItem();
         void CreateItem();
+        void CreateItemWithId();
 
 
         void RemoveUnknownItem();

@@ -3,7 +3,7 @@ using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MongoDB.Bson;
 using WebAPIUnitTests.TestHelpers.Extensions;
-using WebAPIUnitTests.TestMocks.Mock;
+using WebAPIUnitTests.TestModels;
 
 // ReSharper disable once CheckNamespace
 namespace WebAPIUnitTests.ServiceTests.Data.Abstract
@@ -15,16 +15,41 @@ namespace WebAPIUnitTests.ServiceTests.Data.Abstract
         [TestMethod]
         public void CreateNullItem()
         {
-            ActionExtensions.ShouldCatchArgumentNullException(() =>
-                {
-                    var _ = CreateNewDataService().CreateAsync(null).Result;
-                },
+            var dataService = CreateNewDataService();
+
+            ActionExtensions.ShouldCatchArgumentNullException(() => { dataService.CreateAsync(null).Wait(); },
                 "item",
                 "the item to create cannot be null");
+
+            dataService
+                .GetAll()
+                .Should()
+                .NotContainNulls("that should not happen");
         }
 
         [TestMethod]
         public void CreateItem()
+        {
+            var entity = new TestEntity
+            {
+                S = "Anna",
+                B = true
+            };
+
+            var dataService = CreateNewDataService();
+            var originalCount = dataService.GetAll().Count();
+
+            dataService.CreateAsync(entity).Wait();
+
+            dataService
+                .GetAll()
+                .Count()
+                .Should()
+                .NotBe(originalCount, "an item should have been added");
+        }
+
+        [TestMethod]
+        public void CreateItemWithId()
         {
             var id = ObjectId.GenerateNewId();
             var entity = new TestEntity
@@ -36,15 +61,12 @@ namespace WebAPIUnitTests.ServiceTests.Data.Abstract
 
             var dataService = CreateNewDataService();
 
-            dataService.CreateAsync(entity).Result
-                .Should()
-                .BeTrue("it is assigned in the create method of the service");
+            dataService.CreateAsync(entity).Wait();
 
             dataService.GetAll()
-                .First(x => x.S == entity.S && x.B == entity.B && x.I == entity.I)
-                .Id
+                .Where(x => x.S == entity.S && x.B == entity.B && x.I == entity.I)
                 .Should()
-                .NotBe(id);
+                .NotContain(x => x.Id == id, "the id should have changed");
         }
 
         #endregion ONE
