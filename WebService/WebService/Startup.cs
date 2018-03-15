@@ -9,6 +9,7 @@ using WebService.Models;
 using WebService.Services.Data;
 using WebService.Services.Data.Mock;
 using WebService.Services.Data.Mongo;
+using WebService.Services.Exceptions;
 using WebService.Services.Logging;
 
 namespace WebService
@@ -27,6 +28,7 @@ namespace WebService
         {
             services
                 .AddSingleton(typeof(ILogger), new LoggerCollection {new ConsoleLogger(), new FileLogger()})
+                .AddSingleton<IThrow, Throw>()
                 //.AddSingleton<IDataService<Resident>, MockResidentsService>()
                 //.AddSingleton<IDataService<ReceiverModule>, ReceiverModulesService>();
                 .AddSingleton<IDataService<Resident>, ResidentsService>()

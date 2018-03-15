@@ -8,11 +8,36 @@ using MongoDB.Bson;
 using MongoDB.Driver;
 using WebService.Helpers.Exceptions;
 using WebService.Models.Bases;
+using WebService.Services.Exceptions;
 
 namespace WebService.Services.Data.Mongo
 {
     public abstract class AMongoDataService<T> : IDataService<T> where T : IModelWithID
     {
+        #region FIELDS
+
+        /// <summary>
+        /// Throw is an object that handles exception throwing
+        /// </summary>
+        protected readonly IThrow Throw;
+
+        #endregion FIELDS
+
+
+        #region CONSTRUCTOR
+
+        /// <summary>
+        /// AMongoDataServcie creates an instance of the <see cref="AMongoDataService{T}"/> class
+        /// </summary>
+        /// <param name="iThrow">is the object that handles exception throwing</param>
+        protected AMongoDataService(IThrow iThrow)
+        {
+            Throw = iThrow;
+        }
+
+        #endregion CONSTRUCTOR
+
+
         #region PROPERTIES
 
         /// <summary>
@@ -37,12 +62,23 @@ namespace WebService.Services.Data.Mongo
         {
             // if the item is null, throw exception
             if (item == null)
-                throw new ArgumentNullException(nameof(item), "the item to create cannot be null");
+            {
+                Throw?.NullArgument(nameof(item));
+                return;
+            }
 
             // create a new id for the new item
             item.Id = ObjectId.GenerateNewId();
-            // save the new item to the database
-            await MongoCollection.InsertOneAsync(item);
+
+            try
+            {
+                // save the new item to the database
+                await MongoCollection.InsertOneAsync(item);
+            }
+            catch (Exception)
+            {
+                Throw.Database<T>(EDatabaseMethod.Create);
+            }
         }
 
         #endregion create
@@ -100,7 +136,10 @@ namespace WebService.Services.Data.Mongo
 
             // if there is no item with the given id, throw exception
             if (find.Count() <= 0)
-                throw new NotFoundException($"there is no {typeof(T).Name} with the id {id}");
+            {
+                Throw?.NotFound<T>(id);
+                return default(T);
+            }
 
             // if the properties are null or there are none, return all the properties
             if (propertiesToInclude == null)
@@ -133,15 +172,20 @@ namespace WebService.Services.Data.Mongo
         {
             // if the property to select is null, throw exception
             if (propertyToSelect == null)
-                throw new ArgumentNullException(nameof(propertyToSelect),
-                    "the property to select selector cannot be null");
+            {
+                Throw?.NullArgument(nameof(propertyToSelect));
+                return null;
+            }
 
             // get the item with the given id
             var find = MongoCollection.Find(x => x.Id == id);
 
             // if there is no item with the given id, throw exception
             if (find.Count() <= 0)
-                throw new NotFoundException($"no {typeof(T).Name} could be found with the id {id}");
+            {
+                Throw?.NotFound<T>(id);
+                return null;
+            }
 
             // create a property filter
             var selector = Builders<T>.Projection.Include(propertyToSelect);
@@ -184,7 +228,10 @@ namespace WebService.Services.Data.Mongo
 
             // if the new item is null, throw exception
             if (newItem == null)
-                throw new ArgumentNullException(nameof(newItem), "the item to update cannot be null");
+            {
+                Throw.NullArgument(nameof(newItem));
+                return;
+            }
 
             // create a filter that filters on id
             var filter = Builders<T>.Filter.Eq(x => x.Id, newItem.Id);
@@ -214,12 +261,14 @@ namespace WebService.Services.Data.Mongo
 
             // if the query is not acknowledged, throw exception
             if (!updateResult.IsAcknowledged)
-                throw new MongoException(
-                    $"the database could not update property of the {typeof(T).Name} with id {newItem.Id}");
+            {
+                Throw.Database<T>(EDatabaseMethod.Update, newItem.Id);
+                return;
+            }
 
             // if there is no item with the given id, throw exception
             if (updateResult.MatchedCount <= 0)
-                throw new NotFoundException($"the {typeof(T).Name} with id {newItem.Id} could not be found");
+                Throw.NotFound<T>(newItem.Id);
         }
 
         /// <summary>
@@ -233,19 +282,24 @@ namespace WebService.Services.Data.Mongo
         {
             // if the new item is null, throw exception
             if (newItem == null)
-                throw new ArgumentNullException(nameof(newItem), "the item to update cannot be null");
+            {
+                Throw.NullArgument(nameof(newItem));
+                return;
+            }
 
             // if there are no properties in the list, replace the document
             var replaceOneResult = await MongoCollection.ReplaceOneAsync(x => x.Id == newItem.Id, newItem);
 
             // if the query is not acknowledged, throw exception
             if (!replaceOneResult.IsAcknowledged)
-                throw new MongoException(
-                    $"the database could not update property of the {typeof(T).Name} with id {newItem.Id}");
+            {
+                Throw.Database<T>(EDatabaseMethod.Update, newItem.Id);
+                return;
+            }
 
             // if there is no item with the given id, throw exception
             if (replaceOneResult.MatchedCount <= 0)
-                throw new NotFoundException($"the {typeof(T).Name} with id {newItem.Id} could not be found");
+                Throw.NotFound<T>(newItem.Id);
         }
 
         /// <inheritdoc cref="IDataService{T}.UpdatePropertyAsync" />
@@ -265,8 +319,10 @@ namespace WebService.Services.Data.Mongo
         {
             // if there is no property to update, throw exception
             if (propertyToUpdate == null)
-                throw new ArgumentNullException(nameof(propertyToUpdate),
-                    "the property to update selector cannot be null");
+            {
+                Throw.NullArgument(nameof(propertyToUpdate));
+                return;
+            }
 
             // get the property to update
             var property = propertyToUpdate.Body is MemberExpression expression
@@ -277,14 +333,16 @@ namespace WebService.Services.Data.Mongo
 
             // if the property doesn't exist, throw exception
             if (property == null)
-                throw new ArgumentException($"the property could nod be found on object {typeof(T).Name}",
-                    nameof(propertyToUpdate));
+            {
+                Throw.PropertyNotKnown<T>("");
+                return;
+            }
 
             // if the value is not of the correct type, throw exception
             if (!property.PropertyType.IsInstanceOfType(value))
-                throw new ArgumentException(
-                    $"the value of type {value.GetType().Name} cannot be assigned to the property of type {property.PropertyType}",
-                    nameof(value));
+            {
+                Throw.WrongTypeArgument(value.GetType(), property.PropertyType);
+            }
 
             // create a filter that filters on id
             var filter = Builders<T>.Filter.Eq(x => x.Id, id);
@@ -296,12 +354,14 @@ namespace WebService.Services.Data.Mongo
 
             // if the query is not acknowledged, throw exception
             if (!updateResult.IsAcknowledged)
-                throw new MongoException(
-                    $"the database could not update property of the {typeof(T).Name} with id {id}");
+            {
+                Throw.Database<T>(EDatabaseMethod.Update, id);
+                return;
+            }
 
             // if there is no item with the given id, throw exception
             if (updateResult.MatchedCount <= 0)
-                throw new NotFoundException($"the {typeof(T).Name} with id {id} could not be found");
+                Throw.NotFound<T>(id);
         }
 
         #endregion update
@@ -318,15 +378,18 @@ namespace WebService.Services.Data.Mongo
         public async Task RemoveAsync(ObjectId id)
         {
             // remove the document from the database with the given id
-            var result = await MongoCollection.DeleteOneAsync(x => x.Id == id);
+            var deleteResult = await MongoCollection.DeleteOneAsync(x => x.Id == id);
 
             // if the query is not acknowledged, throw exception
-            if (!result.IsAcknowledged)
-                throw new MongoException("the delete request could not be acknowledged by the database");
+            if (!deleteResult.IsAcknowledged)
+            {
+                Throw.Database<T>(EDatabaseMethod.Update, id);
+                return;
+            }
 
-            // if there was no item deleted, throw exception
-            if (result.DeletedCount <= 0)
-                throw new NotFoundException($"there is no {typeof(T).Name} id {id}");
+            // if there is no item with the given id, throw exception
+            if (deleteResult.DeletedCount <= 0)
+                Throw.NotFound<T>(id);
         }
 
         #endregion delete

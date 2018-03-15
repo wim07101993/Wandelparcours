@@ -7,6 +7,7 @@ using Microsoft.Extensions.Configuration;
 using MongoDB.Driver;
 using WebService.Helpers.Exceptions;
 using WebService.Models;
+using WebService.Services.Exceptions;
 
 namespace WebService.Services.Data.Mongo
 {
@@ -21,13 +22,16 @@ namespace WebService.Services.Data.Mongo
     /// </summary>
     public class ReceiverModulesService : AMongoDataService<ReceiverModule>, IReceiverModulesService
     {
+        /// <inheritdoc cref="AMongoDataService{T}"/>
         /// <summary>
         /// ReceiverModulesService is the constructor to create an instance of the <see cref="ReceiverModulesService"/> class.
         /// <para/>
         /// The connection string, db name and collections that are used are stored in the IConfiguration dependency under the Database object.
         /// </summary>
-        /// <param name="config"></param>
-        public ReceiverModulesService(IConfiguration config)
+        /// <param name="config">are the configurations to get the database details from</param>
+        /// <param name="iThrow">is the object to throw exceptions</param>
+        public ReceiverModulesService(IConfiguration config, IThrow iThrow)
+            : base(iThrow)
         {
             MongoCollection =
                 // create a new client
@@ -60,14 +64,18 @@ namespace WebService.Services.Data.Mongo
         {
             // if the mac is null, throw exception
             if (mac == null)
-                throw new ArgumentNullException(nameof(mac), "the mac address cannot be null");
+            {
+                Throw.NotFound<ReceiverModule>(nameof(mac));
+            }
 
             // get the item with the given id
             var find = MongoCollection.Find(x => x.Mac == mac);
 
             // if there is no resident with the given id, throw exception
             if (find.Count() <= 0)
-                throw new NotFoundException($"the {typeof(ReceiverModule).Name} with mac address {mac} was not found");
+            {
+                Throw.NotFound<ReceiverModule>(nameof(mac));
+            }
 
             // if the properties are null or there are none, return all the properties
             if (propertiesToInclude == null)
@@ -97,21 +105,25 @@ namespace WebService.Services.Data.Mongo
         /// <exception cref="NotFoundException">when there was no item removed</exception>
         public async Task RemoveAsync(string mac)
         {
-            // if the mac address is null, throw exception
+            // if the mac is null, throw exception
             if (mac == null)
-                throw new ArgumentNullException(nameof(mac), "the mac address cannot be null");
+            {
+                Throw.NotFound<ReceiverModule>(nameof(mac));
+            }
 
             // remove the receiver module with the given mac from the database
-            var result = await MongoCollection.DeleteOneAsync(x => x.Mac == mac);
+            var deleteResult = await MongoCollection.DeleteOneAsync(x => x.Mac == mac);
 
             // if the query is not acknowledged, throw exception
-            if (!result.IsAcknowledged)
-                throw new MongoException(
-                    $"the {typeof(ReceiverModule).Name} with mac address {mac} could not be removed from the db");
+            if (!deleteResult.IsAcknowledged)
+            {
+                Throw.Database<ReceiverModule>(EDatabaseMethod.Update, mac);
+                return;
+            }
 
-            // if there is no item removed, throw exception
-            if (result.DeletedCount <= 0)
-                throw new NotFoundException($"the {typeof(ReceiverModule).Name} with mac address {mac} was not found");
+            // if there is no item with the given id, throw exception
+            if (deleteResult.DeletedCount <= 0)
+                Throw.NotFound<ReceiverModule>(mac);
         }
     }
 }

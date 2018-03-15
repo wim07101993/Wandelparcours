@@ -8,7 +8,7 @@ using WebService.Helpers.Exceptions;
 
 namespace WebService.Models
 {
-    public class FormFile
+    public class MultiPartFile
     {
         public IFormFile File { get; set; }
 

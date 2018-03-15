@@ -8,12 +8,13 @@ using WebAPIUnitTests.TestModels;
 using WebService.Helpers.Extensions;
 using WebService.Models;
 using WebService.Services.Data.Mongo;
+using WebService.Services.Exceptions;
 
 namespace WebAPIUnitTests.TestServices.ReceiverModules
 {
     public class TestMongoReceiverModulesService : ReceiverModulesService, ITestReceiverModulesService
     {
-        public TestMongoReceiverModulesService() : base(new TestConfiguration())
+        public TestMongoReceiverModulesService() : base(new TestConfiguration(), new Throw())
         {
             if (!GetAll().Any())
                 MongoCollection.InsertMany(TestData.TestReceiverModules);

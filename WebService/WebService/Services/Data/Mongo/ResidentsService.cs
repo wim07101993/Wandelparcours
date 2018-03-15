@@ -6,9 +6,8 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using MongoDB.Bson;
 using MongoDB.Driver;
-using WebService.Helpers.Exceptions;
 using WebService.Models;
-using WebService.Models.Bases;
+using WebService.Services.Exceptions;
 
 namespace WebService.Services.Data.Mongo
 {
@@ -23,13 +22,16 @@ namespace WebService.Services.Data.Mongo
     /// </summary>
     public class ResidentsService : AMongoDataService<Resident>, IResidentsService
     {
+        /// <inheritdoc cref="AMongoDataService{T}"/>
         /// <summary>
         /// ResidentsService is the constructor to create an instance of the <see cref="ResidentsService"/> class.
         /// <para/>
         /// The connection string, db name and collections that are used are stored in the IConfiguration dependency under the Database object.
         /// </summary>
-        /// <param name="config"></param>
-        public ResidentsService(IConfiguration config)
+        /// <param name="config">are the configurations to get the database details from</param>
+        /// <param name="iThrow">is the object to throw exceptions</param>
+        public ResidentsService(IConfiguration config, IThrow iThrow)
+            : base(iThrow)
         {
             MongoCollection =
                 // create a new client
@@ -66,7 +68,10 @@ namespace WebService.Services.Data.Mongo
 
             // if there is no resident with the given tag, throw NotFoundException
             if (findResult.Count() <= 0)
-                throw new NotFoundException($"no {typeof(Resident).Name} found with tag {tag}");
+            {
+                Throw?.NotFound<Resident>(tag);
+                return default(Resident);
+            }
 
             // if the properties to include are null, return all the properties
             if (propertiesToInclude == null)
@@ -102,7 +107,10 @@ namespace WebService.Services.Data.Mongo
         {
             // if the data is null, throw an exception
             if (data == null)
-                throw new ArgumentNullException(nameof(data), "data cannot be null");
+            {
+                Throw.NullArgument(nameof(data));
+                return;
+            }
 
             // add the media
             await AddMediaAsync(residentId, new MediaWithId {Id = ObjectId.GenerateNewId(), Data = data}, mediaType);
@@ -123,7 +131,10 @@ namespace WebService.Services.Data.Mongo
         {
             // if the url is null, throw an exception
             if (url == null)
-                throw new ArgumentNullException(nameof(url), "url cannot be null");
+            {
+                Throw.NullArgument(nameof(url));
+                return;
+            }
 
             // add the media
             await AddMediaAsync(residentId, new MediaWithId {Id = ObjectId.GenerateNewId(), Url = url}, mediaType);
@@ -185,7 +196,10 @@ namespace WebService.Services.Data.Mongo
 
             // if there was no resident that matched, throw exception
             if (resident == null)
-                throw new NotFoundException($"no {typeof(Resident).Name} found with id {residentId}");
+            {
+                Throw.NotFound<Resident>(residentId);
+                return null;
+            }
 
             // return the resident
             return resident;
@@ -235,7 +249,7 @@ namespace WebService.Services.Data.Mongo
 
             // if the resident did not have the media, throw exception
             if (!containsMedia)
-                throw new NotFoundException($"there is no media found with id {mediaId}");
+                Throw.NotFound<MediaWithId>(mediaId);
         }
 
         /// <inheritdoc cref="IResidentsService.RemoveMediaAsync" />
@@ -263,7 +277,10 @@ namespace WebService.Services.Data.Mongo
 
             // if there was no resident to match, throw exception
             if (resident == null)
-                throw new NotFoundException($"no {typeof(Resident).Name} found with id {residentId}");
+            {
+                Throw.NotFound<Resident>(residentId);
+                return null;
+            }
 
             // return the original resident
             return resident;
