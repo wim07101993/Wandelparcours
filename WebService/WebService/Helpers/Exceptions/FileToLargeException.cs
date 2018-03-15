@@ -2,32 +2,28 @@
 
 namespace WebService.Helpers.Exceptions
 {
-    /// <inheritdoc cref="Exception" />
-    /// <summary>
-    /// The exception that is thrown when a page or item cannot be found.
-    /// </summary>
-    public class NotFoundException : Exception
+    public class FileToLargeException : Exception
     {
         /// <inheritdoc cref="Exception()" />
         /// <summary>
-        /// Initializes a new instance of the <see cref="NotFoundException"></see> class.
+        /// Initializes a new instance of the <see cref="FileToLargeException"></see> class.
         /// </summary>
-        public NotFoundException()
+        public FileToLargeException()
         {
         }
 
         /// <inheritdoc cref="Exception(string)"/>
         /// <summary>
-        /// Initializes a new instance of the <see cref="NotFoundException"></see> class with a specified error message.
+        /// Initializes a new instance of the <see cref="FileToLargeException"></see> class with a specified error message.
         /// </summary>
         /// <param name="message">The error message that explains the reason for the exception.</param>
-        public NotFoundException(string message) : base(message)
+        public FileToLargeException(string message) : base(message)
         {
         }
 
         /// <inheritdoc cref="Exception(string, Exception)"/>
         /// <summary>
-        /// Initializes a new instance of the <see cref="NotFoundException"></see> class with a specified error message
+        /// Initializes a new instance of the <see cref="FileToLargeException"></see> class with a specified error message
         /// and a reference to the inner exception that is the cause of this exception.
         /// </summary>
         /// <param name="message">The error message that explains the reason for the exception.</param>
@@ -35,7 +31,7 @@ namespace WebService.Helpers.Exceptions
         /// The exception that is the cause of the current exception. If the innerException parameter is not a null reference, 
         /// the current exception is raised in a catch block that handles the inner exception.
         /// </param>
-        public NotFoundException(string message, Exception innerException) : base(message, innerException)
+        public FileToLargeException(string message, Exception innerException) : base(message, innerException)
         {
         }
     }

@@ -101,8 +101,8 @@ namespace WebService.Controllers
         /// <exception cref="NotFoundException">When the <see cref="residentId"/> cannot be parsed or <see cref="Resident"/> not found</exception>
         /// <exception cref="Exception">When the item could not be added</exception>
         [HttpPost("{residentId}/Music/data")]
-        public async Task AddMusicAsync(string residentId, [FromBody] byte[] musicData)
-            => await AddMediaAsync(residentId, musicData, EMediaType.Audio);
+        public async Task AddMusicAsync(string residentId, [FromForm] FormFile musicData)
+            => await AddMediaAsync(residentId, musicData, EMediaType.Audio, (int) 20e6);
 
         /// <inheritdoc cref="IResidentsController.AddMusicAsync(string,string)"/>
         /// <summary>
@@ -125,8 +125,8 @@ namespace WebService.Controllers
         /// <exception cref="NotFoundException">When the <see cref="residentId"/> cannot be parsed or <see cref="Resident"/> not found</exception>
         /// <exception cref="Exception">When the item could not be added</exception>
         [HttpPost("{residentId}/Videos/data")]
-        public async Task AddVideoAsync(string residentId, [FromBody] byte[] videoData)
-            => await AddMediaAsync(residentId, videoData, EMediaType.Video);
+        public async Task AddVideoAsync(string residentId, [FromForm] FormFile videoData)
+            => await AddMediaAsync(residentId, videoData, EMediaType.Video, (int) 1e9);
 
         /// <inheritdoc cref="IResidentsController.AddVideoAsync(string,string)"/>
         /// <summary>
@@ -150,24 +150,7 @@ namespace WebService.Controllers
         /// <exception cref="Exception">When the item could not be added</exception>
         [HttpPost("{residentId}/Images/data")]
         public async Task AddImageAsync(string residentId, [FromForm] FormFile imageData)
-        {
-            using (var stream = imageData.File.OpenReadStream())
-            {
-                if (!stream.CanRead)
-                    return;
-
-                const int maxFileLength = 20000000;
-                if (stream.Length > maxFileLength)
-                    throw new WebArgumentException(
-                        $"the file is to large it is {stream.Length} bytes and the maximum is {maxFileLength}");
-
-                var bytes = new List<byte>((int) stream.Length);
-                for (var i = 0; i < stream.Length; i++)
-                    bytes.Add((byte) stream.ReadByte());
-
-                await AddMediaAsync(residentId, bytes.ToArray(), EMediaType.Image);
-            }
-        }
+            => await AddMediaAsync(residentId, imageData, EMediaType.Image, (int) 20e6);
 
         /// <inheritdoc cref="IResidentsController.AddImageAsync(string,string)"/>
         /// <summary>
@@ -191,7 +174,14 @@ namespace WebService.Controllers
         /// <exception cref="Exception">When the item could not be added</exception>
         [HttpPost("{residentId}/Colors/data")]
         public async Task AddColorAsync(string residentId, [FromBody] byte[] colorData)
-            => await AddMediaAsync(residentId, colorData, EMediaType.Color);
+        {
+            // parse the id
+            if (!ObjectId.TryParse(residentId, out var residentObjectId))
+                // if it fails, throw not found exception
+                throw new NotFoundException($"The {typeof(Resident).Name} with id {residentId} could not be found");
+
+            await ((IResidentsService) DataService).AddMediaAsync(residentObjectId, colorData, EMediaType.Color);
+        }
 
         /// <inheritdoc cref="IResidentsController.AddColorAsync(string,string)"/>
         /// <summary>
@@ -211,17 +201,30 @@ namespace WebService.Controllers
         /// <param name="residentId">is the id of the <see cref="Resident"/></param>
         /// <param name="data">is the data to add to the <see cref="Resident"/>'s list</param>
         /// <param name="mediaType"></param>
+        /// <param name="maxFileSize"></param>
         /// <exception cref="NotFoundException">When the <see cref="residentId"/> cannot be parsed or <see cref="Resident"/> not found</exception>
         /// <exception cref="Exception">When the item could not be added</exception>
-        private async Task AddMediaAsync(string residentId, byte[] data, EMediaType mediaType)
+        private async Task AddMediaAsync(string residentId, FormFile data, EMediaType mediaType,
+            int maxFileSize = int.MaxValue)
         {
+            if (data?.File == null)
+                throw new WebArgumentException($"the file cannot be null", nameof(data));
+
             // parse the id
             if (!ObjectId.TryParse(residentId, out var residentObjectId))
                 // if it fails, throw not found exception
                 throw new NotFoundException($"The {typeof(Resident).Name} with id {residentId} could not be found");
 
-            // use the data service to create a new updater
-            await ((IResidentsService) DataService).AddMediaAsync(residentObjectId, data, mediaType);
+            try
+            {
+                var bytes = data.ConvertToBytes(maxFileSize);
+
+                await ((IResidentsService) DataService).AddMediaAsync(residentObjectId, bytes, mediaType);
+            }
+            catch (FileToLargeException e)
+            {
+                throw new WebArgumentException(e.Message, nameof(data));
+            }
         }
 
         /// <summary>

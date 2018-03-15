@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using WebAPIUnitTests.TestModels;
 using WebAPIUnitTests.TestServices.Abstract;
-using WebService.Helpers.Extensions;
 using WebService.Services.Logging;
 
 namespace WebAPIUnitTests.TestControllers
@@ -23,20 +22,14 @@ namespace WebAPIUnitTests.TestControllers
                 x => x.Id
             };
 
-        public override Expression<Func<TestEntity, object>> ConvertStringToSelector(
-            string propertyName)
+        public override IDictionary<string, Expression<Func<TestEntity, object>>> PropertySelectors { get; } = new Dictionary<string, Expression<Func<TestEntity, object>>>
         {
-            if (propertyName.EqualsWithCamelCasing(nameof(TestEntity.S)))
-                return x => x.S;
-            if (propertyName.EqualsWithCamelCasing(nameof(TestEntity.I)))
-                return x => x.I;
-            if (propertyName.EqualsWithCamelCasing(nameof(TestEntity.B)))
-                return x => x.B;
-
-            throw new ArgumentException(nameof(propertyName),
-                $"Property {propertyName} cannot be found on {typeof(TestEntity).Name}");
-        }
-
+            { nameof(TestEntity.S), x => x.S },
+            { nameof(TestEntity.I), x => x.I },
+            { nameof(TestEntity.B), x => x.B },
+            { nameof(TestEntity.Id), x => x.Id }
+        };
+        
         public IDictionary<string, Expression<Func<TestEntity, object>>> Selectors { get; set; } =
             new Dictionary<string, Expression<Func<TestEntity, object>>>
             {
