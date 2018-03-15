@@ -55,7 +55,7 @@ namespace WebService.Services.Data
         /// <param name="mediaId">is the id of media to remove</param>
         /// <param name="mediaType">is the type of media to remove</param>
         /// <exception cref="NotFoundException">when there is no <see cref="Resident"/> found with the given <see cref="AModelWithID.Id"/></exception>
-        /// <exception cref="NotFoundException">when there is no <see cref="MediaWithId"/> found with the given <see cref="AModelWithID.Id"/></exception>
+        /// <exception cref="NotFoundException">when there is no <see cref="MediaData"/> found with the given <see cref="AModelWithID.Id"/></exception>
         /// <exception cref="ArgumentOutOfRangeException">when the media type doesn't exist</exception>
         Task RemoveMediaAsync(ObjectId residentId, ObjectId mediaId, EMediaType mediaType);
     }

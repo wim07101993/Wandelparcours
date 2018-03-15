@@ -1,17 +1,19 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using WebAPIUnitTests.TestControllers.bases;
 using WebAPIUnitTests.TestServices.Residents;
 using WebService.Controllers;
 using WebService.Helpers.Extensions;
 using WebService.Models;
+using WebService.Services.Exceptions;
 using WebService.Services.Logging;
 
 namespace WebAPIUnitTests.TestControllers
 {
-    public class TestResidentsController : ResidentsController, ITestController<Resident>
+    public class TestResidentsController : ResidentsController, ITestResidentsController
     {
         public TestResidentsController()
-            : base(new TestResidentsService(), new ConsoleLogger())
+            : base(new Throw(), new TestResidentsService(), new ConsoleLogger())
         {
         }
 

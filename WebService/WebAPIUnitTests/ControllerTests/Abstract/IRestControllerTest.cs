@@ -2,12 +2,10 @@
 {
     public interface IRestControllerTest
     {
-        #region ConvertStringToSelector
+        #region PropertySelectors
 
-        void ConvertNullStringToSelector();
         void ConvertUnknownStringToSelector();
         void ConvertStringToSelector();
-
 
         void ConvertNullStringsToSelectors();
         void ConvertEmptyStringsToSelectors();
@@ -15,7 +13,7 @@
         void ConvertStringsToSelectorsWithSomeUnknownStrings();
         void ConvertStringsToSelectors();
 
-        #endregion ConvertStringToSelector
+        #endregion PropertySelectors
 
 
         #region Create

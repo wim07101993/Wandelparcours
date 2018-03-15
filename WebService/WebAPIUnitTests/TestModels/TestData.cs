@@ -21,12 +21,6 @@ namespace WebAPIUnitTests.TestModels
                 Id = new ObjectId("5a9566c58b9ed54db08d0ce7"),
                 FirstName = "Lea",
                 LastName = "Thuwis",
-                Colors = new List<MediaWithId>
-                {
-                    new MediaWithId {Id = ObjectId.GenerateNewId(), Data = new byte[] {137, 145, 25}},
-                    new MediaWithId {Id = ObjectId.GenerateNewId(), Data = new byte[] {255, 75, 65}},
-                    new MediaWithId {Id = ObjectId.GenerateNewId(), Data = new byte[] {200, 13, 46}}
-                },
                 Room = "AT109 A",
                 Birthday = new DateTime(1937, 4, 8),
                 Doctor = new Doctor

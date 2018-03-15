@@ -46,7 +46,7 @@ namespace WebService.Helpers.JsonConverters
         /// - false if this instance can not convert the specified object type (ObjectId is not assignable from the passed type)
         /// </returns>
         public override bool CanConvert(Type objectType) 
-            // return true if the tye ObjectId type is assignable from the passed type
+            // return true if the type ObjectId type is assignable from the passed type
             => typeof(ObjectId).IsAssignableFrom(objectType);
     }
 }

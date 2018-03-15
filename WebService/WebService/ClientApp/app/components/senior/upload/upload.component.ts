@@ -32,6 +32,7 @@ export class UploadComponent implements OnInit {
       for (const file in this.selectedFile) {
           const index = parseInt(file);
           if (!isNaN(index)) {
+              this.loading = "uploading...";
               const fd = new FormData();
               //console.log(this.selectedFile[index]);
               fd.append("File", this.selectedFile[index], this.selectedFile[index].name);

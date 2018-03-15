@@ -10,6 +10,7 @@ using WebService.Helpers.Exceptions;
 using WebService.Helpers.Extensions;
 using WebService.Models.Bases;
 using WebService.Services.Data;
+using WebService.Services.Exceptions;
 using WebService.Services.Logging;
 
 namespace WebService.Controllers.Bases
@@ -23,6 +24,8 @@ namespace WebService.Controllers.Bases
     public abstract class ARestControllerBase<T> : Controller, IRestController<T> where T : IModelWithID
     {
         #region FIELDS
+
+        protected readonly IThrow Throw;
 
         /// <summary>
         /// _dataService is used to handle the data traffic to and from the database.
@@ -44,9 +47,10 @@ namespace WebService.Controllers.Bases
         /// </summary>
         /// <param name="dataService">is a service to handle the database connection</param>
         /// <param name="logger">is a service to handle the logging of messages</param>
-        protected ARestControllerBase(IDataService<T> dataService, ILogger logger)
+        protected ARestControllerBase(IThrow iThrow, IDataService<T> dataService, ILogger logger)
         {
             // initiate the services
+            Throw = iThrow;
             DataService = dataService;
             Logger = logger;
         }
@@ -79,7 +83,9 @@ namespace WebService.Controllers.Bases
         /// <returns>An <see cref="Func{TInput,TResult}"/> that contains the converted selector</returns>
         /// <exception cref="WebArgumentException">When the property could not be converted to a selector</exception>
         public IEnumerable<Expression<Func<T, object>>> ConvertStringsToSelectors(IEnumerable<string> propertyNames)
-            => propertyNames.Select(x => PropertySelectors.FirstOrDefault(y => y.Key.EqualsWithCamelCasing(x)).Value);
+            => propertyNames
+                .Select(x => PropertySelectors.FirstOrDefault(y => y.Key.EqualsWithCamelCasing(x)).Value
+                             ?? throw new WebArgumentException("property not known", nameof(propertyNames)));
 
 
         #region create

@@ -8,6 +8,7 @@ using WebService.Helpers.Exceptions;
 using WebService.Helpers.Extensions;
 using WebService.Models;
 using WebService.Services.Data;
+using WebService.Services.Exceptions;
 using WebService.Services.Logging;
 
 namespace WebService.Controllers
@@ -27,8 +28,8 @@ namespace WebService.Controllers
         /// </summary>
         /// <param name="dataService">is a service to handle the database connection</param>
         /// <param name="logger">is a service to handle the logging of messages</param>
-        public ReceiverModulesController(IDataService<ReceiverModule> dataService, ILogger logger)
-            : base(dataService, logger)
+        public ReceiverModulesController(IThrow iThrow, IDataService<ReceiverModule> dataService, ILogger logger)
+            : base(iThrow, dataService, logger)
         {
         }
 
@@ -48,17 +49,17 @@ namespace WebService.Controllers
         public override IDictionary<string, Expression<Func<ReceiverModule, object>>> PropertySelectors { get; } =
             new Dictionary<string, Expression<Func<ReceiverModule, object>>>
             {
-                {nameof(ReceiverModule.Mac), x => x.Mac },
-                {nameof(ReceiverModule.Id), x => x.Id },
-                {nameof(ReceiverModule.IsActive), x => x.IsActive },
-                {nameof(ReceiverModule.Position), x => x.Position },
+                {nameof(ReceiverModule.Mac), x => x.Mac},
+                {nameof(ReceiverModule.Id), x => x.Id},
+                {nameof(ReceiverModule.IsActive), x => x.IsActive},
+                {nameof(ReceiverModule.Position), x => x.Position},
             };
 
         #endregion PROPERTIES
 
 
         #region METHODS
-        
+
         #region post (create)
 
         /// <inheritdoc cref="ARestControllerBase{T}.CreateAsync" />

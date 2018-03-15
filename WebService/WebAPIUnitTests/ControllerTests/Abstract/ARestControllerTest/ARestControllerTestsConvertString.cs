@@ -7,22 +7,16 @@ namespace WebAPIUnitTests.ControllerTests.Abstract
     // ReSharper disable once UnusedTypeParameter
     public partial class ARestControllerTests<T>
     {
-        #region ConvertStringToSelector
-
-        [TestMethod]
-        public void ConvertNullStringToSelector()
-        {
-            ActionExtensions.ShouldCatchWebArgumentException(
-                () => CreateNewController().ConvertStringToSelector(null),
-                "propertyName",
-                "the propertyNames cannot be null");
-        }
+        #region PropertySelectors
 
         [TestMethod]
         public void ConvertUnknownStringToSelector()
         {
             ActionExtensions.ShouldCatchWebArgumentException(
-                () => CreateNewController().ConvertStringToSelector("1randomProperty"),
+                () =>
+                {
+                    var _ = CreateNewController().PropertySelectors["1randomProperty"];
+                },
                 "propertyName",
                 "the property doesn't exist");
         }
@@ -30,7 +24,7 @@ namespace WebAPIUnitTests.ControllerTests.Abstract
         [TestMethod]
         public abstract void ConvertStringToSelector();
 
-        #endregion ConvertStringToSelector
+        #endregion PropertySelectors
 
 
         #region ConvertStringsToSelectors
