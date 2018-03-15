@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using WebService.Controllers;
-using WebService.Helpers.Extensions;
+﻿using WebService.Helpers;
 using WebService.Models.Bases;
 
 namespace WebService.Models
@@ -12,10 +9,11 @@ namespace WebService.Models
 
         public string Url
         {
-            get => _url ?? typeof(MediaController)
-                       .GetMethods()
-                       .FirstOrDefault(x => x.Name == nameof(MediaController.GetAsync) && x.GetParameters().Length == 2)
-                       .GetUrl<MediaController>(new Dictionary<string, string> {{"id", Id.ToString()}});
+            get => _url ?? $"{IPAddressHelper.GetIPAddress()}/media/{Id}";
+            //get => _url ?? typeof(MediaController)
+            //           .GetMethods()
+            //           .FirstOrDefault(x => x.Name == nameof(MediaController.GetAsync) && x.GetParameters().Length == 2)
+            //           .GetUrl<MediaController>(new Dictionary<string, string> {{"id", Id.ToString()}});
             set => _url = value;
         }
     }
