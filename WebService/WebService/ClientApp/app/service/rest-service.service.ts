@@ -123,7 +123,7 @@ export class RestServiceService {
     //MEDIA//
     /////////
 
-    addImagesToDatabase(uniqueIdentifier: any,images: any, options: any = null) {
+    addImagesToDatabase(uniqueIdentifier: any, images: any) {
         return new Promise(resolve => {
             this.http.post(this.restUrl + 'api/v1/residents/' + uniqueIdentifier + '/images/data', images).subscribe(response => {
                 console.log(images);
@@ -139,7 +139,8 @@ export class RestServiceService {
 
     getImagesOfResidentBasedOnId(uniqueIdentifier: string) {
         return new Promise<Resident[]>(resolve => {
-            this.http.get(this.restUrl + 'api/v1/residents/' + uniqueIdentifier + '/images').subscribe(response => {
+            this.http.get(this.restUrl + 'api/v1/residents/' + uniqueIdentifier + '/images', {
+            }).subscribe(response => {
                 resolve(<Resident[]>response.json());
             },
                 error => {

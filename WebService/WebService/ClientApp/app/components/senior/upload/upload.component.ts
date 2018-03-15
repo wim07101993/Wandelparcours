@@ -1,6 +1,9 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { RestServiceService } from '../../../service/rest-service.service';
 import { ActivatedRoute } from '@angular/router';
+import { RequestOptions } from '@angular/http';
+
+declare var $: any;
 
 @Component({
   selector: 'app-upload',
@@ -10,9 +13,10 @@ import { ActivatedRoute } from '@angular/router';
 export class UploadComponent implements OnInit {
     id: string = this.route.snapshot.params['id'];
     @Input() type: string;
-    fd: FormData = new FormData();
-    selectedFile: File;
-    blob: Blob;
+    fd: FormData;
+    selectedFile: any;
+    loading: string = "";
+    images: any;
 
     constructor(private restService: RestServiceService, private route: ActivatedRoute) {}
 
@@ -20,19 +24,31 @@ export class UploadComponent implements OnInit {
   }
 
   onFileSelected(event: any) {
-      this.selectedFile = <File>event.target.files[0];
-      console.log(this.selectedFile);
+      this.loading = "Upload"
+      this.selectedFile = <any>event.target.files;   
   }
 
   async onUpload() {
-      this.fd.append('images/data', this.selectedFile, this.selectedFile.name);
-      this.blob = new Blob()
-      console.log(this.fd);
-      //let headers = new Headers();
-      //let options = new RequestOptions({ headers: headers });    
-      //await this.service.addImagesToDatabase(this.id, new Blob([JSON.stringify(this.selectedFile.name)], { type: "application/json"}));
-      let images = this.restService.addImagesToDatabase(this.id, this.fd);
-      //console.log(images);
+      for (const file in this.selectedFile) {
+          const index = parseInt(file);
+          if (!isNaN(index)) {
+              const fd = new FormData();
+              //console.log(this.selectedFile[index]);
+              fd.append("File", this.selectedFile[index], this.selectedFile[index].name);
+              console.log(fd);
+              this.images = await this.restService.addImagesToDatabase(this.id, fd);
+              
+          }
+          
+      }
+      if (this.images) {
+          this.loading = "Uploaded!"
+      }
+      
+
+      this.selectedFile = [];
+
+
   }    
 
 

@@ -101,7 +101,7 @@ namespace WebService.Controllers
         /// <exception cref="NotFoundException">When the <see cref="residentId"/> cannot be parsed or <see cref="Resident"/> not found</exception>
         /// <exception cref="Exception">When the item could not be added</exception>
         [HttpPost("{residentId}/Music/data")]
-        public async Task AddMusicAsync(string residentId, [FromForm] FormFile musicData)
+        public async Task AddMusicAsync(string residentId, [FromForm] MultiPartFile musicData)
             => await AddMediaAsync(residentId, musicData, EMediaType.Audio, (int) 20e6);
 
         /// <inheritdoc cref="IResidentsController.AddMusicAsync(string,string)"/>
@@ -125,7 +125,7 @@ namespace WebService.Controllers
         /// <exception cref="NotFoundException">When the <see cref="residentId"/> cannot be parsed or <see cref="Resident"/> not found</exception>
         /// <exception cref="Exception">When the item could not be added</exception>
         [HttpPost("{residentId}/Videos/data")]
-        public async Task AddVideoAsync(string residentId, [FromForm] FormFile videoData)
+        public async Task AddVideoAsync(string residentId, [FromForm] MultiPartFile videoData)
             => await AddMediaAsync(residentId, videoData, EMediaType.Video, (int) 1e9);
 
         /// <inheritdoc cref="IResidentsController.AddVideoAsync(string,string)"/>
@@ -149,7 +149,7 @@ namespace WebService.Controllers
         /// <exception cref="NotFoundException">When the <see cref="residentId"/> cannot be parsed or <see cref="Resident"/> not found</exception>
         /// <exception cref="Exception">When the item could not be added</exception>
         [HttpPost("{residentId}/Images/data")]
-        public async Task AddImageAsync(string residentId, [FromForm] FormFile imageData)
+        public async Task AddImageAsync(string residentId, [FromForm] MultiPartFile imageData)
             => await AddMediaAsync(residentId, imageData, EMediaType.Image, (int) 20e6);
 
         /// <inheritdoc cref="IResidentsController.AddImageAsync(string,string)"/>
@@ -204,7 +204,7 @@ namespace WebService.Controllers
         /// <param name="maxFileSize"></param>
         /// <exception cref="NotFoundException">When the <see cref="residentId"/> cannot be parsed or <see cref="Resident"/> not found</exception>
         /// <exception cref="Exception">When the item could not be added</exception>
-        private async Task AddMediaAsync(string residentId, FormFile data, EMediaType mediaType,
+        private async Task AddMediaAsync(string residentId, MultiPartFile data, EMediaType mediaType,
             int maxFileSize = int.MaxValue)
         {
             if (data?.File == null)

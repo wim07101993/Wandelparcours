@@ -13,7 +13,6 @@ declare var $: any;
 })
 export class PictureComponent implements OnInit {
     typeOfMedia: string;
-    fd: FormData = new FormData();
     ngOnInit() { }
 
 

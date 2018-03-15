@@ -6,9 +6,21 @@ export class Resident {
     room: string
     birthday: Date
     doctor: Doctor
+    images: Images
+    videos: Videos
 }
 
 export class Doctor {
     name: string
     phoneNumber: string
+}
+
+export class Images {
+    id: string
+    url: string
+}
+
+export class Videos {
+    id: string
+    url: string
 }
