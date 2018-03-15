@@ -61,28 +61,25 @@ namespace WebService.Controllers.Bases
         /// </summary>
         public abstract IEnumerable<Expression<Func<T, object>>> PropertiesToSendOnGetAll { get; }
 
+        /// <summary>
+        /// PropertySelectors should return an <see cref="IDictionary{TKey,TValue}"/> with as keys the property names
+        /// and as values the selectors.
+        /// </summary>
+        public abstract IDictionary<string, Expression<Func<T, object>>> PropertySelectors { get; }
+
         #endregion PROPERTIES
 
 
         #region METHODS
 
         /// <summary>
-        /// ConvertStringToSelector should convert a property name to it's selector in the form of a
-        /// <see cref="Func{TInput,TResult}"/>
-        /// </summary>
-        /// <param name="propertyName">is the property name to convert to a selector</param>
-        /// <returns>An <see cref="Func{TInput,TResult}"/> that contains the converted selector</returns>
-        /// <exception cref="WebArgumentException">When the property could not be converted to a selector</exception>
-        public abstract Expression<Func<T, object>> ConvertStringToSelector(string propertyName);
-
-        /// <summary>
-        /// ConvertStringToSelector converts property names to their selectors in the form of <see cref="Func{TInput,TResult}"/>
+        /// PropertySelectors converts property names to their selectors in the form of <see cref="Func{TInput,TResult}"/>
         /// </summary>
         /// <param name="propertyNames">are the property names to convert to a selector</param>
         /// <returns>An <see cref="Func{TInput,TResult}"/> that contains the converted selector</returns>
         /// <exception cref="WebArgumentException">When the property could not be converted to a selector</exception>
         public IEnumerable<Expression<Func<T, object>>> ConvertStringsToSelectors(IEnumerable<string> propertyNames)
-            => propertyNames.Select(ConvertStringToSelector);
+            => propertyNames.Select(x => PropertySelectors[x]);
 
 
         #region create
@@ -180,7 +177,7 @@ namespace WebService.Controllers.Bases
                 throw new NotFoundException($"The {typeof(T).Name} with id {id} could not be found");
 
             // get the property from the database
-            return await DataService.GetPropertyAsync(objectId, ConvertStringToSelector(propertyName));
+            return await DataService.GetPropertyAsync(objectId, PropertySelectors[propertyName]);
         }
 
         #endregion read
@@ -240,7 +237,8 @@ namespace WebService.Controllers.Bases
             {
                 // if it fails, throw web argument exception
                 throw new WebArgumentException(
-                    $"The passed jsonValue is not assignable to the property {propertyName} of type {typeof(T).Name}", jsonValue);
+                    $"The passed jsonValue is not assignable to the property {propertyName} of type {typeof(T).Name}",
+                    jsonValue);
             }
 
 
@@ -249,7 +247,7 @@ namespace WebService.Controllers.Bases
                 throw new NotFoundException($"The {typeof(T).Name} with id {id} could not be found");
 
             // update the property int the database
-            await DataService.UpdatePropertyAsync(objectId, ConvertStringToSelector(propertyName), value);
+            await DataService.UpdatePropertyAsync(objectId, PropertySelectors[propertyName], value);
         }
 
         #endregion update
@@ -270,7 +268,7 @@ namespace WebService.Controllers.Bases
                 throw new NotFoundException($"The {typeof(T).Name} with id {id} could not be found");
 
             // use the data service to remove the item
-           await DataService.RemoveAsync(objectId);
+            await DataService.RemoveAsync(objectId);
         }
 
         #endregion delete

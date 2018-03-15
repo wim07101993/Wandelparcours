@@ -43,37 +43,22 @@ namespace WebService.Controllers
         /// consume the least space (in this case all of them => value is null).
         /// </summary>
 
-        public override IEnumerable<Expression<Func<ReceiverModule, object>>> PropertiesToSendOnGetAll { get; }
+        public override IEnumerable<Expression<Func<ReceiverModule, object>>> PropertiesToSendOnGetAll { get; } = null;
+
+        public override IDictionary<string, Expression<Func<ReceiverModule, object>>> PropertySelectors { get; } =
+            new Dictionary<string, Expression<Func<ReceiverModule, object>>>
+            {
+                {nameof(ReceiverModule.Mac), x => x.Mac },
+                {nameof(ReceiverModule.Id), x => x.Id },
+                {nameof(ReceiverModule.IsActive), x => x.IsActive },
+                {nameof(ReceiverModule.Position), x => x.Position },
+            };
 
         #endregion PROPERTIES
 
 
         #region METHODS
-
-        /// <inheritdoc cref="ARestControllerBase{T}.ConvertStringToSelector" />
-        /// <summary>
-        /// ConvertStringToSelector converts a property name to it's selector in the form of a <see cref="Func{TInput,TResult}"/>
-        /// </summary>
-        /// <param name="propertyName">is the property name to convert to a selector</param>
-        /// <returns>An <see cref="Func{TInput,TResult}"/> that contains the converted selector</returns>
-        /// <exception cref="WebArgumentException">When the property could not be converted to a selector</exception>
-        public override Expression<Func<ReceiverModule, object>> ConvertStringToSelector(string propertyName)
-        {
-            // if the name of a properties matches a property of a Value, 
-            // add the corresponding selector
-            if (propertyName.EqualsWithCamelCasing(nameof(ReceiverModule.IsActive)))
-                return x => x.IsActive;
-            if (propertyName.EqualsWithCamelCasing(nameof(ReceiverModule.Mac)))
-                return x => x.Mac;
-            if (propertyName.EqualsWithCamelCasing(nameof(ReceiverModule.Position)))
-                return x => x.Position;
-            if (propertyName.EqualsWithCamelCasing(nameof(ReceiverModule.Id)))
-                return x => x.Id;
-
-            throw new WebArgumentException(
-                $"Property {propertyName} cannot be found on {typeof(ReceiverModule).Name}", nameof(propertyName));
-        }
-
+        
         #region post (create)
 
         /// <inheritdoc cref="ARestControllerBase{T}.CreateAsync" />
@@ -137,7 +122,7 @@ namespace WebService.Controllers
         /// Get is supposed to return all the Items in the database. 
         /// To limit data traffic it is possible to select only a number of property.
         /// <para/>
-        /// By default only the properties in the selector <see cref="PropertiesForSmallDataTraffic"/> are returned.
+        /// By default only the properties in the selector <see cref="PropertiesToSendOnGetAll"/> are returned.
         /// </summary>
         /// <param name="propertiesToInclude">are the properties of which the values should be returned</param>
         /// <returns>All <see cref="ReceiverModule"/>s in the database but only the given properties are filled in</returns>

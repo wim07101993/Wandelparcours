@@ -56,54 +56,29 @@ namespace WebService.Controllers
                 x => x.Doctor,
             };
 
+        public override IDictionary<string, Expression<Func<Resident, object>>> PropertySelectors { get; } =
+            new Dictionary<string, Expression<Func<Resident, object>>>
+            {
+                {nameof(Resident.Birthday), x => x.Birthday},
+                {nameof(Resident.Colors), x => x.Colors},
+                {nameof(Resident.Doctor), x => x.Doctor},
+                {nameof(Resident.FirstName), x => x.FirstName},
+                {nameof(Resident.Images), x => x.Images},
+                {nameof(Resident.LastName), x => x.LastName},
+                {nameof(Resident.LastRecordedPosition), x => x.LastRecordedPosition},
+                {nameof(Resident.Locations), x => x.Locations},
+                {nameof(Resident.Music), x => x.Music},
+                {nameof(Resident.Picture), x => x.Picture},
+                {nameof(Resident.Room), x => x.Room},
+                {nameof(Resident.Tags), x => x.Tags},
+                {nameof(Resident.Videos), x => x.Videos},
+                {nameof(Resident.Id), x => x.Id}
+            };
+
         #endregion PROPERTIES
 
 
         #region METHODS
-
-        /// <inheritdoc cref="ARestControllerBase{T}.ConvertStringToSelector" />
-        /// <summary>
-        /// ConvertStringToSelector converts a property name to it's selector in the form of a <see cref="Func{TInput,TResult}"/>
-        /// </summary>
-        /// <param name="propertyName">is the property name to convert to a selector</param>
-        /// <returns>An <see cref="Func{TInput,TResult}"/> that contains the converted selector</returns>
-        /// <exception cref="WebArgumentException">When the property could not be converted to a selector</exception>
-        public override Expression<Func<Resident, object>> ConvertStringToSelector(string propertyName)
-        {
-            // if the name of a properties matches a property of a Value, 
-            // add the corresponding selector
-            if (propertyName.EqualsWithCamelCasing(nameof(Resident.Birthday)))
-                return x => x.Birthday;
-            if (propertyName.EqualsWithCamelCasing(nameof(Resident.Colors)))
-                return x => x.Colors;
-            if (propertyName.EqualsWithCamelCasing(nameof(Resident.Doctor)))
-                return x => x.Doctor;
-            if (propertyName.EqualsWithCamelCasing(nameof(Resident.FirstName)))
-                return x => x.FirstName;
-            if (propertyName.EqualsWithCamelCasing(nameof(Resident.Images)))
-                return x => x.Images;
-            if (propertyName.EqualsWithCamelCasing(nameof(Resident.LastName)))
-                return x => x.LastName;
-            if (propertyName.EqualsWithCamelCasing(nameof(Resident.LastRecordedPosition)))
-                return x => x.LastRecordedPosition;
-            if (propertyName.EqualsWithCamelCasing(nameof(Resident.Locations)))
-                return x => x.Locations;
-            if (propertyName.EqualsWithCamelCasing(nameof(Resident.Music)))
-                return x => x.Music;
-            if (propertyName.EqualsWithCamelCasing(nameof(Resident.Picture)))
-                return x => x.Picture;
-            if (propertyName.EqualsWithCamelCasing(nameof(Resident.Room)))
-                return x => x.Room;
-            if (propertyName.EqualsWithCamelCasing(nameof(Resident.Tags)))
-                return x => x.Tags;
-            if (propertyName.EqualsWithCamelCasing(nameof(Resident.Videos)))
-                return x => x.Videos;
-            if (propertyName.EqualsWithCamelCasing(nameof(Resident.Id)))
-                return x => x.Id;
-
-            throw new WebArgumentException(
-                $"Property {propertyName} cannot be found on {typeof(Resident).Name}", nameof(propertyName));
-        }
 
         #region post (create)
 
@@ -174,8 +149,25 @@ namespace WebService.Controllers
         /// <exception cref="NotFoundException">When the <see cref="residentId"/> cannot be parsed or <see cref="Resident"/> not found</exception>
         /// <exception cref="Exception">When the item could not be added</exception>
         [HttpPost("{residentId}/Images/data")]
-        public async Task AddImageAsync(string residentId, [FromBody] dynamic imageData)
-            => await AddMediaAsync(residentId, imageData, EMediaType.Image);
+        public async Task AddImageAsync(string residentId, [FromForm] FormFile imageData)
+        {
+            using (var stream = imageData.File.OpenReadStream())
+            {
+                if (!stream.CanRead)
+                    return;
+
+                const int maxFileLength = 20000000;
+                if (stream.Length > maxFileLength)
+                    throw new WebArgumentException(
+                        $"the file is to large it is {stream.Length} bytes and the maximum is {maxFileLength}");
+
+                var bytes = new List<byte>((int) stream.Length);
+                for (var i = 0; i < stream.Length; i++)
+                    bytes.Add((byte) stream.ReadByte());
+
+                await AddMediaAsync(residentId, bytes.ToArray(), EMediaType.Image);
+            }
+        }
 
         /// <inheritdoc cref="IResidentsController.AddImageAsync(string,string)"/>
         /// <summary>
