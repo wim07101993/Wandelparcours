@@ -58,7 +58,7 @@ namespace WebService.Services.Data.Mongo
         /// </summary>
         /// <param name="item">is the <see cref="T"/> to save in the database</param>
         /// <exception cref="ArgumentNullException">when the item to create is null</exception>
-        public async Task CreateAsync(T item)
+        public virtual async Task CreateAsync(T item)
         {
             // if the item is null, throw exception
             if (item == null)
@@ -95,7 +95,7 @@ namespace WebService.Services.Data.Mongo
         /// </summary>
         /// <param name="propertiesToInclude">are the properties that should be included in the objects</param>
         /// <returns>An <see cref="IEnumerable{T}"/> filled with all the items in the database.</returns>
-        public async Task<IEnumerable<T>> GetAsync(IEnumerable<Expression<Func<T, object>>> propertiesToInclude = null)
+        public virtual async Task<IEnumerable<T>> GetAsync(IEnumerable<Expression<Func<T, object>>> propertiesToInclude = null)
         {
             // get all the items
             var foundItems = MongoCollection.Find(FilterDefinition<T>.Empty);
@@ -129,7 +129,7 @@ namespace WebService.Services.Data.Mongo
         /// <param name="propertiesToInclude">are the properties that should be included in the objects</param>
         /// <returns>An <see cref="IEnumerable{T}"/> filled with all the ts in the database.</returns>
         /// <exception cref="NotFoundException">when there is no item found with the given id</exception>
-        public async Task<T> GetAsync(ObjectId id, IEnumerable<Expression<Func<T, object>>> propertiesToInclude = null)
+        public virtual async Task<T> GetAsync(ObjectId id, IEnumerable<Expression<Func<T, object>>> propertiesToInclude = null)
         {
             // get the item with the given id
             var find = MongoCollection.Find(x => x.Id == id);
@@ -168,7 +168,7 @@ namespace WebService.Services.Data.Mongo
         /// <returns>The value of the asked property</returns>
         /// <exception cref="ArgumentNullException">when the property to select is null</exception>
         /// <exception cref="NotFoundException">when there is no item with the given id</exception>
-        public async Task<object> GetPropertyAsync(ObjectId id, Expression<Func<T, object>> propertyToSelect)
+        public virtual async Task<object> GetPropertyAsync(ObjectId id, Expression<Func<T, object>> propertyToSelect)
         {
             // if the property to select is null, throw exception
             if (propertyToSelect == null)
@@ -216,7 +216,7 @@ namespace WebService.Services.Data.Mongo
         /// <exception cref="ArgumentNullException">when the new item is null</exception>
         /// <exception cref="MongoException">when the query was not acknowledged</exception>
         /// <exception cref="NotFoundException">when there was no item with the same id as the newItem</exception>
-        public async Task UpdateAsync(T newItem,
+        public virtual async Task UpdateAsync(T newItem,
             IEnumerable<Expression<Func<T, object>>> propertiesToUpdate = null)
         {
             // if there are no properties to update, replace the old item with the new
@@ -278,7 +278,7 @@ namespace WebService.Services.Data.Mongo
         /// <exception cref="ArgumentNullException">when the new item is null</exception>
         /// <exception cref="MongoException">when the query was not acknowledged</exception>
         /// <exception cref="NotFoundException">when there was no item with the same id as the newItem</exception>
-        private async Task ReplaceAsync(T newItem)
+        protected virtual async Task ReplaceAsync(T newItem)
         {
             // if the new item is null, throw exception
             if (newItem == null)
@@ -314,7 +314,7 @@ namespace WebService.Services.Data.Mongo
         /// <exception cref="ArgumentException">when the value is of the wrong type</exception>
         /// <exception cref="MongoException">when the query was not acknowledged</exception>
         /// <exception cref="NotFoundException">when there was no item with the same id as the newItem</exception>
-        public async Task UpdatePropertyAsync(ObjectId id, Expression<Func<T, object>> propertyToUpdate,
+        public virtual async Task UpdatePropertyAsync(ObjectId id, Expression<Func<T, object>> propertyToUpdate,
             object value)
         {
             // if there is no property to update, throw exception
@@ -375,7 +375,7 @@ namespace WebService.Services.Data.Mongo
         /// <param name="id">is the id of the <see cref="T"/> to remove in the database</param>
         /// <exception cref="MongoException">when the query was not acknowledged</exception>
         /// <exception cref="NotFoundException">when there was no item to remove</exception>
-        public async Task RemoveAsync(ObjectId id)
+        public virtual async Task RemoveAsync(ObjectId id)
         {
             // remove the document from the database with the given id
             var deleteResult = await MongoCollection.DeleteOneAsync(x => x.Id == id);

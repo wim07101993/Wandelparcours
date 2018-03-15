@@ -14,7 +14,8 @@ namespace WebAPIUnitTests.TestServices.Residents
 {
     public class TestMongoResidentsService : ResidentsService, ITestResidentsService
     {
-        public TestMongoResidentsService() : base(new TestConfiguration(), new Throw())
+        public TestMongoResidentsService() : base(new TestConfiguration(),
+            new Throw(), new MediaService(new TestConfiguration(), new Throw()))
         {
             if (!GetAll().Any())
                 MongoCollection.InsertMany(TestData.TestResidents);

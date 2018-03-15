@@ -6,7 +6,9 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using MongoDB.Bson;
 using MongoDB.Driver;
+using WebService.Helpers.Exceptions;
 using WebService.Models;
+using WebService.Models.Bases;
 using WebService.Services.Exceptions;
 
 namespace WebService.Services.Data.Mongo
@@ -22,6 +24,8 @@ namespace WebService.Services.Data.Mongo
     /// </summary>
     public class ResidentsService : AMongoDataService<Resident>, IResidentsService
     {
+        private readonly IMediaService _mediaService;
+
         /// <inheritdoc cref="AMongoDataService{T}"/>
         /// <summary>
         /// ResidentsService is the constructor to create an instance of the <see cref="ResidentsService"/> class.
@@ -30,9 +34,12 @@ namespace WebService.Services.Data.Mongo
         /// </summary>
         /// <param name="config">are the configurations to get the database details from</param>
         /// <param name="iThrow">is the object to throw exceptions</param>
-        public ResidentsService(IConfiguration config, IThrow iThrow)
+        /// <param name="mediaService"></param>
+        public ResidentsService(IConfiguration config, IThrow iThrow, IMediaService mediaService)
             : base(iThrow)
         {
+            _mediaService = mediaService;
+
             MongoCollection =
                 // create a new client
                 new MongoClient(config["Database:ConnectionString"])
@@ -94,15 +101,15 @@ namespace WebService.Services.Data.Mongo
 
         /// <inheritdoc cref="IResidentsService.AddMediaAsync(ObjectId,byte[],EMediaType)" />
         /// <summary>
-        /// AddMediaAsync adds the <see cref="data"/> as media of the type <see cref="mediaType"/> to the <see cref="Resident"/>
+        /// AddMediaAsync adds the <see cref="data"/> as mediaData of the type <see cref="mediaType"/> to the <see cref="Resident"/>
         /// with as <see cref="Resident.Id"/> the passed <see cref="residentId"/>.
         /// </summary>
         /// <param name="residentId">is the id of the <see cref="Resident"/></param>
-        /// <param name="data">is the data of the media to add</param>
-        /// <param name="mediaType">is the type of media to add</param>
+        /// <param name="data">is the data of the mediaData to add</param>
+        /// <param name="mediaType">is the type of mediaData to add</param>
         /// <exception cref="ArgumentNullException">when the data is null</exception>
         /// <exception cref="NotFoundException">when there is no <see cref="Resident"/> found with the given <see cref="AModelWithID.Id"/></exception>
-        /// <exception cref="ArgumentOutOfRangeException">when the media type doesn't exist</exception>
+        /// <exception cref="ArgumentOutOfRangeException">when the mediaData type doesn't exist</exception>
         public async Task AddMediaAsync(ObjectId residentId, byte[] data, EMediaType mediaType)
         {
             // if the data is null, throw an exception
@@ -112,21 +119,24 @@ namespace WebService.Services.Data.Mongo
                 return;
             }
 
-            // add the media
-            await AddMediaAsync(residentId, new MediaWithId {Id = ObjectId.GenerateNewId(), Data = data}, mediaType);
+            var mediaId = ObjectId.GenerateNewId();
+            await _mediaService.CreateAsync(new MediaData {Id = mediaId, Data = data});
+
+            // add the mediaData
+            await AddMediaAsync(residentId, new MediaUrl {Id = ObjectId.GenerateNewId()}, mediaType);
         }
 
         /// <inheritdoc cref="IResidentsService.AddMediaAsync(ObjectId,string,EMediaType)" />
         /// <summary>
-        /// AddMediaAsync adds the <see cref="url"/> as media of the type <see cref="mediaType"/> to the <see cref="Resident"/>
+        /// AddMediaAsync adds the <see cref="url"/> as mediaData of the type <see cref="mediaType"/> to the <see cref="Resident"/>
         /// with as <see cref="Resident.Id"/> the passed <see cref="residentId"/>.
         /// </summary>
-        /// <param name="residentId">is the id of the <see cref="Resident"/> add the media to</param>
-        /// <param name="url">is the url to the media to add</param>
-        /// <param name="mediaType">is the type of media to add</param>
+        /// <param name="residentId">is the id of the <see cref="Resident"/> add the mediaData to</param>
+        /// <param name="url">is the url to the mediaData to add</param>
+        /// <param name="mediaType">is the type of mediaData to add</param>
         /// <exception cref="ArgumentNullException">when the url is null</exception>
         /// <exception cref="NotFoundException">when there is no <see cref="Resident"/> found with the given <see cref="AModelWithID.Id"/></exception>
-        /// <exception cref="ArgumentOutOfRangeException">when the media type doesn't exist</exception>
+        /// <exception cref="ArgumentOutOfRangeException">when the mediaData type doesn't exist</exception>
         public async Task AddMediaAsync(ObjectId residentId, string url, EMediaType mediaType)
         {
             // if the url is null, throw an exception
@@ -136,35 +146,32 @@ namespace WebService.Services.Data.Mongo
                 return;
             }
 
-            // add the media
-            await AddMediaAsync(residentId, new MediaWithId {Id = ObjectId.GenerateNewId(), Url = url}, mediaType);
+            // add the mediaData
+            await AddMediaAsync(residentId, new MediaUrl {Id = ObjectId.GenerateNewId(), Url = url}, mediaType);
         }
 
         /// <summary>
-        /// AddMediaAsync adds the <see cref="media"/> of the type <see cref="mediaType"/> to the <see cref="Resident"/>
+        /// AddMediaAsync adds the <see cref="mediaUrl"/> of the type <see cref="mediaType"/> to the <see cref="Resident"/>
         /// with as <see cref="Resident.Id"/> the passed <see cref="residentId"/>.
         /// </summary>
-        /// <param name="residentId">is the id of the <see cref="Resident"/> add the media to</param>
-        /// <param name="media">is the media to add</param>
-        /// <param name="mediaType">is the type of media to add</param>
+        /// <param name="residentId">is the id of the <see cref="Resident"/> add the mediaData to</param>
+        /// <param name="mediaUrl">is the media to add</param>
+        /// <param name="mediaType">is the type of mediaData to add</param>
         /// <exception cref="NotFoundException">when there is no <see cref="Resident"/> found with the given <see cref="AModelWithID.Id"/></exception>
-        /// <exception cref="ArgumentOutOfRangeException">when the media type doesn't exist</exception>
-        private async Task AddMediaAsync(ObjectId residentId, MediaWithId media, EMediaType mediaType)
+        /// <exception cref="ArgumentOutOfRangeException">when the mediaData type doesn't exist</exception>
+        private async Task AddMediaAsync(ObjectId residentId, MediaUrl mediaUrl, EMediaType mediaType)
         {
-            // check the media type and add the respectively media.
+            // check the mediaData type and add the respectively mediaData.
             switch (mediaType)
             {
                 case EMediaType.Audio:
-                    await AddMediaAsync(residentId, x => x.Music, media);
+                    await AddMediaAsync(residentId, x => x.Music, mediaUrl);
                     break;
                 case EMediaType.Video:
-                    await AddMediaAsync(residentId, x => x.Videos, media);
+                    await AddMediaAsync(residentId, x => x.Videos, mediaUrl);
                     break;
                 case EMediaType.Image:
-                    await AddMediaAsync(residentId, x => x.Images, media);
-                    break;
-                case EMediaType.Color:
-                    await AddMediaAsync(residentId, x => x.Colors, media);
+                    await AddMediaAsync(residentId, x => x.Images, mediaUrl);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(mediaType), mediaType, null);
@@ -172,24 +179,24 @@ namespace WebService.Services.Data.Mongo
         }
 
         /// <summary>
-        /// AddMediaAsync is supposed to add the <see cref="media"/> to the <see cref="Resident"/> with as <see cref="Resident.Id"/> 
+        /// AddMediaAsync is supposed to add the <see cref="mediaUrl"/> to the <see cref="Resident"/> with as <see cref="Resident.Id"/> 
         /// the passed <see cref="residentId"/>.
         /// <para/>
-        /// The property to add the media to is selected using the <see cref="selector"/>.
+        /// The property to add the mediaData to is selected using the <see cref="selector"/>.
         /// </summary>
-        /// <param name="residentId">is the id of the <see cref="Resident"/> add the media to</param>
-        /// <param name="selector">is the selector to select what property the media should be added to</param>
-        /// <param name="media">is the media to add</param>
-        /// <returns>the <see cref="Resident"/> tho which the media has been added in the state before the change</returns>
+        /// <param name="residentId">is the id of the <see cref="Resident"/> add the mediaData to</param>
+        /// <param name="selector">is the selector to select what property the mediaData should be added to</param>
+        /// <param name="mediaUrl">is the media to add</param>
+        /// <returns>the <see cref="Resident"/> tho which the mediaData has been added in the state before the change</returns>
         /// <exception cref="NotFoundException">when there is no <see cref="Resident"/> found with the given <see cref="AModelWithID.Id"/></exception>
         private async Task<Resident> AddMediaAsync(ObjectId residentId,
-            Expression<Func<Resident, IEnumerable<MediaWithId>>> selector, MediaWithId media)
+            Expression<Func<Resident, IEnumerable<MediaUrl>>> selector, MediaUrl mediaUrl)
         {
             // create a filter to get the right resident
             var filter = Builders<Resident>.Filter.Eq(x => x.Id, residentId);
 
-            // create updater to add media to the resident
-            var updater = Builders<Resident>.Update.Push(selector, media);
+            // create updater to add mediaData to the resident
+            var updater = Builders<Resident>.Update.Push(selector, mediaUrl);
 
             // execute the query with the filter and updater
             var resident = await MongoCollection.FindOneAndUpdateAsync(filter, updater);
@@ -207,28 +214,28 @@ namespace WebService.Services.Data.Mongo
 
         /// <inheritdoc cref="IResidentsService.RemoveMediaAsync" />
         /// <summary>
-        /// RemoveMediaAsync removes the media of type <see cref="mediaType"/> with as id <see cref="mediaId"/> of the
+        /// RemoveMediaAsync removes the mediaData of type <see cref="mediaType"/> with as id <see cref="mediaId"/> of the
         /// <see cref="Resident"/> with as id <see cref="residentId"/>.
         /// </summary>
-        /// <param name="residentId">is the id of the <see cref="Resident"/> to remove the media from</param>
-        /// <param name="mediaId">is the id of media to remove</param>
-        /// <param name="mediaType">is the type of media to remove</param>
+        /// <param name="residentId">is the id of the <see cref="Resident"/> to remove the mediaData from</param>
+        /// <param name="mediaId">is the id of mediaData to remove</param>
+        /// <param name="mediaType">is the type of mediaData to remove</param>
         /// <exception cref="NotFoundException">when there is no <see cref="Resident"/> found with the given <see cref="AModelWithID.Id"/></exception>
-        /// <exception cref="NotFoundException">when there is no <see cref="MediaWithId"/> found with the given <see cref="AModelWithID.Id"/></exception>
-        /// <exception cref="ArgumentOutOfRangeException">when the media type doesn't exist</exception>
+        /// <exception cref="NotFoundException">when there is no <see cref="MediaData"/> found with the given <see cref="AModelWithID.Id"/></exception>
+        /// <exception cref="ArgumentOutOfRangeException">when the mediaData type doesn't exist</exception>
         public async Task RemoveMediaAsync(ObjectId residentId, ObjectId mediaId, EMediaType mediaType)
         {
             // declare variables
             Resident resident;
             bool containsMedia;
 
-            // check the media type and remove the respectively media
+            // check the mediaData type and remove the respectively mediaData
             switch (mediaType)
             {
                 case EMediaType.Audio:
-                    // remove the media
+                    // remove the mediaData
                     resident = await RemoveMediaAsync(residentId, x => x.Music, mediaId);
-                    // check if the original resident had the media with the given id
+                    // check if the original resident had the mediaData with the given id
                     containsMedia = resident.Music.Any(x => x.Id == mediaId);
                     break;
                 case EMediaType.Video:
@@ -239,38 +246,36 @@ namespace WebService.Services.Data.Mongo
                     resident = await RemoveMediaAsync(residentId, x => x.Images, mediaId);
                     containsMedia = resident.Images.Any(x => x.Id == mediaId);
                     break;
-                case EMediaType.Color:
-                    resident = await RemoveMediaAsync(residentId, x => x.Colors, mediaId);
-                    containsMedia = resident.Colors.Any(x => x.Id == mediaId);
-                    break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(mediaType), mediaType, null);
             }
 
-            // if the resident did not have the media, throw exception
+            // if the resident did not have the mediaData, throw exception
             if (!containsMedia)
-                Throw.NotFound<MediaWithId>(mediaId);
+                Throw.NotFound<MediaData>(mediaId);
         }
 
         /// <inheritdoc cref="IResidentsService.RemoveMediaAsync" />
         /// <summary>
-        /// RemoveMediaAsync to removes the media with as id <see cref="mediaId"/> of the <see cref="Resident"/> with as id <see cref="residentId"/>.
+        /// RemoveMediaAsync to removes the mediaData with as id <see cref="mediaId"/> of the <see cref="Resident"/> with as id <see cref="residentId"/>.
         /// <para/>
-        /// The property to remove the media from is selected using the <see cref="selector"/>.
+        /// The property to remove the mediaData from is selected using the <see cref="selector"/>.
         /// </summary>
-        /// <param name="residentId">is the id of the <see cref="Resident"/> to remove the media from</param>
-        /// <param name="selector">is the selector to select what property the media should be removed from</param>
-        /// <param name="mediaId">is the id to the media to remove</param>
-        /// <returns>the <see cref="Resident"/> as it was before the media was removed</returns>
+        /// <param name="residentId">is the id of the <see cref="Resident"/> to remove the mediaData from</param>
+        /// <param name="selector">is the selector to select what property the mediaData should be removed from</param>
+        /// <param name="mediaId">is the id to the mediaData to remove</param>
+        /// <returns>the <see cref="Resident"/> as it was before the mediaData was removed</returns>
         private async Task<Resident> RemoveMediaAsync(ObjectId residentId,
-            Expression<Func<Resident, IEnumerable<MediaWithId>>> selector, ObjectId mediaId)
+            Expression<Func<Resident, IEnumerable<MediaUrl>>> selector, ObjectId mediaId)
         {
+            await _mediaService.RemoveAsync(mediaId);
+
             // create filter to select the correct resident
             var filter = Builders<Resident>.Filter.Eq(x => x.Id, residentId);
 
-            // create updater to remove the correct media
+            // create updater to remove the correct mediaData
             var updater = Builders<Resident>.Update.PullFilter(
-                selector, Builders<MediaWithId>.Filter.Eq(x => x.Id, mediaId));
+                selector, Builders<MediaUrl>.Filter.Eq(x => x.Id, mediaId));
 
             // execute the query
             var resident = await MongoCollection.FindOneAndUpdateAsync(filter, updater);

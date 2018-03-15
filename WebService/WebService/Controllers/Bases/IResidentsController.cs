@@ -118,7 +118,7 @@ namespace WebService.Controllers.Bases
         /// <param name="residentId">is the id of the <see cref="Resident"/></param>
         /// <param name="musicId">is the id of the music to remove from the <see cref="Resident"/>'s music list</param>
         /// <exception cref="NotFoundException">
-        /// When the <see cref="residentId"/>/<see cref="musicId"/> cannot be parsed or <see cref="Resident"/>/<see cref="MediaWithId"/> not found
+        /// When the <see cref="residentId"/>/<see cref="musicId"/> cannot be parsed or <see cref="Resident"/>/<see cref="MediaData"/> not found
         /// </exception>
         /// <exception cref="Exception">When the item could not be removed</exception>
         Task RemoveMusicAsync(string residentId, string musicId);
@@ -129,7 +129,7 @@ namespace WebService.Controllers.Bases
         /// <param name="residentId">is the id of the <see cref="Resident"/></param>
         /// <param name="videoId">is the id of the video to remove from the <see cref="Resident"/>'s video list</param>
         /// <exception cref="NotFoundException">
-        /// When the <see cref="residentId"/>/<see cref="videoId"/> cannot be parsed or <see cref="Resident"/>/<see cref="MediaWithId"/> not found
+        /// When the <see cref="residentId"/>/<see cref="videoId"/> cannot be parsed or <see cref="Resident"/>/<see cref="MediaData"/> not found
         /// </exception>
         /// <exception cref="Exception">When the item could not be removed</exception>
         Task RemoveVideoAsync(string residentId, string videoId);
@@ -140,7 +140,7 @@ namespace WebService.Controllers.Bases
         /// <param name="residentId">is the id of the <see cref="Resident"/></param>
         /// <param name="imageId">is the id of the image to remove from the <see cref="Resident"/>'s image list</param>
         /// <exception cref="NotFoundException">
-        /// When the <see cref="residentId"/>/<see cref="imageId"/> cannot be parsed or <see cref="Resident"/>/<see cref="MediaWithId"/> not found
+        /// When the <see cref="residentId"/>/<see cref="imageId"/> cannot be parsed or <see cref="Resident"/>/<see cref="MediaData"/> not found
         /// </exception>
         /// <exception cref="Exception">When the item could not be removed</exception>
         Task RemoveImageAsync(string residentId, string imageId);
@@ -151,7 +151,7 @@ namespace WebService.Controllers.Bases
         /// <param name="residentId">is the id of the <see cref="Resident"/></param>
         /// <param name="colorId">is the id of the color to remove from the <see cref="Resident"/>'s color list</param>
         /// <exception cref="NotFoundException">
-        /// When the <see cref="residentId"/>/<see cref="colorId"/> cannot be parsed or <see cref="Resident"/>/<see cref="MediaWithId"/> not found
+        /// When the <see cref="residentId"/>/<see cref="colorId"/> cannot be parsed or <see cref="Resident"/>/<see cref="MediaData"/> not found
         /// </exception>
         /// <exception cref="Exception">When the item could not be removed</exception>
         Task RemoveColorAsync(string residentId, string colorId);

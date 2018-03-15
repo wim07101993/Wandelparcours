@@ -111,19 +111,21 @@ namespace WebService.Controllers
                 Throw.NotFound<Resident>(residentId);
             }
 
-            await ((IResidentsService) DataService).AddMediaAsync(residentObjectId, colorData, EMediaType.Color);
+            // TODO
         }
 
         [HttpPost("{residentId}/Colors/url")]
         public async Task AddColorAsync(string residentId, [FromBody] string url)
-            => await AddMediaAsync(residentId, url, EMediaType.Color);
+        {
+            // TODO
+        }
 
         private async Task AddMediaAsync(string residentId, MultiPartFile data, EMediaType mediaType,
             int maxFileSize = int.MaxValue)
         {
             if (data?.File == null)
             {
-                Throw.NullArgumentWeb(nameof(data));
+                Throw.NullArgument(nameof(data));
                 return;
             }
 
@@ -143,7 +145,7 @@ namespace WebService.Controllers
             }
             catch (FileToLargeException)
             {
-                Throw.FileToLarge(nameof(data), maxFileSize);
+                Throw.FileToLarge(maxFileSize);
             }
         }
 
@@ -231,7 +233,9 @@ namespace WebService.Controllers
 
         [HttpDelete("{residentId}/Colors")]
         public async Task RemoveColorAsync(string residentId, string colorId)
-            => await RemoveMediaAsync(residentId, colorId, EMediaType.Color);
+        {
+            // TODO
+        }
 
         private async Task RemoveMediaAsync(string residentId, string mediaId, EMediaType mediaType)
         {
@@ -247,7 +251,7 @@ namespace WebService.Controllers
             if (!ObjectId.TryParse(mediaId, out var mediaObjectId))
             {
                 // if it fails, throw not found exception
-                Throw.NotFound<MediaWithId>(mediaId);
+                Throw.NotFound<MediaData>(mediaId);
                 return;
             }
 
