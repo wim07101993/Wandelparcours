@@ -79,7 +79,7 @@ namespace WebService.Controllers.Bases
         /// <returns>An <see cref="Func{TInput,TResult}"/> that contains the converted selector</returns>
         /// <exception cref="WebArgumentException">When the property could not be converted to a selector</exception>
         public IEnumerable<Expression<Func<T, object>>> ConvertStringsToSelectors(IEnumerable<string> propertyNames)
-            => propertyNames.Select(x => PropertySelectors[x]);
+            => propertyNames.Select(x => PropertySelectors.FirstOrDefault(y => y.Key.EqualsWithCamelCasing(x)).Value);
 
 
         #region create
