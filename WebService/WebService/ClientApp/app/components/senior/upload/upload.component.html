@@ -1,4 +1,4 @@
 <div>
-    <input type="file" (change)="onFileSelected($event)" [accept]="type" />
+    <input type="file" (change)="onFileSelected($event)" multiple [accept]="type" />
     <button class="btn btn-primary" (click)="onUpload()">Upload</button>
 </div>
