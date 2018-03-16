@@ -1,6 +1,9 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using FluentAssertions;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
+using WebAPIUnitTests.TestHelpers.Extensions;
 using WebService.Controllers;
+using WebService.Helpers.Exceptions;
 using WebService.Models;
 using WebService.Services.Data;
 using WebService.Services.Exceptions;
@@ -16,7 +19,8 @@ namespace WebAPIUnitTests.ControllerTests.MediaControllerTests
             var controller = new MediaController(new Throw(), new Mock<IDataService<MediaData>>().Object,
                 new ConsoleLogger());
 
-            
+            controller.CreateAsync(null)
+                .ShouldCatchArgumentException<WebArgumentNullException>("item", "the item to create cannot be null");
         }
 
         [TestMethod]

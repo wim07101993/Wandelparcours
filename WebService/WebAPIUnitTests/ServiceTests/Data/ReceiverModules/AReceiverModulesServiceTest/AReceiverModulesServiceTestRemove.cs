@@ -11,7 +11,7 @@ namespace WebAPIUnitTests.ServiceTests.Data.ReceiverModules
         [TestMethod]
         public void RemoveNullMac()
         {
-            ActionExtensions.ShouldCatchException<WebArgumentNullException>(
+            ActionExtensions.ShouldCatchArgumentException<WebArgumentNullException>(
                 () => CreateNewDataService().RemoveAsync(null).Wait(),
                 "mac",
                 "the mac address cannot be null");

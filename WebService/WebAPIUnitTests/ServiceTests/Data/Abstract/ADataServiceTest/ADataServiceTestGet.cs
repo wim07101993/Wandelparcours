@@ -216,7 +216,7 @@ namespace WebAPIUnitTests.ServiceTests.Data.Abstract
         [TestMethod]
         public void GetPropertyWithUnknownIdAndNoProperty()
         {
-            ActionExtensions.ShouldCatchException<WebArgumentNullException>(
+            ActionExtensions.ShouldCatchArgumentException<WebArgumentNullException>(
                 () => CreateNewDataService()
                     .GetPropertyAsync(ObjectId.GenerateNewId(), null)
                     .Wait(),
@@ -239,7 +239,7 @@ namespace WebAPIUnitTests.ServiceTests.Data.Abstract
         {
             var dataService = CreateNewDataService();
 
-            ActionExtensions.ShouldCatchException<WebArgumentNullException>(
+            ActionExtensions.ShouldCatchArgumentException<WebArgumentNullException>(
                 () => dataService.GetPropertyAsync(dataService.GetFirst().Id, null).Wait(),
                 "propertyToSelect",
                 "the selector cannot be null");

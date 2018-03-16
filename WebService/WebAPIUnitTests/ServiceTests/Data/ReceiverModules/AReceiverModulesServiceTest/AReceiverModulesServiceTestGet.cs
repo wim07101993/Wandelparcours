@@ -14,7 +14,7 @@ namespace WebAPIUnitTests.ServiceTests.Data.ReceiverModules
         [TestMethod]
         public void GetOneWithNullMacAndNoPropertiestToInclude()
         {
-            ActionExtensions.ShouldCatchException<WebArgumentNullException>(
+            ActionExtensions.ShouldCatchArgumentException<WebArgumentNullException>(
                 () => CreateNewDataService().GetAsync(null).Wait(),
                 "mac",
                 "the mac address cannot be null");
@@ -23,7 +23,7 @@ namespace WebAPIUnitTests.ServiceTests.Data.ReceiverModules
         [TestMethod]
         public void GetOneWithNullMacAndEmptyPropertiesToInclude()
         {
-            ActionExtensions.ShouldCatchException<WebArgumentNullException>(
+            ActionExtensions.ShouldCatchArgumentException<WebArgumentNullException>(
                 () => CreateNewDataService().GetAsync(null, new Expression<Func<ReceiverModule, object>>[] { })
                     .Wait(),
                 "mac",
@@ -33,7 +33,7 @@ namespace WebAPIUnitTests.ServiceTests.Data.ReceiverModules
         [TestMethod]
         public void GetOneWithNullMacAndPropertiesToInclude()
         {
-            ActionExtensions.ShouldCatchException<WebArgumentNullException>(
+            ActionExtensions.ShouldCatchArgumentException<WebArgumentNullException>(
                 () => CreateNewDataService()
                     .GetAsync(null, new Expression<Func<ReceiverModule, object>>[] {x => x.Position})
                     .Wait(),

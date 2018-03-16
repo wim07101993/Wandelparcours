@@ -18,7 +18,7 @@ namespace WebAPIUnitTests.ServiceTests.Data.Abstract
         {
             var dataService = CreateNewDataService();
 
-            ActionExtensions.ShouldCatchException<WebArgumentNullException>(() => { dataService.CreateAsync(null).Wait(); },
+            ActionExtensions.ShouldCatchArgumentException<WebArgumentNullException>(() => { dataService.CreateAsync(null).Wait(); },
                 "item",
                 "the item to create cannot be null");
 
