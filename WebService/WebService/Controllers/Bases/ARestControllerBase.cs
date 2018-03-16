@@ -45,6 +45,7 @@ namespace WebService.Controllers.Bases
         /// <summary>
         /// ARestControllerBase creates an instance of the <see cref="ARestControllerBase{T}"/> class. 
         /// </summary>
+        /// <param name="iThrow"></param>
         /// <param name="dataService">is a service to handle the database connection</param>
         /// <param name="logger">is a service to handle the logging of messages</param>
         protected ARestControllerBase(IThrow iThrow, IDataService<T> dataService, ILogger logger)
@@ -84,8 +85,15 @@ namespace WebService.Controllers.Bases
         /// <exception cref="WebArgumentException">When the property could not be converted to a selector</exception>
         public IEnumerable<Expression<Func<T, object>>> ConvertStringsToSelectors(IEnumerable<string> propertyNames)
             => propertyNames
-                .Select(x => PropertySelectors.FirstOrDefault(y => y.Key.EqualsWithCamelCasing(x)).Value
-                             ?? throw new WebArgumentException("property not known", nameof(propertyNames)));
+                .Select(x =>
+                {
+                    var selector = PropertySelectors.FirstOrDefault(y => y.Key.EqualsWithCamelCasing(x)).Value;
+                    if (selector != null)
+                        return selector;
+
+                    Throw.PropertyNotKnown<T>(x);
+                    return null;
+                });
 
 
         #region create

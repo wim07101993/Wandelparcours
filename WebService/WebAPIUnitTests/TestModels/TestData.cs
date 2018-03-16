@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using MongoDB.Bson;
 using WebService.Models;
+using WebService.Services.Randomizer;
 
 namespace WebAPIUnitTests.TestModels
 {
@@ -122,6 +123,60 @@ namespace WebAPIUnitTests.TestModels
                     Y = 0.392156862745098,
                 }
             },
+        };
+
+        public static List<MediaData> TestMediaData { get; } = new List<MediaData>
+        {
+            new MediaData
+            {
+                Id = ObjectId.GenerateNewId(),
+                Data = Randomizer.Instance.Next(new byte[10])
+            },
+            new MediaData
+            {
+                Id = ObjectId.GenerateNewId(),
+                Data = Randomizer.Instance.Next(new byte[10])
+            },
+            new MediaData
+            {
+                Id = ObjectId.GenerateNewId(),
+                Data = Randomizer.Instance.Next(new byte[10])
+            },
+            new MediaData
+            {
+                Id = ObjectId.GenerateNewId(),
+                Data = Randomizer.Instance.Next(new byte[10])
+            },
+            new MediaData
+            {
+                Id = ObjectId.GenerateNewId(),
+                Data = Randomizer.Instance.Next(new byte[10])
+            },
+            new MediaData
+            {
+                Id = ObjectId.GenerateNewId(),
+                Data =Randomizer.Instance.Next(new byte[10])
+            },
+            new MediaData
+            {
+                Id = ObjectId.GenerateNewId(),
+                Data = Randomizer.Instance.Next(new byte[10])
+            },
+            new MediaData
+            {
+                Id = ObjectId.GenerateNewId(),
+                Data = Randomizer.Instance.Next(new byte[10])
+            },
+            new MediaData
+            {
+                Id = ObjectId.GenerateNewId(),
+                Data = Randomizer.Instance.Next(new byte[10])
+            },
+            new MediaData
+            {
+                Id = ObjectId.GenerateNewId(),
+                Data = Randomizer.Instance.Next(new byte[10])
+            }
         };
     }
 }

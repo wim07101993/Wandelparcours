@@ -12,7 +12,7 @@ namespace WebService.Services.Exceptions
                 $"the property with name {propertyName} could not be found on {typeof(T).Name}");
 
         public void NullArgument(string parameterName)
-            => throw new WebArgumentException($"The argument {parameterName} cannot be null", parameterName);
+            => throw new WebArgumentNullException($"The argument {parameterName} cannot be null", parameterName);
 
         public void WrongTypeArgument(Type propertyType, Type valueType)
             => throw new WrongArgumentTypeException(

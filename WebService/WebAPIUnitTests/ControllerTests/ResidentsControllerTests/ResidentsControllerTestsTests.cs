@@ -2,6 +2,7 @@
 
 namespace WebAPIUnitTests.ControllerTests.ResidentsControllerTests
 {
+    [TestClass]
     public class ResidentsControllerTestsTests : IResidentsControllerTests
     {
         #region CREATE
