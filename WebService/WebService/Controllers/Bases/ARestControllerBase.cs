@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Bson;
@@ -104,10 +105,17 @@ namespace WebService.Controllers.Bases
         /// </summary>
         /// <param name="item">is the <see cref="T"/> to save in the database</param>
         /// <exception cref="Exception">When the item could not be created</exception>
-        public virtual async Task CreateAsync([FromBody] T item)
+        public virtual async Task<StatusCodeResult> CreateAsync([FromBody] T item)
         {
+            if (item == null)
+            {
+                Throw.NullArgument("item");
+                return null;
+            }
+
             // use the data service to create a new item
             await DataService.CreateAsync(item);
+            return StatusCode((int) HttpStatusCode.Created);
         }
 
         #endregion create

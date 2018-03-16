@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
+using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using WebService.Controllers.Bases;
@@ -51,12 +52,12 @@ namespace WebService.Controllers
         #region post (create)
 
         [HttpPost]
-        public override async Task CreateAsync([FromBody] ReceiverModule item)
+        public override async Task<StatusCodeResult> CreateAsync([FromBody] ReceiverModule item)
         {
             if (item == null)
             {
                 Throw.NullArgument(nameof(item));
-                return;
+                return null;
             }
 
             if (item.Position == null)
@@ -64,6 +65,7 @@ namespace WebService.Controllers
 
             item.Position.TimeStamp = DateTime.Now;
             await base.CreateAsync(item);
+            return StatusCode((int) HttpStatusCode.Created);
         }
 
         #endregion post (create)

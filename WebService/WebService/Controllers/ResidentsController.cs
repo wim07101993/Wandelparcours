@@ -74,7 +74,7 @@ namespace WebService.Controllers
         #region post (create)
 
         [HttpPost]
-        public override Task CreateAsync([FromBody] Resident item)
+        public override Task<StatusCodeResult> CreateAsync([FromBody] Resident item)
             => base.CreateAsync(item);
 
         [HttpPost("{residentId}/Music/data")]
