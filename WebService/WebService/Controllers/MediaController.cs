@@ -12,7 +12,7 @@ using WebService.Services.Logging;
 namespace WebService.Controllers
 {
     [Route("api/v1/[controller]")]
-    public class MediaController : ARestControllerBase<MediaData>
+    public class MediaController : ARestControllerBase<MediaData>, IMediaController
     {
         public MediaController(IThrow iThrow, IDataService<MediaData> dataService, ILogger logger) : base(iThrow,
             dataService, logger)
