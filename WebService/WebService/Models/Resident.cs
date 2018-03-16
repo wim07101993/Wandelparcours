@@ -31,12 +31,12 @@ namespace WebService.Models
         public string LastName { get; set; }
 
         /// <summary>
-        /// Picture is a picture of the Value
+        /// ImagePicture is a picture of the Value
         /// <para/>
         /// In the database the value is stored under the field "picture"
         /// </summary>
         [BsonElement("picture")]
-        public byte[] Picture { get; set; } = { };
+        public byte[] ImagePicture { get; set; } = { };
 
         /// <summary>
         /// Room is the room of the Value

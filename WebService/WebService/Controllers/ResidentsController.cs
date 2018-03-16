@@ -58,7 +58,7 @@ namespace WebService.Controllers
                 {nameof(Resident.LastRecordedPosition), x => x.LastRecordedPosition},
                 {nameof(Resident.Locations), x => x.Locations},
                 {nameof(Resident.Music), x => x.Music},
-                {nameof(Resident.Picture), x => x.Picture},
+                {nameof(Resident.ImagePicture), x => x.ImagePicture},
                 {nameof(Resident.Room), x => x.Room},
                 {nameof(Resident.Tags), x => x.Tags},
                 {nameof(Resident.Videos), x => x.Videos},
