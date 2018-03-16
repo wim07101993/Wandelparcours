@@ -136,8 +136,9 @@ namespace WebService.Controllers
             try
             {
                 var bytes = data.ConvertToBytes(maxFileSize);
+                var title = data.File.FileName;
 
-                await ((IResidentsService) DataService).AddMediaAsync(residentObjectId, bytes, mediaType);
+                await ((IResidentsService) DataService).AddMediaAsync(residentObjectId, title, bytes, mediaType);
                 return StatusCode((int) HttpStatusCode.Created);
             }
             catch (FileToLargeException)

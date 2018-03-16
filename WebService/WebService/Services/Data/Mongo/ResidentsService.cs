@@ -69,7 +69,7 @@ namespace WebService.Services.Data.Mongo
         /// <exception cref="ArgumentNullException">when the data is null</exception>
         /// <exception cref="NotFoundException">when there is no <see cref="Resident"/> found with the given <see cref="AModelWithID.Id"/></exception>
         /// <exception cref="ArgumentOutOfRangeException">when the mediaData type doesn't exist</exception>
-        public async Task AddMediaAsync(ObjectId residentId, byte[] data, EMediaType mediaType)
+        public async Task AddMediaAsync(ObjectId residentId, string title, byte[] data, EMediaType mediaType)
         {
             // if the data is null, throw an exception
             if (data == null)
@@ -82,7 +82,7 @@ namespace WebService.Services.Data.Mongo
             await _mediaService.CreateAsync(new MediaData {Id = mediaId, Data = data});
 
             // add the mediaData
-            await AddMediaAsync(residentId, new MediaUrl {Id = mediaId}, mediaType);
+            await AddMediaAsync(residentId, new MediaUrl {Id = mediaId, Title = title}, mediaType);
         }
 
         /// <inheritdoc cref="IResidentsService.AddMediaAsync(ObjectId,string,EMediaType)" />
