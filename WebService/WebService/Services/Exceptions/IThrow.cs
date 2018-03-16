@@ -15,6 +15,8 @@ namespace WebService.Services.Exceptions
         void NotFound<T>(string id);
         void NotFound<T>(ObjectId id);
 
+        void MediaTypeNotFound<T>(string passedValue);
+
         void Database<T>(EDatabaseMethod databaseMethod);
         void Database<T>(EDatabaseMethod databaseMethod, string id);
         void Database<T>(EDatabaseMethod databaseMethod, ObjectId id);

@@ -3,17 +3,21 @@ import { RestServiceService } from '../../../../service/rest-service.service';
 import { ActivatedRoute } from '@angular/router';
 import { RequestOptions, Headers } from '@angular/http';
 import { UploadComponent } from '../../upload/upload.component';
+import { Resident } from '../../../../models/resident';
 declare var $: any;
 
 
 @Component({
-  selector: 'app-picture',
-  templateUrl: './picture.component.html',
-  styleUrls: ['./picture.component.css'],
+    selector: 'app-picture',
+    templateUrl: './picture.component.html',
+    styleUrls: ['./picture.component.css'],
 })
 export class PictureComponent implements OnInit {
     typeOfMedia: string;
     ngOnInit() { }
+    images: Resident[];
+    fullLinks: any=[];
+    url: any = "http://localhost:5000/api/v1/media/";
 
 
     id: string = this.route.snapshot.params['id'];
@@ -25,7 +29,23 @@ export class PictureComponent implements OnInit {
     }
 
     async getAllImages() {
-        let images: any = await this.service.getImagesOfResidentBasedOnId(this.id);
-        console.log(images);
+        this.images = await this.service.getImagesOfResidentBasedOnId(this.id);
+        for (let a of this.images){
+            let url2 = this.url + a.id;
+            let fullLinks = new Resident();
+            
+            fullLinks.images.id = a.id;
+            fullLinks.images.url = url2; 
+            console.log(fullLinks);
+            this.fullLinks.push(fullLinks);
+        }
+        this.fullLinks;
+
+        console.log(this.fullLinks);
+        }
+
+
+    deleteImageOnId(uniquePictureID: string) {
+        console.log(uniquePictureID);
     }
 }

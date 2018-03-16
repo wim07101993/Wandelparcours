@@ -2,6 +2,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MongoDB.Bson;
 using WebAPIUnitTests.TestHelpers.Extensions;
+using WebService.Helpers.Exceptions;
 
 // ReSharper disable once CheckNamespace
 namespace WebAPIUnitTests.ServiceTests.Data.Abstract
@@ -13,7 +14,7 @@ namespace WebAPIUnitTests.ServiceTests.Data.Abstract
         [TestMethod]
         public void RemoveUnknownItem()
         {
-            ActionExtensions.ShouldCatchNotFoundException(
+            ActionExtensions.ShouldCatchException<NotFoundException>(
                 () => CreateNewDataService().RemoveAsync(ObjectId.GenerateNewId()).Wait(),
                 "the given id doesn't exist");
         }

@@ -129,7 +129,6 @@ export class RestServiceService {
                 console.log(images);
                 resolve(true);
             }, error => {
-                console.log("Could not update data!");
                 this.customErrorHandler.updateMessage(error);
                 resolve(false);
             });
@@ -139,8 +138,7 @@ export class RestServiceService {
 
     getImagesOfResidentBasedOnId(uniqueIdentifier: string) {
         return new Promise<Resident[]>(resolve => {
-            this.http.get(this.restUrl + 'api/v1/residents/' + uniqueIdentifier + '/images', {
-            }).subscribe(response => {
+            this.http.get(this.restUrl + 'api/v1/residents/' + uniqueIdentifier + '/images').subscribe(response => {
                 resolve(<Resident[]>response.json());
             },
                 error => {

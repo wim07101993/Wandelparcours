@@ -6,6 +6,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MongoDB.Bson;
 using WebAPIUnitTests.TestHelpers.Extensions;
 using WebAPIUnitTests.TestModels;
+using WebService.Helpers.Exceptions;
 
 // ReSharper disable once CheckNamespace
 namespace WebAPIUnitTests.ServiceTests.Data.Abstract
@@ -106,7 +107,7 @@ namespace WebAPIUnitTests.ServiceTests.Data.Abstract
         [TestMethod]
         public void GetOneWithUnknownIdAndNullPropertiesToInclude()
         {
-            ActionExtensions.ShouldCatchNotFoundException(
+            ActionExtensions.ShouldCatchException<NotFoundException>(
                 () => CreateNewDataService().GetAsync(ObjectId.GenerateNewId()).Wait(),
                 "the given id doesn't exist");
         }
@@ -114,7 +115,7 @@ namespace WebAPIUnitTests.ServiceTests.Data.Abstract
         [TestMethod]
         public void GetOneWithUnknownIdAndEmptyPropertiesToInclude()
         {
-            ActionExtensions.ShouldCatchNotFoundException(
+            ActionExtensions.ShouldCatchException<NotFoundException>(
                 () => CreateNewDataService()
                     .GetAsync(ObjectId.GenerateNewId(), new Expression<Func<TestEntity, object>>[] { })
                     .Wait(),
@@ -124,7 +125,7 @@ namespace WebAPIUnitTests.ServiceTests.Data.Abstract
         [TestMethod]
         public void GetOneWithUnknownIdAndSomePropertiesToInclude()
         {
-            ActionExtensions.ShouldCatchNotFoundException(
+            ActionExtensions.ShouldCatchException<NotFoundException>(
                 () => CreateNewDataService()
                     .GetAsync(ObjectId.GenerateNewId(),
                         new Expression<Func<TestEntity, object>>[] {x => x.S, x => x.I})
@@ -215,7 +216,7 @@ namespace WebAPIUnitTests.ServiceTests.Data.Abstract
         [TestMethod]
         public void GetPropertyWithUnknownIdAndNoProperty()
         {
-            ActionExtensions.ShouldCatchArgumentNullException(
+            ActionExtensions.ShouldCatchArgumentException<WebArgumentNullException>(
                 () => CreateNewDataService()
                     .GetPropertyAsync(ObjectId.GenerateNewId(), null)
                     .Wait(),
@@ -226,7 +227,7 @@ namespace WebAPIUnitTests.ServiceTests.Data.Abstract
         [TestMethod]
         public void GetKnownPropertyWithUnknownId()
         {
-            ActionExtensions.ShouldCatchNotFoundException(
+            ActionExtensions.ShouldCatchException<NotFoundException>(
                 () => CreateNewDataService()
                     .GetPropertyAsync(ObjectId.GenerateNewId(), x => x.B)
                     .Wait(),
@@ -238,7 +239,7 @@ namespace WebAPIUnitTests.ServiceTests.Data.Abstract
         {
             var dataService = CreateNewDataService();
 
-            ActionExtensions.ShouldCatchArgumentNullException(
+            ActionExtensions.ShouldCatchArgumentException<WebArgumentNullException>(
                 () => dataService.GetPropertyAsync(dataService.GetFirst().Id, null).Wait(),
                 "propertyToSelect",
                 "the selector cannot be null");

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -13,7 +12,7 @@ using WebService.Services.Logging;
 namespace WebService.Controllers
 {
     [Route("api/v1/[controller]")]
-    public class MediaController : ARestControllerBase<MediaData>
+    public class MediaController : ARestControllerBase<MediaData>, IMediaController
     {
         public MediaController(IThrow iThrow, IDataService<MediaData> dataService, ILogger logger) : base(iThrow,
             dataService, logger)
