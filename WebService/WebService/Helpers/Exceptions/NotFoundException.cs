@@ -8,7 +8,7 @@ namespace WebService.Helpers.Exceptions
     /// </summary>
     public class NotFoundException : Exception
     {
-        /// <inheritdoc cref="ArgumentException()" />
+        /// <inheritdoc cref="Exception()" />
         /// <summary>
         /// Initializes a new instance of the <see cref="NotFoundException"></see> class.
         /// </summary>
@@ -16,7 +16,7 @@ namespace WebService.Helpers.Exceptions
         {
         }
 
-        /// <inheritdoc cref="ArgumentException(string)"/>
+        /// <inheritdoc cref="Exception(string)"/>
         /// <summary>
         /// Initializes a new instance of the <see cref="NotFoundException"></see> class with a specified error message.
         /// </summary>
@@ -25,7 +25,7 @@ namespace WebService.Helpers.Exceptions
         {
         }
 
-        /// <inheritdoc cref="ArgumentException(string, Exception)"/>
+        /// <inheritdoc cref="Exception(string, Exception)"/>
         /// <summary>
         /// Initializes a new instance of the <see cref="NotFoundException"></see> class with a specified error message
         /// and a reference to the inner exception that is the cause of this exception.

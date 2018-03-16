@@ -4,7 +4,6 @@
     {
         Audio,
         Video,
-        Image,
-        Color,
+        Image
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using MongoDB.Bson;
+using WebAPIUnitTests.TestModels;
 using WebService.Helpers.Extensions;
 using WebService.Models;
 using WebService.Services.Data.Mock;

@@ -21,7 +21,7 @@ namespace WebService.Controllers.Bases
         /// <param name="musicData">is the music to add to the <see cref="Resident"/>'s music list</param>
         /// <exception cref="NotFoundException">When the <see cref="residentId"/> cannot be parsed or <see cref="Resident"/> not found</exception>
         /// <exception cref="Exception">When the item could not be added</exception>
-        Task AddMusicAsync(string residentId, [FromBody] byte[] musicData);
+        Task AddMusicAsync(string residentId, [FromForm]MultiPartFile musicData);
 
         /// <summary>
         /// AddMusicAsymc is supposed to add music to the music list of a <see cref="Resident"/>.
@@ -40,7 +40,7 @@ namespace WebService.Controllers.Bases
         /// <param name="videoData">is the video to add to the <see cref="Resident"/>'s video list</param>
         /// <exception cref="NotFoundException">When the <see cref="residentId"/> cannot be parsed or <see cref="Resident"/> not found</exception>
         /// <exception cref="Exception">When the item could not be added</exception>
-        Task AddVideoAsync(string residentId, [FromBody] byte[] videoData);
+        Task AddVideoAsync(string residentId, [FromForm] MultiPartFile videoData);
 
         /// <summary>
         /// AddVideoAsymc is supposed to add video to the video list of a <see cref="Resident"/>.
@@ -59,7 +59,7 @@ namespace WebService.Controllers.Bases
         /// <param name="imageData">is the image to add to the <see cref="Resident"/>'s image list</param>
         /// <exception cref="NotFoundException">When the <see cref="residentId"/> cannot be parsed or <see cref="Resident"/> not found</exception>
         /// <exception cref="Exception">When the item could not be added</exception>
-        Task AddImageAsync(string residentId, [FromBody] dynamic imageData);
+        Task AddImageAsync(string residentId, [FromForm] MultiPartFile imageData);
 
         /// <summary>
         /// AddImageAsymc is supposed to add image to the image list of a <see cref="Resident"/>.
@@ -68,7 +68,7 @@ namespace WebService.Controllers.Bases
         /// <param name="url">is the url to the image to add to the <see cref="Resident"/>'s image list</param>
         /// <exception cref="NotFoundException">When the <see cref="residentId"/> cannot be parsed or <see cref="Resident"/> not found</exception>
         /// <exception cref="Exception">When the item could not be added</exception>
-        // Task AddImageAsync(string residentId, [FromBody] string url);
+        Task AddImageAsync(string residentId, [FromBody] string url);
 
 
         /// <summary>
@@ -107,6 +107,8 @@ namespace WebService.Controllers.Bases
         /// <exception cref="WebArgumentException">When one ore more properties could not be converted to selectors</exception>
         Task<Resident> GetAsync(int tag, string[] propertiesToInclude);
 
+        Task<string> GetRandomMedia(int tag, string mediaType);
+
         #endregion READ
 
 
@@ -118,7 +120,7 @@ namespace WebService.Controllers.Bases
         /// <param name="residentId">is the id of the <see cref="Resident"/></param>
         /// <param name="musicId">is the id of the music to remove from the <see cref="Resident"/>'s music list</param>
         /// <exception cref="NotFoundException">
-        /// When the <see cref="residentId"/>/<see cref="musicId"/> cannot be parsed or <see cref="Resident"/>/<see cref="MediaWithId"/> not found
+        /// When the <see cref="residentId"/>/<see cref="musicId"/> cannot be parsed or <see cref="Resident"/>/<see cref="MediaData"/> not found
         /// </exception>
         /// <exception cref="Exception">When the item could not be removed</exception>
         Task RemoveMusicAsync(string residentId, string musicId);
@@ -129,7 +131,7 @@ namespace WebService.Controllers.Bases
         /// <param name="residentId">is the id of the <see cref="Resident"/></param>
         /// <param name="videoId">is the id of the video to remove from the <see cref="Resident"/>'s video list</param>
         /// <exception cref="NotFoundException">
-        /// When the <see cref="residentId"/>/<see cref="videoId"/> cannot be parsed or <see cref="Resident"/>/<see cref="MediaWithId"/> not found
+        /// When the <see cref="residentId"/>/<see cref="videoId"/> cannot be parsed or <see cref="Resident"/>/<see cref="MediaData"/> not found
         /// </exception>
         /// <exception cref="Exception">When the item could not be removed</exception>
         Task RemoveVideoAsync(string residentId, string videoId);
@@ -140,7 +142,7 @@ namespace WebService.Controllers.Bases
         /// <param name="residentId">is the id of the <see cref="Resident"/></param>
         /// <param name="imageId">is the id of the image to remove from the <see cref="Resident"/>'s image list</param>
         /// <exception cref="NotFoundException">
-        /// When the <see cref="residentId"/>/<see cref="imageId"/> cannot be parsed or <see cref="Resident"/>/<see cref="MediaWithId"/> not found
+        /// When the <see cref="residentId"/>/<see cref="imageId"/> cannot be parsed or <see cref="Resident"/>/<see cref="MediaData"/> not found
         /// </exception>
         /// <exception cref="Exception">When the item could not be removed</exception>
         Task RemoveImageAsync(string residentId, string imageId);
@@ -151,7 +153,7 @@ namespace WebService.Controllers.Bases
         /// <param name="residentId">is the id of the <see cref="Resident"/></param>
         /// <param name="colorId">is the id of the color to remove from the <see cref="Resident"/>'s color list</param>
         /// <exception cref="NotFoundException">
-        /// When the <see cref="residentId"/>/<see cref="colorId"/> cannot be parsed or <see cref="Resident"/>/<see cref="MediaWithId"/> not found
+        /// When the <see cref="residentId"/>/<see cref="colorId"/> cannot be parsed or <see cref="Resident"/>/<see cref="MediaData"/> not found
         /// </exception>
         /// <exception cref="Exception">When the item could not be removed</exception>
         Task RemoveColorAsync(string residentId, string colorId);

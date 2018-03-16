@@ -1,14 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using MongoDB.Bson.Serialization.Attributes;
+using Newtonsoft.Json;
+using WebService.Helpers.JsonConverters;
 using WebService.Models.Bases;
+using ColorConverter = System.Drawing.ColorConverter;
 
 namespace WebService.Models
 {
     /// <summary>
     /// Value is a representation of a resident in the home to use for detection and animation at the kiosk.
     /// </summary>
-    public class Resident :AModelWithID
+    public class Resident : AModelWithID
     {
         /// <summary>
         /// FirstName is the first name of the Value
@@ -27,12 +31,12 @@ namespace WebService.Models
         public string LastName { get; set; }
 
         /// <summary>
-        /// Picture is a picture of the Value
+        /// ImagePicture is a picture of the Value
         /// <para/>
         /// In the database the value is stored under the field "picture"
         /// </summary>
         [BsonElement("picture")]
-        public byte[] Picture { get; set; }
+        public byte[] ImagePicture { get; set; } = { };
 
         /// <summary>
         /// Room is the room of the Value
@@ -64,39 +68,41 @@ namespace WebService.Models
         /// In the database the value is stored under the field "tags"
         /// </summary>
         [BsonElement("tags")]
-        public List<int> Tags { get; set; }
+        public List<int> Tags { get; set; } = new List<int>();
 
         /// <summary>
-        /// Music is the musiccollection of the Value
+        /// Music is the music-collection of the Value
         /// <para/>
         /// In the database the value is stored under the field "music"
         /// </summary>
         [BsonElement("music")]
-        public List<MediaWithId> Music { get; set; }
+        public List<MediaUrl> Music { get; set; } = new List<MediaUrl>();
 
         /// <summary>
-        /// Videos is the videocollection of the Value
+        /// Videos is the video-collection of the Value
         /// <para/>
         /// In the database the value is stored under the field "videos"
         /// </summary>
         [BsonElement("videos")]
-        public List<MediaWithId> Videos { get; set; }
+        public List<MediaUrl> Videos { get; set; } = new List<MediaUrl>();
 
         /// <summary>
-        /// Images is the imagecollection of the Value
+        /// Images is the image-collection of the Value
         /// <para/>
         /// In the database the value is stored under the field "images"
         /// </summary>
         [BsonElement("images")]
-        public List<MediaWithId> Images { get; set; }
+        public List<MediaUrl> Images { get; set; } = new List<MediaUrl>();
 
         /// <summary>
         /// Colors are the favorite colors of the Value
         /// <para/>
         /// In the database the value is stored under the field "colors"
         /// </summary>
-        [BsonElement("colors")]
-        public List<MediaWithId> Colors { get; set; }
+        //[BsonElement("colors")]
+        //[JsonConverter(typeof(ColorConverter))]
+        //[BsonSerializer(typeof(ColorSerializer))]
+        //public List<Color> Colors { get; set; } = new List<Color>();
 
         /// <summary>
         /// LastRecordedPosition is position where the resident has last been tracked
@@ -112,6 +118,6 @@ namespace WebService.Models
         /// In the database the value is stored under the field "locations"
         /// </summary>
         [BsonElement("locations")]
-        public List<Point> Locations { get; set; }
+        public List<Point> Locations { get; set; } = new List<Point>();
     }
 }

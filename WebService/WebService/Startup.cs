@@ -7,8 +7,11 @@ using Newtonsoft.Json.Serialization;
 using WebService.Helpers.Extensions;
 using WebService.Models;
 using WebService.Services.Data;
+using WebService.Services.Data.Mock;
 using WebService.Services.Data.Mongo;
+using WebService.Services.Exceptions;
 using WebService.Services.Logging;
+using WebService.Services.Randomizer;
 
 namespace WebService
 {
@@ -26,6 +29,11 @@ namespace WebService
         {
             services
                 .AddSingleton(typeof(ILogger), new LoggerCollection {new ConsoleLogger(), new FileLogger()})
+                .AddSingleton<IRandomizer, Randomizer>()
+                .AddSingleton<IThrow, Throw>()
+                //.AddSingleton<IDataService<Resident>, MockResidentsService>()
+                //.AddSingleton<IDataService<ReceiverModule>, ReceiverModulesService>();
+                .AddSingleton<IDataService<MediaData>, MediaService>()
                 .AddSingleton<IDataService<Resident>, ResidentsService>()
                 .AddSingleton<IDataService<ReceiverModule>, ReceiverModulesService>();
 
