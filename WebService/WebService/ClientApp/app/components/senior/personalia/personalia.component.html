@@ -1,25 +1,33 @@
 <app-senior></app-senior>
 
-    <div class="row personalia-row">
-        <div class="col">
-            <div class="card">
-                <div class="card-image">
-                    <img src="/images/boss.png">
-                    <span class="card-title">{{resident.firstName}}, {{resident.lastName}} </span>
-                </div>
-                <div class="card-content">
-                    <p>
-                        Kamer: {{resident.room}}
-                    </p>
-                    <p>
-                        Geboortedatum: {{resident.birthday | date:'dd-MM-yyyy'}}
-                    </p>
-                    <p>
-                        Huisarts: {{resident.doctor.name}} <br /> Tel: {{resident.doctor.phoneNumber}}
-                    </p>
-                </div>
+<div class="row personalia-row">
+    <div class="col s12">
+        
+        <div class="row">
+            
+            <div class="col s3">
+                <img src="/images/boss.png">
+            </div>
+            
+            <div class="col s9">
+                
             </div>
         </div>
     </div>
+</div>
 
 
+<span class="card-title">{{resident.firstName}}, {{resident.lastName}} </span>
+</div>
+<div class="card-content">
+    <p>
+        Kamer: {{resident.room}}
+    </p>
+    <p>
+        Geboortedatum: {{resident.birthday | date:'dd-MM-yyyy'}}
+    </p>
+    <p>
+        Huisarts: {{resident.doctor.name}} <br /> Tel: {{resident.doctor.phoneNumber}}
+    </p>
+</div>
+</div>
