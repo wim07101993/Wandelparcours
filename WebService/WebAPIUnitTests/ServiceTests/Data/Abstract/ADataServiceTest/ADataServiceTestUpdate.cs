@@ -207,19 +207,7 @@ namespace WebAPIUnitTests.ServiceTests.Data.Abstract
                 "propertyToUpdate",
                 "the property to update cannot be null");
         }
-
-        [TestMethod]
-        public void UpdatePropertyOfUnknownIdAndIncorrectValue()
-        {
-            ActionExtensions.ShouldCatchArgumentException<WebArgumentException>(
-                () => CreateNewDataService()
-                    .UpdatePropertyAsync(ObjectId.GenerateNewId(), x => x.I, new {X = "not a real property"})
-                    .Wait(),
-                "value",
-                "the value cannot be assigned to the property because it if of a wrong type");
-        }
-
-
+        
         [TestMethod]
         public void UpdatePropertyOfKnownIdAndCorrectValue()
         {
@@ -247,20 +235,7 @@ namespace WebAPIUnitTests.ServiceTests.Data.Abstract
                 "propertyToUpdate",
                 "the property to update cannot be null");
         }
-
-        [TestMethod]
-        public void UpdatePropertyOfKnownIdAndIncorrectValue()
-        {
-            var dataService = CreateNewDataService();
-
-            ActionExtensions.ShouldCatchArgumentException<WebArgumentException>(
-                () => dataService
-                    .UpdatePropertyAsync(dataService.GetFirst().Id, x => x.I, new {X = "not a real property"})
-                    .Wait(),
-                "value",
-                "the value cannot be assigned to the property");
-        }
-
+        
         #endregion PROPERTY
     }
 }

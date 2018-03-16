@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
@@ -96,7 +97,6 @@ namespace WebService.Controllers.Bases
                     return null;
                 });
 
-
         #region create
 
         /// <inheritdoc cref="IRestController{T}.CreateAsync" />
@@ -116,6 +116,41 @@ namespace WebService.Controllers.Bases
             // use the data service to create a new item
             await DataService.CreateAsync(item);
             return StatusCode((int) HttpStatusCode.Created);
+        }
+
+        public virtual async Task<StatusCodeResult> AddItemToList(string id, string propertyName, string jsonValue)
+        {
+            var property = typeof(T)
+                .GetProperties()
+                .FirstOrDefault(x => x.Name.EqualsWithCamelCasing(propertyName) &&
+                                     x.PropertyType.IsGenericType &&
+                                     typeof(IEnumerable).IsAssignableFrom(x.PropertyType));
+
+            // check if the property exists on the item
+            if (property == null)
+                throw new WebArgumentException(
+                    $"Property {propertyName} cannot be found on {typeof(T).Name}", nameof(propertyName));
+
+            // parse the id
+            if (!ObjectId.TryParse(id, out var objectId))
+                // if it fails, throw not found exception
+                throw new NotFoundException($"The {typeof(T).Name} with id {id} could not be found");
+
+            var valueType = property.PropertyType.GetGenericArguments()[0];
+
+            try
+            {
+                var value = JsonConvert.DeserializeObject(jsonValue, valueType);
+                await DataService.AddItemToListProperty(objectId,
+                    PropertySelectors[propertyName.ToUpperCamelCase()] as Expression<Func<T, IEnumerable<object>>>,
+                    value);
+                return StatusCode((int) HttpStatusCode.Created);
+            }
+            catch (Exception)
+            {
+                Throw.WrongTypeArgument(valueType, null);
+                return null;
+            }
         }
 
         #endregion create

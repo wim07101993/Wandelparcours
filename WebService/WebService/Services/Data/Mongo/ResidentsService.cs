@@ -56,48 +56,7 @@ namespace WebService.Services.Data.Mongo
         public override IMongoCollection<Resident> MongoCollection { get; }
 
 
-        /// <inheritdoc cref="IResidentsService.GetAsync(int,IEnumerable{Expression{Func{Resident,object}}})" />
-        /// <summary>
-        /// GetAsync returns the <see cref="Resident"/> with the given tag from the database. 
-        /// <para/>
-        /// It only fills the properties passed in the <see cref="propertiesToInclude"/> parameter. The id is always passed and 
-        /// if the <see cref="propertiesToInclude"/> parameter is null (which it is by default), all the properties are included. 
-        /// </summary>
-        /// <param name="tag">is the tag of the <see cref="Resident"/> that needs to be fetched</param>
-        /// <param name="propertiesToInclude">are the properties that should be included in the objects</param>
-        /// <returns>The <see cref="Resident"/> with the given id</returns>
-        /// <exception cref="NotFoundException">when there is no <see cref="Resident"/> that holds the given tag</exception>
-        public async Task<Resident> GetAsync(int tag,
-            IEnumerable<Expression<Func<Resident, object>>> propertiesToInclude = null)
-        {
-            // get the resident with the given tag
-            var findResult = MongoCollection.Find(x => x.Tags != null && x.Tags.Contains(tag));
-
-            // if there is no resident with the given tag, throw NotFoundException
-            if (findResult.Count() <= 0)
-            {
-                Throw?.NotFound<Resident>(tag);
-                return default(Resident);
-            }
-
-            // if the properties to include are null, return all the properties
-            if (propertiesToInclude == null)
-                return await findResult.FirstOrDefaultAsync();
-
-            // create a property filter (always include the id)
-            var selector = Builders<Resident>.Projection.Include(x => x.Id);
-
-            // iterate over all the properties to include and add them to the filter
-            selector = propertiesToInclude.Aggregate(selector, (current, property) => current.Include(property));
-
-            // return the item
-            return await findResult
-                // filter the properties
-                .Project<Resident>(selector)
-                // execute the query
-                .FirstOrDefaultAsync();
-        }
-
+        #region CREATE
 
         /// <inheritdoc cref="IResidentsService.AddMediaAsync(ObjectId,byte[],EMediaType)" />
         /// <summary>
@@ -212,6 +171,58 @@ namespace WebService.Services.Data.Mongo
             return resident;
         }
 
+        #endregion CREATE
+
+
+        #region READ
+
+        /// <inheritdoc cref="IResidentsService.GetAsync(int,IEnumerable{Expression{Func{Resident,object}}})" />
+        /// <summary>
+        /// GetAsync returns the <see cref="Resident"/> with the given tag from the database. 
+        /// <para/>
+        /// It only fills the properties passed in the <see cref="propertiesToInclude"/> parameter. The id is always passed and 
+        /// if the <see cref="propertiesToInclude"/> parameter is null (which it is by default), all the properties are included. 
+        /// </summary>
+        /// <param name="tag">is the tag of the <see cref="Resident"/> that needs to be fetched</param>
+        /// <param name="propertiesToInclude">are the properties that should be included in the objects</param>
+        /// <returns>The <see cref="Resident"/> with the given id</returns>
+        /// <exception cref="NotFoundException">when there is no <see cref="Resident"/> that holds the given tag</exception>
+        public async Task<Resident> GetAsync(int tag,
+            IEnumerable<Expression<Func<Resident, object>>> propertiesToInclude = null)
+        {
+            // get the resident with the given tag
+            var findResult = MongoCollection.Find(x => x.Tags != null && x.Tags.Contains(tag));
+
+            // if there is no resident with the given tag, throw NotFoundException
+            if (findResult.Count() <= 0)
+            {
+                Throw?.NotFound<Resident>(tag);
+                return default(Resident);
+            }
+
+            // if the properties to include are null, return all the properties
+            if (propertiesToInclude == null)
+                return await findResult.FirstOrDefaultAsync();
+
+            // create a property filter (always include the id)
+            var selector = Builders<Resident>.Projection.Include(x => x.Id);
+
+            // iterate over all the properties to include and add them to the filter
+            selector = propertiesToInclude.Aggregate(selector, (current, property) => current.Include(property));
+
+            // return the item
+            return await findResult
+                // filter the properties
+                .Project<Resident>(selector)
+                // execute the query
+                .FirstOrDefaultAsync();
+        }
+
+        #endregion READ
+
+
+        #region DELETE
+
         /// <inheritdoc cref="IResidentsService.RemoveMediaAsync" />
         /// <summary>
         /// RemoveMediaAsync removes the mediaData of type <see cref="mediaType"/> with as id <see cref="mediaId"/> of the
@@ -290,5 +301,7 @@ namespace WebService.Services.Data.Mongo
             // return the original resident
             return resident;
         }
+
+        #endregion DELETE
     }
 }

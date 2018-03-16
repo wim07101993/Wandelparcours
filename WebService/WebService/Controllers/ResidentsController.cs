@@ -51,7 +51,7 @@ namespace WebService.Controllers
             new Dictionary<string, Expression<Func<Resident, object>>>
             {
                 {nameof(Resident.Birthday), x => x.Birthday},
-                 {nameof(Resident.Colors), x => x.Colors},
+                {nameof(Resident.Colors), x => x.Colors},
                 {nameof(Resident.Doctor), x => x.Doctor},
                 {nameof(Resident.FirstName), x => x.FirstName},
                 {nameof(Resident.Images), x => x.Images},
@@ -106,13 +106,13 @@ namespace WebService.Controllers
         {
             // parse the id
             if (!ObjectId.TryParse(residentId, out var residentObjectId))
-
             {
                 // if it fails, throw not found exception
                 Throw.NotFound<Resident>(residentId);
+                return null;
             }
 
-            // TODO
+            await DataService.AddItemToListProperty(residentObjectId, x => x.Colors, colorData);
             return StatusCode((int) HttpStatusCode.Created);
         }
 

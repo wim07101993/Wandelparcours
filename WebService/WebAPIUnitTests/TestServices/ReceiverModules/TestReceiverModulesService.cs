@@ -4,11 +4,17 @@ using WebAPIUnitTests.TestModels;
 using WebService.Helpers.Extensions;
 using WebService.Models;
 using WebService.Services.Data.Mock;
+using WebService.Services.Exceptions;
 
 namespace WebAPIUnitTests.TestServices.ReceiverModules
 {
     public class TestReceiverModulesService : MockReceiverModulesesService, ITestReceiverModulesService
     {
+        public TestReceiverModulesService() : base(new Throw())
+        {
+            
+        }
+
         public override List<ReceiverModule> MockData { get; } = TestData.TestReceiverModules.Clone();
 
         public override ReceiverModule CreateNewItem(ObjectId id)
