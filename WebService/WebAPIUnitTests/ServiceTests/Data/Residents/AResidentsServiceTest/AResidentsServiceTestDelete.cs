@@ -1,8 +1,4 @@
-﻿using System.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using MongoDB.Bson;
-using WebAPIUnitTests.TestHelpers.Extensions;
-using WebService.Models;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 // ReSharper disable once CheckNamespace
 namespace WebAPIUnitTests.ServiceTests.Data.Residents
@@ -12,13 +8,7 @@ namespace WebAPIUnitTests.ServiceTests.Data.Residents
         [TestMethod]
         public void RemoveKnownMediaWithUnknownId()
         {
-            ActionExtensions.ShouldCatchNotFoundException(() =>
-                {
-                    var _ = CreateNewDataService()
-                        .RemoveMediaAsync(ObjectId.GenerateNewId(), ObjectId.GenerateNewId(), EMediaType.Color)
-                        .Result;
-                },
-                "there is no resident with that id");
+            // TODO
         }
 
         [TestMethod]
@@ -27,8 +17,7 @@ namespace WebAPIUnitTests.ServiceTests.Data.Residents
             var datatService = CreateNewDataService();
 
             var original = datatService.GetFirst();
-
-            datatService.RemoveMediaAsync(original.Id, original.Colors.First().Id, EMediaType.Color);
+            // TODO
         }
 
         [TestMethod]
@@ -38,12 +27,7 @@ namespace WebAPIUnitTests.ServiceTests.Data.Residents
 
             var original = dataService.GetFirst();
 
-            ActionExtensions.ShouldCatchNotFoundException(() =>
-                {
-                    var _ = dataService.RemoveMediaAsync(original.Id, ObjectId.GenerateNewId(), EMediaType.Color)
-                        .Result;
-                },
-                "there is no media with the given id");
+            // TODO
         }
     }
 }
