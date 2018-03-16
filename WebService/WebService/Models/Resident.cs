@@ -2,10 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using MongoDB.Bson.Serialization.Attributes;
-using Newtonsoft.Json;
-using WebService.Helpers.JsonConverters;
 using WebService.Models.Bases;
-using ColorConverter = System.Drawing.ColorConverter;
 
 namespace WebService.Models
 {
@@ -99,10 +96,8 @@ namespace WebService.Models
         /// <para/>
         /// In the database the value is stored under the field "colors"
         /// </summary>
-        //[BsonElement("colors")]
-        //[JsonConverter(typeof(ColorConverter))]
-        //[BsonSerializer(typeof(ColorSerializer))]
-        //public List<Color> Colors { get; set; } = new List<Color>();
+        [BsonElement("colors")]
+        public List<byte[]> Colors { get; set; } = new List<byte[]>();
 
         /// <summary>
         /// LastRecordedPosition is position where the resident has last been tracked

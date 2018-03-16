@@ -51,7 +51,7 @@ namespace WebService.Controllers
             new Dictionary<string, Expression<Func<Resident, object>>>
             {
                 {nameof(Resident.Birthday), x => x.Birthday},
-                // {nameof(Resident.Colors), x => x.Colors},
+                 {nameof(Resident.Colors), x => x.Colors},
                 {nameof(Resident.Doctor), x => x.Doctor},
                 {nameof(Resident.FirstName), x => x.FirstName},
                 {nameof(Resident.Images), x => x.Images},
