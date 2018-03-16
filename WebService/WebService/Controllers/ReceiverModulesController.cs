@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
+using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using WebService.Controllers.Bases;
@@ -51,10 +52,20 @@ namespace WebService.Controllers
         #region post (create)
 
         [HttpPost]
-        public override async Task CreateAsync([FromBody] ReceiverModule item)
+        public override async Task<StatusCodeResult> CreateAsync([FromBody] ReceiverModule item)
         {
+            if (item == null)
+            {
+                Throw.NullArgument(nameof(item));
+                return null;
+            }
+
+            if (item.Position == null)
+                item.Position = new Point();
+
             item.Position.TimeStamp = DateTime.Now;
             await base.CreateAsync(item);
+            return StatusCode((int) HttpStatusCode.Created);
         }
 
         #endregion post (create)
@@ -68,10 +79,16 @@ namespace WebService.Controllers
         [HttpGet("{mac}")]
         public override async Task<ReceiverModule> GetAsync(string mac, [FromQuery] string[] propertiesToInclude)
         {
+            if (mac == null)
+            {
+                Throw.NotFound<ReceiverModule>(null);
+                return null;
+            }
+
             // convert the property names to selectors, if there are any
             var selectors = !EnumerableExtensions.IsNullOrEmpty(propertiesToInclude)
                 ? ConvertStringsToSelectors(propertiesToInclude)
-                : null;
+                : new Expression<Func<ReceiverModule, object>>[0];
 
             // get the value from the data service
             return await ((IReceiverModulesService) DataService).GetAsync(mac, selectors)

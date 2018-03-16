@@ -47,10 +47,8 @@
 
         void UpdatePropertyOfUnknownIdAndCorrectValue();
         void UpdateNullPropertyOfUnknownId();
-        void UpdatePropertyOfUnknownIdAndIncorrectValue();
 
         void UpdatePropertyOfKnownIdAndCorrectValue();
         void UpdateNullPropertyOfKnownId();
-        void UpdatePropertyOfKnownIdAndIncorrectValue();
     }
 }

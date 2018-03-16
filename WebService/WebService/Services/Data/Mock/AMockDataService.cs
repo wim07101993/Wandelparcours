@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using MongoDB.Bson;
 using WebService.Helpers.Exceptions;
 using WebService.Models.Bases;
+using WebService.Services.Exceptions;
 
 namespace WebService.Services.Data.Mock
 {
@@ -19,6 +20,13 @@ namespace WebService.Services.Data.Mock
     /// </summary>
     public abstract class AMockDataService<T> : IDataService<T> where T : IModelWithID
     {
+        protected readonly IThrow Throw;
+
+        protected AMockDataService(IThrow iThrow)
+        {
+            Throw = iThrow;
+        }
+
         /// <summary>
         /// MockData is the list of items to test the application.
         /// </summary>
@@ -51,6 +59,53 @@ namespace WebService.Services.Data.Mock
             item.Id = ObjectId.GenerateNewId();
             // add the new item to the list
             MockData.Add(item);
+        }
+
+        public virtual async Task AddItemToListProperty(ObjectId id,
+            Expression<Func<T, IEnumerable<object>>> propertyToAddItemTo, object itemToAdd)
+        {
+            if (itemToAdd == null)
+            {
+                Throw.NullArgument(nameof(itemToAdd));
+                return;
+            }
+
+
+            if (itemToAdd is IModelWithID modelWithID)
+                modelWithID.Id = ObjectId.GenerateNewId();
+
+            // get the index of the item to update
+            var index = MockData.FindIndex(x => x.Id == id);
+
+            // if the item doesn't exist, throw exception
+            if (index < 0)
+                Throw.NotFound<T>(id);
+
+
+            // get the property
+            var prop = propertyToAddItemTo.Body is MemberExpression expression
+                // via member expression
+                ? expression.Member as PropertyInfo
+                // if that fails, unary expression
+                : ((MemberExpression) ((UnaryExpression) propertyToAddItemTo.Body).Operand).Member as PropertyInfo;
+
+            if (prop == null)
+            {
+                Throw.PropertyNotKnown<T>("");
+                return;
+            }
+
+            var oldValue = (prop.GetValue(MockData[index]) as IEnumerable<object>)?.ToList();
+
+            if (oldValue == null)
+            {
+                Throw.Exception("could not convert property");
+                return;
+            }
+
+            oldValue.Add(itemToAdd);
+
+            prop.SetValue(MockData[index], oldValue);
         }
 
         #endregion CREATE
@@ -208,8 +263,8 @@ namespace WebService.Services.Data.Mock
 
             // if the item doesn't exist, throw exception
             if (index < 0)
-                throw new NotFoundException($"no item with the id {newItem.Id} could be found");
-            
+                Throw.NotFound<T>(newItem.Id);
+
             // iterate over all the properties that need to be updated
             foreach (var selector in propertiesToUpdate)
             {
@@ -262,8 +317,8 @@ namespace WebService.Services.Data.Mock
         /// - true if the property was updated
         /// - false if the property was not updated
         /// </returns>
-        public async Task UpdatePropertyAsync(ObjectId id, Expression<Func<T, object>> propertyToUpdate,
-            object value)
+        public async Task UpdatePropertyAsync<TValue>(ObjectId id, Expression<Func<T, TValue>> propertyToUpdate,
+            TValue value)
         {
             if (propertyToUpdate == null)
                 throw new ArgumentNullException(nameof(propertyToUpdate));
@@ -279,10 +334,6 @@ namespace WebService.Services.Data.Mock
             if (prop == null)
                 throw new ArgumentException(
                     $"the property {propertyToUpdate} could not be found on the type {typeof(T).Name}");
-
-            if (!prop.PropertyType.IsInstanceOfType(value))
-                throw new ArgumentException($"the value {value} cannot be assigned to the property {prop.Name}",
-                    nameof(value));
 
             var index = MockData.FindIndex(x => x.Id == id);
             if (index < 0)

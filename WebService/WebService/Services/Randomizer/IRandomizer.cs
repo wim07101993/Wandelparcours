@@ -8,7 +8,7 @@
         int Next(int maxValue);
         int Next(int minValue, int maxValue);
 
-        void Next(byte[] buffer);
+        byte[] Next(byte[] buffer);
 
         string NextString(int length);
     }

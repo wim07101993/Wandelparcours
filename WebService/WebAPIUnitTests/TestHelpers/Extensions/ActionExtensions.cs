@@ -6,7 +6,7 @@ namespace WebAPIUnitTests.TestHelpers.Extensions
 {
     public static class ActionExtensions
     {
-        public static void ShouldCatchException<T>(this Action action, string because) where T : Exception
+        public static void ShouldCatchException<T>(this Action action, string because = "") where T : Exception
         {
             try
             {
@@ -25,7 +25,7 @@ namespace WebAPIUnitTests.TestHelpers.Extensions
             }
         }
 
-        public static void ShouldCatchArgumentException<T>(this Action action, string paramName, string because)
+        public static void ShouldCatchArgumentException<T>(this Action action, string paramName, string because = "")
             where T : ArgumentException
         {
             try

@@ -58,8 +58,12 @@ namespace WebService.Services.Randomizer
         /// Fills the elements of a specified array of bytes with random numbers.
         /// </summary>
         /// <param name="buffer"></param>
-        public void Next(byte[] buffer)
-            => Random.NextBytes(buffer);
+        /// <returns>the filled array</returns>
+        public byte[] Next(byte[] buffer)
+        {
+            Random.NextBytes(buffer);
+            return buffer;
+        }
 
         /// <summary>
         /// Returns a random string of the specified length.

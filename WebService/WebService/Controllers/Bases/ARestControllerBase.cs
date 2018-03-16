@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Bson;
@@ -45,6 +47,7 @@ namespace WebService.Controllers.Bases
         /// <summary>
         /// ARestControllerBase creates an instance of the <see cref="ARestControllerBase{T}"/> class. 
         /// </summary>
+        /// <param name="iThrow"></param>
         /// <param name="dataService">is a service to handle the database connection</param>
         /// <param name="logger">is a service to handle the logging of messages</param>
         protected ARestControllerBase(IThrow iThrow, IDataService<T> dataService, ILogger logger)
@@ -84,9 +87,15 @@ namespace WebService.Controllers.Bases
         /// <exception cref="WebArgumentException">When the property could not be converted to a selector</exception>
         public IEnumerable<Expression<Func<T, object>>> ConvertStringsToSelectors(IEnumerable<string> propertyNames)
             => propertyNames
-                .Select(x => PropertySelectors.FirstOrDefault(y => y.Key.EqualsWithCamelCasing(x)).Value
-                             ?? throw new WebArgumentException("property not known", nameof(propertyNames)));
+                .Select(x =>
+                {
+                    var selector = PropertySelectors.FirstOrDefault(y => y.Key.EqualsWithCamelCasing(x)).Value;
+                    if (selector != null)
+                        return selector;
 
+                    Throw.PropertyNotKnown<T>(x);
+                    return null;
+                });
 
         #region create
 
@@ -96,10 +105,52 @@ namespace WebService.Controllers.Bases
         /// </summary>
         /// <param name="item">is the <see cref="T"/> to save in the database</param>
         /// <exception cref="Exception">When the item could not be created</exception>
-        public virtual async Task CreateAsync([FromBody] T item)
+        public virtual async Task<StatusCodeResult> CreateAsync([FromBody] T item)
         {
+            if (item == null)
+            {
+                Throw.NullArgument("item");
+                return null;
+            }
+
             // use the data service to create a new item
             await DataService.CreateAsync(item);
+            return StatusCode((int) HttpStatusCode.Created);
+        }
+
+        public virtual async Task<StatusCodeResult> AddItemToList(string id, string propertyName, string jsonValue)
+        {
+            var property = typeof(T)
+                .GetProperties()
+                .FirstOrDefault(x => x.Name.EqualsWithCamelCasing(propertyName) &&
+                                     x.PropertyType.IsGenericType &&
+                                     typeof(IEnumerable).IsAssignableFrom(x.PropertyType));
+
+            // check if the property exists on the item
+            if (property == null)
+                throw new WebArgumentException(
+                    $"Property {propertyName} cannot be found on {typeof(T).Name}", nameof(propertyName));
+
+            // parse the id
+            if (!ObjectId.TryParse(id, out var objectId))
+                // if it fails, throw not found exception
+                throw new NotFoundException($"The {typeof(T).Name} with id {id} could not be found");
+
+            var valueType = property.PropertyType.GetGenericArguments()[0];
+
+            try
+            {
+                var value = JsonConvert.DeserializeObject(jsonValue, valueType);
+                await DataService.AddItemToListProperty(objectId,
+                    PropertySelectors[propertyName.ToUpperCamelCase()] as Expression<Func<T, IEnumerable<object>>>,
+                    value);
+                return StatusCode((int) HttpStatusCode.Created);
+            }
+            catch (Exception)
+            {
+                Throw.WrongTypeArgument(valueType, null);
+                return null;
+            }
         }
 
         #endregion create

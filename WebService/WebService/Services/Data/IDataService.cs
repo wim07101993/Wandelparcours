@@ -49,11 +49,14 @@ namespace WebService.Services.Data
         /// <param name="item">is the <see cref="T"/> to save in the database</param>
         Task CreateAsync(T item);
 
+        Task AddItemToListProperty(ObjectId id, Expression<Func<T, IEnumerable<object>>> propertyToAddItemTo,
+            object itemToAdd);
+
         /// <summary>
         /// RemoveAsync is supposed to remove the <see cref="T"/> with the given id from the database.
         /// </summary>
         /// <param name="id">is the id of the <see cref="T"/> to remove in the database</param>
-       Task RemoveAsync(ObjectId id);
+        Task RemoveAsync(ObjectId id);
 
         /// <summary>
         /// UpdateAsync is supposed to update the <see cref="T"/> with the id of the given <see cref="T"/>.
@@ -71,6 +74,6 @@ namespace WebService.Services.Data
         /// <param name="id">is the id of the <see cref="T"/> to get the property from</param>
         /// <param name="propertyToUpdate">is the selector to select the property to update</param>
         /// <param name="value">is the new value of the property</param>
-       Task UpdatePropertyAsync(ObjectId id, Expression<Func<T, object>> propertyToUpdate, object value);
+        Task UpdatePropertyAsync<TValue>(ObjectId id, Expression<Func<T, TValue>> propertyToUpdate, TValue value);
     }
 }

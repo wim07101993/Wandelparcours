@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using MongoDB.Bson;
 using WebService.Helpers.Exceptions;
 using WebService.Models;
+using WebService.Services.Exceptions;
 
 namespace WebService.Services.Data.Mock
 {
@@ -18,6 +19,11 @@ namespace WebService.Services.Data.Mock
     /// </summary>
     public partial class MockReceiverModulesesService : AMockDataService<ReceiverModule>, IReceiverModulesService
     {
+        public MockReceiverModulesesService(IThrow iThrow) : base(iThrow)
+        {
+        }
+
+
         /// <inheritdoc cref="AMockDataService{T}" />
         /// <summary>
         /// CreateNewItems returns a new item of the given type <see cref="ReceiverModule" /> with as Id, <see cref="id" />.

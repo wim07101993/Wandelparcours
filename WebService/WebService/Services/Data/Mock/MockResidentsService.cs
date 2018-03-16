@@ -7,6 +7,7 @@ using MongoDB.Bson;
 using WebService.Helpers.Exceptions;
 using WebService.Models;
 using WebService.Models.Bases;
+using WebService.Services.Exceptions;
 
 namespace WebService.Services.Data.Mock
 {
@@ -19,6 +20,10 @@ namespace WebService.Services.Data.Mock
     /// </summary>
     public partial class MockResidentsService : AMockDataService<Resident>, IResidentsService
     {
+        public MockResidentsService(IThrow iThrow) : base(iThrow)
+        {
+        }
+
         /// <inheritdoc cref="AMockDataService{T}" />
         /// <summary>
         /// CreateNewItems returns a new item of the type <see cref="Resident" /> with as Id, <see cref="id" />.
