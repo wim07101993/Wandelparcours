@@ -1,6 +1,7 @@
 ﻿using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using WebAPIUnitTests.TestHelpers.Extensions;
+using WebService.Helpers.Exceptions;
 
 // ReSharper disable once CheckNamespace
 namespace WebAPIUnitTests.ServiceTests.Data.ReceiverModules
@@ -10,7 +11,7 @@ namespace WebAPIUnitTests.ServiceTests.Data.ReceiverModules
         [TestMethod]
         public void RemoveNullMac()
         {
-            ActionExtensions.ShouldCatchArgumentNullException(
+            ActionExtensions.ShouldCatchException<WebArgumentNullException>(
                 () => CreateNewDataService().RemoveAsync(null).Wait(),
                 "mac",
                 "the mac address cannot be null");
@@ -19,7 +20,7 @@ namespace WebAPIUnitTests.ServiceTests.Data.ReceiverModules
         [TestMethod]
         public void RemoveUnknownMac()
         {
-            ActionExtensions.ShouldCatchNotFoundException(() => CreateNewDataService().RemoveAsync("").Wait(),
+            ActionExtensions.ShouldCatchException<NotFoundException>(() => CreateNewDataService().RemoveAsync("").Wait(),
                 "there is no module with that mac in the database");
         }
 

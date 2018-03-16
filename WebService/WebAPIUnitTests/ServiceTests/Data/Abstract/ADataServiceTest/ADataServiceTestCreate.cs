@@ -4,6 +4,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MongoDB.Bson;
 using WebAPIUnitTests.TestHelpers.Extensions;
 using WebAPIUnitTests.TestModels;
+using WebService.Helpers.Exceptions;
 
 // ReSharper disable once CheckNamespace
 namespace WebAPIUnitTests.ServiceTests.Data.Abstract
@@ -17,7 +18,7 @@ namespace WebAPIUnitTests.ServiceTests.Data.Abstract
         {
             var dataService = CreateNewDataService();
 
-            ActionExtensions.ShouldCatchArgumentNullException(() => { dataService.CreateAsync(null).Wait(); },
+            ActionExtensions.ShouldCatchException<WebArgumentNullException>(() => { dataService.CreateAsync(null).Wait(); },
                 "item",
                 "the item to create cannot be null");
 

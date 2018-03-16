@@ -4,6 +4,7 @@ using System.Linq.Expressions;
 using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using WebAPIUnitTests.TestHelpers.Extensions;
+using WebService.Helpers.Exceptions;
 using WebService.Models;
 
 // ReSharper disable once CheckNamespace
@@ -14,7 +15,7 @@ namespace WebAPIUnitTests.ServiceTests.Data.Residents
         [TestMethod]
         public void GetOneByUnknownTagAndNoPropertiestToInclude()
         {
-            ActionExtensions.ShouldCatchNotFoundException(
+            ActionExtensions.ShouldCatchException<NotFoundException>(
                 () => CreateNewDataService().GetAsync(-1).Wait(),
                 "the given tag address doesn't exist in the database");
         }
@@ -22,7 +23,7 @@ namespace WebAPIUnitTests.ServiceTests.Data.Residents
         [TestMethod]
         public void GetOneByUnknownTagAndEmptyPropertiesToInclude()
         {
-            ActionExtensions.ShouldCatchNotFoundException(
+            ActionExtensions.ShouldCatchException<NotFoundException>(
                 () => CreateNewDataService().GetAsync(-1, new Expression<Func<Resident, object>>[] { }).Wait(),
                 "the given tag address doesn't exist in the database");
         }
@@ -30,7 +31,7 @@ namespace WebAPIUnitTests.ServiceTests.Data.Residents
         [TestMethod]
         public void GetOneByUnknownTagAndPropertiesToInclude()
         {
-            ActionExtensions.ShouldCatchNotFoundException(
+            ActionExtensions.ShouldCatchException<NotFoundException>(
                 () => CreateNewDataService()
                     .GetAsync(-1, new Expression<Func<Resident, object>>[] {x => x.FirstName, x => x.LastName})
                     .Wait(),

@@ -3,6 +3,7 @@ using System.Linq.Expressions;
 using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using WebAPIUnitTests.TestHelpers.Extensions;
+using WebService.Helpers.Exceptions;
 using WebService.Models;
 
 // ReSharper disable once CheckNamespace
@@ -13,7 +14,7 @@ namespace WebAPIUnitTests.ServiceTests.Data.ReceiverModules
         [TestMethod]
         public void GetOneWithNullMacAndNoPropertiestToInclude()
         {
-            ActionExtensions.ShouldCatchArgumentNullException(
+            ActionExtensions.ShouldCatchException<WebArgumentNullException>(
                 () => CreateNewDataService().GetAsync(null).Wait(),
                 "mac",
                 "the mac address cannot be null");
@@ -22,7 +23,7 @@ namespace WebAPIUnitTests.ServiceTests.Data.ReceiverModules
         [TestMethod]
         public void GetOneWithNullMacAndEmptyPropertiesToInclude()
         {
-            ActionExtensions.ShouldCatchArgumentNullException(
+            ActionExtensions.ShouldCatchException<WebArgumentNullException>(
                 () => CreateNewDataService().GetAsync(null, new Expression<Func<ReceiverModule, object>>[] { })
                     .Wait(),
                 "mac",
@@ -32,7 +33,7 @@ namespace WebAPIUnitTests.ServiceTests.Data.ReceiverModules
         [TestMethod]
         public void GetOneWithNullMacAndPropertiesToInclude()
         {
-            ActionExtensions.ShouldCatchArgumentNullException(
+            ActionExtensions.ShouldCatchException<WebArgumentNullException>(
                 () => CreateNewDataService()
                     .GetAsync(null, new Expression<Func<ReceiverModule, object>>[] {x => x.Position})
                     .Wait(),
@@ -43,7 +44,7 @@ namespace WebAPIUnitTests.ServiceTests.Data.ReceiverModules
         [TestMethod]
         public void GetOneWithUnknownMacAndNoPropertiestToInclude()
         {
-            ActionExtensions.ShouldCatchNotFoundException(
+            ActionExtensions.ShouldCatchException<NotFoundException>(
                 () => CreateNewDataService().GetAsync("").Wait(),
                 "the given mac address doesn't exist in the database");
         }
@@ -51,7 +52,7 @@ namespace WebAPIUnitTests.ServiceTests.Data.ReceiverModules
         [TestMethod]
         public void GetOneWithUnknownMacAndEmptyPropertiesToInclude()
         {
-            ActionExtensions.ShouldCatchNotFoundException(
+            ActionExtensions.ShouldCatchException<NotFoundException>(
                 () => CreateNewDataService().GetAsync("", new Expression<Func<ReceiverModule, object>>[] { })
                     .Wait(),
                 "the given mac address doesn't exist in the database");
@@ -60,7 +61,7 @@ namespace WebAPIUnitTests.ServiceTests.Data.ReceiverModules
         [TestMethod]
         public void GetOneWithUnknownMacAndPropertiesToInclude()
         {
-            ActionExtensions.ShouldCatchNotFoundException(
+            ActionExtensions.ShouldCatchException<NotFoundException>(
                 () => CreateNewDataService()
                     .GetAsync("", new Expression<Func<ReceiverModule, object>>[] {x => x.Position})
                     .Wait(),
