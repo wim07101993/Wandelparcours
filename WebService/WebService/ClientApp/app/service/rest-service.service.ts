@@ -123,10 +123,11 @@ export class RestServiceService {
     //MEDIA//
     /////////
 
+    //IMAGES
     addImagesToDatabase(uniqueIdentifier: any, images: any) {
         return new Promise(resolve => {
             this.http.post(this.restUrl + 'api/v1/residents/' + uniqueIdentifier + '/images/data', images).subscribe(response => {
-                console.log(images);
+                //console.log(images);
                 resolve(true);
             }, error => {
                 this.customErrorHandler.updateMessage(error);
@@ -148,6 +149,62 @@ export class RestServiceService {
             );
         });
     }
+
+    deleteResidentImageByUniqueId(uniqueIdentifier: string, uniqueMediaIdentifier: string) {
+        return new Promise(resolve => {
+            this.http.delete(this.restUrl + 'api/v1/residents/' + uniqueIdentifier + '/images/' + uniqueMediaIdentifier).subscribe(response => {
+                console.log("Deleted");
+                resolve(true);
+            }, error => {
+                console.log("Something went wrong");
+                this.customErrorHandler.updateMessage(error);
+                resolve(false);
+            });
+        });
+    }
+
+    //VIDEOS
+
+    getVideosOfResidentBasedOnId(uniqueIdentifier: string) {
+        return new Promise<Resident[]>(resolve => {
+            this.http.get(this.restUrl + 'api/v1/residents/' + uniqueIdentifier + '/videos').subscribe(resp => {
+                resolve(<Resident[]>resp.json());
+            }, (error) => {
+                this.customErrorHandler.updateMessage(error);
+                resolve();
+            });
+        })
+    }
+
+    addVideosToDatabase(uniqueIdentifier: string, video: any) {
+        return new Promise(resolve => {
+            this.http.post(this.restUrl + 'api/v1/residents/' + uniqueIdentifier + '/videos/data', video).subscribe(resp => {
+                resolve(true)
+            },
+                (error) => {
+                    this.customErrorHandler.updateMessage(error);
+                    resolve()
+                });
+            });
+    }
+
+
+    deleteResidentVideoByUniqueId(uniqueIdentifier: string, uniqueMediaIdentifier: string) {
+        return new Promise(resolve => {
+            this.http.delete(this.restUrl + 'api/v1/residents/' + uniqueIdentifier + '/videos/' + uniqueMediaIdentifier).subscribe(response => {
+                console.log("Deleted");
+                resolve(true);
+            }, error => {
+                console.log("Something went wrong");
+                this.customErrorHandler.updateMessage(error);
+                resolve(false);
+            });
+        });
+    }
+
+
+
+
 
 
     async SaveStationToDatabase(station:Station){

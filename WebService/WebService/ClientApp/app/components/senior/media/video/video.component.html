@@ -2,4 +2,14 @@
 <p>
   video works!
 </p>
-<app-upload [type]="typeOfMedia"></app-upload>
+<div class="center" *ngFor="let link of fullLinks">
+    <video width="320" height="240" controls>
+        <source [src]="link.videos.url">
+    </video>
+    <i class="material-icons red-text pointer" (click)="deleteVideoOnId(link.videos.id)">delete</i>
+</div>
+
+<app-upload [type]="typeOfMedia"  (reload)="reload()"></app-upload>
+<div class="right" *ngFor="let link of fullLinks">
+    <button class="btn btn-primary">{{link.videos.url}}</button>
+</div>

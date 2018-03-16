@@ -8,4 +8,4 @@
     </ul>
     </div>
 <div class="right"><p>Picture works</p></div>
-<div class="center"><app-upload [type]="typeOfMedia"></app-upload></div>
+<div class="center"><app-upload (reload)="reload()" [type]="typeOfMedia"></app-upload></div>

@@ -33,19 +33,25 @@ export class Doctor {
 export class Images {
     id: string
     url: string
+    name: string
 
     constructor() {
         this.id = "";
         this.url = "";
+        this.name = "";
     }
 }
 
 export class Videos {
     id: string
     url: string
+    type: string
+    name: string
 
     constructor() {
         this.id = "";
         this.url = "";
+        this.type = "";
+        this.name = "";
     }
 }

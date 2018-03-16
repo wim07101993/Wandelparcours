@@ -23,6 +23,11 @@ import { TrackingComponent } from './components/senior/tracking/tracking.compone
 import { PersonaliaComponent } from './components/senior/personalia/personalia.component';
 import { ErrorPageComponent } from './components/error-page/error-page.component';
 import { UploadComponent } from './components/senior/upload/upload.component';
+import { VgBufferingModule } from 'videogular2/src/buffering/buffering';
+import { VgOverlayPlayModule } from 'videogular2/src/overlay-play/overlay-play';
+import { VgControlsModule } from 'videogular2/src/controls/controls';
+import { VgCoreModule } from 'videogular2/src/core/core';
+import { BrowserModule } from '@angular/platform-browser';
 
 const appRoutes: Routes = [
     { path: '', redirectTo: 'residents', pathMatch: 'full' },
@@ -69,6 +74,7 @@ const appRoutes: Routes = [
         HttpModule,
         FormsModule,
         RouterModule.forRoot(appRoutes),
+        BrowserModule, VgCoreModule, VgControlsModule, VgOverlayPlayModule, VgBufferingModule,
     ]
 })
 export class AppModuleShared {
