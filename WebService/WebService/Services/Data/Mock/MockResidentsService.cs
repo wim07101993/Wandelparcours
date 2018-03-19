@@ -67,6 +67,12 @@ namespace WebService.Services.Data.Mock
             return itemToReturn;
         }
 
+        public Task<object> GetPropertyAsync(int tag, Expression<Func<Resident, object>> propertyToSelect)
+        {
+            //TODO
+            throw new NotImplementedException();
+        }
+
         public async Task AddMediaAsync(ObjectId residentId, string title, byte[] data, EMediaType mediaType)
         {
             // if the data is null, throw an exception

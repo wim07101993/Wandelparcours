@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
@@ -198,36 +199,34 @@ namespace WebService.Controllers
             return resident;
         }
 
-        [HttpGet("byTag/{tag}/{mediaType}/random")]
-        public async Task<MediaUrl> GetRandomMedia(int tag, string mediaType)
+        [HttpGet("byTag/{tag}/{propertyName}/random")]
+        public async Task<object> GetRandomElementFromProperty(int tag, string propertyName)
         {
-            if (!Enum.TryParse<EMediaType>(mediaType, out var eMediaType))
-            {
-                Throw.MediaTypeNotFound<EMediaType>(mediaType);
-                return null;
-            }
+            IList data;
 
-            IList<MediaUrl> media;
-
-            switch (eMediaType)
+            switch (propertyName.ToUpperCamelCase())
             {
-                case EMediaType.Audio:
-                    media = (await ((IResidentsService) DataService).GetAsync(tag,
+                case nameof(Resident.Music):
+                    data = (await ((IResidentsService) DataService).GetAsync(tag,
                         new Expression<Func<Resident, object>>[] {x => x.Music})).Music;
                     break;
-                case EMediaType.Video:
-                    media = (await ((IResidentsService) DataService).GetAsync(tag,
+                case nameof(Resident.Videos):
+                    data = (await ((IResidentsService) DataService).GetAsync(tag,
                         new Expression<Func<Resident, object>>[] {x => x.Videos})).Videos;
                     break;
-                case EMediaType.Image:
-                    media = (await ((IResidentsService) DataService).GetAsync(tag,
+                case nameof(Resident.Images):
+                    data = (await ((IResidentsService) DataService).GetAsync(tag,
                         new Expression<Func<Resident, object>>[] {x => x.Images})).Images;
+                    break;
+                case nameof(Resident.Colors):
+                    data = (await ((IResidentsService)DataService).GetAsync(tag,
+                        new Expression<Func<Resident, object>>[] { x => x.Colors })).Colors;
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
             }
 
-            return media.RandomItem();
+            return data.RandomItem();
         }
 
         [HttpGet("{id}/{propertyName}")]
