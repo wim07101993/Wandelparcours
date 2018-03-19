@@ -23,17 +23,27 @@ export class VideoComponent implements OnInit {
         this.typeOfMedia = "video/*";
         this.getAllVideos();
     }
-
+    /**
+     * reload the page
+     */
     reload() {
         this.getAllVideos();
     }
 
+    /**
+     * gets all urls for videos
+     */
     async getAllVideos() {
         this.fullLinks = [];
         this.fullLinks = await this.media.getMedia(this.id, this.video);
         console.log(this.fullLinks)
     }
 
+    /**
+     * Delete resident media based on uniqueID
+     * @param uniqueVideoId unique videoId
+     * Either reloads the page or sends user to error page
+     */
     async deleteResidentMediaByUniqueId(uniqueVideoId: string) {
         this.check = await this.media.deleteMedia(this.id, uniqueVideoId, this.video);
         if (this.check) {
@@ -43,7 +53,7 @@ export class VideoComponent implements OnInit {
         }
     }
 
-  ngOnInit() {
-  }
+    ngOnInit() {
+    }
 
 }

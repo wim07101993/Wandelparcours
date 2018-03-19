@@ -29,16 +29,27 @@ export class PictureComponent implements OnInit {
         this.typeOfMedia = "image/*";
     }
 
+    /**
+     * reload page
+     */
     reload() {
         this.getAllImages();
     }
 
+    /**
+     * Gets all urls for images
+     */
     async getAllImages() {
         this.fullLinks = [];
         this.fullLinks = await this.media.getMedia(this.id, this.picture);
         //console.log(this.fullLinks);
     }
 
+    /**
+     * Delete resident media based on uniqueId
+     * @param uniquePictureID unique pictureId
+     * Either reloads the page or sends user to errorpage
+     */
     async deleteResidentMediaByUniqueId(uniquePictureID: string) {
         this.check = await this.media.deleteMedia(this.id, uniquePictureID, this.picture);
         if (this.check) {

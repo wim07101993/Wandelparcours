@@ -9,6 +9,12 @@ export class MediaService {
     url: any = "http://localhost:5000/api/v1/media/";
     constructor(private service: RestServiceService) { }
 
+    /**
+     * Get correct media of resident based on id and media type
+     * @param id resident id
+     * @param media media type
+     * converts all images to url and sends this back
+     */
     async getMedia(id: string, media: string) {
         this.fullLinks = [];
         let mediaType = await this.service.getCorrectMediaOfResidentBasedOnId(id, media);
@@ -30,8 +36,14 @@ export class MediaService {
         return this.fullLinks;
     }
 
+    /**
+     * Delete media of resident based on id mediaId and media
+     * @param id resident id
+     * @param mediaId resident media id
+     * @param media media type
+     * returns true or false
+     */
     async deleteMedia(id: string, mediaId: string, media: string) {
-        return this.check = await this.service.deleteResidentMediaByUniqueId(id, mediaId, media);
-        
+        return this.check = await this.service.deleteResidentMediaByUniqueId(id, mediaId, media);      
     }
 }

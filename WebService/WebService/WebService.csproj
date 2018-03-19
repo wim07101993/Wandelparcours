@@ -49,9 +49,11 @@
   </Target>
   <ItemGroup>
     <None Remove="ClientApp\app\service\customErrorHandler.ts" />
+    <None Remove="ClientApp\app\service\media.service.ts" />
     <None Remove="wwwroot\images\resident.jpg" />
   </ItemGroup>
   <ItemGroup>
     <TypeScriptCompile Include="ClientApp\app\service\customErrorHandler.ts" />
+    <TypeScriptCompile Include="ClientApp\app\service\media.service.ts" />
   </ItemGroup>
 </Project>
