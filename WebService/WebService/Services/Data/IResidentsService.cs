@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
@@ -59,5 +60,16 @@ namespace WebService.Services.Data
         /// <exception cref="NotFoundException">when there is no <see cref="MediaData"/> found with the given <see cref="AModelWithID.Id"/></exception>
         /// <exception cref="ArgumentOutOfRangeException">when the media type doesn't exist</exception>
         Task RemoveMediaAsync(ObjectId residentId, ObjectId mediaId, EMediaType mediaType);
+
+
+        /// <summary>
+        /// RemoveSubItemAsync is supposed to remove a sub-property from a <see cref="Resident"/>
+        /// </summary>
+        /// <param name="residentId">is the id of the <see cref="Resident"/> to remove the media from</param>
+        /// <param name="selector">is the selector to select the property</param>
+        /// <param name="item">is the item to remove</param>
+        /// <exception cref="NotFoundException">when there is no <see cref="Resident"/> found with the given <see cref="AModelWithID.Id"/></exception>
+        /// <exception cref="NotFoundException">when there is no item found with the given <see cref="AModelWithID.Id"/></exception>
+        Task RemoveSubItemAsync(ObjectId residentId, Expression<Func<Resident, IEnumerable>> selector, object item);
     }
 }
