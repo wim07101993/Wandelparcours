@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
@@ -23,6 +22,8 @@ namespace WebService.Services.Data
         /// <returns>The <see cref="Resident"/> with the given id</returns>
         /// <exception cref="NotFoundException">when there is no <see cref="Resident"/> that holds the given tag</exception>
         Task<Resident> GetAsync(int tag, IEnumerable<Expression<Func<Resident, object>>> propertiesToInclude = null);
+
+        Task<object> GetPropertyAsync(int tag, Expression<Func<Resident, object>> propertyToSelect);
 
         /// <summary>
         /// AddMediaAsync is supposed to add the <see cref="data"/> as media of the type <see cref="mediaType"/> to the <see cref="Resident"/>
@@ -70,6 +71,7 @@ namespace WebService.Services.Data
         /// <param name="item">is the item to remove</param>
         /// <exception cref="NotFoundException">when there is no <see cref="Resident"/> found with the given <see cref="AModelWithID.Id"/></exception>
         /// <exception cref="NotFoundException">when there is no item found with the given <see cref="AModelWithID.Id"/></exception>
-        Task RemoveSubItemAsync(ObjectId residentId, Expression<Func<Resident, IEnumerable<object>>> selector, object item);
+        Task RemoveSubItemAsync(ObjectId residentId, Expression<Func<Resident, IEnumerable<object>>> selector,
+            object item);
     }
 }

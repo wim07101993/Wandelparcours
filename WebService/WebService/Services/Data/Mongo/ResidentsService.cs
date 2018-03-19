@@ -151,6 +151,37 @@ namespace WebService.Services.Data.Mongo
                 .FirstOrDefaultAsync();
         }
 
+         public virtual async Task<object> GetPropertyAsync(int tag, Expression<Func<Resident, object>> propertyToSelect)
+        {
+            // if the property to select is null, throw exception
+            if (propertyToSelect == null)
+            {
+                Throw?.NullArgument(nameof(propertyToSelect));
+                return null;
+            }
+
+            // get the item with the given id
+            var find = MongoCollection.Find(x => x.Tags.Contains(tag));
+
+            // if there is no item with the given id, throw exception
+            if (find.Count() <= 0)
+            {
+                Throw?.NotFound<Resident>(tag);
+                return null;
+            }
+
+            // create a property filter
+            var selector = Builders<Resident>.Projection.Include(propertyToSelect);
+
+            // execute the query
+            var item = await find
+                .Project<Resident>(selector)
+                .FirstOrDefaultAsync();
+
+            // return only the asked property
+            return propertyToSelect.Compile()(item);
+        }
+
         #endregion READ
 
 

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Net;
 using System.Threading.Tasks;
@@ -197,7 +198,7 @@ namespace WebService.Controllers
             return resident;
         }
 
-        [HttpGet("{tag}/{mediaType}/random")]
+        [HttpGet("byTag/{tag}/{mediaType}/random")]
         public async Task<MediaUrl> GetRandomMedia(int tag, string mediaType)
         {
             if (!Enum.TryParse<EMediaType>(mediaType, out var eMediaType))
@@ -232,6 +233,19 @@ namespace WebService.Controllers
         [HttpGet("{id}/{propertyName}")]
         public override Task<object> GetPropertyAsync(string id, string propertyName)
             => base.GetPropertyAsync(id, propertyName);
+
+        [HttpGet("bytTag/{tag}/{propertyName}")]
+        public async Task<object> GetPropertyAsync(int tag, string propertyName)
+        {
+            // check if the property exists on the item
+            if (!typeof(Resident).GetProperties().Any(x => x.Name.EqualsWithCamelCasing(propertyName)))
+                throw new WebArgumentException(
+                    $"Property {propertyName} cannot be found on {typeof(Resident).Name}", nameof(propertyName));
+
+            // get the property from the database
+            return await ((IResidentsService) DataService).GetPropertyAsync(tag,
+                PropertySelectors[propertyName.ToUpperCamelCase()]);
+        }
 
         #endregion get (read)
 
