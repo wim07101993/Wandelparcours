@@ -6,6 +6,4 @@ class InjectionHandler():
 
     @staticmethod
     def getInjection(type):
-        return {
-            TagInterface: TagMock
-        }.get(type)
+        pass
