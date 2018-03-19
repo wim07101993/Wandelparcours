@@ -6,7 +6,8 @@ class ScannerMock(ScannerInterface):
 
     def scan(self):
         list = dict()
-        list["testmac"] = TagMock("testmac",random.randint(0,50))
-        list["testmac1"] = TagMock("testmac1", random.randint(0,50))
-        list["testmac2"] = TagMock("testmac2", random.randint(0,50))
+        list["1"] = TagMock("1",random.randint(0,50))
+        list["2"] = TagMock("2", random.randint(0,50))
+        list["3"] = TagMock("3", random.randint(0,50))
+        list["4"] = TagMock("4", random.randint(0, 50))
         return list
