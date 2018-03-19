@@ -179,6 +179,11 @@ namespace WebService.Services.Data.Mock
 
             ((IList) selector.Compile()(MockData[residentIndex])).Remove(x => x.Equals(item));
         }
+
+        public Task<object> GetPropertyAsync(int tag, Expression<Func<Resident, object>> propertyToSelect)
+        {
+            throw new NotImplementedException();
+        }
     }
 #pragma warning restore 1998
 }

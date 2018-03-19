@@ -8,7 +8,7 @@ class Rest(RestInterface):
         self.__url="http://10.9.4.40:5000"
 
     def GetImages(self,id):
-        url = self.__url+"/API/v1/residents/"+id+"/images"
+        url = self.__url+"/API/v1/residents/bytag/"+id+"/images"
         r = requests.get(url)
         return r.json()
 

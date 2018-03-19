@@ -1,4 +1,4 @@
 from RestService.Rest import Rest
 
 r= Rest()
-r.GetImages()
+r.GetImages("1")
