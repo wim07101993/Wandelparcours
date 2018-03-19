@@ -268,7 +268,25 @@ namespace WebService.Controllers
         [HttpDelete("{residentId}/Colors/{colorId}")]
         public async Task RemoveColorAsync(string residentId, string colorId)
         {
-            // TODO
+            // parse the resident id
+            if (!ObjectId.TryParse(residentId, out var residentObjectId))
+            {
+                // if it fails, throw not found exception
+                Throw.NotFound<Resident>(residentId);
+                return;
+            }
+
+            // parse the media id
+            if (!ObjectId.TryParse(colorId, out var mediaObjectId))
+            {
+                // if it fails, throw not found exception
+                Throw.NotFound<byte[]>(colorId);
+                return;
+            }
+
+            // remove the media from the database
+            await ((IResidentsService) DataService)
+                .RemoveSubItemAsync(residentObjectId, x => x.Colors, mediaObjectId);
         }
 
         public async Task RemoveMediaAsync(string residentId, string mediaId, EMediaType mediaType)
