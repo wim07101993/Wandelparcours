@@ -198,7 +198,7 @@ namespace WebService.Controllers
         }
 
         [HttpGet("{tag}/{mediaType}/random")]
-        public async Task<string> GetRandomMedia(int tag, string mediaType)
+        public async Task<MediaUrl> GetRandomMedia(int tag, string mediaType)
         {
             if (!Enum.TryParse<EMediaType>(mediaType, out var eMediaType))
             {
@@ -226,7 +226,7 @@ namespace WebService.Controllers
                     throw new ArgumentOutOfRangeException();
             }
 
-            return media.RandomItem().Url;
+            return media.RandomItem();
         }
 
         [HttpGet("{id}/{propertyName}")]

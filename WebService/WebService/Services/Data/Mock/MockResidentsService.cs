@@ -89,6 +89,7 @@ namespace WebService.Services.Data.Mock
         /// with as <see cref="Resident.Id"/> the passed <see cref="residentId"/>.
         /// </summary>
         /// <param name="residentId">is the id of the <see cref="Resident"/></param>
+        /// <param name="title">is the title of the media</param>
         /// <param name="data">is the data of the mediaData to add</param>
         /// <param name="mediaType">is the type of mediaData to add</param>
         /// <exception cref="ArgumentNullException">when the data is null</exception>
