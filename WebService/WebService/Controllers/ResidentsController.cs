@@ -252,19 +252,19 @@ namespace WebService.Controllers
         public override Task DeleteAsync(string id)
             => base.DeleteAsync(id);
 
-        [HttpDelete("{residentId}/Videos")]
+        [HttpDelete("{residentId}/Videos/{videoId}")]
         public Task RemoveVideoAsync(string residentId, string videoId)
             => RemoveMediaAsync(residentId, videoId, EMediaType.Video);
 
-        [HttpDelete("{residentId}/Music")]
+        [HttpDelete("{residentId}/Music/{musicId}")]
         public Task RemoveMusicAsync(string residentId, string musicId)
             => RemoveMediaAsync(residentId, musicId, EMediaType.Audio);
 
-        [HttpDelete("{residentId}/Images")]
+        [HttpDelete("{residentId}/Images/{imageId}")]
         public Task RemoveImageAsync(string residentId, string imageId)
             => RemoveMediaAsync(residentId, imageId, EMediaType.Image);
 
-        [HttpDelete("{residentId}/Colors")]
+        [HttpDelete("{residentId}/Colors/{colorId}")]
         public async Task RemoveColorAsync(string residentId, string colorId)
         {
             // TODO
