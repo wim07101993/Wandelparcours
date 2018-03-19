@@ -3,7 +3,7 @@
     <ul>
         <li *ngFor="let link of fullLinks">
             <img [src]="link.images.url" alt="Smiley face" height="150" width="175">
-            <i class="material-icons red-text pointer" (click)="deleteImageOnId(link.images.id)">delete</i>
+            <i class="material-icons red-text pointer" (click)="deleteResidentMediaByUniqueId(link.images.id)">delete</i>
         </li>
     </ul>
     </div>

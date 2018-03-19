@@ -17,6 +17,8 @@ export class UploadComponent implements OnInit {
     selectedFile: any;
     loading: string = "";
     check: any;
+    addPicture: string = "/images/data";
+    addVideo: string = "/videos/data";
     @Output() reload = new EventEmitter();
 
     constructor(private restService: RestServiceService, private route: ActivatedRoute) {}
@@ -37,11 +39,11 @@ export class UploadComponent implements OnInit {
                   const fd = new FormData();
                   fd.append("File", this.selectedFile[index], this.selectedFile[index].name);
                   if (this.selectedFile[index].type.indexOf("image") != -1) {
-                      this.check = await this.restService.addImagesToDatabase(this.id, fd);
+                      this.check = await this.restService.addCorrectMediaToDatabase(this.id, fd, this.addPicture);
                       //console.log(this.selectedFile[index].name);
                   }
                   else if (this.selectedFile[index].type.indexOf("video") != -1) {
-                      this.check = await this.restService.addVideosToDatabase(this.id, fd);
+                      this.check = await this.restService.addCorrectMediaToDatabase(this.id, fd, this.addVideo);
                   }
                   else{
                       alert("won't work");

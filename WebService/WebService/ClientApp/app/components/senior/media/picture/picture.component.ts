@@ -4,6 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { RequestOptions, Headers } from '@angular/http';
 import { UploadComponent } from '../../upload/upload.component';
 import { Resident } from '../../../../models/resident';
+import { MediaService } from '../../../../service/media.service';
 declare var $: any;
 
 
@@ -14,17 +15,16 @@ declare var $: any;
 })
 export class PictureComponent implements OnInit {
     typeOfMedia: string;
+    picture: string = "/images";
+    check: any;
     ngOnInit() { }
-
-
 
     images: Resident[];
     fullLinks: any=[];
-    url: any = "http://localhost:5000/api/v1/media/";
     id: string = this.route.snapshot.params['id'];
     selectedFile: File;
 
-    constructor(private service: RestServiceService, private route: ActivatedRoute, private router: Router) {
+    constructor(private route: ActivatedRoute, private router: Router, private media: MediaService) {
         this.getAllImages();
         this.typeOfMedia = "image/*";
     }
@@ -35,24 +35,17 @@ export class PictureComponent implements OnInit {
 
     async getAllImages() {
         this.fullLinks = [];
-        this.images = await this.service.getImagesOfResidentBasedOnId(this.id);
-        for (let a of this.images){
-            let url2 = this.url + a.id;
-            let fullLinks = new Resident();
-            
-            fullLinks.images.id = a.id;
-            fullLinks.images.url = url2; 
-            this.fullLinks.push(fullLinks);
-        }
+        this.fullLinks = await this.media.getMedia(this.id, this.picture);
+        //console.log(this.fullLinks);
     }
 
-
-    async deleteImageOnId(uniquePictureID: string) {
-        let a: any = await this.service.deleteResidentImageByUniqueId(this.id, uniquePictureID);
-        if (a) {
+    async deleteResidentMediaByUniqueId(uniquePictureID: string) {
+        this.check = await this.media.deleteMedia(this.id, uniquePictureID, this.picture);
+        if (this.check) {
             this.getAllImages();
         } else {
             this.router.navigate(["/error"]);
         }
+
     }
 }

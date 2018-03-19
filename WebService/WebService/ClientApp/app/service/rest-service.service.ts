@@ -41,9 +41,9 @@ export class RestServiceService {
     * @returns {Resident} one resident of type Resident with only the requested properties or undefined   
     */
     getResidentBasedOnId(uniqueIdentifier: string) {
-        return new Promise<Resident[]>(resolve => {
+        return new Promise<Resident>(resolve => {
             this.http.get(this.restUrl + 'api/v1/residents/' + uniqueIdentifier + '?properties=firstName&properties=lastName&properties=room&properties=birthday&properties=doctor').subscribe(response => {
-                resolve(<Resident[]>response.json());
+                resolve(<Resident>response.json());
             },
                 error => {
                     this.customErrorHandler.updateMessage(error);
@@ -122,11 +122,9 @@ export class RestServiceService {
     /////////
     //MEDIA//
     /////////
-
-    //IMAGES
-    addImagesToDatabase(uniqueIdentifier: any, images: any) {
+    addCorrectMediaToDatabase(uniqueIdentifier: any, images: any, addImage: string) {
         return new Promise(resolve => {
-            this.http.post(this.restUrl + 'api/v1/residents/' + uniqueIdentifier + '/images/data', images).subscribe(response => {
+            this.http.post(this.restUrl + 'api/v1/residents/' + uniqueIdentifier + addImage , images).subscribe(response => {
                 //console.log(images);
                 resolve(true);
             }, error => {
@@ -136,10 +134,9 @@ export class RestServiceService {
         });
     }
 
-
-    getImagesOfResidentBasedOnId(uniqueIdentifier: string) {
+    getCorrectMediaOfResidentBasedOnId(uniqueIdentifier: string, type: string) {
         return new Promise<Resident[]>(resolve => {
-            this.http.get(this.restUrl + 'api/v1/residents/' + uniqueIdentifier + '/images').subscribe(response => {
+            this.http.get(this.restUrl + 'api/v1/residents/' + uniqueIdentifier + type).subscribe(response => {
                 resolve(<Resident[]>response.json());
             },
                 error => {
@@ -150,62 +147,16 @@ export class RestServiceService {
         });
     }
 
-    deleteResidentImageByUniqueId(uniqueIdentifier: string, uniqueMediaIdentifier: string) {
+    deleteResidentMediaByUniqueId(uniqueIdentifier: string, uniqueMediaIdentifier: string, type: string) {
         return new Promise(resolve => {
-            this.http.delete(this.restUrl + 'api/v1/residents/' + uniqueIdentifier + '/images/' + uniqueMediaIdentifier).subscribe(response => {
-                //console.log("Deleted");
+            this.http.delete(this.restUrl + 'api/v1/residents/' + uniqueIdentifier + type + '/' + uniqueMediaIdentifier).subscribe(response => {
                 resolve(true);
             }, error => {
-                console.log("Something went wrong");
                 this.customErrorHandler.updateMessage(error);
                 resolve(false);
             });
         });
     }
-
-    //VIDEOS
-
-    getVideosOfResidentBasedOnId(uniqueIdentifier: string) {
-        return new Promise<Resident[]>(resolve => {
-            this.http.get(this.restUrl + 'api/v1/residents/' + uniqueIdentifier + '/videos').subscribe(resp => {
-                resolve(<Resident[]>resp.json());
-            }, (error) => {
-                this.customErrorHandler.updateMessage(error);
-                resolve();
-            });
-        })
-    }
-
-    addVideosToDatabase(uniqueIdentifier: string, video: any) {
-        return new Promise(resolve => {
-            this.http.post(this.restUrl + 'api/v1/residents/' + uniqueIdentifier + '/videos/data', video).subscribe(resp => {
-                resolve(true)
-            },
-                (error) => {
-                    this.customErrorHandler.updateMessage(error);
-                    resolve()
-                });
-            });
-    }
-
-
-    deleteResidentVideoByUniqueId(uniqueIdentifier: string, uniqueMediaIdentifier: string) {
-        return new Promise(resolve => {
-            this.http.delete(this.restUrl + 'api/v1/residents/' + uniqueIdentifier + '/videos/' + uniqueMediaIdentifier).subscribe(response => {
-                console.log("Deleted");
-                resolve(true);
-            }, error => {
-                console.log("Something went wrong");
-                this.customErrorHandler.updateMessage(error);
-                resolve(false);
-            });
-        });
-    }
-
-
-
-
-
 
     async SaveStationToDatabase(station:Station){
         return new Promise(resolve => {

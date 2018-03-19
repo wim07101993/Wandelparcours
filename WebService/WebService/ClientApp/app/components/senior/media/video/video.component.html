@@ -6,7 +6,7 @@
     <video width="320" height="240" controls>
         <source [src]="link.videos.url">
     </video>
-    <i class="material-icons red-text pointer" (click)="deleteVideoOnId(link.videos.id)">delete</i>
+    <i class="material-icons red-text pointer" (click)="deleteResidentMediaByUniqueId(link.videos.id)">delete</i>
 </div>
 
 <app-upload [type]="typeOfMedia"  (reload)="reload()"></app-upload>
