@@ -234,7 +234,7 @@ namespace WebService.Controllers
         public override Task<object> GetPropertyAsync(string id, string propertyName)
             => base.GetPropertyAsync(id, propertyName);
 
-        [HttpGet("bytTag/{tag}/{propertyName}")]
+        [HttpGet("byTag/{tag}/{propertyName}")]
         public async Task<object> GetPropertyAsync(int tag, string propertyName)
         {
             // check if the property exists on the item
