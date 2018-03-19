@@ -81,6 +81,27 @@ namespace WebService.Services.Data.Mongo
             }
         }
 
+        public virtual async Task AddItemToListProperty(ObjectId id,
+            Expression<Func<T, IEnumerable<object>>> propertyToAddItemTo, object itemToAdd)
+        {
+            if (itemToAdd == null)
+            {
+                Throw.NullArgument(nameof(itemToAdd));
+                return;
+            }
+
+            var filter = Builders<T>.Filter.Eq(x => x.Id, id);
+            var updater = Builders<T>.Update.Push(propertyToAddItemTo, itemToAdd);
+
+            if (itemToAdd is IModelWithID modelWithID)
+                modelWithID.Id = ObjectId.GenerateNewId();
+
+            var result = await MongoCollection.FindOneAndUpdateAsync(filter, updater);
+
+            if (result == null)
+                Throw.NotFound<T>(id);
+        }
+
         #endregion create
 
         #region read
@@ -95,7 +116,8 @@ namespace WebService.Services.Data.Mongo
         /// </summary>
         /// <param name="propertiesToInclude">are the properties that should be included in the objects</param>
         /// <returns>An <see cref="IEnumerable{T}"/> filled with all the items in the database.</returns>
-        public virtual async Task<IEnumerable<T>> GetAsync(IEnumerable<Expression<Func<T, object>>> propertiesToInclude = null)
+        public virtual async Task<IEnumerable<T>> GetAsync(
+            IEnumerable<Expression<Func<T, object>>> propertiesToInclude = null)
         {
             // get all the items
             var foundItems = MongoCollection.Find(FilterDefinition<T>.Empty);
@@ -129,7 +151,8 @@ namespace WebService.Services.Data.Mongo
         /// <param name="propertiesToInclude">are the properties that should be included in the objects</param>
         /// <returns>An <see cref="IEnumerable{T}"/> filled with all the ts in the database.</returns>
         /// <exception cref="NotFoundException">when there is no item found with the given id</exception>
-        public virtual async Task<T> GetAsync(ObjectId id, IEnumerable<Expression<Func<T, object>>> propertiesToInclude = null)
+        public virtual async Task<T> GetAsync(ObjectId id,
+            IEnumerable<Expression<Func<T, object>>> propertiesToInclude = null)
         {
             // get the item with the given id
             var find = MongoCollection.Find(x => x.Id == id);
@@ -190,7 +213,6 @@ namespace WebService.Services.Data.Mongo
             // create a property filter
             var selector = Builders<T>.Projection.Include(propertyToSelect);
 
-            // TODO write pretty query
             // execute the query
             var item = await find
                 .Project<T>(selector)
@@ -302,7 +324,7 @@ namespace WebService.Services.Data.Mongo
                 Throw.NotFound<T>(newItem.Id);
         }
 
-        /// <inheritdoc cref="IDataService{T}.UpdatePropertyAsync" />
+        /// <inheritdoc cref="IDataService{T}.UpdatePropertyAsync{TValue}" />
         /// <summary>
         /// GetPropertyAsync updates a single property of the <see cref="T"/> with the given id
         /// </summary>
@@ -314,34 +336,14 @@ namespace WebService.Services.Data.Mongo
         /// <exception cref="ArgumentException">when the value is of the wrong type</exception>
         /// <exception cref="MongoException">when the query was not acknowledged</exception>
         /// <exception cref="NotFoundException">when there was no item with the same id as the newItem</exception>
-        public virtual async Task UpdatePropertyAsync(ObjectId id, Expression<Func<T, object>> propertyToUpdate,
-            object value)
+        public virtual async Task UpdatePropertyAsync<TValue>(ObjectId id, Expression<Func<T, TValue>> propertyToUpdate,
+            TValue value)
         {
             // if there is no property to update, throw exception
             if (propertyToUpdate == null)
             {
                 Throw.NullArgument(nameof(propertyToUpdate));
                 return;
-            }
-
-            // get the property to update
-            var property = propertyToUpdate.Body is MemberExpression expression
-                // via member expression
-                ? expression.Member as PropertyInfo
-                // via unary expression
-                : ((MemberExpression) ((UnaryExpression) propertyToUpdate.Body).Operand).Member as PropertyInfo;
-
-            // if the property doesn't exist, throw exception
-            if (property == null)
-            {
-                Throw.PropertyNotKnown<T>("");
-                return;
-            }
-
-            // if the value is not of the correct type, throw exception
-            if (!property.PropertyType.IsInstanceOfType(value))
-            {
-                Throw.WrongTypeArgument(value.GetType(), property.PropertyType);
             }
 
             // create a filter that filters on id

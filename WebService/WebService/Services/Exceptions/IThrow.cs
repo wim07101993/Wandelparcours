@@ -22,5 +22,7 @@ namespace WebService.Services.Exceptions
         void Database<T>(EDatabaseMethod databaseMethod, ObjectId id);
 
         void FileToLarge(int maxSize);
+
+        void Exception(string message = null);
     }
 }

@@ -22,6 +22,8 @@ namespace WebService.Controllers.Bases
         /// <exception cref="Exception">When the item could not be created</exception>
         Task<StatusCodeResult> CreateAsync([FromBody] T item);
 
+        Task<StatusCodeResult> AddItemToList(string id, string property, string jsonValue);
+
         #endregion CREATE
 
 

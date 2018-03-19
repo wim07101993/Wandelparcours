@@ -51,7 +51,7 @@ namespace WebService.Controllers
             new Dictionary<string, Expression<Func<Resident, object>>>
             {
                 {nameof(Resident.Birthday), x => x.Birthday},
-                 {nameof(Resident.Colors), x => x.Colors},
+                {nameof(Resident.Colors), x => x.Colors},
                 {nameof(Resident.Doctor), x => x.Doctor},
                 {nameof(Resident.FirstName), x => x.FirstName},
                 {nameof(Resident.Images), x => x.Images},
@@ -106,15 +106,16 @@ namespace WebService.Controllers
         {
             // parse the id
             if (!ObjectId.TryParse(residentId, out var residentObjectId))
-
             {
                 // if it fails, throw not found exception
                 Throw.NotFound<Resident>(residentId);
+                return null;
             }
 
-            // TODO
+            await DataService.AddItemToListProperty(residentObjectId, x => x.Colors, colorData);
             return StatusCode((int) HttpStatusCode.Created);
         }
+
 
         public async Task<StatusCodeResult> AddMediaAsync(string residentId, MultiPartFile data, EMediaType mediaType,
             int maxFileSize = int.MaxValue)
@@ -136,8 +137,9 @@ namespace WebService.Controllers
             try
             {
                 var bytes = data.ConvertToBytes(maxFileSize);
+                var title = data.File.FileName;
 
-                await ((IResidentsService) DataService).AddMediaAsync(residentObjectId, bytes, mediaType);
+                await ((IResidentsService) DataService).AddMediaAsync(residentObjectId, title, bytes, mediaType);
                 return StatusCode((int) HttpStatusCode.Created);
             }
             catch (FileToLargeException)
@@ -196,7 +198,7 @@ namespace WebService.Controllers
         }
 
         [HttpGet("{tag}/{mediaType}/random")]
-        public async Task<string> GetRandomMedia(int tag, string mediaType)
+        public async Task<MediaUrl> GetRandomMedia(int tag, string mediaType)
         {
             if (!Enum.TryParse<EMediaType>(mediaType, out var eMediaType))
             {
@@ -224,7 +226,7 @@ namespace WebService.Controllers
                     throw new ArgumentOutOfRangeException();
             }
 
-            return media.RandomItem().Url;
+            return media.RandomItem();
         }
 
         [HttpGet("{id}/{propertyName}")]
@@ -251,22 +253,40 @@ namespace WebService.Controllers
         public override Task DeleteAsync(string id)
             => base.DeleteAsync(id);
 
-        [HttpDelete("{residentId}/Videos")]
+        [HttpDelete("{residentId}/Videos/{videoId}")]
         public Task RemoveVideoAsync(string residentId, string videoId)
             => RemoveMediaAsync(residentId, videoId, EMediaType.Video);
 
-        [HttpDelete("{residentId}/Music")]
+        [HttpDelete("{residentId}/Music/{musicId}")]
         public Task RemoveMusicAsync(string residentId, string musicId)
             => RemoveMediaAsync(residentId, musicId, EMediaType.Audio);
 
-        [HttpDelete("{residentId}/Images")]
+        [HttpDelete("{residentId}/Images/{imageId}")]
         public Task RemoveImageAsync(string residentId, string imageId)
             => RemoveMediaAsync(residentId, imageId, EMediaType.Image);
 
-        [HttpDelete("{residentId}/Colors")]
+        [HttpDelete("{residentId}/Colors/{colorId}")]
         public async Task RemoveColorAsync(string residentId, string colorId)
         {
-            // TODO
+            // parse the resident id
+            if (!ObjectId.TryParse(residentId, out var residentObjectId))
+            {
+                // if it fails, throw not found exception
+                Throw.NotFound<Resident>(residentId);
+                return;
+            }
+
+            // parse the media id
+            if (!ObjectId.TryParse(colorId, out var mediaObjectId))
+            {
+                // if it fails, throw not found exception
+                Throw.NotFound<byte[]>(colorId);
+                return;
+            }
+
+            // remove the media from the database
+            await ((IResidentsService) DataService)
+                .RemoveSubItemAsync(residentObjectId, x => x.Colors, mediaObjectId);
         }
 
         public async Task RemoveMediaAsync(string residentId, string mediaId, EMediaType mediaType)
