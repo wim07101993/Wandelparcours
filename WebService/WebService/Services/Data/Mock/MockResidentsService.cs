@@ -168,7 +168,7 @@ namespace WebService.Services.Data.Mock
         }
 
         public async Task RemoveSubItemAsync(ObjectId residentId,
-            Expression<Func<Resident, IEnumerable>> selector, object item)
+            Expression<Func<Resident, IEnumerable<object>>> selector, object item)
         {
             // search for the resident index
             var residentIndex = MockData.FindIndex(x => x.Id == residentId);

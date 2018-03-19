@@ -70,6 +70,6 @@ namespace WebService.Services.Data
         /// <param name="item">is the item to remove</param>
         /// <exception cref="NotFoundException">when there is no <see cref="Resident"/> found with the given <see cref="AModelWithID.Id"/></exception>
         /// <exception cref="NotFoundException">when there is no item found with the given <see cref="AModelWithID.Id"/></exception>
-        Task RemoveSubItemAsync(ObjectId residentId, Expression<Func<Resident, IEnumerable>> selector, object item);
+        Task RemoveSubItemAsync(ObjectId residentId, Expression<Func<Resident, IEnumerable<object>>> selector, object item);
     }
 }

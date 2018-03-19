@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
@@ -213,8 +214,12 @@ namespace WebService.Services.Data.Mongo
             return resident;
         }
 
-        public async Task RemoveSubItemAsync(ObjectId residentId,
-            Expression<Func<Resident, IEnumerable<object>>> selector, object item)
+        public Task RemoveSubItemAsync(ObjectId residentId, Expression<Func<Resident, IEnumerable>> selector, object item)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task RemoveSubItemAsync(ObjectId residentId,Expression<Func<Resident, IEnumerable<object>>> selector, object item)
         {
             // create filter to select the correct resident
             var filter = Builders<Resident>.Filter.Eq(x => x.Id, residentId);
