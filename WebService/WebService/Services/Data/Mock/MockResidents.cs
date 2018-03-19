@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using MongoDB.Bson;
 using WebService.Models;
+using WebService.Services.Exceptions;
 
 namespace WebService.Services.Data.Mock
 {

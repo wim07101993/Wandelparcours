@@ -1,74 +1,54 @@
 ﻿using System;
-using System.Linq;
 using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using WebService.Helpers.Exceptions;
 
 namespace WebAPIUnitTests.TestHelpers.Extensions
 {
     public static class ActionExtensions
     {
-        public static void ShouldCatchArgumentNullException(this Action action, string paramName, string because)
+        public static void ShouldCatchException<T>(this Action action, string because = "") where T : Exception
         {
             try
             {
                 action();
-                Assert.Fail($"a null argument exception should have been thrown because {because}");
+                Assert.Fail($"a {typeof(T).Name} should have been thrown because {because}");
             }
-            catch (AggregateException e)
+            catch (Exception e)
             {
-                e.InnerExceptions
-                    .Any(x => (x as ArgumentNullException)?.ParamName == paramName)
-                    .Should()
-                    .BeTrue($"at least one exception should be an argument null exception since {because}");
-            }
-            catch (ArgumentNullException e)
-            {
-                e.ParamName
-                    .Should()
-                    .Be(paramName, because);
+                if (e is AggregateException aggregateException)
+                    aggregateException.InnerExceptions
+                        .Should()
+                        .Contain(x => x is T, $"at least one exception should be a {typeof(T).Name} since {because}");
+                else
+                    e.Should()
+                        .BeAssignableTo<T>(because);
             }
         }
 
-        public static void ShouldCatchNotFoundException(this Action action, string because)
+        public static void ShouldCatchArgumentException<T>(this Action action, string paramName, string because = "")
+            where T : ArgumentException
         {
             try
             {
                 action();
-                Assert.Fail($"a not found exception should have been thrown because {because}");
+                Assert.Fail($"a {typeof(T).Name} should have been thrown because {because}");
             }
-            catch (AggregateException e)
+            catch (Exception e)
             {
-                e.InnerExceptions
-                    .Any(x => x is NotFoundException)
-                    .Should()
-                    .BeTrue($"at least one exception should be a not found exception since {because}");
-            }
-            catch (NotFoundException)
-            {
-                // IGNORED => this should happen
-            }
-        }
-
-        public static void ShouldCatchArgumentException(this Action action, string paramName, string because)
-        {
-            try
-            {
-                action();
-                Assert.Fail($"a argument exception should have been thrown because {because}");
-            }
-            catch (AggregateException e)
-            {
-                e.InnerExceptions
-                    .Any(x => (x as ArgumentException)?.ParamName == paramName)
-                    .Should()
-                    .BeTrue($"at least one exception should be an argument exception since {because}");
-            }
-            catch (ArgumentException e)
-            {
-                e.ParamName
-                    .Should()
-                    .Be(paramName, because);
+                if (e is AggregateException aggregateException)
+                    aggregateException.InnerExceptions
+                        .Should()
+                        .Contain(x => x is T && ((T) x).ParamName == paramName,
+                            $"at least one exception should be a {typeof(T).Name} since {because}");
+                else
+                    e.Should()
+                        .BeAssignableTo<T>(because)
+                        .And
+                        .Subject
+                        .As<T>()
+                        .ParamName
+                        .Should()
+                        .Be(paramName, because);
             }
         }
     }

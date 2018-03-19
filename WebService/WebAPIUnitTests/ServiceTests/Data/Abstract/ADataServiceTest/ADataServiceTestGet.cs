@@ -5,7 +5,8 @@ using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MongoDB.Bson;
 using WebAPIUnitTests.TestHelpers.Extensions;
-using WebAPIUnitTests.TestMocks.Mock;
+using WebAPIUnitTests.TestModels;
+using WebService.Helpers.Exceptions;
 
 // ReSharper disable once CheckNamespace
 namespace WebAPIUnitTests.ServiceTests.Data.Abstract
@@ -67,7 +68,7 @@ namespace WebAPIUnitTests.ServiceTests.Data.Abstract
             var dataService = CreateNewDataService();
 
             var mockEntities = dataService
-                .GetAsync(new Expression<Func<TestEntity, object>>[] { x => x.S, x => x.I })
+                .GetAsync(new Expression<Func<TestEntity, object>>[] {x => x.S, x => x.I})
                 .Result
                 .ToList();
 
@@ -106,35 +107,29 @@ namespace WebAPIUnitTests.ServiceTests.Data.Abstract
         [TestMethod]
         public void GetOneWithUnknownIdAndNullPropertiesToInclude()
         {
-            ActionExtensions.ShouldCatchNotFoundException(() =>
-            {
-                var _ = CreateNewDataService().GetAsync(ObjectId.GenerateNewId()).Result;
-            },
+            ActionExtensions.ShouldCatchException<NotFoundException>(
+                () => CreateNewDataService().GetAsync(ObjectId.GenerateNewId()).Wait(),
                 "the given id doesn't exist");
         }
 
         [TestMethod]
         public void GetOneWithUnknownIdAndEmptyPropertiesToInclude()
         {
-            ActionExtensions.ShouldCatchNotFoundException(() =>
-            {
-                var _ = CreateNewDataService()
+            ActionExtensions.ShouldCatchException<NotFoundException>(
+                () => CreateNewDataService()
                     .GetAsync(ObjectId.GenerateNewId(), new Expression<Func<TestEntity, object>>[] { })
-                    .Result;
-            },
+                    .Wait(),
                 "there is no entity with the given id");
         }
 
         [TestMethod]
         public void GetOneWithUnknownIdAndSomePropertiesToInclude()
         {
-            ActionExtensions.ShouldCatchNotFoundException(() =>
-            {
-                var _ = CreateNewDataService()
+            ActionExtensions.ShouldCatchException<NotFoundException>(
+                () => CreateNewDataService()
                     .GetAsync(ObjectId.GenerateNewId(),
-                        new Expression<Func<TestEntity, object>>[] { x => x.S, x => x.I })
-                    .Result;
-            },
+                        new Expression<Func<TestEntity, object>>[] {x => x.S, x => x.I})
+                    .Wait(),
                 "there is no entity with the given id");
         }
 
@@ -188,7 +183,7 @@ namespace WebAPIUnitTests.ServiceTests.Data.Abstract
 
             var mockEntity = dataService
                 .GetAsync(dataService.GetFirst().Id,
-                    new Expression<Func<TestEntity, object>>[] { x => x.S, x => x.I })
+                    new Expression<Func<TestEntity, object>>[] {x => x.S, x => x.I})
                 .Result;
 
             var emptyEntity = new TestEntity();
@@ -221,12 +216,10 @@ namespace WebAPIUnitTests.ServiceTests.Data.Abstract
         [TestMethod]
         public void GetPropertyWithUnknownIdAndNoProperty()
         {
-            ActionExtensions.ShouldCatchArgumentNullException(() =>
-            {
-                var _ = CreateNewDataService()
+            ActionExtensions.ShouldCatchArgumentException<WebArgumentNullException>(
+                () => CreateNewDataService()
                     .GetPropertyAsync(ObjectId.GenerateNewId(), null)
-                    .Result;
-            },
+                    .Wait(),
                 "propertyToSelect",
                 "there must be a property to select");
         }
@@ -234,12 +227,10 @@ namespace WebAPIUnitTests.ServiceTests.Data.Abstract
         [TestMethod]
         public void GetKnownPropertyWithUnknownId()
         {
-            ActionExtensions.ShouldCatchNotFoundException(() =>
-            {
-                var _ = CreateNewDataService()
+            ActionExtensions.ShouldCatchException<NotFoundException>(
+                () => CreateNewDataService()
                     .GetPropertyAsync(ObjectId.GenerateNewId(), x => x.B)
-                    .Result;
-            },
+                    .Wait(),
                 "the given id doesn't exist");
         }
 
@@ -248,10 +239,8 @@ namespace WebAPIUnitTests.ServiceTests.Data.Abstract
         {
             var dataService = CreateNewDataService();
 
-            ActionExtensions.ShouldCatchArgumentNullException(() =>
-            {
-                var _ = dataService.GetPropertyAsync(dataService.GetFirst().Id, null).Result;
-            },
+            ActionExtensions.ShouldCatchArgumentException<WebArgumentNullException>(
+                () => dataService.GetPropertyAsync(dataService.GetFirst().Id, null).Wait(),
                 "propertyToSelect",
                 "the selector cannot be null");
         }

@@ -47,21 +47,16 @@ namespace WebService.Services.Data
         /// If the item is created, the method should return the id of the new <see cref="T"/>, else null.
         /// </summary>
         /// <param name="item">is the <see cref="T"/> to save in the database</param>
-        /// <returns>
-        /// - the new id if the <see cref="T"/> was created in the database
-        /// - null if the item was not created
-        /// </returns>
-        Task<bool> CreateAsync(T item);
+        Task CreateAsync(T item);
+
+        Task AddItemToListProperty(ObjectId id, Expression<Func<T, IEnumerable<object>>> propertyToAddItemTo,
+            object itemToAdd);
 
         /// <summary>
         /// RemoveAsync is supposed to remove the <see cref="T"/> with the given id from the database.
         /// </summary>
         /// <param name="id">is the id of the <see cref="T"/> to remove in the database</param>
-        /// <returns>
-        /// - true if the <see cref="T"/> was removed from the database
-        /// - false if the item was not removed
-        /// </returns>
-        Task<bool> RemoveAsync(ObjectId id);
+        Task RemoveAsync(ObjectId id);
 
         /// <summary>
         /// UpdateAsync is supposed to update the <see cref="T"/> with the id of the given <see cref="T"/>.
@@ -71,11 +66,7 @@ namespace WebService.Services.Data
         /// </summary>
         /// <param name="newItem">is the <see cref="T"/> to update</param>
         /// <param name="propertiesToUpdate">are the properties that need to be updated</param>
-        /// <returns>
-        /// - true if the <see cref="T"/> was updated
-        /// - false if the item was not updated
-        /// </returns>
-        Task<bool> UpdateAsync(T newItem, IEnumerable<Expression<Func<T, object>>> propertiesToUpdate = null);
+        Task UpdateAsync(T newItem, IEnumerable<Expression<Func<T, object>>> propertiesToUpdate = null);
 
         /// <summary>
         /// GetPropertyAsync is supposed to update a single property of the <see cref="T"/> with the given id
@@ -83,10 +74,6 @@ namespace WebService.Services.Data
         /// <param name="id">is the id of the <see cref="T"/> to get the property from</param>
         /// <param name="propertyToUpdate">is the selector to select the property to update</param>
         /// <param name="value">is the new value of the property</param>
-        /// <returns>
-        /// - true if the property was updated
-        /// - false if the property was not updated
-        /// </returns>
-        Task<bool> UpdatePropertyAsync(ObjectId id, Expression<Func<T, object>> propertyToUpdate, object value);
+        Task UpdatePropertyAsync<TValue>(ObjectId id, Expression<Func<T, TValue>> propertyToUpdate, TValue value);
     }
 }

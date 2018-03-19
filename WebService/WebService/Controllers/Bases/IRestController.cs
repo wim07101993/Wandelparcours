@@ -20,7 +20,9 @@ namespace WebService.Controllers.Bases
         /// </summary>
         /// <param name="item">is the <see cref="T"/> to save in the database</param>
         /// <exception cref="Exception">When the item could not be created</exception>
-        Task CreateAsync([FromBody] T item);
+        Task<StatusCodeResult> CreateAsync([FromBody] T item);
+
+        Task<StatusCodeResult> AddItemToList(string id, string property, string jsonValue);
 
         #endregion CREATE
 

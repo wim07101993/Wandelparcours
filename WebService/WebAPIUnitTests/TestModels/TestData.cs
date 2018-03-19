@@ -2,8 +2,9 @@
 using System.Collections.Generic;
 using MongoDB.Bson;
 using WebService.Models;
+using WebService.Services.Randomizer;
 
-namespace WebAPIUnitTests
+namespace WebAPIUnitTests.TestModels
 {
     public static class TestData
     {
@@ -21,12 +22,6 @@ namespace WebAPIUnitTests
                 Id = new ObjectId("5a9566c58b9ed54db08d0ce7"),
                 FirstName = "Lea",
                 LastName = "Thuwis",
-                Colors = new List<MediaWithId>
-                {
-                    new MediaWithId {Id = ObjectId.GenerateNewId(), Data = new byte[] {137, 145, 25}},
-                    new MediaWithId {Id = ObjectId.GenerateNewId(), Data = new byte[] {255, 75, 65}},
-                    new MediaWithId {Id = ObjectId.GenerateNewId(), Data = new byte[] {200, 13, 46}}
-                },
                 Room = "AT109 A",
                 Birthday = new DateTime(1937, 4, 8),
                 Doctor = new Doctor
@@ -128,6 +123,60 @@ namespace WebAPIUnitTests
                     Y = 0.392156862745098,
                 }
             },
+        };
+
+        public static List<MediaData> TestMediaData { get; } = new List<MediaData>
+        {
+            new MediaData
+            {
+                Id = ObjectId.GenerateNewId(),
+                Data = Randomizer.Instance.Next(new byte[10])
+            },
+            new MediaData
+            {
+                Id = ObjectId.GenerateNewId(),
+                Data = Randomizer.Instance.Next(new byte[10])
+            },
+            new MediaData
+            {
+                Id = ObjectId.GenerateNewId(),
+                Data = Randomizer.Instance.Next(new byte[10])
+            },
+            new MediaData
+            {
+                Id = ObjectId.GenerateNewId(),
+                Data = Randomizer.Instance.Next(new byte[10])
+            },
+            new MediaData
+            {
+                Id = ObjectId.GenerateNewId(),
+                Data = Randomizer.Instance.Next(new byte[10])
+            },
+            new MediaData
+            {
+                Id = ObjectId.GenerateNewId(),
+                Data =Randomizer.Instance.Next(new byte[10])
+            },
+            new MediaData
+            {
+                Id = ObjectId.GenerateNewId(),
+                Data = Randomizer.Instance.Next(new byte[10])
+            },
+            new MediaData
+            {
+                Id = ObjectId.GenerateNewId(),
+                Data = Randomizer.Instance.Next(new byte[10])
+            },
+            new MediaData
+            {
+                Id = ObjectId.GenerateNewId(),
+                Data = Randomizer.Instance.Next(new byte[10])
+            },
+            new MediaData
+            {
+                Id = ObjectId.GenerateNewId(),
+                Data = Randomizer.Instance.Next(new byte[10])
+            }
         };
     }
 }
