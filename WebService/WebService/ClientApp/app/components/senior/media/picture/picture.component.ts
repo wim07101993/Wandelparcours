@@ -1,44 +1,62 @@
-import { Component, OnInit, ViewChild, Injectable } from '@angular/core';
+import { Component, OnInit, ViewChild, Injectable, Input } from '@angular/core';
 import { RestServiceService } from '../../../../service/rest-service.service';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { RequestOptions, Headers } from '@angular/http';
+import { UploadComponent } from '../../upload/upload.component';
+import { Resident } from '../../../../models/resident';
+import { MediaService } from '../../../../service/media.service';
 declare var $: any;
 
 
 @Component({
-  selector: 'app-picture',
-  templateUrl: './picture.component.html',
-  styleUrls: ['./picture.component.css'],
+    selector: 'app-picture',
+    templateUrl: './picture.component.html',
+    styleUrls: ['./picture.component.css'],
 })
 export class PictureComponent implements OnInit {
-    fd: FormData = new FormData();
+    typeOfMedia: string;
+    picture: string = "/images";
+    check: any;
     ngOnInit() { }
 
-
+    images: Resident[];
+    fullLinks: any=[];
     id: string = this.route.snapshot.params['id'];
     selectedFile: File;
 
-    constructor(private service: RestServiceService, private route: ActivatedRoute, ) {
+    constructor(private route: ActivatedRoute, private router: Router, private media: MediaService) {
+        this.getAllImages();
+        this.typeOfMedia = "image/*";
+    }
+
+    /**
+     * reload page
+     */
+    reload() {
         this.getAllImages();
     }
 
-    onFileSelected(event: any) {
-        this.selectedFile = <File>event.target.files[0];
-        console.log(this.selectedFile);
+    /**
+     * Gets all urls for images
+     */
+    async getAllImages() {
+        this.fullLinks = [];
+        this.fullLinks = await this.media.getMedia(this.id, this.picture);
+        //console.log(this.fullLinks);
     }
 
-    async onUpload() {
-        this.fd.append('images/data', this.selectedFile, this.selectedFile.name);
-        console.log(this.fd); console.log(this.selectedFile.type);
-        //let headers = new Headers();
-        //let options = new RequestOptions({ headers: headers });    
-        //await this.service.addImagesToDatabase(this.id, new Blob([JSON.stringify(this.selectedFile.name)], { type: "application/json"}));
-        let images = this.service.addImagesToDatabase(this.id, this.fd);
-        //console.log(images);
-    }    
+    /**
+     * Delete resident media based on uniqueId
+     * @param uniquePictureID unique pictureId
+     * Either reloads the page or sends user to errorpage
+     */
+    async deleteResidentMediaByUniqueId(uniquePictureID: string) {
+        this.check = await this.media.deleteMedia(this.id, uniquePictureID, this.picture);
+        if (this.check) {
+            this.getAllImages();
+        } else {
+            this.router.navigate(["/error"]);
+        }
 
-    async getAllImages() {
-        let images: any = await this.service.getImagesOfResidentBasedOnId(this.id);
-        console.log(images);
     }
 }

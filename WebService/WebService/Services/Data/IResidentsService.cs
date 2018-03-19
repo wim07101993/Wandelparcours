@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
@@ -28,12 +29,13 @@ namespace WebService.Services.Data
         /// with as <see cref="Resident.Id"/> the passed <see cref="residentId"/>.
         /// </summary>
         /// <param name="residentId">is the id of the <see cref="Resident"/></param>
+        /// <param name="title">is the title of the media</param>
         /// <param name="data">is the data of the media to add</param>
         /// <param name="mediaType">is the type of media to add</param>
         /// <exception cref="ArgumentNullException">when the data is null</exception>
         /// <exception cref="NotFoundException">when there is no <see cref="Resident"/> found with the given <see cref="AModelWithID.Id"/></exception>
         /// <exception cref="ArgumentOutOfRangeException">when the media type doesn't exist</exception>
-        Task AddMediaAsync(ObjectId residentId, byte[] data, EMediaType mediaType);
+        Task AddMediaAsync(ObjectId residentId, string title, byte[] data, EMediaType mediaType);
 
         /// <summary>
         /// AddMediaAsync is supposed to add the <see cref="url"/> as media of the type <see cref="mediaType"/> to the <see cref="Resident"/>
@@ -58,5 +60,16 @@ namespace WebService.Services.Data
         /// <exception cref="NotFoundException">when there is no <see cref="MediaData"/> found with the given <see cref="AModelWithID.Id"/></exception>
         /// <exception cref="ArgumentOutOfRangeException">when the media type doesn't exist</exception>
         Task RemoveMediaAsync(ObjectId residentId, ObjectId mediaId, EMediaType mediaType);
+
+
+        /// <summary>
+        /// RemoveSubItemAsync is supposed to remove a sub-property from a <see cref="Resident"/>
+        /// </summary>
+        /// <param name="residentId">is the id of the <see cref="Resident"/> to remove the media from</param>
+        /// <param name="selector">is the selector to select the property</param>
+        /// <param name="item">is the item to remove</param>
+        /// <exception cref="NotFoundException">when there is no <see cref="Resident"/> found with the given <see cref="AModelWithID.Id"/></exception>
+        /// <exception cref="NotFoundException">when there is no item found with the given <see cref="AModelWithID.Id"/></exception>
+        Task RemoveSubItemAsync(ObjectId residentId, Expression<Func<Resident, IEnumerable<object>>> selector, object item);
     }
 }

@@ -1,0 +1,12 @@
+<div>
+    <input type="file" (change)="onFileSelected($event)" multiple [accept]="type" />
+    <button class="btn btn-primary" (click)="onUpload()">Upload</button>
+    <p>{{loading}}</p>
+</div>
+
+<div class="progress">
+    <div class="bar"></div>
+    <div class="percent">0%</div>
+</div>
+
+<div id="status"></div>

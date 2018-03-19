@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
+using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Bson;
@@ -50,7 +51,7 @@ namespace WebService.Controllers
             new Dictionary<string, Expression<Func<Resident, object>>>
             {
                 {nameof(Resident.Birthday), x => x.Birthday},
-                // {nameof(Resident.Colors), x => x.Colors},
+                {nameof(Resident.Colors), x => x.Colors},
                 {nameof(Resident.Doctor), x => x.Doctor},
                 {nameof(Resident.FirstName), x => x.FirstName},
                 {nameof(Resident.Images), x => x.Images},
@@ -73,60 +74,56 @@ namespace WebService.Controllers
         #region post (create)
 
         [HttpPost]
-        public override Task CreateAsync([FromBody] Resident item)
+        public override Task<StatusCodeResult> CreateAsync([FromBody] Resident item)
             => base.CreateAsync(item);
 
         [HttpPost("{residentId}/Music/data")]
-        public Task AddMusicAsync(string residentId, [FromForm] MultiPartFile musicData)
+        public Task<StatusCodeResult> AddMusicAsync(string residentId, [FromForm] MultiPartFile musicData)
             => AddMediaAsync(residentId, musicData, EMediaType.Audio, (int) 20e6);
 
         [HttpPost("{residentId}/Music/url")]
-        public Task AddMusicAsync(string residentId, [FromBody] string url)
+        public Task<StatusCodeResult> AddMusicAsync(string residentId, [FromBody] string url)
             => AddMediaAsync(residentId, url, EMediaType.Audio);
 
         [HttpPost("{residentId}/Videos/data")]
-        public Task AddVideoAsync(string residentId, [FromForm] MultiPartFile videoData)
+        public Task<StatusCodeResult> AddVideoAsync(string residentId, [FromForm] MultiPartFile videoData)
             => AddMediaAsync(residentId, videoData, EMediaType.Video, (int) 1e9);
 
         [HttpPost("{residentId}/Videos/url")]
-        public Task AddVideoAsync(string residentId, [FromBody] string url)
+        public Task<StatusCodeResult> AddVideoAsync(string residentId, [FromBody] string url)
             => AddMediaAsync(residentId, url, EMediaType.Video);
 
         [HttpPost("{residentId}/Images/data")]
-        public Task AddImageAsync(string residentId, [FromForm] MultiPartFile imageData)
+        public Task<StatusCodeResult> AddImageAsync(string residentId, [FromForm] MultiPartFile imageData)
             => AddMediaAsync(residentId, imageData, EMediaType.Image, (int) 20e6);
 
         [HttpPost("{residentId}/Images/url")]
-        public Task AddImageAsync(string residentId, [FromBody] string url)
+        public Task<StatusCodeResult> AddImageAsync(string residentId, [FromBody] string url)
             => AddMediaAsync(residentId, url, EMediaType.Image);
 
         [HttpPost("{residentId}/Colors/data")]
-        public async Task AddColorAsync(string residentId, [FromBody] byte[] colorData)
+        public async Task<StatusCodeResult> AddColorAsync(string residentId, [FromBody] byte[] colorData)
         {
             // parse the id
             if (!ObjectId.TryParse(residentId, out var residentObjectId))
-
             {
                 // if it fails, throw not found exception
                 Throw.NotFound<Resident>(residentId);
+                return null;
             }
 
-            // TODO
+            await DataService.AddItemToListProperty(residentObjectId, x => x.Colors, colorData);
+            return StatusCode((int) HttpStatusCode.Created);
         }
 
-        [HttpPost("{residentId}/Colors/url")]
-        public async Task AddColorAsync(string residentId, [FromBody] string url)
-        {
-            // TODO
-        }
 
-        public async Task AddMediaAsync(string residentId, MultiPartFile data, EMediaType mediaType,
+        public async Task<StatusCodeResult> AddMediaAsync(string residentId, MultiPartFile data, EMediaType mediaType,
             int maxFileSize = int.MaxValue)
         {
             if (data?.File == null)
             {
                 Throw.NullArgument(nameof(data));
-                return;
+                return null;
             }
 
             // parse the id
@@ -134,33 +131,38 @@ namespace WebService.Controllers
             {
                 // if it fails, throw not found exception
                 Throw.NotFound<Resident>(residentId);
-                return;
+                return null;
             }
 
             try
             {
                 var bytes = data.ConvertToBytes(maxFileSize);
+                var title = data.File.FileName;
 
-                await ((IResidentsService) DataService).AddMediaAsync(residentObjectId, bytes, mediaType);
+                await ((IResidentsService) DataService).AddMediaAsync(residentObjectId, title, bytes, mediaType);
+                return StatusCode((int) HttpStatusCode.Created);
             }
             catch (FileToLargeException)
             {
                 Throw.FileToLarge(maxFileSize);
             }
+
+            return null;
         }
 
-        public async Task AddMediaAsync(string residentId, string url, EMediaType mediaType)
+        public async Task<StatusCodeResult> AddMediaAsync(string residentId, string url, EMediaType mediaType)
         {
             // parse the id
             if (!ObjectId.TryParse(residentId, out var residentObjectId))
             {
                 // if it fails, throw not found exception
                 Throw.NotFound<Resident>(residentId);
-                return;
+                return null;
             }
 
             // use the data service to create a new updater
             await ((IResidentsService) DataService).AddMediaAsync(residentObjectId, url, mediaType);
+            return StatusCode((int) HttpStatusCode.Created);
         }
 
         #endregion post (create)
@@ -196,7 +198,7 @@ namespace WebService.Controllers
         }
 
         [HttpGet("{tag}/{mediaType}/random")]
-        public async Task<string> GetRandomMedia(int tag, string mediaType)
+        public async Task<MediaUrl> GetRandomMedia(int tag, string mediaType)
         {
             if (!Enum.TryParse<EMediaType>(mediaType, out var eMediaType))
             {
@@ -224,7 +226,7 @@ namespace WebService.Controllers
                     throw new ArgumentOutOfRangeException();
             }
 
-            return media.RandomItem().Url;
+            return media.RandomItem();
         }
 
         [HttpGet("{id}/{propertyName}")]
@@ -251,22 +253,40 @@ namespace WebService.Controllers
         public override Task DeleteAsync(string id)
             => base.DeleteAsync(id);
 
-        [HttpDelete("{residentId}/Videos")]
-        public  Task RemoveVideoAsync(string residentId, string videoId)
-            =>  RemoveMediaAsync(residentId, videoId, EMediaType.Video);
+        [HttpDelete("{residentId}/Videos/{videoId}")]
+        public Task RemoveVideoAsync(string residentId, string videoId)
+            => RemoveMediaAsync(residentId, videoId, EMediaType.Video);
 
-        [HttpDelete("{residentId}/Music")]
+        [HttpDelete("{residentId}/Music/{musicId}")]
         public Task RemoveMusicAsync(string residentId, string musicId)
             => RemoveMediaAsync(residentId, musicId, EMediaType.Audio);
 
-        [HttpDelete("{residentId}/Images")]
+        [HttpDelete("{residentId}/Images/{imageId}")]
         public Task RemoveImageAsync(string residentId, string imageId)
             => RemoveMediaAsync(residentId, imageId, EMediaType.Image);
 
-        [HttpDelete("{residentId}/Colors")]
+        [HttpDelete("{residentId}/Colors/{colorId}")]
         public async Task RemoveColorAsync(string residentId, string colorId)
         {
-            // TODO
+            // parse the resident id
+            if (!ObjectId.TryParse(residentId, out var residentObjectId))
+            {
+                // if it fails, throw not found exception
+                Throw.NotFound<Resident>(residentId);
+                return;
+            }
+
+            // parse the media id
+            if (!ObjectId.TryParse(colorId, out var mediaObjectId))
+            {
+                // if it fails, throw not found exception
+                Throw.NotFound<byte[]>(colorId);
+                return;
+            }
+
+            // remove the media from the database
+            await ((IResidentsService) DataService)
+                .RemoveSubItemAsync(residentObjectId, x => x.Colors, mediaObjectId);
         }
 
         public async Task RemoveMediaAsync(string residentId, string mediaId, EMediaType mediaType)

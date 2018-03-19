@@ -1,3 +1,11 @@
 <app-senior></app-senior>
-<input type="file" (change)="onFileSelected($event)" />
-<button class="btn btn-primary" (click)="onUpload()">Upload</button>
+<div class="center">
+    <ul>
+        <li *ngFor="let link of fullLinks">
+            <img [src]="link.images.url" alt="Smiley face" height="150" width="175">
+            <i class="material-icons red-text pointer" (click)="deleteResidentMediaByUniqueId(link.images.id)">delete</i>
+        </li>
+    </ul>
+    </div>
+<div class="right"><p>Picture works</p></div>
+<div class="center"><app-upload (reload)="reload()" [type]="typeOfMedia"></app-upload></div>
