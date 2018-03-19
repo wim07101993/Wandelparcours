@@ -37,6 +37,7 @@ export class VideoComponent implements OnInit {
 
             fullLinks.videos.id = a.id;
             fullLinks.videos.url = url2;
+            //fullLinks.videos.name = a.videos.name;
             //console.log(fullLinks);
             this.fullLinks.push(fullLinks);
         }
@@ -45,7 +46,7 @@ export class VideoComponent implements OnInit {
     }
 
     async deleteVideoOnId(uniqueVideoId: string) {
-        console.log("deleted");
+        //console.log("deleted");
         let check = await this.service.deleteResidentVideoByUniqueId(this.id, uniqueVideoId);
         if (check) {
             this.getAllVideos();

@@ -42,12 +42,8 @@ export class PictureComponent implements OnInit {
             
             fullLinks.images.id = a.id;
             fullLinks.images.url = url2; 
-            //console.log(fullLinks);
             this.fullLinks.push(fullLinks);
         }
-        //this.fullLinks;
-
-        //console.log(this.fullLinks);
     }
 
 
@@ -58,8 +54,5 @@ export class PictureComponent implements OnInit {
         } else {
             this.router.navigate(["/error"]);
         }
-        //console.log(a);
-        
-        //console.log(uniquePictureID);
     }
 }

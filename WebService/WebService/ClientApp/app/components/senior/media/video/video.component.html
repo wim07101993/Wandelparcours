@@ -11,5 +11,5 @@
 
 <app-upload [type]="typeOfMedia"  (reload)="reload()"></app-upload>
 <div class="right" *ngFor="let link of fullLinks">
-    <button class="btn btn-primary">{{link.videos.url}}</button>
+    <button class="btn btn-primary">{{link.videos.title}}</button>
 </div>

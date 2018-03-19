@@ -153,7 +153,7 @@ export class RestServiceService {
     deleteResidentImageByUniqueId(uniqueIdentifier: string, uniqueMediaIdentifier: string) {
         return new Promise(resolve => {
             this.http.delete(this.restUrl + 'api/v1/residents/' + uniqueIdentifier + '/images/' + uniqueMediaIdentifier).subscribe(response => {
-                console.log("Deleted");
+                //console.log("Deleted");
                 resolve(true);
             }, error => {
                 console.log("Something went wrong");

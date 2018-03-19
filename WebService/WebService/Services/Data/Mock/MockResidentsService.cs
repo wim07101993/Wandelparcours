@@ -94,14 +94,14 @@ namespace WebService.Services.Data.Mock
         /// <exception cref="ArgumentNullException">when the data is null</exception>
         /// <exception cref="NotFoundException">when there is no <see cref="Resident"/> found with the given <see cref="AModelWithID.Id"/></exception>
         /// <exception cref="ArgumentOutOfRangeException">when the mediaData type doesn't exist</exception>
-        public async Task AddMediaAsync(ObjectId residentId, byte[] data, EMediaType mediaType)
+        public async Task AddMediaAsync(ObjectId residentId,string title, byte[] data, EMediaType mediaType)
         {
             // if the data is null, throw an exception
             if (data == null)
                 throw new ArgumentNullException(nameof(data), "data to add cannot be null");
 
             // add the mediaData
-            AddMedia(residentId, new MediaUrl {Id = ObjectId.GenerateNewId()}, mediaType);
+            AddMedia(residentId, new MediaUrl {Id = ObjectId.GenerateNewId(), Title = title}, mediaType);
         }
 
         /// <inheritdoc cref="IResidentsService.AddMediaAsync(ObjectId,string,EMediaType)" />
