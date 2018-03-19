@@ -27,6 +27,7 @@ namespace WebService
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddCors();
             services
                 .AddSingleton(typeof(ILogger), new LoggerCollection {new ConsoleLogger(), new FileLogger()})
                 .AddSingleton<IRandomizer, Randomizer>()
@@ -60,6 +61,9 @@ namespace WebService
             {
                 app.UseExceptionHandler("/Home/Error");
             }
+            app.UseCors(
+                options => options.AllowAnyOrigin().AllowAnyMethod()
+            );
 
             app.UseExceptionMiddleware()
                 .UseStaticFiles()
