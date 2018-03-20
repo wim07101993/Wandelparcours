@@ -41,7 +41,7 @@ namespace WebService.Models
         /// In the database the value is stored under the field "authLevel"
         /// </summary>
         [BsonElement("authLevel")]
-        public EAuthLevel AuthLevel { get; set; }
+        public EAuthLevel AuthLevel { get; set; } = EAuthLevel.Guest;
 
 
         [BsonElement("residents")]
