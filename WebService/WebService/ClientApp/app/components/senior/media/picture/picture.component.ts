@@ -19,6 +19,7 @@ export class PictureComponent implements OnInit {
     check: any;
     ngOnInit() { }
 
+    deleteResidentImage: Resident;
     images: Resident[];
     fullLinks: any=[];
     id: string = this.route.snapshot.params['id'];
@@ -27,6 +28,8 @@ export class PictureComponent implements OnInit {
     constructor(private route: ActivatedRoute, private router: Router, private media: MediaService) {
         this.getAllImages();
         this.typeOfMedia = "image/*";
+        this.deleteResidentImage = <Resident>{images: {}}
+        ;
     }
 
     /**
@@ -57,6 +60,28 @@ export class PictureComponent implements OnInit {
         } else {
             this.router.navigate(["/error"]);
         }
-
+        $("#deleteModal").modal("close");
     }
+
+    /*
+    *   Closes the modal to add a station 
+    */
+    async CloseModal() {
+        $("#deleteModal").modal("close");
+    }
+
+    /*
+    *   Opens modal to delete a station 
+    */
+    async deleteModal(resident: Resident) {
+        
+        this.deleteResidentImage = resident;
+        console.log(resident.images.id);
+            // noinspection JSJQueryEfficiency
+            $("#deleteModal").modal();
+            // noinspection JSJQueryEfficiency
+            $("#deleteModal").modal("open");
+            
+    }
+
 }
