@@ -4,6 +4,8 @@ from MockUp.TagMock import TagMock
 import random
 class ScannerMock(ScannerInterface):
 
+
+
     def scan(self):
         list = dict()
         list["1"] = TagMock("1",random.randint(0,50))
