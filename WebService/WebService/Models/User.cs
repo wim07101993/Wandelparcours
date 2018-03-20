@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
+using WebService.Helpers.Extensions;
 using WebService.Models.Bases;
 
 namespace WebService.Models
@@ -41,5 +42,9 @@ namespace WebService.Models
         /// </summary>
         [BsonElement("authLevel")]
         public EAuthLevel AuthLevel { get; set; }
+
+
+        [BsonElement("residents")]
+        public IEnumerable<Resident> Residents { get; set; }
     }
 }
