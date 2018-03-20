@@ -1,8 +1,10 @@
-﻿namespace WebService.Services.Authorization
+﻿using System.Threading.Tasks;
+
+namespace WebService.Services.Authorization
 {
     public interface ITokenService
     {
-        string CreateToken(string userName, string password);
+        Task<string> CreateTokenAsync(string userName, string password);
         bool ValidateToken(string strToken);
     }
 }

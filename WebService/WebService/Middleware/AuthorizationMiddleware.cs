@@ -48,7 +48,7 @@ namespace WebService.Middleware
 
             var postUrl =
                 (typeof(TokenController)
-                    .GetMethod(nameof(TokenController.CreateToken))
+                    .GetMethod(nameof(TokenController.CreateTokenAsync))
                     .GetCustomAttribute(typeof(HttpPostAttribute)) as HttpPostAttribute)
                 ?.Template
                 ?? "";

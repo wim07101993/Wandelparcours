@@ -44,14 +44,6 @@ namespace WebService.Controllers
                 {nameof(Models.User.Residents), x => x.Residents},
             };
 
-
-        [HttpPost]
-        public override Task<StatusCodeResult> CreateAsync([FromBody] User item)
-        {
-            item.HashPassword();
-            return base.CreateAsync(item);
-        }
-
         [HttpPut]
         public override async Task UpdateAsync([FromBody] User item, [FromQuery] string[] properties)
         {
@@ -71,7 +63,6 @@ namespace WebService.Controllers
 
             var user = await DataService.GetAsync(item.Id, PropertiesToSendOnGetAll);
             user.Password = item.Password;
-            user.HashPassword();
             await DataService.UpdatePropertyAsync(user.Id, x => x.Password, user.Password);
         }
 
@@ -88,10 +79,7 @@ namespace WebService.Controllers
                 // if it fails, throw not found exception
                 throw new NotFoundException($"The {typeof(User).Name} with id {id} could not be found");
 
-            var user = await DataService.GetAsync(objectId, PropertiesToSendOnGetAll);
-            user.Password = jsonValue;
-            user.HashPassword();
-            await DataService.UpdatePropertyAsync(objectId, x => x.Password, user.Password);
+            await ((IUsersService) DataService).TaskUpdatePasswordAsync(objectId, jsonValue);
         }
     }
 }

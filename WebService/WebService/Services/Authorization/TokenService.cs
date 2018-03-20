@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Text;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using WebService.Models;
@@ -27,9 +28,9 @@ namespace WebService.Services.Authorization
         }
 
 
-        public string CreateToken(string userName, string password)
+        public async Task<string> CreateTokenAsync(string userName, string password)
         {
-            if (!_usersService.CheckCredentials(userName, password))
+            if (!(await _usersService.CheckCredentialsAsync(userName, password)))
                 _iThrow.NotFound<User>(nameof(userName));
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
