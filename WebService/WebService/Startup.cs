@@ -28,14 +28,15 @@ namespace WebService
         public void ConfigureServices(IServiceCollection services)
         {
             services
-                .AddSingleton(typeof(ILogger), new LoggerCollection {new ConsoleLogger(), new FileLogger()})
+                .AddSingleton(typeof(ILogger), new LoggerCollection { new ConsoleLogger(), new FileLogger() })
                 .AddSingleton<IRandomizer, Randomizer>()
                 .AddSingleton<IThrow, Throw>()
                 //.AddSingleton<IDataService<Resident>, MockResidentsService>()
                 //.AddSingleton<IDataService<ReceiverModule>, ReceiverModulesService>();
                 .AddSingleton<IDataService<MediaData>, MediaService>()
                 .AddSingleton<IDataService<Resident>, ResidentsService>()
-                .AddSingleton<IDataService<ReceiverModule>, ReceiverModulesService>();
+                .AddSingleton<IDataService<ReceiverModule>, ReceiverModulesService>()
+                .AddSingleton<IUsersService, UsersService>();
 
             services
                 .AddMvc()
@@ -44,7 +45,6 @@ namespace WebService
                     options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
                 });
             services.AddCors();
-
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -75,7 +75,7 @@ namespace WebService
 
                     routes.MapSpaFallbackRoute(
                         name: "spa-fallback",
-                        defaults: new {controller = "Home", action = "Index"});
+                        defaults: new { controller = "Home", action = "Index" });
                 });
         }
     }
