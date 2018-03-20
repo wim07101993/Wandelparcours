@@ -1,3 +1,45 @@
 .personalia-row{
     margin-left: 7%;
 }
+
+table {
+    box-shadow: 0 2px 2px 0 rgba(0,0,0,0.2);
+    border-collapse: separate;
+}
+
+th {
+    color: teal;
+    font-weight: bolder;
+}
+
+img{
+    margin-top: 0.82rem;
+    box-shadow: 0 2px 2px 0 rgba(0,0,0,0.5);
+}
+
+.card-photo{
+    color: #333;
+}
+
+.card-video{
+    color: teal;
+}
+
+.card-audio{
+    color: #333;
+}
+
+.card-game{
+    color: teal;
+}
+
+.badge{
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    border-radius: 16px;
+}
+
+h5{
+    color: #333;
+}
