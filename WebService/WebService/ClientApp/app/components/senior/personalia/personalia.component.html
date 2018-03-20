@@ -10,7 +10,7 @@
             
             <div class="col s8">
                 <h5>Gekoppelde beacons</h5>
-                <table class="striped responsive-table">
+                <table class="striped responsive-table centered">
                     <thead>
                     <tr>
                         <th>Beacon-id</th>
@@ -78,35 +78,39 @@
         </div>
         <div class="row">
             <div class="col s6 m3">
+                <a [routerLink]="['/resident', id, 'picture']">
                 <div class="card">
                     <div class="card-content center-align blue-grey lighten-5 card-photo">
                         <i class="large material-icons">photo</i>
                     </div>
                     <span class="badge amber darken-2 white-text">14</span>
-                </div>
+                </div></a>
             </div>
             <div class="col s6 m3">
+                <a [routerLink]="['/resident', id, 'video']">
                 <div class="card">
                     <div class="card-content center-align card-video">
                         <i class="large material-icons">ondemand_video</i>
                     </div>
                     <span class="badge orange darken-2 white-text">9</span>
-                </div>
+                </div></a>
             </div>
             <div class="col s6 m3">
+                <a [routerLink]="['/resident', id, 'audio']">
                 <div class="card">
                     <div class="card-content blue-grey lighten-5 center-align card-audio">
                         <i class="large material-icons">audiotrack</i>
                     </div> <span class="badge amber darken-2 white-text">2</span>
-                </div>
+                </div></a>
             </div>
             <div class="col s6 m3">
+                <a [routerLink]="['/resident', id, 'game']">
                 <div class="card">
                     <div class="card-content center-align card-game">
                         <i class="large material-icons">videogame_asset</i>
                     </div>
                     <span class="badge orange darken-2 white-text">8</span>
-                </div>
+                </div></a>
             </div>
         </div>
     </div>
