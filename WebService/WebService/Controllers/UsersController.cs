@@ -24,6 +24,7 @@ namespace WebService.Controllers
         {
         }
 
+
         public override IEnumerable<Expression<Func<User, object>>> PropertiesToSendOnGetAll { get; } =
             new Expression<Func<User, object>>[]
             {
@@ -32,6 +33,7 @@ namespace WebService.Controllers
                 x => x.Email,
                 x => x.AuthLevel
             };
+
 
         public override IDictionary<string, Expression<Func<User, object>>> PropertySelectors { get; } =
             new Dictionary<string, Expression<Func<User, object>>>
@@ -43,8 +45,8 @@ namespace WebService.Controllers
                 {nameof(Models.User.AuthLevel), x => x.AuthLevel},
                 {nameof(Models.User.Residents), x => x.Residents},
             };
-
-        [HttpPut]
+        
+        [HttpPut(UpdateTemplate)]
         public override async Task UpdateAsync([FromBody] User item, [FromQuery] string[] properties)
         {
             if (properties.All(x => !x.EqualsWithCamelCasing(nameof(Models.User.Password))))
@@ -66,7 +68,7 @@ namespace WebService.Controllers
             await DataService.UpdatePropertyAsync(user.Id, x => x.Password, user.Password);
         }
 
-        [HttpPut("{id}/{propertyName}")]
+        [HttpPut(UpdatePropertyTemplate)]
         public override async Task UpdatePropertyAsync(string id, string propertyName, [FromQuery] string jsonValue)
         {
             if (!propertyName.EqualsWithCamelCasing(nameof(Models.User.Password)))

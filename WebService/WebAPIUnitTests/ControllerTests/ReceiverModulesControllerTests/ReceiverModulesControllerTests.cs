@@ -88,7 +88,7 @@ namespace WebAPIUnitTests.ControllerTests.ReceiverModulesControllerTests
                 new ReceiverModulesController(new Throw(), new TestReceiverModulesService(), new ConsoleLogger());
 
             controller
-                .GetAsync(null, null)
+                .GetOneAsync(null, null)
                 .ShouldCatchException<NotFoundException>("there is no item with a null mac");
         }
 
@@ -99,7 +99,7 @@ namespace WebAPIUnitTests.ControllerTests.ReceiverModulesControllerTests
                 new ReceiverModulesController(new Throw(), new TestReceiverModulesService(), new ConsoleLogger());
 
             controller
-                .GetAsync(null, new string[0])
+                .GetOneAsync(null, new string[0])
                 .ShouldCatchException<NotFoundException>("there is no item with a null mac");
         }
 
@@ -110,7 +110,7 @@ namespace WebAPIUnitTests.ControllerTests.ReceiverModulesControllerTests
                 new ReceiverModulesController(new Throw(), new TestReceiverModulesService(), new ConsoleLogger());
 
             controller
-                .GetAsync(null, new[] {"bad property", nameof(ReceiverModule.IsActive)})
+                .GetOneAsync(null, new[] {"bad property", nameof(ReceiverModule.IsActive)})
                 .ShouldCatchException<NotFoundException>("there is no item with a null mac");
         }
 
@@ -121,7 +121,7 @@ namespace WebAPIUnitTests.ControllerTests.ReceiverModulesControllerTests
                 new ReceiverModulesController(new Throw(), new TestReceiverModulesService(), new ConsoleLogger());
 
             controller
-                .GetAsync(null, new[] {nameof(ReceiverModule.Mac), nameof(ReceiverModule.IsActive)})
+                .GetOneAsync(null, new[] {nameof(ReceiverModule.Mac), nameof(ReceiverModule.IsActive)})
                 .ShouldCatchException<NotFoundException>("there is no item with a null mac");
         }
 
@@ -132,7 +132,7 @@ namespace WebAPIUnitTests.ControllerTests.ReceiverModulesControllerTests
                 new ReceiverModulesController(new Throw(), new TestReceiverModulesService(), new ConsoleLogger());
 
             controller
-                .GetAsync("a", null)
+                .GetOneAsync("a", null)
                 .ShouldCatchException<NotFoundException>("there is no item with that mac");
         }
 
@@ -143,7 +143,7 @@ namespace WebAPIUnitTests.ControllerTests.ReceiverModulesControllerTests
                 new ReceiverModulesController(new Throw(), new TestReceiverModulesService(), new ConsoleLogger());
 
             controller
-                .GetAsync("a", new string[0])
+                .GetOneAsync("a", new string[0])
                 .ShouldCatchException<NotFoundException>("there is no item with that mac");
         }
 
@@ -154,7 +154,7 @@ namespace WebAPIUnitTests.ControllerTests.ReceiverModulesControllerTests
                 new ReceiverModulesController(new Throw(), new TestReceiverModulesService(), new ConsoleLogger());
 
             controller
-                .GetAsync("a", new[] {"bad property", nameof(ReceiverModule.IsActive)})
+                .GetOneAsync("a", new[] {"bad property", nameof(ReceiverModule.IsActive)})
                 .ShouldCatchException<NotFoundException>("there no property 'bad property' in a receiver module");
         }
 
@@ -165,7 +165,7 @@ namespace WebAPIUnitTests.ControllerTests.ReceiverModulesControllerTests
                 new ReceiverModulesController(new Throw(), new TestReceiverModulesService(), new ConsoleLogger());
 
             controller
-                .GetAsync("a", new[] {nameof(ReceiverModule.Mac), nameof(ReceiverModule.IsActive)})
+                .GetOneAsync("a", new[] {nameof(ReceiverModule.Mac), nameof(ReceiverModule.IsActive)})
                 .ShouldCatchException<NotFoundException>("there is no item with that mac");
         }
 
@@ -177,7 +177,7 @@ namespace WebAPIUnitTests.ControllerTests.ReceiverModulesControllerTests
 
             var mac = dataService.GetFirst().Mac;
 
-            var item = controller.GetAsync(mac, null).Result;
+            var item = controller.GetOneAsync(mac, null).Result;
             var original = dataService.GetAsync(mac).Result;
 
             foreach (var property in typeof(ReceiverModule).GetProperties())
@@ -195,7 +195,7 @@ namespace WebAPIUnitTests.ControllerTests.ReceiverModulesControllerTests
 
             var mac = dataService.GetFirst().Mac;
 
-            var item = controller.GetAsync(mac, new string[0]).Result;
+            var item = controller.GetOneAsync(mac, new string[0]).Result;
             var original = dataService.GetAsync(mac).Result;
 
             item.Mac
@@ -222,7 +222,7 @@ namespace WebAPIUnitTests.ControllerTests.ReceiverModulesControllerTests
             var mac = dataService.GetFirst().Mac;
 
             controller
-                .GetAsync(mac, new[] {"bad property", nameof(ReceiverModule.IsActive)})
+                .GetOneAsync(mac, new[] {"bad property", nameof(ReceiverModule.IsActive)})
                 .ShouldCatchException<PropertyNotFoundException>("there no property 'bad property' in a receiver module");
         }
 
@@ -234,7 +234,7 @@ namespace WebAPIUnitTests.ControllerTests.ReceiverModulesControllerTests
 
             var mac = dataService.GetFirst().Mac;
 
-            var item = controller.GetAsync(mac, new[] {nameof(ReceiverModule.Mac), nameof(ReceiverModule.IsActive)})
+            var item = controller.GetOneAsync(mac, new[] {nameof(ReceiverModule.Mac), nameof(ReceiverModule.IsActive)})
                 .Result;
             var original = dataService.GetAsync(mac).Result;
 

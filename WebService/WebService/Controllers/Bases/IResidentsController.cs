@@ -86,7 +86,7 @@ namespace WebService.Controllers.Bases
         #region READ
 
         /// <summary>
-        /// Get is supposed to return the <see cref="Resident"/> that holds a given tag in the database. 
+        /// GetByTag is supposed to return the <see cref="Resident"/> that holds a given tag in the database. 
         /// To limit data traffic it is possible to select only a number of properties.
         /// <para/>
         /// By default all properties are returned.
@@ -96,9 +96,9 @@ namespace WebService.Controllers.Bases
         /// <returns>The <see cref="Resident"/> in the database that has the given id</returns>
         /// <exception cref="NotFoundException">When the id cannot be parsed or <see cref="Resident"/> not found</exception>
         /// <exception cref="WebArgumentException">When one ore more properties could not be converted to selectors</exception>
-        Task<Resident> GetAsync(int tag, string[] propertiesToInclude);
+        Task<Resident> GetByTagAsync(int tag, string[] propertiesToInclude);
 
-        Task<object> GetRandomElementFromProperty(int tag, string mediaType);
+        Task<object> GetRandomElementFromPropertyAsync(int tag, string mediaType);
 
         #endregion READ
 

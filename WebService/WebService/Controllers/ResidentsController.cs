@@ -26,9 +26,32 @@ namespace WebService.Controllers
     [SuppressMessage("ReSharper", "SpecifyACultureInStringConversionExplicitly")]
     public class ResidentsController : ARestControllerBase<Resident>, IResidentsController
     {
+        #region FIELDS
+
+        public const string AddMusicDataTemplate = "{residentId}/Music/data";
+        public const string AddVideoDataTemplate = "{residentId}/Videos/data";
+        public const string AddImageDataTemplate = "{residentId}/Images/data";
+        public const string AddColorTemplate = "{residentId}/Colors/data";
+
+        public const string AddMusicUrlTemplate = "{residentId}/Music/url";
+        public const string AddVideoUrlTemplate = "{residentId}/Videos/url";
+        public const string AddMImageUrlTemplate = "{residentId}/Images/url";
+
+        public const string GetByTagTemplate = "byTag/{tag}";
+        public const string GetRandomElementFromPropertyTemplate = "byTag/{tag}/{propertyName}/random";
+        public const string GetPropertyByTagTemplate = "byTag/{tag}/{propertyName}";
+
+        public const string RemoveMusicTemplate = "{residentId}/Music/{musicId}";
+        public const string RemoveVideoTemplate = "{residentId}/Videos/{videoId}";
+        public const string RemoveImageTemplate = "{residentId}/Images/{imageId}";
+        public const string RemoveColorTemplate = "{residentId}/Colors/{colorId}";
+
+        #endregion FIELDS
+
+
         #region CONSTRUCTOR
 
-        public ResidentsController(IThrow iThrow, IDataService<Resident> dataService, ILogger logger)
+        public ResidentsController(IThrow iThrow, IResidentsService dataService, ILogger logger)
             : base(iThrow, dataService, logger)
         {
         }
@@ -74,32 +97,20 @@ namespace WebService.Controllers
         #region METHODS
 
         #region post (create)
-        
-        [HttpPost("{residentId}/Music/data")]
+
+        [HttpPost(AddMusicDataTemplate)]
         public Task<StatusCodeResult> AddMusicAsync(string residentId, [FromForm] MultiPartFile musicData)
             => AddMediaAsync(residentId, musicData, EMediaType.Audio, (int) 20e6);
 
-        [HttpPost("{residentId}/Music/url")]
-        public Task<StatusCodeResult> AddMusicAsync(string residentId, [FromBody] string url)
-            => AddMediaAsync(residentId, url, EMediaType.Audio);
-
-        [HttpPost("{residentId}/Videos/data")]
+        [HttpPost(AddVideoDataTemplate)]
         public Task<StatusCodeResult> AddVideoAsync(string residentId, [FromForm] MultiPartFile videoData)
             => AddMediaAsync(residentId, videoData, EMediaType.Video, (int) 1e9);
 
-        [HttpPost("{residentId}/Videos/url")]
-        public Task<StatusCodeResult> AddVideoAsync(string residentId, [FromBody] string url)
-            => AddMediaAsync(residentId, url, EMediaType.Video);
-
-        [HttpPost("{residentId}/Images/data")]
+        [HttpPost(AddImageDataTemplate)]
         public Task<StatusCodeResult> AddImageAsync(string residentId, [FromForm] MultiPartFile imageData)
             => AddMediaAsync(residentId, imageData, EMediaType.Image, (int) 20e6);
 
-        [HttpPost("{residentId}/Images/url")]
-        public Task<StatusCodeResult> AddImageAsync(string residentId, [FromBody] string url)
-            => AddMediaAsync(residentId, url, EMediaType.Image);
-
-        [HttpPost("{residentId}/Colors/data")]
+        [HttpPost(AddColorTemplate)]
         public async Task<StatusCodeResult> AddColorAsync(string residentId, [FromBody] byte[] colorData)
         {
             // parse the id
@@ -113,7 +124,6 @@ namespace WebService.Controllers
             await DataService.AddItemToListProperty(residentObjectId, x => x.Colors, colorData);
             return StatusCode((int) HttpStatusCode.Created);
         }
-
 
         public async Task<StatusCodeResult> AddMediaAsync(string residentId, MultiPartFile data, EMediaType mediaType,
             int maxFileSize = int.MaxValue)
@@ -148,6 +158,19 @@ namespace WebService.Controllers
             return null;
         }
 
+
+        [HttpPost(AddMusicUrlTemplate)]
+        public Task<StatusCodeResult> AddMusicAsync(string residentId, [FromBody] string url)
+            => AddMediaAsync(residentId, url, EMediaType.Audio);
+
+        [HttpPost(AddVideoUrlTemplate)]
+        public Task<StatusCodeResult> AddVideoAsync(string residentId, [FromBody] string url)
+            => AddMediaAsync(residentId, url, EMediaType.Video);
+
+        [HttpPost(AddMImageUrlTemplate)]
+        public Task<StatusCodeResult> AddImageAsync(string residentId, [FromBody] string url)
+            => AddMediaAsync(residentId, url, EMediaType.Image);
+
         public async Task<StatusCodeResult> AddMediaAsync(string residentId, string url, EMediaType mediaType)
         {
             // parse the id
@@ -166,9 +189,9 @@ namespace WebService.Controllers
         #endregion post (create)
 
         #region get (read)
-        
-        [HttpGet("byTag/{tag}")]
-        public async Task<Resident> GetAsync(int tag, [FromQuery] string[] propertiesToInclude)
+
+        [HttpGet(GetByTagTemplate)]
+        public async Task<Resident> GetByTagAsync(int tag, [FromQuery] string[] propertiesToInclude)
         {
             // convert the property names to selectors, if there are any
             var selectors = !EnumerableExtensions.IsNullOrEmpty(propertiesToInclude)
@@ -187,8 +210,8 @@ namespace WebService.Controllers
             return resident;
         }
 
-        [HttpGet("byTag/{tag}/{propertyName}/random")]
-        public async Task<object> GetRandomElementFromProperty(int tag, string propertyName)
+        [HttpGet(GetRandomElementFromPropertyTemplate)]
+        public async Task<object> GetRandomElementFromPropertyAsync(int tag, string propertyName)
         {
             IList data;
 
@@ -207,8 +230,8 @@ namespace WebService.Controllers
                         new Expression<Func<Resident, object>>[] {x => x.Images})).Images;
                     break;
                 case nameof(Resident.Colors):
-                    data = (await ((IResidentsService)DataService).GetAsync(tag,
-                        new Expression<Func<Resident, object>>[] { x => x.Colors })).Colors;
+                    data = (await ((IResidentsService) DataService).GetAsync(tag,
+                        new Expression<Func<Resident, object>>[] {x => x.Colors})).Colors;
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
@@ -216,8 +239,8 @@ namespace WebService.Controllers
 
             return data.RandomItem();
         }
-        
-        [HttpGet("byTag/{tag}/{propertyName}")]
+
+        [HttpGet(GetPropertyTemplate)]
         public async Task<object> GetPropertyAsync(int tag, string propertyName)
         {
             // check if the property exists on the item
@@ -231,22 +254,22 @@ namespace WebService.Controllers
         }
 
         #endregion get (read)
-        
-        #region delete
-        
-        [HttpDelete("{residentId}/Videos/{videoId}")]
-        public Task RemoveVideoAsync(string residentId, string videoId)
-            => RemoveMediaAsync(residentId, videoId, EMediaType.Video);
 
-        [HttpDelete("{residentId}/Music/{musicId}")]
+        #region delete
+
+        [HttpDelete(RemoveMusicTemplate)]
         public Task RemoveMusicAsync(string residentId, string musicId)
             => RemoveMediaAsync(residentId, musicId, EMediaType.Audio);
 
-        [HttpDelete("{residentId}/Images/{imageId}")]
+        [HttpDelete(RemoveVideoTemplate)]
+        public Task RemoveVideoAsync(string residentId, string videoId)
+            => RemoveMediaAsync(residentId, videoId, EMediaType.Video);
+
+        [HttpDelete(RemoveImageTemplate)]
         public Task RemoveImageAsync(string residentId, string imageId)
             => RemoveMediaAsync(residentId, imageId, EMediaType.Image);
 
-        [HttpDelete("{residentId}/Colors/{colorId}")]
+        [HttpDelete(RemoveColorTemplate)]
         public async Task RemoveColorAsync(string residentId, string colorId)
         {
             // parse the resident id

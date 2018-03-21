@@ -5,6 +5,6 @@ namespace WebService.Controllers.Bases
 {
     public interface IMediaController
     {
-        Task<IActionResult> GetAsync(string id);
+        Task<IActionResult> GetOneAsync(string id);
     }
 }

@@ -21,9 +21,17 @@ namespace WebService.Controllers
     [Route("api/v1/[controller]")]
     public class ReceiverModulesController : ARestControllerBase<ReceiverModule>, IReceiverModulesController
     {
+        #region FIELDS
+
+        public new const string GetOneTemplate = "{mac}";
+        public new const string DeleteTemplate = "{mac}";
+
+        #endregion FIELDS
+
+
         #region CONSTRUCTOR
 
-        public ReceiverModulesController(IThrow iThrow, IDataService<ReceiverModule> dataService, ILogger logger)
+        public ReceiverModulesController(IThrow iThrow, IReceiverModulesService dataService, ILogger logger)
             : base(iThrow, dataService, logger)
         {
         }
@@ -51,7 +59,7 @@ namespace WebService.Controllers
 
         #region post (create)
 
-        [HttpPost]
+        [HttpPost(CreateTemplate)]
         public override async Task<StatusCodeResult> CreateAsync([FromBody] ReceiverModule item)
         {
             if (item == null)
@@ -71,9 +79,9 @@ namespace WebService.Controllers
         #endregion post (create)
 
         #region get (read)
-        
-        [HttpGet("{mac}")]
-        public override async Task<ReceiverModule> GetAsync(string mac, [FromQuery] string[] propertiesToInclude)
+
+        [HttpGet(GetOneTemplate)]
+        public override async Task<ReceiverModule> GetOneAsync(string mac, [FromQuery] string[] propertiesToInclude)
         {
             if (mac == null)
             {
@@ -91,12 +99,12 @@ namespace WebService.Controllers
                    ?? throw new NotFoundException(
                        $"The {typeof(ReceiverModule).Name} with id {mac} could not be found");
         }
-        
+
         #endregion get (read)
-        
+
         #region delete
 
-        [HttpDelete("{mac}")]
+        [HttpDelete(DeleteTemplate)]
         public override Task DeleteAsync(string mac)
             // use the data service to remove the item
             => ((IReceiverModulesService) DataService).RemoveAsync(mac);

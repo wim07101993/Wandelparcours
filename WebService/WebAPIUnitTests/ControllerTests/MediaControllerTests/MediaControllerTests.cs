@@ -20,7 +20,7 @@ namespace WebAPIUnitTests.ControllerTests.MediaControllerTests
             var controller = new MediaController(new Throw(), new TestMediaService(), new ConsoleLogger());
 
             controller
-                .GetAsync(null)
+                .GetOneAsync(null)
                 .ShouldCatchException<NotFoundException>("there is no item with id null");
         }
 
@@ -30,7 +30,7 @@ namespace WebAPIUnitTests.ControllerTests.MediaControllerTests
             var controller = new MediaController(new Throw(), new TestMediaService(), new ConsoleLogger());
 
             controller
-                .GetAsync(ObjectId.GenerateNewId().ToString())
+                .GetOneAsync(ObjectId.GenerateNewId().ToString())
                 .ShouldCatchException<NotFoundException>("there is no item with the given id null");
         }
 
@@ -44,7 +44,7 @@ namespace WebAPIUnitTests.ControllerTests.MediaControllerTests
             var item = dataService.GetFirst();
 
             controller
-                .GetAsync(item.Id.ToString())
+                .GetOneAsync(item.Id.ToString())
                 .Result
                 .Should()
                 .BeOfType<FileContentResult>()

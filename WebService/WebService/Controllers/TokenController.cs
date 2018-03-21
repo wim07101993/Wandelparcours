@@ -7,6 +7,8 @@ namespace WebService.Controllers
 {
     public class TokenController : Controller
     {
+        public const string CreateTokenTemplate = "";
+
         private readonly ITokenService _tokenService;
 
         public TokenController(ITokenService tokenService)
@@ -14,7 +16,7 @@ namespace WebService.Controllers
             _tokenService = tokenService;
         }
 
-        [HttpPost]
+        [HttpPost(CreateTokenTemplate)]
         public async Task<string> CreateTokenAsync([FromHeader] string userName, [FromHeader] string password)
         {
             var token = await _tokenService.CreateTokenAsync(userName, password);

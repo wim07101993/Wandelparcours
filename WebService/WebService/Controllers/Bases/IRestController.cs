@@ -22,7 +22,7 @@ namespace WebService.Controllers.Bases
         /// <exception cref="Exception">When the item could not be created</exception>
         Task<StatusCodeResult> CreateAsync([FromBody] T item);
 
-        Task<StatusCodeResult> AddItemToList(string id, string property, string jsonValue);
+        Task<StatusCodeResult> AddItemToListAsync(string id, string property, string jsonValue);
 
         #endregion CREATE
 
@@ -30,14 +30,13 @@ namespace WebService.Controllers.Bases
         #region READ
 
         /// <summary>
-        /// GetProperty is supposed to return the jsonValue of the asked property of the asked <see cref="T"/>.
+        /// Get is supposed to return all the Items in the database. 
+        /// To limit data traffic it is possible to select only a number of properties.
         /// </summary>
-        /// <param name="id">is the id of the <see cref="T"/></param>
-        /// <param name="propertyName">is the name of the property to return</param>
-        /// <returns>The jsonValue of the asked property</returns>
-        /// <exception cref="NotFoundException">When the id cannot be parsed or <see cref="T"/> not found</exception>
-        /// <exception cref="WebArgumentException">When the property could not be found on <see cref="T"/></exception>
-        Task<object> GetPropertyAsync(string id, string propertyName);
+        /// <param name="propertiesToInclude">are the properties of which the values should be returned</param>
+        /// <returns>All <see cref="T"/>s in the database but only the given properties are filled in</returns>
+        /// <exception cref="WebArgumentException">When one ore more properties could not be converted to selectors</exception>
+        Task<IEnumerable<T>> GetAllAsync([FromQuery] string[] propertiesToInclude);
 
         /// <summary>
         /// Get is supposed to return the <see cref="T"/> with the given id in the database. 
@@ -48,16 +47,17 @@ namespace WebService.Controllers.Bases
         /// <returns>The <see cref="T"/> in the database that has the given id</returns>
         /// <exception cref="NotFoundException">When the id cannot be parsed or <see cref="T"/> not found</exception>
         /// <exception cref="WebArgumentException">When one ore more properties could not be converted to selectors</exception>
-        Task<T> GetAsync(string id, [FromQuery] string[] propertiesToInclude);
+        Task<T> GetOneAsync(string id, [FromQuery] string[] propertiesToInclude);
 
         /// <summary>
-        /// Get is supposed to return all the Items in the database. 
-        /// To limit data traffic it is possible to select only a number of properties.
+        /// GetProperty is supposed to return the jsonValue of the asked property of the asked <see cref="T"/>.
         /// </summary>
-        /// <param name="propertiesToInclude">are the properties of which the values should be returned</param>
-        /// <returns>All <see cref="T"/>s in the database but only the given properties are filled in</returns>
-        /// <exception cref="WebArgumentException">When one ore more properties could not be converted to selectors</exception>
-        Task<IEnumerable<T>> GetAsync([FromQuery] string[] propertiesToInclude);
+        /// <param name="id">is the id of the <see cref="T"/></param>
+        /// <param name="propertyName">is the name of the property to return</param>
+        /// <returns>The jsonValue of the asked property</returns>
+        /// <exception cref="NotFoundException">When the id cannot be parsed or <see cref="T"/> not found</exception>
+        /// <exception cref="WebArgumentException">When the property could not be found on <see cref="T"/></exception>
+        Task<object> GetPropertyAsync(string id, string propertyName);
 
         #endregion READ
 
@@ -81,7 +81,7 @@ namespace WebService.Controllers.Bases
         /// <param name="id">is the id of the <see cref="T"/></param>
         /// <param name="propertyName">is the name of the property to update</param>
         /// <param name="jsonValue">is the new jsonValue of the property</param>
-         /// <exception cref="NotFoundException">When the id cannot be parsed or <see cref="T"/> not found</exception>
+        /// <exception cref="NotFoundException">When the id cannot be parsed or <see cref="T"/> not found</exception>
         /// <exception cref="WebArgumentException">When the property could not be found on <see cref="T"/> or the jsonValue could not be assigned</exception>
         Task UpdatePropertyAsync(string id, string propertyName, [FromBody] string jsonValue);
 
