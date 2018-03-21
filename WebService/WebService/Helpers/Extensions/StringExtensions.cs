@@ -1,4 +1,7 @@
-﻿using System.Text;
+﻿using System.Linq;
+using System.Text;
+using MongoDB.Bson;
+using WebService.Services.Randomizer;
 
 namespace WebService.Helpers.Extensions
 {
@@ -143,5 +146,11 @@ namespace WebService.Helpers.Extensions
         public static bool EqualsWithCamelCasing(this string This, string propertyName)
             // check if the string's are equal after converting them to lower case
             => This.ToLowerCamelCase() == propertyName.ToLowerCamelCase();
+
+        public static string Hash(this string stringToHash, ObjectId id)
+            => BCrypt.Net.BCrypt.HashString($"{stringToHash}{id}{Randomizer.Instance.NextChar()}");
+
+        public static bool EqualsToHash(this string stringToCompare, ObjectId id, string hash) 
+            => Randomizer.Instance.Chars.Any(c => BCrypt.Net.BCrypt.Verify($"{stringToCompare}{id}{c}", hash));
     }
 }

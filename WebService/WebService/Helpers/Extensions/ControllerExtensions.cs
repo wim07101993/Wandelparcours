@@ -9,9 +9,9 @@ namespace WebService.Helpers.Extensions
 {
     public static class ControllerExtensions
     {
-        public static string GetControllerUrl<T>() where T : Controller
+        public static string GetControllerUrlWithIp(Type type)
         {
-            var completeControllerName = typeof(T).Name;
+            var completeControllerName = type.Name;
 
             const string controllerString = "Controller";
             var normalNameLength = completeControllerName.Length - controllerString.Length;
@@ -20,7 +20,7 @@ namespace WebService.Helpers.Extensions
                 ? completeControllerName.Substring(0, normalNameLength)
                 : completeControllerName;
 
-            var attribute = typeof(T)
+            var attribute = type
                 .GetCustomAttributes()
                 .FirstOrDefault(x => x is RouteAttribute) as RouteAttribute;
 
@@ -33,6 +33,9 @@ namespace WebService.Helpers.Extensions
 
             return $"{ip}/{urlSuffix}";
         }
+
+        public static string GetControllerUrl<T>() where T : Controller
+            => GetControllerUrlWithIp(typeof(T));
 
         public static string GetUrl<T>(this Controller This) where T : Controller
             => GetControllerUrl<T>();

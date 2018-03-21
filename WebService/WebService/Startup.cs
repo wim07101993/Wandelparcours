@@ -5,7 +5,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Serialization;
 using WebService.Helpers.Extensions;
-using WebService.Models;
+using WebService.Services.Authorization;
 using WebService.Services.Data;
 using WebService.Services.Data.Mock;
 using WebService.Services.Data.Mongo;
@@ -28,15 +28,18 @@ namespace WebService
         public void ConfigureServices(IServiceCollection services)
         {
             services
-                .AddSingleton(typeof(ILogger), new LoggerCollection { new ConsoleLogger(), new FileLogger() })
+                .AddSingleton(typeof(ILogger), new LoggerCollection {new ConsoleLogger(), new FileLogger()})
                 .AddSingleton<IRandomizer, Randomizer>()
                 .AddSingleton<IThrow, Throw>()
-                //.AddSingleton<IDataService<Resident>, MockResidentsService>()
-                //.AddSingleton<IDataService<ReceiverModule>, ReceiverModulesService>();
-                .AddSingleton<IMediaService, MediaService>()
-                .AddSingleton<IResidentsService, ResidentsService>()
+                .AddSingleton<IMediaService, MockMediaService>()
+                .AddSingleton<IResidentsService, MockResidentsService>()
                 .AddSingleton<IReceiverModulesService, ReceiverModulesService>()
-                .AddSingleton<IUsersService, UsersService>();
+                .AddSingleton<IUsersService, MockUsersService>()
+                //.AddSingleton<IMediaService, MediaService>()
+                //.AddSingleton<IResidentsService, ResidentsService>()
+                //.AddSingleton<IReceiverModulesService, ReceiverModulesService>()
+                //.AddSingleton<IUsersService, UsersService>()
+                .AddSingleton<ITokenService, TokenService>();
 
             services
                 .AddMvc()
@@ -67,6 +70,7 @@ namespace WebService
 
             app.UseExceptionMiddleware()
                 .UseStaticFiles()
+                .UseAuthorizationMiddleware()
                 .UseMvc(routes =>
                 {
                     routes.MapRoute(
@@ -75,7 +79,7 @@ namespace WebService
 
                     routes.MapSpaFallbackRoute(
                         name: "spa-fallback",
-                        defaults: new { controller = "Home", action = "Index" });
+                        defaults: new {controller = "Home", action = "Index"});
                 });
         }
     }

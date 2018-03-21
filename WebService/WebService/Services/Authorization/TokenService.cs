@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
+using MongoDB.Bson;
 using WebService.Models;
 using WebService.Services.Data;
 using WebService.Services.Exceptions;
@@ -21,7 +22,7 @@ namespace WebService.Services.Authorization
         private readonly IUsersService _usersService;
         private readonly IThrow _iThrow;
         private readonly ILogger _logger;
-        private readonly List<string> _issuedTokens = new List<string>();
+        private readonly IDictionary<string, ObjectId> _issuedTokens = new Dictionary<string, ObjectId>();
 
 
         public TokenService(IConfiguration configuration, IUsersService usersService, IThrow iThrow,
@@ -35,15 +36,15 @@ namespace WebService.Services.Authorization
             RunTokenGarbageCollectorAsync();
         }
 
-        public IReadOnlyList<string> IssuedTokens => _issuedTokens;
+        public IReadOnlyList<string> IssuedTokens => _issuedTokens.Keys.ToList();
 
         public bool IsTokenGarbageCollectorRunning { get; set; }
 
 
-        public async Task<string> CreateTokenAsync(string userName, string password)
+        public async Task<string> CreateTokenAsync(ObjectId id, string password)
         {
-            if (!(await _usersService.CheckCredentialsAsync(userName, password)))
-                _iThrow.NotFound<User>(nameof(userName));
+            if (!await _usersService.CheckCredentialsAsync(id, password))
+                _iThrow.NotFound<User>(nameof(id));
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
@@ -55,10 +56,13 @@ namespace WebService.Services.Authorization
                 signingCredentials: creds
             ));
 
-            _issuedTokens.Add(token);
+            _issuedTokens.Add(token, id);
             _logger.Log(this, ELogLevel.Information, $"Issued new token: {token}");
             return token;
         }
+
+        public Task<ObjectId> GetIdFromToken(string token)
+            => Task.FromResult(_issuedTokens[token]);
 
         public bool ValidateToken(string strToken)
         {
@@ -92,10 +96,10 @@ namespace WebService.Services.Authorization
 
                 if (!_issuedTokens.Any())
                     continue;
-
-                for (var i = _issuedTokens.Count - 1; i >= 0; i--)
-                    if (!ValidateToken(_issuedTokens[i]))
-                        _issuedTokens.RemoveAt(i);
+                
+                for (var i = IssuedTokens.Count - 1; i >= 0; i--)
+                    if (!ValidateToken(IssuedTokens[i]))
+                        _issuedTokens.Remove(IssuedTokens[i]);
             }
 
             IsTokenGarbageCollectorRunning = false;

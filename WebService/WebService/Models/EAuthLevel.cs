@@ -14,7 +14,7 @@
         /// Admin is the level of the nurses of the home.
         /// They can ask and manipulate all the data of all the residents and ask for their location-data.
         /// </summary>
-        Admin = 1,
+        Nurse = 1,
 
         /// <summary>
         /// User the level of the basic users of the webApp (family of the residents).
@@ -28,7 +28,7 @@
         UnVerifiedUser = 3,
 
         /// <summary>
-        /// Guest is the lowes level. A Guest can only ask for a login.
+        /// Guest is the lowest level. A Guest can only ask for a login.
         /// </summary>
         Guest = 4
     }

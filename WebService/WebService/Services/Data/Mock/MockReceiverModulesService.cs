@@ -17,12 +17,14 @@ namespace WebService.Services.Data.Mock
     /// <para/>
     /// It handles the saving and retrieving data to and from a list of Residents in memory. It does not store anything in a database.
     /// </summary>
-    public partial class MockReceiverModulesesService : AMockDataService<ReceiverModule>, IReceiverModulesService
+    public class MockReceiverModulesesService : AMockDataService<ReceiverModule>, IReceiverModulesService
     {
         public MockReceiverModulesesService(IThrow iThrow) : base(iThrow)
         {
         }
 
+
+        public override List<ReceiverModule> MockData { get; } = Mock.MockData.MockReceiverModules;
 
         /// <inheritdoc cref="AMockDataService{T}" />
         /// <summary>
