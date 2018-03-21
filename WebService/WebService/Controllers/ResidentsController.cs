@@ -74,11 +74,7 @@ namespace WebService.Controllers
         #region METHODS
 
         #region post (create)
-
-        [HttpPost]
-        public override Task<StatusCodeResult> CreateAsync([FromBody] Resident item)
-            => base.CreateAsync(item);
-
+        
         [HttpPost("{residentId}/Music/data")]
         public Task<StatusCodeResult> AddMusicAsync(string residentId, [FromForm] MultiPartFile musicData)
             => AddMediaAsync(residentId, musicData, EMediaType.Audio, (int) 20e6);
@@ -170,15 +166,7 @@ namespace WebService.Controllers
         #endregion post (create)
 
         #region get (read)
-
-        [HttpGet]
-        public override Task<IEnumerable<Resident>> GetAsync([FromQuery] string[] propertiesToInclude)
-            => base.GetAsync(propertiesToInclude);
-
-        [HttpGet("{id}")]
-        public override Task<Resident> GetAsync(string id, [FromQuery] string[] propertiesToInclude)
-            => base.GetAsync(id, propertiesToInclude);
-
+        
         [HttpGet("byTag/{tag}")]
         public async Task<Resident> GetAsync(int tag, [FromQuery] string[] propertiesToInclude)
         {
@@ -228,11 +216,7 @@ namespace WebService.Controllers
 
             return data.RandomItem();
         }
-
-        [HttpGet("{id}/{propertyName}")]
-        public override Task<object> GetPropertyAsync(string id, string propertyName)
-            => base.GetPropertyAsync(id, propertyName);
-
+        
         [HttpGet("byTag/{tag}/{propertyName}")]
         public async Task<object> GetPropertyAsync(int tag, string propertyName)
         {
@@ -247,29 +231,9 @@ namespace WebService.Controllers
         }
 
         #endregion get (read)
-
-        #region put (update)
-
-        [HttpPut]
-        public override Task UpdateAsync([FromBody] Resident item, [FromQuery] string[] properties)
-            => base.UpdateAsync(item, properties);
-
-        [HttpPut("{id}/{propertyName}")]
-        public override Task UpdatePropertyAsync(string id, string propertyName, [FromBody] string jsonValue)
-            => base.UpdatePropertyAsync(id, propertyName, jsonValue);
-
-        #endregion put (update)
-
-
-
-
-
+        
         #region delete
-
-        [HttpDelete("{id}")]
-        public override Task DeleteAsync(string id)
-            => base.DeleteAsync(id);
-
+        
         [HttpDelete("{residentId}/Videos/{videoId}")]
         public Task RemoveVideoAsync(string residentId, string videoId)
             => RemoveMediaAsync(residentId, videoId, EMediaType.Video);

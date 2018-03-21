@@ -71,11 +71,7 @@ namespace WebService.Controllers
         #endregion post (create)
 
         #region get (read)
-
-        [HttpGet("{id}/{propertyName}")]
-        public override Task<object> GetPropertyAsync(string id, string propertyName)
-            => base.GetPropertyAsync(id, propertyName);
-
+        
         [HttpGet("{mac}")]
         public override async Task<ReceiverModule> GetAsync(string mac, [FromQuery] string[] propertiesToInclude)
         {
@@ -95,25 +91,9 @@ namespace WebService.Controllers
                    ?? throw new NotFoundException(
                        $"The {typeof(ReceiverModule).Name} with id {mac} could not be found");
         }
-
-        [HttpGet]
-        public override Task<IEnumerable<ReceiverModule>> GetAsync([FromQuery] string[] propertiesToInclude)
-            => base.GetAsync(propertiesToInclude);
-
+        
         #endregion get (read)
-
-        #region put (update)
-
-        [HttpPut]
-        public override Task UpdateAsync([FromBody] ReceiverModule item, [FromQuery] string[] propertiesToUpdate)
-            => base.UpdateAsync(item, propertiesToUpdate);
-
-        [HttpPut("{id}/{propertyName}")]
-        public override Task UpdatePropertyAsync(string id, string propertyName, [FromBody] string jsonValue)
-            => base.UpdatePropertyAsync(id, propertyName, jsonValue);
-
-        #endregion put (update)
-
+        
         #region delete
 
         [HttpDelete("{mac}")]
