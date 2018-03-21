@@ -7,6 +7,7 @@ class Rest(RestInterface):
     def __init__(self):
         self.__url="http://10.9.4.40:5000"
 
+
     def GetImages(self,id):
         url = self.__url+"/API/v1/residents/bytag/"+id+"/images"
         r = requests.get(url)
@@ -19,3 +20,5 @@ class Rest(RestInterface):
 
     def GetUrlForMedia(self, id, type="media"):
         return self.__url+"/API/v1/"+type+"/"+id
+
+
