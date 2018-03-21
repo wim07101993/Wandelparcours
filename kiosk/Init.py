@@ -18,7 +18,7 @@ d= TagAlgorithm.TagAlgorithm.getClosestBeacon(l)
 print("closest")
 print("adress: %s  signaal: %s" % (d.GetMac(), d.GetStrength()))'''
 
-
+#initializer
 class Init(App):
     def build(self):
         componentHandler=ComponentHandler("image")
