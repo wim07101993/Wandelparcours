@@ -37,7 +37,7 @@ namespace WebService.Services.Data.Mongo
         public async Task<bool> CheckCredentialsAsync(ObjectId id, string password)
         {
             var find = await MongoCollection.FindAsync(
-                x => x.Id == id && password.EqualsToHash(id, x.Password));
+                x => x.Id == id && password.EqualsToHash(id, x.Password, true, true));
             return find.Any();
         }
 

@@ -178,8 +178,8 @@ namespace WebService.Services.Data.Mock
                 Email = "wim.vanlaer@student.ucll.be",
                 AuthLevel = EAuthLevel.SysAdmin,
                 UserName = "wim",
-                Password = "$2b$10$shPHUQ1AYzB7faoFgpiCYOTqUdXEiT3wPQslf9W.T7mMpspJZIUe2",
-                Id = ObjectId.GenerateNewId()
+                Password = "$2b$10$cGq2TPUjn.VLBCg1EIUqNOaMgvyXd17pInQTbC1s8g0/hjIVrOofq",
+                Id = ObjectId.Parse("5ab394c95180773ed87c8684")
             }
         };
     }

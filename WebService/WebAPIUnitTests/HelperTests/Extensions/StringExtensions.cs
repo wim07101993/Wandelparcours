@@ -1,5 +1,6 @@
 ﻿using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using MongoDB.Bson;
 using WebService.Helpers.Extensions;
 
 namespace WebAPIUnitTests.HelperTests.Extensions
@@ -59,6 +60,29 @@ namespace WebAPIUnitTests.HelperTests.Extensions
                 .EqualsWithCamelCasing("helloWorld")
                 .Should()
                 .BeFalse("these strings are different: the 'w' is in one with caps and the other without");
+        }
+
+        [TestMethod]
+        public void Hash()
+        {
+            var id = ObjectId.GenerateNewId();
+            var password = "password";
+
+            var hash = password.Hash(id, false, false);
+            password.EqualsToHash(id, hash, false, false)
+                .Should().BeTrue("it is the same password");
+
+            hash = password.Hash(id, true, false);
+            password.EqualsToHash(id, hash, true, false)
+                .Should().BeTrue("it is the same password");
+
+            hash = password.Hash(id, false, true);
+            password.EqualsToHash(id, hash, false, true)
+                .Should().BeTrue("it is the same password");
+
+            hash = password.Hash(id, true, true);
+            password.EqualsToHash(id, hash, true, true)
+                .Should().BeTrue("it is the same password");
         }
     }
 }
