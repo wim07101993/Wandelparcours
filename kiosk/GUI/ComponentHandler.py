@@ -1,5 +1,7 @@
 from kivy.uix.button import Button
 
+from GUI.ImageComponent.ImageComponent import ImageComponentLayout
+
 
 class ComponentHandler():
 
@@ -7,7 +9,7 @@ class ComponentHandler():
         self.timeIsUp=False
         self.type=type
         if type=="image":
-            self.component=Button(text="image")
+            self.component=ImageComponentLayout()
         elif type == "video":
             self.component = Button(text="video")
         else:
@@ -20,7 +22,7 @@ class ComponentHandler():
         self.tag=tag
 
     def Start(self):
-        self.component.text=self.tag.GetMac()+" from "+ self.type
+        return
 
 
     def TimeIsUp(self):
