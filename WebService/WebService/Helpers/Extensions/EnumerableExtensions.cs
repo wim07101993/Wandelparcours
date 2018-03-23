@@ -24,7 +24,7 @@ namespace WebService.Helpers.Extensions
             // check for null and if This holds any elements
             => This == null || !This.Any();
 
-        public static T RandomItem<T>(this IList<T> This)
+        public static object RandomItem(this IList This)
             => This[Randomizer.Instance.Next(This.Count)];
 
 

@@ -15,5 +15,8 @@ namespace WebService.Models
         /// </summary>
         [BsonElement("data")]
         public byte[] Data { get; set; }
+
+        [BsonElement("extension")]
+        public string Extension { get; set; }
     }
 }
