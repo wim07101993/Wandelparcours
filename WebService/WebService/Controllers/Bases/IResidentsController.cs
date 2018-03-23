@@ -100,6 +100,8 @@ namespace WebService.Controllers.Bases
 
         Task<object> GetRandomElementFromPropertyAsync(int tag, string mediaType);
 
+        Task<object> GetPropertyAsync(int tag, string propertyName);
+
         #endregion READ
 
 

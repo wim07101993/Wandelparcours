@@ -110,21 +110,6 @@ namespace WebService.Controllers
         public Task<StatusCodeResult> AddImageAsync(string residentId, [FromForm] MultiPartFile imageData)
             => AddMediaAsync(residentId, imageData, EMediaType.Image, (int) 20e6);
 
-        [HttpPost(AddColorTemplate)]
-        public async Task<StatusCodeResult> AddColorAsync(string residentId, [FromBody] byte[] colorData)
-        {
-            // parse the id
-            if (!ObjectId.TryParse(residentId, out var residentObjectId))
-            {
-                // if it fails, throw not found exception
-                Throw.NotFound<Resident>(residentId);
-                return null;
-            }
-
-            await DataService.AddItemToListProperty(residentObjectId, x => x.Colors, colorData);
-            return StatusCode((int) HttpStatusCode.Created);
-        }
-
         public async Task<StatusCodeResult> AddMediaAsync(string residentId, MultiPartFile data, EMediaType mediaType,
             int maxFileSize = int.MaxValue)
         {
@@ -147,8 +132,8 @@ namespace WebService.Controllers
                 var bytes = data.ConvertToBytes(maxFileSize);
                 var title = data.File.FileName;
 
-                await ((IResidentsService) DataService).AddMediaAsync(residentObjectId, title, bytes, mediaType);
-                return StatusCode((int) HttpStatusCode.Created);
+                await ((IResidentsService)DataService).AddMediaAsync(residentObjectId, title, bytes, mediaType);
+                return StatusCode((int)HttpStatusCode.Created);
             }
             catch (FileToLargeException)
             {
@@ -184,6 +169,22 @@ namespace WebService.Controllers
             // use the data service to create a new updater
             await ((IResidentsService) DataService).AddMediaAsync(residentObjectId, url, mediaType);
             return StatusCode((int) HttpStatusCode.Created);
+        }
+
+
+        [HttpPost(AddColorTemplate)]
+        public async Task<StatusCodeResult> AddColorAsync(string residentId, [FromBody] byte[] colorData)
+        {
+            // parse the id
+            if (!ObjectId.TryParse(residentId, out var residentObjectId))
+            {
+                // if it fails, throw not found exception
+                Throw.NotFound<Resident>(residentId);
+                return null;
+            }
+
+            await DataService.AddItemToListProperty(residentObjectId, x => x.Colors, colorData);
+            return StatusCode((int)HttpStatusCode.Created);
         }
 
         #endregion post (create)
@@ -269,6 +270,28 @@ namespace WebService.Controllers
         public Task RemoveImageAsync(string residentId, string imageId)
             => RemoveMediaAsync(residentId, imageId, EMediaType.Image);
 
+        public async Task RemoveMediaAsync(string residentId, string mediaId, EMediaType mediaType)
+        {
+            // parse the resident id
+            if (!ObjectId.TryParse(residentId, out var residentObjectId))
+            {
+                // if it fails, throw not found exception
+                Throw.NotFound<Resident>(residentId);
+                return;
+            }
+
+            // parse the media id
+            if (!ObjectId.TryParse(mediaId, out var mediaObjectId))
+            {
+                // if it fails, throw not found exception
+                Throw.NotFound<MediaData>(mediaId);
+                return;
+            }
+
+            // remove the media from the database
+            await ((IResidentsService)DataService).RemoveMediaAsync(residentObjectId, mediaObjectId, mediaType);
+        }
+
         [HttpDelete(RemoveColorTemplate)]
         public async Task RemoveColorAsync(string residentId, string colorId)
         {
@@ -292,29 +315,7 @@ namespace WebService.Controllers
             await ((IResidentsService) DataService)
                 .RemoveSubItemAsync(residentObjectId, x => x.Colors, mediaObjectId);
         }
-
-        public async Task RemoveMediaAsync(string residentId, string mediaId, EMediaType mediaType)
-        {
-            // parse the resident id
-            if (!ObjectId.TryParse(residentId, out var residentObjectId))
-            {
-                // if it fails, throw not found exception
-                Throw.NotFound<Resident>(residentId);
-                return;
-            }
-
-            // parse the media id
-            if (!ObjectId.TryParse(mediaId, out var mediaObjectId))
-            {
-                // if it fails, throw not found exception
-                Throw.NotFound<MediaData>(mediaId);
-                return;
-            }
-
-            // remove the media from the database
-            await ((IResidentsService) DataService).RemoveMediaAsync(residentObjectId, mediaObjectId, mediaType);
-        }
-
+        
         #endregion delete
 
         #endregion METHODS
