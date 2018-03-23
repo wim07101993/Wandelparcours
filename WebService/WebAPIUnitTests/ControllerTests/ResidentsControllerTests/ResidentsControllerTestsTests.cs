@@ -95,42 +95,11 @@ namespace WebAPIUnitTests.ControllerTests.ResidentsControllerTests
 
 
         [TestMethod]
-        public void AddColorNullId()
+        public void AddNullColor()
         {
             new ResidentsController(new Throw(), new TestResidentsService(), new ConsoleLogger())
                 .AddColorAsync(null, null)
                 .ShouldCatchException<NotFoundException>("there is no resident with a null id");
-        }
-
-        [TestMethod]
-        public void AddColorBadId()
-        {
-            new ResidentsController(new Throw(), new TestResidentsService(), new ConsoleLogger())
-                .AddColorAsync("a", null)
-                .ShouldCatchException<NotFoundException>("the id cannot be parsed");
-        }
-
-        [TestMethod]
-        public void AddColorNullData()
-        {
-            var dataService = new TestResidentsService();
-            var id = dataService.GetFirst().Id;
-
-            new ResidentsController(new Throw(), dataService, new ConsoleLogger())
-                .AddColorAsync(id.ToString(), null)
-                .ShouldCatchArgumentException<WebArgumentNullException>("data", "the data to add cannot be null");
-        }
-
-        [TestMethod]
-        public void AddColorBadData()
-        {
-            var dataService = new TestResidentsService();
-            var id = dataService.GetFirst().Id;
-
-            new ResidentsController(new Throw(), dataService, new ConsoleLogger())
-                .AddColorAsync(id.ToString(), new byte[0])
-                .ShouldCatchArgumentException<WebArgumentNullException>("data",
-                    "the data to add must have a length of 3 bytes");
         }
 
         [TestMethod]
@@ -141,7 +110,7 @@ namespace WebAPIUnitTests.ControllerTests.ResidentsControllerTests
             var count = dataService.GetAll().Count();
 
             new ResidentsController(new Throw(), dataService, new ConsoleLogger())
-                .AddColorAsync(id.ToString(), new byte[3]).ShouldReturnStatus(HttpStatusCode.Created,
+                .AddColorAsync(id.ToString(), new Color()).ShouldReturnStatus(HttpStatusCode.Created,
                     "when an item is created, that is the status-code");
 
             dataService
@@ -311,7 +280,7 @@ namespace WebAPIUnitTests.ControllerTests.ResidentsControllerTests
         public void RemoveMediaNullResidentId()
         {
             var dataService = new TestResidentsService();
-            var id = dataService.GetFirst().Images.First();
+            var id = dataService.GetFirst().Images.First().Id;
 
             new ResidentsController(new Throw(), dataService, new ConsoleLogger())
                 .RemoveMediaAsync(null, id.ToString(), EMediaType.Image)
@@ -321,55 +290,104 @@ namespace WebAPIUnitTests.ControllerTests.ResidentsControllerTests
         [TestMethod]
         public void RemoveMediaBadResidentId()
         {
-            throw new System.NotImplementedException();
+            var dataService = new TestResidentsService();
+            var id = dataService.GetFirst().Images.First().Id;
+
+            new ResidentsController(new Throw(), dataService, new ConsoleLogger())
+                .RemoveMediaAsync("a", id.ToString(), EMediaType.Image)
+                .ShouldCatchException<NotFoundException>("there is no resident with id a");
         }
 
         [TestMethod]
         public void RemoveMediaNullMediaId()
         {
-            throw new System.NotImplementedException();
+            var dataService = new TestResidentsService();
+            var id = dataService.GetFirst().Id;
+
+            new ResidentsController(new Throw(), dataService, new ConsoleLogger())
+                .RemoveMediaAsync(id.ToString(), null, EMediaType.Image)
+                .ShouldCatchException<NotFoundException>("there is no media with a null id");
         }
 
         [TestMethod]
         public void RemoveMediaBadMediaId()
         {
-            throw new System.NotImplementedException();
+            var dataService = new TestResidentsService();
+            var id = dataService.GetFirst().Id;
+
+            new ResidentsController(new Throw(), dataService, new ConsoleLogger())
+                .RemoveMediaAsync(id.ToString(), "a", EMediaType.Image)
+                .ShouldCatchException<NotFoundException>("there is no media with a id a");
         }
 
         [TestMethod]
         public void RemoveMedia()
         {
-            throw new System.NotImplementedException();
+            var dataService = new TestResidentsService();
+            var residentId = dataService.GetFirst().Id;
+            var mediaId = dataService.GetFirst().Images.First().Id;
+
+            new ResidentsController(new Throw(), dataService, new ConsoleLogger())
+                .RemoveMediaAsync(residentId.ToString(), mediaId.ToString(), EMediaType.Image)
+                .Wait();
+
+            dataService
+                .GetFirst()
+                .Images
+                .Should()
+                .NotContain(x => x.Id == mediaId);
         }
+
 
         [TestMethod]
         public void RemoveColorNullResidentId()
         {
-            throw new System.NotImplementedException();
+            var dataService = new TestResidentsService();
+            var color = dataService.GetFirst().Colors.First();
+
+            new ResidentsController(new Throw(), dataService, new ConsoleLogger())
+                .RemoveColorAsync(null, color)
+                .ShouldCatchException<NotFoundException>("there is no resident with a null id");
         }
 
         [TestMethod]
         public void RemoveColorBadResidentId()
         {
-            throw new System.NotImplementedException();
+            var dataService = new TestResidentsService();
+            var color = dataService.GetFirst().Colors.First();
+
+            new ResidentsController(new Throw(), dataService, new ConsoleLogger())
+                .RemoveColorAsync("a", color)
+                .ShouldCatchException<NotFoundException>("there is no resident with a id a");
         }
 
         [TestMethod]
         public void RemoveColorNullColor()
         {
-            throw new System.NotImplementedException();
-        }
+            var dataService = new TestResidentsService();
+            var id = dataService.GetFirst().Id;
 
-        [TestMethod]
-        public void RemoveColorBadColor()
-        {
-            throw new System.NotImplementedException();
+            new ResidentsController(new Throw(), dataService, new ConsoleLogger())
+                .RemoveColorAsync(id.ToString(), null)
+                .ShouldCatchException<NotFoundException>("there is no resident with a null id");
         }
 
         [TestMethod]
         public void RemoveColor()
         {
-            throw new System.NotImplementedException();
+            var dataService = new TestResidentsService();
+            var id = dataService.GetFirst().Id;
+            var color = dataService.GetFirst().Colors.First();
+
+            new ResidentsController(new Throw(), dataService, new ConsoleLogger())
+                .RemoveColorAsync(id.ToString(), color)
+                .Wait();
+
+            dataService
+                .GetFirst()
+                .Colors
+                .Should()
+                .NotContain(x => x.IsSameOrEqualTo(color));
         }
 
         #endregion DELETE

@@ -151,6 +151,14 @@ namespace WebService.Helpers.Extensions
 
         public static string Hash(this string stringToHash, ObjectId id, bool useSalt = true, bool usePepper = true)
         {
+            //if (useSalt && usePepper)
+            //    return $"{stringToHash}{id}{Randomizer.Instance.NextChar()}";
+            //if (useSalt)
+            //    return $"{stringToHash}{id}";
+            //if (usePepper)
+            //    return $"{stringToHash}{Randomizer.Instance.NextChar()}";
+            //return stringToHash;
+
             if (useSalt && usePepper)
                 return BCrypt.Net.BCrypt.HashPassword($"{stringToHash}{id}{Randomizer.Instance.NextChar()}");
             if (useSalt)
@@ -163,6 +171,14 @@ namespace WebService.Helpers.Extensions
         public static bool EqualsToHash(this string stringToCompare, ObjectId id, string hash, bool useSalt = true,
             bool usePepper = true)
         {
+            //if (useSalt && usePepper)
+            //    return Randomizer.Instance.Chars.Any(c => $"{stringToCompare}{id}{c}" == hash);
+            //if (useSalt)
+            //    return $"{stringToCompare}{id}" == hash;
+            //if (usePepper)
+            //    return Randomizer.Instance.Chars.Any(c => $"{stringToCompare}{c}" == hash);
+            //return stringToCompare == hash;
+
             if (useSalt && usePepper)
                 return Randomizer.Instance.Chars.Any(c => BCrypt.Net.BCrypt.Verify($"{stringToCompare}{id}{c}", hash));
             if (useSalt)

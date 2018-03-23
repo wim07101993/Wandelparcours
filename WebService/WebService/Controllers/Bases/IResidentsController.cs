@@ -1,5 +1,7 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using WebService.Helpers.Exceptions;
 using WebService.Models;
 
 namespace WebService.Controllers.Bases
@@ -22,16 +24,6 @@ namespace WebService.Controllers.Bases
         Task<StatusCodeResult> AddMusicAsync(string residentId, [FromForm] MultiPartFile musicData);
 
         /// <summary>
-        /// AddMusicAsymc is supposed to add music to the music list of a <see cref="Resident"/>.
-        /// </summary>
-        /// <param name="residentId">is the id of the <see cref="Resident"/></param>
-        /// <param name="url">is the url to the music to add to the <see cref="Resident"/>'s music list</param>
-        /// <exception cref="NotFoundException">When the <see cref="residentId"/> cannot be parsed or <see cref="Resident"/> not found</exception>
-        /// <exception cref="Exception">When the item could not be added</exception>
-        Task<StatusCodeResult> AddMusicAsync(string residentId, [FromBody] string url);
-
-
-        /// <summary>
         /// AddVideoAsymc is supposed to add video to the video list of a <see cref="Resident"/>.
         /// </summary>
         /// <param name="residentId">is the id of the <see cref="Resident"/></param>
@@ -41,16 +33,6 @@ namespace WebService.Controllers.Bases
         Task<StatusCodeResult> AddVideoAsync(string residentId, [FromForm] MultiPartFile videoData);
 
         /// <summary>
-        /// AddVideoAsymc is supposed to add video to the video list of a <see cref="Resident"/>.
-        /// </summary>
-        /// <param name="residentId">is the id of the <see cref="Resident"/></param>
-        /// <param name="url">is the url to the video to add to the <see cref="Resident"/>'s video list</param>
-        /// <exception cref="NotFoundException">When the <see cref="residentId"/> cannot be parsed or <see cref="Resident"/> not found</exception>
-        /// <exception cref="Exception">When the item could not be added</exception>
-        Task<StatusCodeResult> AddVideoAsync(string residentId, [FromBody] string url);
-
-
-        /// <summary>
         /// AddImageAsymc is supposed to add image to the image list of a <see cref="Resident"/>.
         /// </summary>
         /// <param name="residentId">is the id of the <see cref="Resident"/></param>
@@ -58,6 +40,25 @@ namespace WebService.Controllers.Bases
         /// <exception cref="NotFoundException">When the <see cref="residentId"/> cannot be parsed or <see cref="Resident"/> not found</exception>
         /// <exception cref="Exception">When the item could not be added</exception>
         Task<StatusCodeResult> AddImageAsync(string residentId, [FromForm] MultiPartFile imageData);
+
+
+        /// <summary>
+        /// AddMusicAsymc is supposed to add music to the music list of a <see cref="Resident"/>.
+        /// </summary>
+        /// <param name="residentId">is the id of the <see cref="Resident"/></param>
+        /// <param name="url">is the url to the music to add to the <see cref="Resident"/>'s music list</param>
+        /// <exception cref="NotFoundException">When the <see cref="residentId"/> cannot be parsed or <see cref="Resident"/> not found</exception>
+        /// <exception cref="Exception">When the item could not be added</exception>
+        Task<StatusCodeResult> AddMusicAsync(string residentId, [FromBody] string url);
+
+        /// <summary>
+        /// AddVideoAsymc is supposed to add video to the video list of a <see cref="Resident"/>.
+        /// </summary>
+        /// <param name="residentId">is the id of the <see cref="Resident"/></param>
+        /// <param name="url">is the url to the video to add to the <see cref="Resident"/>'s video list</param>
+        /// <exception cref="NotFoundException">When the <see cref="residentId"/> cannot be parsed or <see cref="Resident"/> not found</exception>
+        /// <exception cref="Exception">When the item could not be added</exception>
+        Task<StatusCodeResult> AddVideoAsync(string residentId, [FromBody] string url);
 
         /// <summary>
         /// AddImageAsymc is supposed to add image to the image list of a <see cref="Resident"/>.
@@ -76,7 +77,7 @@ namespace WebService.Controllers.Bases
         /// <param name="colorData">is the color to add to the <see cref="Resident"/>'s color list</param>
         /// <exception cref="NotFoundException">When the <see cref="residentId"/> cannot be parsed or <see cref="Resident"/> not found</exception>
         /// <exception cref="Exception">When the item could not be added</exception>
-        Task<StatusCodeResult> AddColorAsync(string residentId, [FromBody] byte[] colorData);
+        Task<StatusCodeResult> AddColorAsync(string residentId, [FromBody] Color colorData);
 
         #endregion CREATE
 
@@ -149,12 +150,12 @@ namespace WebService.Controllers.Bases
         /// RemoveColorAsync is supposed to remove color from the color list of a <see cref="Resident"/>.
         /// </summary>
         /// <param name="residentId">is the id of the <see cref="Resident"/></param>
-        /// <param name="colorId">is the id of the color to remove from the <see cref="Resident"/>'s color list</param>
+        /// <param name="color">is the color to remove from the <see cref="Resident"/>'s color list</param>
         /// <exception cref="NotFoundException">
-        /// When the <see cref="residentId"/>/<see cref="colorId"/> cannot be parsed or <see cref="Resident"/>/<see cref="MediaData"/> not found
+        /// When the <see cref="residentId"/> cannot be parsed or <see cref="Resident"/>/<see cref="Color"/> not found
         /// </exception>
         /// <exception cref="Exception">When the item could not be removed</exception>
-        Task RemoveColorAsync(string residentId, string colorId);
+        Task RemoveColorAsync(string residentId, Color color);
 
         #endregion DELETE
     }

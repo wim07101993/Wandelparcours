@@ -34,7 +34,7 @@ namespace WebService.Services.Data.Mock
         public Task<bool> CheckCredentialsAsync(ObjectId id, string password)
             => Task.FromResult(MockData.Any(x => x.Id == id && password.EqualsToHash(id,x.Password)));
 
-        public Task TaskUpdatePasswordAsync(ObjectId id, string password)
+        public Task UpdatePasswordAsync(ObjectId id, string password)
             => Task.Factory.StartNew(() =>
             {
                 var user = MockData.FirstOrDefault(x => x.Id == id);

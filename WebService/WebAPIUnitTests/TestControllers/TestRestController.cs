@@ -16,6 +16,13 @@ namespace WebAPIUnitTests.TestControllers
         {
         }
 
+        public TestRestController(ITestDataService<TestEntity> dataService)
+            : base(new Throw(), dataService, new ConsoleLogger())
+        {
+            
+        }
+
+
         public override IEnumerable<Expression<Func<TestEntity, object>>> PropertiesToSendOnGetAll { get; } =
             new Expression<Func<TestEntity, object>>[]
             {

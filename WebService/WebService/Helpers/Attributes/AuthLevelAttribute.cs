@@ -7,11 +7,11 @@ namespace WebService.Helpers.Attributes
     {
         public const EAuthLevel Default = EAuthLevel.User;
 
-        public EAuthLevel AuthLevel { get; set; }
+        public EAuthLevel[] AuthLevels { get; set; }
         
-        public AuthLevelAttribute(EAuthLevel authLevel)
+        public AuthLevelAttribute(params EAuthLevel[] authLevels)
         {
-            AuthLevel = authLevel;
+            AuthLevels = authLevels;
         }
     }
 }

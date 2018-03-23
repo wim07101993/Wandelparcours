@@ -28,20 +28,37 @@ namespace WebService.Services.Data.Mongo
         public override IMongoCollection<User> MongoCollection { get; }
 
 
-        public override Task CreateAsync(User item)
+        public override async Task CreateAsync(User item)
         {
+            // if the item is null, throw exception
+            if (item == null)
+            {
+                Throw?.NullArgument(nameof(item));
+                return;
+            }
+
+            // create a new id for the new item
+            item.Id = ObjectId.GenerateNewId();
             item.Password = item.Password.Hash(item.Id);
-            return base.CreateAsync(item);
+
+            try
+            {
+                // save the new item to the database
+                await MongoCollection.InsertOneAsync(item);
+            }
+            catch (Exception e)
+            {
+                Throw.Database<User>(EDatabaseMethod.Create);
+            }
         }
 
         public async Task<bool> CheckCredentialsAsync(ObjectId id, string password)
         {
-            var find = await MongoCollection.FindAsync(
-                x => x.Id == id && password.EqualsToHash(id, x.Password, true, true));
-            return find.Any();
+            var find = await MongoCollection.Find(x => x.Id == id).FirstOrDefaultAsync();
+            return password.EqualsToHash(id, find.Password);
         }
 
-        public async Task TaskUpdatePasswordAsync(ObjectId id, string password)
+        public async Task UpdatePasswordAsync(ObjectId id, string password)
         {
             var user = await GetOneAsync(id);
             user.Password = password;

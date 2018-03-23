@@ -1,5 +1,6 @@
 ﻿using System;
 using MongoDB.Bson;
+using WebService.Models;
 using WebService.Services.Data;
 
 namespace WebService.Services.Exceptions
@@ -24,5 +25,8 @@ namespace WebService.Services.Exceptions
         void FileToLarge(int maxSize);
 
         void Exception(string message = null);
+
+        void Unauthorized(params EAuthLevel[] minAuthLevels);
+        void Unauthorized();
     }
 }

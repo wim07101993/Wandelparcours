@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Net;
 using System.Reflection;
 using System.Text;
@@ -15,6 +17,7 @@ using WebService.Helpers.Extensions;
 using WebService.Models;
 using WebService.Services.Authorization;
 using WebService.Services.Data;
+using WebService.Services.Exceptions;
 using WebService.Services.Logging;
 
 namespace WebService.Middleware
@@ -27,18 +30,21 @@ namespace WebService.Middleware
         private readonly ITokenService _tokenService;
         private readonly ILogger _logger;
         private readonly IUsersService _usersService;
+        private readonly IThrow _iThrow;
 
         #endregion FIELDS
 
 
         #region CONSTRUCTOR
 
-        public AuthorizationMiddleware(RequestDelegate next, ITokenService tokenService, ILogger logger, IUsersService usersService)
+        public AuthorizationMiddleware(RequestDelegate next, ITokenService tokenService, ILogger logger,
+            IUsersService usersService, IThrow iThrow)
         {
             _next = next;
             _tokenService = tokenService;
             _logger = logger;
             _usersService = usersService;
+            _iThrow = iThrow;
         }
 
         #endregion CONSTRUCTOR
@@ -59,15 +65,19 @@ namespace WebService.Middleware
                 await _next.Invoke(context);
             else if (header.ContainsKey("token") && _tokenService.ValidateToken(header["token"]))
             {
-                var autLevel = GetAuthLevel(requestUrl);
-                await _next.Invoke(context);
+                var autLevels = GetAuthLevel(requestUrl);
+
+                var userId = await _tokenService.GetIdFromToken(header["token"]);
+                var user = await _usersService.GetOneAsync(userId,
+                    new Expression<Func<User, object>>[] {x => x.AuthLevel});
+
+                if (autLevels.Any(x => x == user.AuthLevel))
+                    await _next.Invoke(context);
+                else
+                _iThrow.Unauthorized(autLevels);
             }
             else
-            {
-                context.Response.StatusCode = (int) HttpStatusCode.Unauthorized;
-                _logger.Log(this, ELogLevel.Information,
-                    $"Unauthorized request from {context.Connection.RemoteIpAddress}:{context.Connection.RemotePort}");
-            }
+                _iThrow.Unauthorized();
         }
 
         private static string GetControllerUrl(Type controllerType)
@@ -88,15 +98,14 @@ namespace WebService.Middleware
                 .Replace("[Controller]", controllerName, StringComparison.InvariantCultureIgnoreCase);
         }
 
-        private static EAuthLevel GetAuthLevel(string url)
+        private static EAuthLevel[] GetAuthLevel(string url)
         {
             var controllerType = GetControllerCorrespondingToUrl(url);
 
             return (GetMethodCorrespondingToUrl(controllerType, url)
-                       ?.GetCustomAttributes()
-                       .FirstOrDefault(x => x is AuthLevelAttribute) as AuthLevelAttribute)
-                   ?.AuthLevel
-                   ?? AuthLevelAttribute.Default;
+                    ?.GetCustomAttributes()
+                    .Where(x => x is AuthLevelAttribute) as AuthLevelAttribute)
+                ?.AuthLevels;
         }
 
         private static Type GetControllerCorrespondingToUrl(string url)
@@ -113,7 +122,7 @@ namespace WebService.Middleware
 
                     var controllerUrl = GetControllerUrl(x);
 
-                    if (controllerUrl == null || controllerUrl.Length > url.Length)
+                    if (controllerUrl == null || controllerUrl.Length >= url.Length)
                         return false;
 
                     var urlPart = url

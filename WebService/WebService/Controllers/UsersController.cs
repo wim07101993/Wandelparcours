@@ -80,7 +80,7 @@ namespace WebService.Controllers
                 // if it fails, throw not found exception
                 throw new NotFoundException($"The {typeof(User).Name} with id {id} could not be found");
 
-            await ((IUsersService) DataService).TaskUpdatePasswordAsync(objectId, jsonValue);
+            await ((IUsersService) DataService).UpdatePasswordAsync(objectId, jsonValue);
         }
     }
 }

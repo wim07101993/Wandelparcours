@@ -44,7 +44,7 @@ namespace WebService.Services.Authorization
         public async Task<string> CreateTokenAsync(ObjectId id, string password)
         {
             if (!await _usersService.CheckCredentialsAsync(id, password))
-                _iThrow.NotFound<User>(nameof(id));
+                _iThrow.Unauthorized();
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
@@ -66,6 +66,9 @@ namespace WebService.Services.Authorization
 
         public bool ValidateToken(string strToken)
         {
+            if (!_issuedTokens.ContainsKey(strToken))
+                return false;
+
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
 
             var tokenParams = new TokenValidationParameters
@@ -96,7 +99,7 @@ namespace WebService.Services.Authorization
 
                 if (!_issuedTokens.Any())
                     continue;
-                
+
                 for (var i = IssuedTokens.Count - 1; i >= 0; i--)
                     if (!ValidateToken(IssuedTokens[i]))
                         _issuedTokens.Remove(IssuedTokens[i]);

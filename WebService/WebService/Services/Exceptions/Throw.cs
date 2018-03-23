@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Linq;
 using MongoDB.Bson;
 using WebService.Helpers.Exceptions;
+using WebService.Models;
 using WebService.Services.Data;
 
 namespace WebService.Services.Exceptions
@@ -56,5 +58,12 @@ namespace WebService.Services.Exceptions
 
         public void Exception(string message = null)
             => throw new Exception(message);
+
+        public void Unauthorized(params EAuthLevel[] minAuthLevels)
+            => throw new UnauthorizedException(
+                $"You need to ask the {minAuthLevels.Select(x => x.ToString()).ToJson()} for acces", minAuthLevel);
+
+        public void Unauthorized()
+            => throw new UnauthorizedException($"You need to ask the server for a token to get access");
     }
 }

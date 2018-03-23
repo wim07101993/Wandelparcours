@@ -1,28 +1,84 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using System;
+using System.Collections.Generic;
+using System.Net;
+using FluentAssertions;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using MongoDB.Bson;
+using Moq;
+using WebAPIUnitTests.TestControllers;
+using WebAPIUnitTests.TestHelpers.Extensions;
+using WebAPIUnitTests.TestModels;
+using WebAPIUnitTests.TestServices.Abstract;
+using WebService.Helpers.Exceptions;
 
 namespace WebAPIUnitTests.ControllerTests.RestControllerBaseTests
 {
     [TestClass]
-    public class RestControllerBaseTests// : IRestControllerTests
+    public class RestControllerBaseTests : IRestControllerTests
     {
         #region CREATE
 
         [TestMethod]
-        public void Create()
-        {
-            // TODO create test
-        }
-
-        [TestMethod]
         public void CreateNull()
         {
-            // TODO create test
+            var controller = new TestRestController();
+
+            controller
+                .CreateAsync(null)
+                .ShouldCatchArgumentException<WebArgumentNullException>("item", "the item to create cannot be null");
         }
 
         [TestMethod]
         public void CreateDuplicate()
         {
-            // TODO create test
+            var item = new TestEntity {Id = ObjectId.GenerateNewId()};
+            var duplicate = new TestEntity {Id = item.Id};
+
+            var list = new List<TestEntity> {item};
+
+            var mock = new Mock<ITestDataService<TestEntity>>();
+            mock.Setup(x => x.CreateAsync(duplicate)).Callback(new Action<TestEntity>(x => list.Add(x)));
+
+            var controller = new TestRestController(mock.Object);
+
+            controller
+                .CreateAsync(duplicate)
+                .Result
+                .StatusCode
+                .Should()
+                .Be((int) HttpStatusCode.Created, "the item should have been created but the id should have changed");
+
+            list
+                .Should()
+                .HaveCount(2)
+                .And
+                .ContainSingle(x => x.Id == item.Id);
+        }
+
+        [TestMethod]
+        public void Create()
+        {
+            var item = new TestEntity {Id = ObjectId.GenerateNewId(), S="some strange string"};
+
+            var list = new List<TestEntity>();
+
+            var mock = new Mock<ITestDataService<TestEntity>>();
+            mock.Setup(x => x.CreateAsync(item)).Callback(new Action<TestEntity>(x => list.Add(x)));
+
+            var controller = new TestRestController(mock.Object);
+
+            controller
+                .CreateAsync(item)
+                .Result
+                .StatusCode
+                .Should()
+                .Be((int) HttpStatusCode.Created, "the item should have been created but the id should have changed");
+
+            list
+                .Should()
+                .HaveCount(1)
+                .And
+                .Contain(x => x.S == item.S);
         }
 
         #endregion CREATE
@@ -33,145 +89,85 @@ namespace WebAPIUnitTests.ControllerTests.RestControllerBaseTests
         [TestMethod]
         public void GetAllNullProperties()
         {
-            // TODO create test
+            throw new System.NotImplementedException();
         }
 
         [TestMethod]
         public void GetAllEmptyProperties()
         {
-            // TODO create test
+            throw new System.NotImplementedException();
         }
 
         [TestMethod]
         public void GetAllSomeProperties()
         {
-            // TODO create test
+            throw new System.NotImplementedException();
         }
 
         [TestMethod]
-        public void GetOneNullIdNullProperties()
+        public void GetOneNullId()
         {
-            // TODO create test
+            throw new System.NotImplementedException();
         }
 
         [TestMethod]
-        public void GetOneNullIdEmptyProperties()
+        public void GetOneBadId()
         {
-            // TODO create test
+            throw new System.NotImplementedException();
         }
 
         [TestMethod]
-        public void GetOneNullIdBadProperties()
+        public void GetOneNullProperties()
         {
-            // TODO create test
+            throw new System.NotImplementedException();
         }
 
         [TestMethod]
-        public void GetOneNullIdSomeProperties()
+        public void GetOneEmptyProperties()
         {
-            // TODO create test
+            throw new System.NotImplementedException();
         }
 
         [TestMethod]
-        public void GetOneExistingIdNullProperties()
+        public void GetOneBadProperties()
         {
-            // TODO create test
+            throw new System.NotImplementedException();
         }
 
         [TestMethod]
-        public void GetOneExistingIdEmptyProperties()
+        public void GetOne()
         {
-            // TODO create test
+            throw new System.NotImplementedException();
         }
 
         [TestMethod]
-        public void GetOneExistingIdBadProperties()
+        public void GetNullProperty()
         {
-            // TODO create test
+            throw new System.NotImplementedException();
         }
 
         [TestMethod]
-        public void GetOneExistingIdSomeProperties()
+        public void GetBadProperty()
         {
-            // TODO create test
+            throw new System.NotImplementedException();
         }
 
         [TestMethod]
-        public void GetOneBadIdNullProperties()
+        public void GetPropertyNullID()
         {
-            // TODO create test
+            throw new System.NotImplementedException();
         }
 
         [TestMethod]
-        public void GetOneBadIdEmptyProperties()
+        public void GetPropertyBadId()
         {
-            // TODO create test
+            throw new System.NotImplementedException();
         }
 
         [TestMethod]
-        public void GetOneBadIdBadProperties()
+        public void GetProperty()
         {
-            // TODO create test
-        }
-
-        [TestMethod]
-        public void GetOneBadIdSomeProperties()
-        {
-            // TODO create test
-        }
-
-        [TestMethod]
-        public void GetNullPropertyNullId()
-        {
-            // TODO create test
-        }
-
-        [TestMethod]
-        public void GetNullPropertyExistingId()
-        {
-            // TODO create test
-        }
-
-        [TestMethod]
-        public void GetNullPropertyBadId()
-        {
-            // TODO create test
-        }
-
-        [TestMethod]
-        public void GetBadPropertyNullId()
-        {
-            // TODO create test
-        }
-
-        [TestMethod]
-        public void GetBadPropertyExistingId()
-        {
-            // TODO create test
-        }
-
-        [TestMethod]
-        public void GetBadPropertyBadId()
-        {
-            // TODO create test
-        }
-
-        [TestMethod]
-        public void GetExistingPropertyNullId()
-        {
-            // TODO create test
-        }
-
-        [TestMethod]
-        public void GetExistingPropertyExistingId()
-        {
-            // TODO create test
-        }
-
-        [TestMethod]
-        public void GetExistingPropertyBadId()
-        {
-            // TODO create test
+            throw new System.NotImplementedException();
         }
 
         #endregion READ
@@ -180,147 +176,75 @@ namespace WebAPIUnitTests.ControllerTests.RestControllerBaseTests
         #region UPDATE
 
         [TestMethod]
-        public void UpdateNullItemNullProperties()
+        public void UpdateNullItem()
         {
-            // TODO create test
+            throw new System.NotImplementedException();
         }
 
         [TestMethod]
-        public void UpdateNullItemEmptyProperties()
+        public void UpdateBadItem()
         {
-            // TODO create test
+            throw new System.NotImplementedException();
         }
 
         [TestMethod]
-        public void UpdateNullItemBadProperties()
+        public void UpdateNullProperties()
         {
-            // TODO create test
+            throw new System.NotImplementedException();
         }
 
         [TestMethod]
-        public void UpdateNullItemSomeProperties()
+        public void UpdateEmptyProperties()
         {
-            // TODO create test
+            throw new System.NotImplementedException();
         }
 
         [TestMethod]
-        public void UpdateBadIdNullProperties()
+        public void UpdatedBadProperties()
         {
-            // TODO create test
+            throw new System.NotImplementedException();
         }
 
         [TestMethod]
-        public void UpdateBadIdEmptyProperties()
+        public void Update()
         {
-            // TODO create test
+            throw new System.NotImplementedException();
         }
 
         [TestMethod]
-        public void UpdateBadIdBadProperties()
+        public void UpdatePropertyNullId()
         {
-            // TODO create test
+            throw new System.NotImplementedException();
         }
 
         [TestMethod]
-        public void UpdateBadIdSomeProperties()
+        public void UpdatePropertyBadId()
         {
-            // TODO create test
+            throw new System.NotImplementedException();
         }
 
         [TestMethod]
-        public void UpdateExistingIdNullProperties()
+        public void UpdateNullProperty()
         {
-            // TODO create test
+            throw new System.NotImplementedException();
         }
 
         [TestMethod]
-        public void UpdateExistingIdEmptyProperties()
+        public void UpdateBadProperty()
         {
-            // TODO create test
+            throw new System.NotImplementedException();
         }
 
         [TestMethod]
-        public void UpdateExistingIdBadProperties()
+        public void UpdatePropertyBadValue()
         {
-            // TODO create test
+            throw new System.NotImplementedException();
         }
 
         [TestMethod]
-        public void UpdateExistingIdSomeProperties()
+        public void UpdateProperty()
         {
-            // TODO create test
-        }
-
-        [TestMethod]
-        public void UpdateNullIdNullProperty()
-        {
-            // TODO create test
-        }
-
-        [TestMethod]
-        public void UpdateNullIdBadProperty()
-        {
-            // TODO create test
-        }
-
-        [TestMethod]
-        public void UpdateNullIdExistingPropertyBadValue()
-        {
-            // TODO create test
-        }
-
-        [TestMethod]
-        public void UpdateNullIdExistingPropertyGoodValue()
-        {
-            // TODO create test
-        }
-
-        [TestMethod]
-        public void UpdateBadIdNullProperty()
-        {
-            // TODO create test
-        }
-
-        [TestMethod]
-        public void UpdateBadIdBadProperty()
-        {
-            // TODO create test
-        }
-
-        [TestMethod]
-        public void UpdateBadIdExistingPropertyBadValue()
-        {
-            // TODO create test
-        }
-
-        [TestMethod]
-        public void UpdateBadIdExistingPropertyGoodValue()
-        {
-            // TODO create test
-        }
-
-        [TestMethod]
-        public void UpdateExistingIdNullProperty()
-        {
-            // TODO create test
-        }
-
-        [TestMethod]
-        public void UpdateExistingIdBadProperty()
-        {
-            // TODO create test
-        }
-
-        [TestMethod]
-        public void UpdateExistingIdExistingPropertyBadValue()
-        {
-            // TODO create test
-        }
-
-        [TestMethod]
-        public void UpdateExistingIdExistingPropertyGoodValue()
-        {
-            // TODO create test
+            throw new System.NotImplementedException();
         }
 
         #endregion UPDATE
@@ -341,7 +265,7 @@ namespace WebAPIUnitTests.ControllerTests.RestControllerBaseTests
         }
 
         [TestMethod]
-        public void DeleteExistingId()
+        public void Delete()
         {
             // TODO create test
         }

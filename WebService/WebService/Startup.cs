@@ -31,14 +31,14 @@ namespace WebService
                 .AddSingleton(typeof(ILogger), new LoggerCollection {new ConsoleLogger(), new FileLogger()})
                 .AddSingleton<IRandomizer, Randomizer>()
                 .AddSingleton<IThrow, Throw>()
-                .AddSingleton<IMediaService, MockMediaService>()
-                .AddSingleton<IResidentsService, MockResidentsService>()
-                .AddSingleton<IReceiverModulesService, ReceiverModulesService>()
-                .AddSingleton<IUsersService, MockUsersService>()
-                //.AddSingleton<IMediaService, MediaService>()
-                //.AddSingleton<IResidentsService, ResidentsService>()
+                //.AddSingleton<IMediaService, MockMediaService>()
+                //.AddSingleton<IResidentsService, MockResidentsService>()
                 //.AddSingleton<IReceiverModulesService, ReceiverModulesService>()
-                //.AddSingleton<IUsersService, UsersService>()
+                //.AddSingleton<IUsersService, MockUsersService>()
+                .AddSingleton<IMediaService, MediaService>()
+                .AddSingleton<IResidentsService, ResidentsService>()
+                .AddSingleton<IReceiverModulesService, ReceiverModulesService>()
+                .AddSingleton<IUsersService, UsersService>()
                 .AddSingleton<ITokenService, TokenService>();
 
             services

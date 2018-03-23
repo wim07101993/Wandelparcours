@@ -82,6 +82,20 @@ namespace WebService.Middleware
                 // respond the error
                 await context.Response.WriteAsync(e.Message);
             }
+            // check for unauthorized requests
+            catch (UnauthorizedException e)
+            {
+                // respond with a 404 not found status code
+                context.Response.StatusCode = (int) HttpStatusCode.Unauthorized;
+
+                // respond a message
+                await context.Response.WriteAsync("You shall not pass!!\n\n");
+
+                // respond the error
+                await context.Response.WriteAsync(e.Message);
+
+                _logger.Log(this, ELogLevel.Information, e);
+            }
             // catch all other exceptions
             catch (Exception e)
             {

@@ -97,7 +97,7 @@ namespace WebService.Models
         /// In the database the value is stored under the field "colors"
         /// </summary>
         [BsonElement("colors")]
-        public List<byte[]> Colors { get; set; }
+        public List<Color> Colors { get; set; }
 
         /// <summary>
         /// LastRecordedPosition is position where the resident has last been tracked

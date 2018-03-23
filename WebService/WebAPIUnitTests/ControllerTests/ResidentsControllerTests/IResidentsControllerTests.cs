@@ -21,10 +21,7 @@
         void AddMediaNullUrl();
         void AddMediaWithUrl();
 
-        void AddColorNullId();
-        void AddColorBadId();
-        void AddColorNullData();
-        void AddColorBadData();
+        void AddNullColor();
         void AddColor();
 
         #endregion CREATE

@@ -59,12 +59,18 @@ namespace WebAPIUnitTests.ControllerTests.ReceiverModulesControllerTests
                 .HaveCount(2)
                 .And
                 .ContainSingle(x => x.Id == item.Id);
+
+            list.First(x => x.Id == item.Id)
+                .Position
+                ?.TimeStamp
+                .Should()
+                .NotBe(default(DateTime));
         }
 
         [TestMethod]
         public void CreateItem()
         {
-            var item = new ReceiverModule {Id = ObjectId.GenerateNewId()};
+            var item = new ReceiverModule {Id = ObjectId.GenerateNewId(), Mac = "some mac"};
 
             var list = new List<ReceiverModule>();
 
@@ -84,7 +90,7 @@ namespace WebAPIUnitTests.ControllerTests.ReceiverModulesControllerTests
                 .Should()
                 .HaveCount(1)
                 .And
-                .Contain(x => x == item);
+                .Contain(x => x.Mac == item.Mac);
         }
 
         #endregion CREATE
@@ -210,6 +216,7 @@ namespace WebAPIUnitTests.ControllerTests.ReceiverModulesControllerTests
         }
 
         #endregion READ
+
 
         #region DELETE
 

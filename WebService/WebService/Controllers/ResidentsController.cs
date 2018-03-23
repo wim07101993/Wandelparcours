@@ -44,7 +44,7 @@ namespace WebService.Controllers
         public const string RemoveMusicTemplate = "{residentId}/Music/{musicId}";
         public const string RemoveVideoTemplate = "{residentId}/Videos/{videoId}";
         public const string RemoveImageTemplate = "{residentId}/Images/{imageId}";
-        public const string RemoveColorTemplate = "{residentId}/Colors/{colorId}";
+        public const string RemoveColorTemplate = "{residentId}/Colors";
 
         #endregion FIELDS
 
@@ -172,7 +172,7 @@ namespace WebService.Controllers
 
 
         [HttpPost("{residentId}/Colors/data")]
-        public async Task<StatusCodeResult> AddColorAsync(string residentId, [FromBody] byte[] colorData)
+        public async Task<StatusCodeResult> AddColorAsync(string residentId, [FromBody] Color colorData)
         {
             // parse the id
             if (!ObjectId.TryParse(residentId, out var residentObjectId))
@@ -334,7 +334,7 @@ namespace WebService.Controllers
         }
 
         [HttpDelete(RemoveColorTemplate)]
-        public async Task RemoveColorAsync(string residentId, string colorId)
+        public async Task RemoveColorAsync(string residentId, [FromBody] Color color)
         {
             // parse the resident id
             if (!ObjectId.TryParse(residentId, out var residentObjectId))
@@ -344,17 +344,9 @@ namespace WebService.Controllers
                 return;
             }
 
-            // parse the media id
-            if (!ObjectId.TryParse(colorId, out var mediaObjectId))
-            {
-                // if it fails, throw not found exception
-                Throw.NotFound<byte[]>(colorId);
-                return;
-            }
-
             // remove the media from the database
             await ((IResidentsService) DataService)
-                .RemoveSubItemAsync(residentObjectId, x => x.Colors, mediaObjectId);
+                .RemoveSubItemAsync(residentObjectId, x => x.Colors, color);
         }
 
         #endregion delete
