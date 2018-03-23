@@ -11,12 +11,13 @@ class ImageComponentLayout(RelativeLayout):
     def build(self):
         self.carousel=Carousel(direction='right', loop=True)
         self.add_widget(self.carousel)
-        Clock.schedule_interval(self.changer, 8)
+
 
     def SetTag(self, tag):
         self.tag=tag
 
-    def Start(self):
+    def Start(self, componenthandler):
+        self.componenthandler = componenthandler
         print(self.tag.GetMac())
         tagid = self.tag.GetMac()
         rest = Rest()
@@ -26,11 +27,14 @@ class ImageComponentLayout(RelativeLayout):
             src= rest.GetUrlForMedia(id=r['id'])+ '.' + str(r['extension'])
             image = AsyncImage(source=src, allow_stretch=True)
             self.carousel.add_widget(image)
+        Clock.schedule_interval(self.changer, 8)
+        Clock.schedule_interval(self.LoadNextBeacon, 30)
 
     def changer(self, *args):
         self.carousel.load_next()
 
-
+    def LoadNextBeacon(self):
+        self.componenthandler.timeIsUp=True
 
 
 
