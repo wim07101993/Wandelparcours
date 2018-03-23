@@ -1,35 +1,34 @@
-from kivy.uix.label import Label
+from kivy.uix.boxlayout import BoxLayout
+from kivy.uix.image import AsyncImage
 from kivy.uix.carousel import Carousel
 from kivy.clock import Clock
 from kivy.uix.relativelayout import RelativeLayout
-
-
-class ImageComponent(Carousel):
-    def update(self, dt):
-        self.load_next()
+from kivy.uix.button import Button
+from RestService.Rest import Rest
 
 
 class ImageComponentLayout(RelativeLayout):
-    def __init__(self):
-        Clock.schedule_iterval(ImageComponent.update(),1)
-        self.add_widget(ImageComponent())
-
-
-'''class ImageComponent(Carousel):
-    def update(self, dt):
-        self.load_next()
-        
-
-class ImageComponentApp():
     def build(self):
-        self.title = "Image"
-        imagecomponentlayout = ImageComponent()
-        Clock.schedule_interval(imagecomponentlayout.update(),1)
-        return imagecomponentlayout
+        self.carousel=Carousel(direction='right', loop=True)
+        self.add_widget(self.carousel)
+        Clock.schedule_interval(self.changer, 8)
 
-if __name__ == '__Image__':
-    ImageComponentApp().run()'''
+    def SetTag(self, tag):
+        self.tag=tag
 
+    def Start(self):
+        print(self.tag.GetMac())
+        tagid = self.tag.GetMac()
+        rest = Rest()
+        request = rest.GetImages(tagid)
+        for r in request:
+            #src="http://10.9.4.40:5000/API/v1/media/5ab11d2eb9cb951e3de4ea72.jpg"
+            src= rest.GetUrlForMedia(id=r['id'])+".jpg"
+            image = AsyncImage(source=src, allow_stretch=True)
+            self.carousel.add_widget(image)
+
+    def changer(self, *args):
+        self.carousel.load_next()
 
 
 

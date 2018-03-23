@@ -10,6 +10,7 @@ class ComponentHandler():
         self.type=type
         if type=="image":
             self.component=ImageComponentLayout()
+            self.component.build()
         elif type == "video":
             self.component = Button(text="video")
         else:
@@ -19,9 +20,12 @@ class ComponentHandler():
         return self.component
 
     def SetTag(self,tag):
+
+        self.component.SetTag(tag)
         self.tag=tag
 
     def Start(self):
+        self.component.Start()
         return
 
 
