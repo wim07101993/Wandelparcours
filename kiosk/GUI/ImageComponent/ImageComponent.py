@@ -12,7 +12,6 @@ class ImageComponentLayout(RelativeLayout):
         self.carousel=Carousel(direction='right', loop=True)
         self.add_widget(self.carousel)
 
-
     def SetTag(self, tag):
         self.tag=tag
 
@@ -33,7 +32,7 @@ class ImageComponentLayout(RelativeLayout):
     def changer(self, *args):
         self.carousel.load_next()
 
-    def LoadNextBeacon(self):
+    def LoadNextBeacon(self, *args):
         self.componenthandler.timeIsUp=True
 
 
