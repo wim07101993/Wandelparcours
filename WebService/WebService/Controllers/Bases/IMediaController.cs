@@ -7,5 +7,6 @@ namespace WebService.Controllers.Bases
     public interface IMediaController : IRestController<MediaData>
     {
         Task<FileContentResult> GetOneAsync(string id, string extension);
+        Task<FileContentResult> GetOneAsync(string id);
     }
 }

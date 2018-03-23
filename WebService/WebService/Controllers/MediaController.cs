@@ -31,25 +31,16 @@ namespace WebService.Controllers
                 {nameof(MediaData.Data), x => x.Data}
             };
 
-        [HttpGet(GetOneTemplate)]
-        public async Task<FileContentResult> GetOneAsync(string id, string extension) 
+        [HttpGet(@"{id}.{extension}")]
+        public async Task<FileContentResult> GetOneAsync(string id, string extension)
         {
             // parse the id
             if (!ObjectId.TryParse(id, out var objectId))
                 // if it fails, throw not found exception
                 throw new NotFoundException($"The {typeof(MediaData).Name} with id {id} could not be found");
-            
-            if (string.IsNullOrWhiteSpace(extension))
-            {
-                // get the jsonValue from the data service
-                var media = await ((IMediaService) DataService).GetOneAsync(objectId, new Expression<Func<MediaData, object>>[] { x => x.Data });
 
-                return Equals(media, default(MediaData))
-                    // if the item is null, throw a not found exception
-                    ? throw new NotFoundException($"The {typeof(MediaData).Name} with id {id} could not be found")
-                    // else return the values
-                    : File(media.Data, "image/jpg");
-            }
+            if (string.IsNullOrWhiteSpace(extension))
+                throw new NotFoundException($"there is no data with no extension");
 
             // get the jsonValue from the data service
             var data = await ((IMediaService) DataService).GetOneAsync(objectId, extension);
@@ -62,6 +53,24 @@ namespace WebService.Controllers
                 // else return the values
                 : File(data, $"{mediaType.ToString().ToLower()}/{extension}");
         }
-        
+
+        [HttpGet(@"{id}")]
+        public async Task<FileContentResult> GetOneAsync(string id)
+        {
+            // parse the id
+            if (!ObjectId.TryParse(id, out var objectId))
+                // if it fails, throw not found exception
+                throw new NotFoundException($"The {typeof(MediaData).Name} with id {id} could not be found");
+
+            // get the jsonValue from the data service
+            var media = await ((IMediaService) DataService).GetOneAsync(objectId,
+                new Expression<Func<MediaData, object>>[] {x => x.Data});
+
+            return Equals(media, default(MediaData))
+                // if the item is null, throw a not found exception
+                ? throw new NotFoundException($"The {typeof(MediaData).Name} with id {id} could not be found")
+                // else return the values
+                : File(media.Data, "image/jpg");
+        }
     }
 }
