@@ -21,7 +21,7 @@ print("adress: %s  signaal: %s" % (d.GetMac(), d.GetStrength()))'''
 #initializer
 class Init(App):
     def build(self):
-        componentHandler=ComponentHandler("image")
+        componentHandler=ComponentHandler("video")
         tag= BeaconTag("1",123)
         componentHandler.SetTag(tag)
         componentHandler.Start()
