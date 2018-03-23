@@ -23,7 +23,7 @@ class ImageComponentLayout(RelativeLayout):
         request = rest.GetImages(tagid)
         for r in request:
             #src="http://10.9.4.40:5000/API/v1/media/5ab11d2eb9cb951e3de4ea72.jpg"
-            src= rest.GetUrlForMedia(id=r['id'])+".jpg"
+            src= rest.GetUrlForMedia(id=r['id'])+ '.' + str(r['extension'])
             image = AsyncImage(source=src, allow_stretch=True)
             self.carousel.add_widget(image)
 

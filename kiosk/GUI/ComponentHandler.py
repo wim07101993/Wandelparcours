@@ -1,6 +1,7 @@
 from kivy.uix.button import Button
 
 from GUI.ImageComponent.ImageComponent import ImageComponentLayout
+from GUI.VideoComponent.VideoComponent import VideoComponentLayout
 
 
 class ComponentHandler():
@@ -12,7 +13,8 @@ class ComponentHandler():
             self.component=ImageComponentLayout()
             self.component.build()
         elif type == "video":
-            self.component = Button(text="video")
+            self.component=VideoComponentLayout()
+            self.component.build()
         else:
             self.component=Button(text="Er ging iets mis!")
 
