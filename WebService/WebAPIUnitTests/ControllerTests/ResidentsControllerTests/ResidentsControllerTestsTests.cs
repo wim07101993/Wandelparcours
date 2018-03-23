@@ -1,9 +1,9 @@
 ﻿using System.Linq;
 using System.Net;
 using FluentAssertions;
+using FluentAssertions.Common;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using WebAPIUnitTests.TestHelpers.Extensions;
-using WebAPIUnitTests.TestServices.Media;
 using WebAPIUnitTests.TestServices.Residents;
 using WebService.Controllers;
 using WebService.Helpers.Exceptions;
@@ -14,74 +14,12 @@ using WebService.Services.Logging;
 namespace WebAPIUnitTests.ControllerTests.ResidentsControllerTests
 {
     [TestClass]
-    public class ResidentsControllerTestsTests// : IResidentsControllerTests
+    public class ResidentsControllerTestsTests : IResidentsControllerTests
     {
         #region CREATE
 
         [TestMethod]
-        public void AddColorNullIdNullData()
-        {
-            new ResidentsController(new Throw(), new TestResidentsService(), new ConsoleLogger())
-                .AddColorAsync(null, null)
-                .ShouldCatchException<NotFoundException>("there is no resident with a null id");
-        }
-
-        [TestMethod]
-        public void AddColorNullIdWithData()
-        {
-            new ResidentsController(new Throw(), new TestResidentsService(), new ConsoleLogger())
-                .AddColorAsync(null, new byte[2])
-                .ShouldCatchException<NotFoundException>("there is no resident with a null id");
-        }
-
-        [TestMethod]
-        public void AddColorBadIdNullData()
-        {
-            new ResidentsController(new Throw(), new TestResidentsService(), new ConsoleLogger())
-                .AddColorAsync("a", null)
-                .ShouldCatchException<NotFoundException>("the id cannot be parsed");
-        }
-
-        [TestMethod]
-        public void AddColorBadIdWithData()
-        {
-            new ResidentsController(new Throw(), new TestResidentsService(), new ConsoleLogger())
-                .AddColorAsync("a", new byte[2])
-                .ShouldCatchException<NotFoundException>("the id cannot be parsed");
-        }
-
-        [TestMethod]
-        public void AddColorExistingIdNullData()
-        {
-            var dataService = new TestResidentsService();
-            var id = dataService.GetFirst().Id;
-
-            new ResidentsController(new Throw(), dataService, new ConsoleLogger())
-                .AddColorAsync(id.ToString(), null)
-                .ShouldCatchArgumentException<WebArgumentNullException>("data", "the data to add cannot be null");
-        }
-
-        [TestMethod]
-        public void AddColorExistingIdWithData()
-        {
-            var dataService = new TestResidentsService();
-            var id = dataService.GetFirst().Id;
-            var count = dataService.GetAll().Count();
-
-            new ResidentsController(new Throw(), dataService, new ConsoleLogger())
-                .AddColorAsync(id.ToString(), new byte[2]).ShouldReturnStatus(HttpStatusCode.Created,
-                    "when an item is created, that is the status-code");
-
-            dataService
-                .GetAll()
-                .Count()
-                .Should()
-                .BeGreaterThan(count, "an item has been added");
-        }
-
-
-        [TestMethod]
-        public void AddMediaNullIdNullData()
+        public void AddMediaNullId()
         {
             new ResidentsController(new Throw(), new TestResidentsService(), new ConsoleLogger())
                 .AddMediaAsync(null, null, EMediaType.Image, 50)
@@ -89,21 +27,7 @@ namespace WebAPIUnitTests.ControllerTests.ResidentsControllerTests
         }
 
         [TestMethod]
-        public void AddMediaNullIdNullFile()
-        {
-            new ResidentsController(new Throw(), new TestResidentsService(), new ConsoleLogger())
-                .AddMediaAsync(null, new MultiPartFile(), EMediaType.Image, 50)
-                .ShouldCatchException<NotFoundException>("there is no resident with a null id");
-        }
-
-        [TestMethod]
-        public void AddMediaNullIdWithData()
-        {
-            // TODO create test
-        }
-
-        [TestMethod]
-        public void AddMediaBadIdNullData()
+        public void AddMediaBadId()
         {
             new ResidentsController(new Throw(), new TestResidentsService(), new ConsoleLogger())
                 .AddMediaAsync("a", null, EMediaType.Image, 50)
@@ -111,21 +35,7 @@ namespace WebAPIUnitTests.ControllerTests.ResidentsControllerTests
         }
 
         [TestMethod]
-        public void AddMediaBadIdNullFile()
-        {
-            new ResidentsController(new Throw(), new TestResidentsService(), new ConsoleLogger())
-                .AddMediaAsync("a", new MultiPartFile(), EMediaType.Image, 50)
-                .ShouldCatchException<NotFoundException>("the id cannot be parsed");
-        }
-
-        [TestMethod]
-        public void AddMediaBadIdWithData()
-        {
-            // TODO create test
-        }
-
-        [TestMethod]
-        public void AddMediaExistingIdNullData()
+        public void AddMediaNullData()
         {
             var dataService = new TestResidentsService();
             var id = dataService.GetFirst().Id;
@@ -136,7 +46,7 @@ namespace WebAPIUnitTests.ControllerTests.ResidentsControllerTests
         }
 
         [TestMethod]
-        public void AddMediaExistingIdNullFile()
+        public void AddMediaNullFile()
         {
             var dataService = new TestResidentsService();
             var id = dataService.GetFirst().Id;
@@ -147,46 +57,14 @@ namespace WebAPIUnitTests.ControllerTests.ResidentsControllerTests
         }
 
         [TestMethod]
-        public void AddMediaExistingIdWithData()
+        public void AddMediaWithData()
         {
             // TODO create test
         }
 
 
         [TestMethod]
-        public void AddMediaNullIdNullUrl()
-        {
-            new ResidentsController(new Throw(), new TestResidentsService(), new ConsoleLogger())
-                .AddMediaAsync(null, null, EMediaType.Image)
-                .ShouldCatchException<NotFoundException>("there is no resident with a null id");
-        }
-
-        [TestMethod]
-        public void AddMediaNullIdWithUrl()
-        {
-            new ResidentsController(new Throw(), new TestResidentsService(), new ConsoleLogger())
-                .AddMediaAsync(null, "dummy url", EMediaType.Image)
-                .ShouldCatchException<NotFoundException>("there is no resident with a null id");
-        }
-
-        [TestMethod]
-        public void AddMediaBadIdNullUrl()
-        {
-            new ResidentsController(new Throw(), new TestResidentsService(), new ConsoleLogger())
-                .AddMediaAsync("a", null, EMediaType.Image)
-                .ShouldCatchException<NotFoundException>("the id cannot be parsed");
-        }
-
-        [TestMethod]
-        public void AddMediaBadIdWithUrl()
-        {
-            new ResidentsController(new Throw(), new TestResidentsService(), new ConsoleLogger())
-                .AddMediaAsync("a", "dummy url", EMediaType.Image)
-                .ShouldCatchException<NotFoundException>("the id cannot be parsed");
-        }
-
-        [TestMethod]
-        public void AddMediaExistingIdNullUrl()
+        public void AddMediaNullUrl()
         {
             var dataService = new TestResidentsService();
             var id = dataService.GetFirst().Id;
@@ -197,7 +75,7 @@ namespace WebAPIUnitTests.ControllerTests.ResidentsControllerTests
         }
 
         [TestMethod]
-        public void AddMediaExistingIdWithUrl()
+        public void AddMediaWithUrl()
         {
             var dataService = new TestResidentsService();
             var id = dataService.GetFirst().Id;
@@ -215,240 +93,283 @@ namespace WebAPIUnitTests.ControllerTests.ResidentsControllerTests
                 .BeGreaterThan(count, "an item has been added");
         }
 
+
+        [TestMethod]
+        public void AddColorNullId()
+        {
+            new ResidentsController(new Throw(), new TestResidentsService(), new ConsoleLogger())
+                .AddColorAsync(null, null)
+                .ShouldCatchException<NotFoundException>("there is no resident with a null id");
+        }
+
+        [TestMethod]
+        public void AddColorBadId()
+        {
+            new ResidentsController(new Throw(), new TestResidentsService(), new ConsoleLogger())
+                .AddColorAsync("a", null)
+                .ShouldCatchException<NotFoundException>("the id cannot be parsed");
+        }
+
+        [TestMethod]
+        public void AddColorNullData()
+        {
+            var dataService = new TestResidentsService();
+            var id = dataService.GetFirst().Id;
+
+            new ResidentsController(new Throw(), dataService, new ConsoleLogger())
+                .AddColorAsync(id.ToString(), null)
+                .ShouldCatchArgumentException<WebArgumentNullException>("data", "the data to add cannot be null");
+        }
+
+        [TestMethod]
+        public void AddColorBadData()
+        {
+            var dataService = new TestResidentsService();
+            var id = dataService.GetFirst().Id;
+
+            new ResidentsController(new Throw(), dataService, new ConsoleLogger())
+                .AddColorAsync(id.ToString(), new byte[0])
+                .ShouldCatchArgumentException<WebArgumentNullException>("data",
+                    "the data to add must have a length of 3 bytes");
+        }
+
+        [TestMethod]
+        public void AddColor()
+        {
+            var dataService = new TestResidentsService();
+            var id = dataService.GetFirst().Id;
+            var count = dataService.GetAll().Count();
+
+            new ResidentsController(new Throw(), dataService, new ConsoleLogger())
+                .AddColorAsync(id.ToString(), new byte[3]).ShouldReturnStatus(HttpStatusCode.Created,
+                    "when an item is created, that is the status-code");
+
+            dataService
+                .GetAll()
+                .Count()
+                .Should()
+                .BeGreaterThan(count, "an item has been added");
+        }
+
         #endregion CREATE
+
 
         #region READ
 
         [TestMethod]
-        public void GetRandomMediaBadTagNullMediaType()
+        public void GetByBadTag()
         {
             new ResidentsController(new Throw(), new TestResidentsService(), new ConsoleLogger())
-                .GetRandomElementFromPropertyAsync(-1, null)
-                .ShouldCatchException<NotFoundException>("there is no resident that has tag -1");
+                .GetByTagAsync(123456, null)
+                .ShouldCatchException<NotFoundException>("there is no resident with tag 123456");
         }
 
         [TestMethod]
-        public void GetRandomMediaBadTagBadMediaType()
-        {
-            new ResidentsController(new Throw(), new TestResidentsService(), new ConsoleLogger())
-                .GetRandomElementFromPropertyAsync(-1, "badMediaType")
-                .ShouldCatchException<NotFoundException>("there is no resident that has tag -1");
-        }
-
-        [TestMethod]
-        public void GetRandomMediaBadTagExistingMediaType()
-        {
-            new ResidentsController(new Throw(), new TestResidentsService(), new ConsoleLogger())
-                .GetRandomElementFromPropertyAsync(-1, EMediaType.Audio.ToString())
-                .ShouldCatchException<NotFoundException>("there is no resident that has tag -1");
-        }
-
-        [TestMethod]
-        public void GetRandomMediaExistingTagNullMediaType()
+        public void GetByTagNullProperties()
         {
             var dataService = new TestResidentsService();
             var tag = dataService.GetFirst().Tags[0];
 
-            var controller = new ResidentsController(new Throw(), dataService, new ConsoleLogger());
-
-            controller
-                .GetRandomElementFromPropertyAsync(tag, null)
-                .ShouldCatchArgumentException<WebArgumentNullException>("the media type cannot be null");
+            new ResidentsController(new Throw(), dataService, new ConsoleLogger())
+                .GetByTagAsync(tag, null).Result
+                .Should()
+                .BeEquivalentTo(dataService.GetFirst());
         }
 
         [TestMethod]
-        public void GetRandomMediaExistingTagBadMediaType()
+        public void GetByTagEmptyProperties()
         {
             var dataService = new TestResidentsService();
             var tag = dataService.GetFirst().Tags[0];
 
-            var controller = new ResidentsController(new Throw(), dataService, new ConsoleLogger());
-
-            controller
-                .GetRandomElementFromPropertyAsync(tag, "bad mediaType")
-                .ShouldCatchException<NotFoundException>("the media type doesn't exist");
+            new ResidentsController(new Throw(), dataService, new ConsoleLogger())
+                .GetByTagAsync(tag, null).Result
+                .Should()
+                .BeEquivalentTo(dataService.MockData.Select(x => new Resident {Id = x.Id}).First());
         }
 
         [TestMethod]
-        public void GetRandomMediaExistingTagExistingMediaTyp()
+        public void GetByTagBadProperties()
         {
             var dataService = new TestResidentsService();
             var tag = dataService.GetFirst().Tags[0];
 
-            var controller = new ResidentsController(new Throw(), dataService, new ConsoleLogger());
+            new ResidentsController(new Throw(), dataService, new ConsoleLogger())
+                .GetByTagAsync(tag, new[] {"bad property"})
+                .ShouldCatchArgumentException<WebArgumentException>("propertiesToInclude",
+                    "the given property doesn't exist");
+        }
 
-            var obj = controller.GetRandomElementFromPropertyAsync(tag, EMediaType.Image.ToString()).Result;
-            obj.Should().NotBeNull("it holds an image");
+        [TestMethod]
+        public void GetByTag()
+        {
+            var dataService = new TestResidentsService();
+            var tag = dataService.GetFirst().Tags[0];
+
+            new ResidentsController(new Throw(), dataService, new ConsoleLogger())
+                .GetByTagAsync(tag, new[] {nameof(Resident.FirstName), nameof(Resident.LastName)}).Result
+                .Should()
+                .BeEquivalentTo(dataService.MockData
+                    .Select(x => new Resident {Id = x.Id, FirstName = x.FirstName, LastName = x.LastName})
+                    .First());
+        }
+
+
+        [TestMethod]
+        public void GetRandomElementFromPropertyWithBadTag()
+        {
+            new ResidentsController(new Throw(), new TestResidentsService(), new ConsoleLogger())
+                .GetRandomElementFromPropertyAsync(123456, nameof(Resident.Colors))
+                .ShouldCatchException<NotFoundException>("there is no resident with tag 123456");
+        }
+
+        [TestMethod]
+        public void GetRandomElementFromPropertyNullPropertyName()
+        {
+            new ResidentsController(new Throw(), new TestResidentsService(), new ConsoleLogger())
+                .GetRandomElementFromPropertyAsync(123456, null)
+                .ShouldCatchException<NotFoundException>("the property to get cannot be null");
+        }
+
+        [TestMethod]
+        public void GetRandomElementFromPropertyBadPropertyName()
+        {
+            var dataService = new TestResidentsService();
+            var tag = dataService.GetFirst().Tags[0];
+
+            new ResidentsController(new Throw(), dataService, new ConsoleLogger())
+                .GetRandomElementFromPropertyAsync(tag, "bad property")
+                .ShouldCatchArgumentException<WebArgumentException>("propertiesToInclude",
+                    "the given property doesn't exist");
+        }
+
+        [TestMethod]
+        public void GetRandomElementFromProperty()
+        {
+            var dataService = new TestResidentsService();
+            var tag = dataService.GetFirst().Tags[0];
+
+            var color = new ResidentsController(new Throw(), dataService, new ConsoleLogger())
+                .GetRandomElementFromPropertyAsync(tag, nameof(Resident.Colors)).Result;
+
+            dataService
+                .GetFirst()
+                .Colors
+                .Should()
+                .Contain(x => x.IsSameOrEqualTo(color));
+        }
+
+
+        [TestMethod]
+        public void GetPropertyBadTag()
+        {
+            new ResidentsController(new Throw(), new TestResidentsService(), new ConsoleLogger())
+                .GetPropertyAsync(123456, nameof(Resident.FirstName))
+                .ShouldCatchException<NotFoundException>("there is no resident tag 123456");
+        }
+
+        [TestMethod]
+        public void GetPropertyNullPropertyName()
+        {
+            var dataService = new TestResidentsService();
+            var tag = dataService.GetFirst().Tags[0];
+
+            new ResidentsController(new Throw(), dataService, new ConsoleLogger())
+                .GetPropertyAsync(tag, null)
+                .ShouldCatchException<NotFoundException>("there must be a property name to get");
+        }
+
+        [TestMethod]
+        public void GetPropertyBadPropertyName()
+        {
+            var dataService = new TestResidentsService();
+            var tag = dataService.GetFirst().Tags[0];
+
+            new ResidentsController(new Throw(), dataService, new ConsoleLogger())
+                .GetPropertyAsync(tag, "bad property")
+                .ShouldCatchException<NotFoundException>("the property 'bad property' doesn't exist");
+        }
+
+        [TestMethod]
+        public void GetProperty()
+        {
+            var dataService = new TestResidentsService();
+            var tag = dataService.GetFirst().Tags[0];
+
+            new ResidentsController(new Throw(), dataService, new ConsoleLogger())
+                .GetPropertyAsync(tag, nameof(Resident.FirstName)).Result
+                .Should()
+                .BeEquivalentTo(dataService.GetFirst().FirstName);
         }
 
         #endregion READ
 
-        #region UPDATE
-
-        [TestMethod]
-        public void UpdateNullItemNullProperties()
-        {
-            // TODO create test
-        }
-
-        [TestMethod]
-        public void UpdateNullItemEmptyProperties()
-        {
-            // TODO create test
-        }
-
-        [TestMethod]
-        public void UpdateNullItemSomeProperties()
-        {
-            // TODO create test
-        }
-
-        [TestMethod]
-        public void UpdateBadItemNullProperties()
-        {
-            // TODO create test
-        }
-
-        [TestMethod]
-        public void UpdateBadItemEmptyProperties()
-        {
-            // TODO create test
-        }
-
-        [TestMethod]
-        public void UpdateBadItemSomeProperties()
-        {
-            // TODO create test
-        }
-
-        [TestMethod]
-        public void UpdateExistingItemNullProperties()
-        {
-            // TODO create test
-        }
-
-        [TestMethod]
-        public void UpdateExistingItemEmptyProperties()
-        {
-            // TODO create test
-        }
-
-        [TestMethod]
-        public void UpdateExistingItemSomeProeprties()
-        {
-            // TODO create test
-        }
-
-        #endregion UPDATE
 
         #region DELETE
 
         [TestMethod]
-        public void RemoveColorNullResidentNullColor()
+        public void RemoveMediaNullResidentId()
         {
-            // TODO create test
+            var dataService = new TestResidentsService();
+            var id = dataService.GetFirst().Images.First();
+
+            new ResidentsController(new Throw(), dataService, new ConsoleLogger())
+                .RemoveMediaAsync(null, id.ToString(), EMediaType.Image)
+                .ShouldCatchException<NotFoundException>("there is no resident with a null id");
         }
 
         [TestMethod]
-        public void RemoveColorNullResidentBadColor()
+        public void RemoveMediaBadResidentId()
         {
-            // TODO create test
+            throw new System.NotImplementedException();
         }
 
         [TestMethod]
-        public void RemoveColorNullResidentExistingColor()
+        public void RemoveMediaNullMediaId()
         {
-            // TODO create test
+            throw new System.NotImplementedException();
         }
 
         [TestMethod]
-        public void RemoveColorBadResidentNullColor()
+        public void RemoveMediaBadMediaId()
         {
-            // TODO create test
+            throw new System.NotImplementedException();
         }
 
         [TestMethod]
-        public void RemoveColorBadResidentBadColor()
+        public void RemoveMedia()
         {
-            // TODO create test
+            throw new System.NotImplementedException();
         }
 
         [TestMethod]
-        public void RemoveColorBadResidentExistingColor()
+        public void RemoveColorNullResidentId()
         {
-            // TODO create test
+            throw new System.NotImplementedException();
         }
 
         [TestMethod]
-        public void RemoveColorExistingResidentNullColor()
+        public void RemoveColorBadResidentId()
         {
-            // TODO create test
+            throw new System.NotImplementedException();
         }
 
         [TestMethod]
-        public void RemoveColorExistingResidentBadColor()
+        public void RemoveColorNullColor()
         {
-            // TODO create test
+            throw new System.NotImplementedException();
         }
 
         [TestMethod]
-        public void RemoveColorExistingResidentExistingColor()
+        public void RemoveColorBadColor()
         {
-            // TODO create test
+            throw new System.NotImplementedException();
         }
 
         [TestMethod]
-        public void RemoveMediaNullResidentNullMedia()
+        public void RemoveColor()
         {
-            // TODO create test
-        }
-
-        [TestMethod]
-        public void RemoveMediaNullResidentBadMedia()
-        {
-            // TODO create test
-        }
-
-        [TestMethod]
-        public void RemoveMediaNullResidentExistingMedia()
-        {
-            // TODO create test
-        }
-
-        [TestMethod]
-        public void RemoveMediaBadResidentNullMedia()
-        {
-            // TODO create test
-        }
-
-        [TestMethod]
-        public void RemoveMediaBadResidentBadMedia()
-        {
-            // TODO create test
-        }
-
-        [TestMethod]
-        public void RemoveMediaBadResidentExistingMedia()
-        {
-            // TODO create test
-        }
-
-        [TestMethod]
-        public void RemoveMediaExistingResidentNullMedia()
-        {
-            // TODO create test
-        }
-
-        [TestMethod]
-        public void RemoveMediaExistingResidentBadMedia()
-        {
-            // TODO create test
-        }
-
-        [TestMethod]
-        public void RemoveMediaExistingResidentExistingMedia()
-        {
-            // TODO create test
+            throw new System.NotImplementedException();
         }
 
         #endregion DELETE
