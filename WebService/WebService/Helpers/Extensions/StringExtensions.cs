@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using WebService.Models;
 
 namespace WebService.Helpers.Extensions
 {
@@ -143,5 +144,36 @@ namespace WebService.Helpers.Extensions
         public static bool EqualsWithCamelCasing(this string This, string propertyName)
             // check if the string's are equal after converting them to lower case
             => This.ToLowerCamelCase() == propertyName.ToLowerCamelCase();
+
+        public static EMediaType GetEMediaTypeFromExtension(this string This)
+        {
+            switch (This)
+            {
+                case "jpg":
+                case "bmp":
+                case "png":
+                case "jpeg":
+                case "gif":
+                case "webp":
+                    return EMediaType.Image;
+                case "midi":
+                case "mp3":
+                case "mpeg":
+                case "wav":
+                case "m4a":
+                case "aac":
+                    return EMediaType.Audio;
+                case "mp4":
+                case "avi":
+                case "webm":
+                case "ogg":
+                case "flv":
+                case "wmv":
+                case "mkv":
+                    return EMediaType.Video;
+                default:
+                    return EMediaType.Image;
+            }
+        }
     }
 }
