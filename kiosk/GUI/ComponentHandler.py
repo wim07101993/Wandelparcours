@@ -25,7 +25,7 @@ class ComponentHandler():
         self.tag=tag
 
     def Start(self):
-        self.component.Start()
+        self.component.Start(self)
         return
 
 
