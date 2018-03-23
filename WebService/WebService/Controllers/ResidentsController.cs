@@ -83,41 +83,13 @@ namespace WebService.Controllers
         public Task<StatusCodeResult> AddMusicAsync(string residentId, [FromForm] MultiPartFile musicData)
             => AddMediaAsync(residentId, musicData, EMediaType.Audio, (int) 20e6);
 
-        [HttpPost("{residentId}/Music/url")]
-        public Task<StatusCodeResult> AddMusicAsync(string residentId, [FromBody] string url)
-            => AddMediaAsync(residentId, url, EMediaType.Audio);
-
         [HttpPost("{residentId}/Videos/data")]
         public Task<StatusCodeResult> AddVideoAsync(string residentId, [FromForm] MultiPartFile videoData)
             => AddMediaAsync(residentId, videoData, EMediaType.Video, (int) 1e9);
 
-        [HttpPost("{residentId}/Videos/url")]
-        public Task<StatusCodeResult> AddVideoAsync(string residentId, [FromBody] string url)
-            => AddMediaAsync(residentId, url, EMediaType.Video);
-
         [HttpPost("{residentId}/Images/data")]
         public Task<StatusCodeResult> AddImageAsync(string residentId, [FromForm] MultiPartFile imageData)
             => AddMediaAsync(residentId, imageData, EMediaType.Image, (int) 20e6);
-
-        [HttpPost("{residentId}/Images/url")]
-        public Task<StatusCodeResult> AddImageAsync(string residentId, [FromBody] string url)
-            => AddMediaAsync(residentId, url, EMediaType.Image);
-
-        [HttpPost("{residentId}/Colors/data")]
-        public async Task<StatusCodeResult> AddColorAsync(string residentId, [FromBody] byte[] colorData)
-        {
-            // parse the id
-            if (!ObjectId.TryParse(residentId, out var residentObjectId))
-            {
-                // if it fails, throw not found exception
-                Throw.NotFound<Resident>(residentId);
-                return null;
-            }
-
-            await DataService.AddItemToListProperty(residentObjectId, x => x.Colors, colorData);
-            return StatusCode((int) HttpStatusCode.Created);
-        }
-
 
         public async Task<StatusCodeResult> AddMediaAsync(string residentId, MultiPartFile data, EMediaType mediaType,
             int maxFileSize = int.MaxValue)
@@ -141,7 +113,8 @@ namespace WebService.Controllers
                 var bytes = data.ConvertToBytes(maxFileSize);
                 var title = data.File.FileName;
 
-                await ((IResidentsService) DataService).AddMediaAsync(residentObjectId, title, bytes, mediaType);
+                await ((IResidentsService) DataService).AddMediaAsync(residentObjectId, title, bytes, mediaType,
+                    data.File.ContentType.Split('/')[1]);
                 return StatusCode((int) HttpStatusCode.Created);
             }
             catch (FileToLargeException)
@@ -151,6 +124,19 @@ namespace WebService.Controllers
 
             return null;
         }
+
+
+        [HttpPost("{residentId}/Music/url")]
+        public Task<StatusCodeResult> AddMusicAsync(string residentId, [FromBody] string url)
+            => AddMediaAsync(residentId, url, EMediaType.Audio);
+
+        [HttpPost("{residentId}/Videos/url")]
+        public Task<StatusCodeResult> AddVideoAsync(string residentId, [FromBody] string url)
+            => AddMediaAsync(residentId, url, EMediaType.Video);
+
+        [HttpPost("{residentId}/Images/url")]
+        public Task<StatusCodeResult> AddImageAsync(string residentId, [FromBody] string url)
+            => AddMediaAsync(residentId, url, EMediaType.Image);
 
         public async Task<StatusCodeResult> AddMediaAsync(string residentId, string url, EMediaType mediaType)
         {
@@ -164,6 +150,22 @@ namespace WebService.Controllers
 
             // use the data service to create a new updater
             await ((IResidentsService) DataService).AddMediaAsync(residentObjectId, url, mediaType);
+            return StatusCode((int) HttpStatusCode.Created);
+        }
+
+
+        [HttpPost("{residentId}/Colors/data")]
+        public async Task<StatusCodeResult> AddColorAsync(string residentId, [FromBody] byte[] colorData)
+        {
+            // parse the id
+            if (!ObjectId.TryParse(residentId, out var residentObjectId))
+            {
+                // if it fails, throw not found exception
+                Throw.NotFound<Resident>(residentId);
+                return null;
+            }
+
+            await DataService.AddItemToListProperty(residentObjectId, x => x.Colors, colorData);
             return StatusCode((int) HttpStatusCode.Created);
         }
 
