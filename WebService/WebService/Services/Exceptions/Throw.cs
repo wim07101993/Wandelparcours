@@ -61,7 +61,7 @@ namespace WebService.Services.Exceptions
 
         public void Unauthorized(params EAuthLevel[] minAuthLevels)
             => throw new UnauthorizedException(
-                $"You need to ask the {minAuthLevels.Select(x => x.ToString()).ToJson()} for acces", minAuthLevel);
+                $"You need to ask the {minAuthLevels.Select(x => x.ToString()).ToJson()} for acces", minAuthLevels);
 
         public void Unauthorized()
             => throw new UnauthorizedException($"You need to ask the server for a token to get access");

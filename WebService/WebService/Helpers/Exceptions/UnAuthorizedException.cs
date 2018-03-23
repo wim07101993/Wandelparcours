@@ -13,11 +13,11 @@ namespace WebService.Helpers.Exceptions
         {
         }
 
-        public UnauthorizedException(string message, EAuthLevel minAuthLevel) : base(message)
+        public UnauthorizedException(string message, EAuthLevel[] minAuthLevels) : base(message)
         {
-            MinAuthLevel = minAuthLevel;
+            MinAuthLevels = minAuthLevels;
         }
 
-        public EAuthLevel MinAuthLevel { get; }
+        public EAuthLevel[] MinAuthLevels { get; }
     }
 }
