@@ -12,7 +12,7 @@ namespace WebService.Services.Data
     public interface IResidentsService : IDataService<Resident>
     {
         /// <summary>
-        /// GetAsync is supposed to return the <see cref="Resident"/> with the given tag from the database. 
+        /// GetOneAsync is supposed to return the <see cref="Resident"/> with the given tag from the database. 
         /// <para/>
         /// It only fills the properties passed in the <see cref="propertiesToInclude"/> parameter. The id is always passed and 
         /// if the <see cref="propertiesToInclude"/> parameter is null (which it is by default), all the properties are included. 
@@ -33,10 +33,11 @@ namespace WebService.Services.Data
         /// <param name="title">is the title of the media</param>
         /// <param name="data">is the data of the media to add</param>
         /// <param name="mediaType">is the type of media to add</param>
+        /// <param name="extension">is the extension of the media to add</param>
         /// <exception cref="ArgumentNullException">when the data is null</exception>
         /// <exception cref="NotFoundException">when there is no <see cref="Resident"/> found with the given <see cref="AModelWithID.Id"/></exception>
         /// <exception cref="ArgumentOutOfRangeException">when the media type doesn't exist</exception>
-        Task AddMediaAsync(ObjectId residentId, string title, byte[] data, EMediaType mediaType);
+        Task AddMediaAsync(ObjectId residentId, string title, byte[] data, EMediaType mediaType, string extension = null);
 
         /// <summary>
         /// AddMediaAsync is supposed to add the <see cref="url"/> as media of the type <see cref="mediaType"/> to the <see cref="Resident"/>

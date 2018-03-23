@@ -1,7 +1,9 @@
-﻿using System.Linq;
+using System.Linq;
 using System.Text;
 using MongoDB.Bson;
 using WebService.Services.Randomizer;
+using System.Text;
+using WebService.Models;
 
 namespace WebService.Helpers.Extensions
 {
@@ -168,6 +170,37 @@ namespace WebService.Helpers.Extensions
             if (usePepper)
                 return Randomizer.Instance.Chars.Any(c => BCrypt.Net.BCrypt.Verify($"{stringToCompare}{c}", hash));
             return BCrypt.Net.BCrypt.Verify(stringToCompare, hash);
+        }
+
+        public static EMediaType GetEMediaTypeFromExtension(this string This)
+        {
+            switch (This)
+            {
+                case "jpg":
+                case "bmp":
+                case "png":
+                case "jpeg":
+                case "gif":
+                case "webp":
+                    return EMediaType.Image;
+                case "midi":
+                case "mp3":
+                case "mpeg":
+                case "wav":
+                case "m4a":
+                case "aac":
+                    return EMediaType.Audio;
+                case "mp4":
+                case "avi":
+                case "webm":
+                case "ogg":
+                case "flv":
+                case "wmv":
+                case "mkv":
+                    return EMediaType.Video;
+                default:
+                    return EMediaType.Image;
+            }
         }
     }
 }

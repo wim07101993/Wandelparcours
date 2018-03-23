@@ -10,7 +10,7 @@ namespace WebService.Services.Data
     public interface IReceiverModulesService : IDataService<ReceiverModule>
     {
         /// <summary>
-        /// GetAsync is supposed to return the receiver module with the given mac.
+        /// GetOneAsync is supposed to return the receiver module with the given mac.
         /// </summary>
         /// <param name="mac">is the mac address of the receiver module to fetch</param>
         /// <param name="propertiesToInclude">are the properties that should be included in the objects</param>

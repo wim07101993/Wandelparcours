@@ -62,7 +62,7 @@ namespace WebService.Controllers
                 await base.UpdateAsync(item, properties);
             }
 
-            var user = await DataService.GetAsync(item.Id, PropertiesToSendOnGetAll);
+            var user = await DataService.GetOneAsync(item.Id, PropertiesToSendOnGetAll);
             user.Password = item.Password;
             await DataService.UpdatePropertyAsync(user.Id, x => x.Password, user.Password);
         }

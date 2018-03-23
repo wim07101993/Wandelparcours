@@ -1,7 +1,5 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using WebService.Helpers.Exceptions;
 using WebService.Models;
 
 namespace WebService.Controllers.Bases
@@ -103,6 +101,13 @@ namespace WebService.Controllers.Bases
         Task<object> GetPropertyAsync(int tag, string propertyName);
 
         #endregion READ
+
+
+        #region UPDATE
+
+        Task UpdatePictureAsync(string id, MultiPartFile picture);
+
+        #endregion UPDATE
 
 
         #region DELETE

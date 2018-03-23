@@ -3,7 +3,10 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using MongoDB.Bson;
 using WebService.Controllers.Bases;
+using WebService.Helpers.Exceptions;
+using WebService.Helpers.Extensions;
 using WebService.Models;
 using WebService.Services.Data;
 using WebService.Services.Exceptions;
@@ -29,7 +32,36 @@ namespace WebService.Controllers
             };
 
         [HttpGet(GetOneTemplate)]
-        public async Task<IActionResult> GetOneAsync(string id) 
-            => File((await base.GetOneAsync(id, null)).Data, "image/jpg");
+        public async Task<FileContentResult> GetOneAsync(string id, string extension) 
+        {
+            // parse the id
+            if (!ObjectId.TryParse(id, out var objectId))
+                // if it fails, throw not found exception
+                throw new NotFoundException($"The {typeof(MediaData).Name} with id {id} could not be found");
+            
+            if (string.IsNullOrWhiteSpace(extension))
+            {
+                // get the jsonValue from the data service
+                var media = await ((IMediaService) DataService).GetOneAsync(objectId, new Expression<Func<MediaData, object>>[] { x => x.Data });
+
+                return Equals(media, default(MediaData))
+                    // if the item is null, throw a not found exception
+                    ? throw new NotFoundException($"The {typeof(MediaData).Name} with id {id} could not be found")
+                    // else return the values
+                    : File(media.Data, "image/jpg");
+            }
+
+            // get the jsonValue from the data service
+            var data = await ((IMediaService) DataService).GetOneAsync(objectId, extension);
+
+            var mediaType = extension.GetEMediaTypeFromExtension();
+
+            return data == null
+                // if the item is null, throw a not found exception
+                ? throw new NotFoundException($"The {typeof(MediaData).Name} with id {id} could not be found")
+                // else return the values
+                : File(data, $"{mediaType.ToString().ToLower()}/{extension}");
+        }
+        
     }
 }

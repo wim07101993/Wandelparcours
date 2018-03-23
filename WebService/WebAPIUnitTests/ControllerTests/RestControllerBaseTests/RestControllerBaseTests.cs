@@ -3,7 +3,7 @@
 namespace WebAPIUnitTests.ControllerTests.RestControllerBaseTests
 {
     [TestClass]
-    public class RestControllerBaseTests : IRestControllerTests
+    public class RestControllerBaseTests// : IRestControllerTests
     {
         #region CREATE
 

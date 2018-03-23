@@ -43,7 +43,7 @@ namespace WebService.Services.Data.Mongo
 
         public async Task TaskUpdatePasswordAsync(ObjectId id, string password)
         {
-            var user = await GetAsync(id);
+            var user = await GetOneAsync(id);
             user.Password = password;
             await UpdatePropertyAsync(user.Id, x => x.Password, password.Hash(id));
         }

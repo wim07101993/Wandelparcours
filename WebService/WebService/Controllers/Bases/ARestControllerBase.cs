@@ -220,7 +220,7 @@ namespace WebService.Controllers.Bases
                 : null;
 
             // get the jsonValue from the data service
-            var item = await DataService.GetAsync(objectId, selectors);
+            var item = await DataService.GetOneAsync(objectId, selectors);
 
             return Equals(item, default(T))
                 // if the item is null, throw a not found exception

@@ -131,9 +131,9 @@ namespace WebService.Controllers
             {
                 var bytes = data.ConvertToBytes(maxFileSize);
                 var title = data.File.FileName;
-
-                await ((IResidentsService)DataService).AddMediaAsync(residentObjectId, title, bytes, mediaType);
-                return StatusCode((int)HttpStatusCode.Created);
+                await ((IResidentsService) DataService).AddMediaAsync(residentObjectId, title, bytes, mediaType,
+                    data.File.ContentType.Split('/')[1]);
+                return StatusCode((int) HttpStatusCode.Created);
             }
             catch (FileToLargeException)
             {
@@ -143,7 +143,6 @@ namespace WebService.Controllers
             return null;
         }
 
-
         [HttpPost(AddMusicUrlTemplate)]
         public Task<StatusCodeResult> AddMusicAsync(string residentId, [FromBody] string url)
             => AddMediaAsync(residentId, url, EMediaType.Audio);
@@ -152,7 +151,7 @@ namespace WebService.Controllers
         public Task<StatusCodeResult> AddVideoAsync(string residentId, [FromBody] string url)
             => AddMediaAsync(residentId, url, EMediaType.Video);
 
-        [HttpPost(AddMImageUrlTemplate)]
+        [HttpPost("{residentId}/Images/url")]
         public Task<StatusCodeResult> AddImageAsync(string residentId, [FromBody] string url)
             => AddMediaAsync(residentId, url, EMediaType.Image);
 
@@ -172,7 +171,7 @@ namespace WebService.Controllers
         }
 
 
-        [HttpPost(AddColorTemplate)]
+        [HttpPost("{residentId}/Colors/data")]
         public async Task<StatusCodeResult> AddColorAsync(string residentId, [FromBody] byte[] colorData)
         {
             // parse the id
@@ -184,10 +183,11 @@ namespace WebService.Controllers
             }
 
             await DataService.AddItemToListProperty(residentObjectId, x => x.Colors, colorData);
-            return StatusCode((int)HttpStatusCode.Created);
+            return StatusCode((int) HttpStatusCode.Created);
         }
 
         #endregion post (create)
+
 
         #region get (read)
 
@@ -256,6 +256,47 @@ namespace WebService.Controllers
 
         #endregion get (read)
 
+
+        #region put (update)
+
+        [HttpPut]
+        public override Task UpdateAsync([FromBody] Resident item, [FromQuery] string[] properties)
+            => base.UpdateAsync(item, properties);
+
+        [HttpPut("{id}/{propertyName}")]
+        public override Task UpdatePropertyAsync(string id, string propertyName, [FromBody] string jsonValue)
+            => base.UpdatePropertyAsync(id, propertyName, jsonValue);
+
+        [HttpPut("{id}/picture")]
+        public async Task UpdatePictureAsync(string id, [FromForm] MultiPartFile picture)
+        {
+            const int maxFileSize = (int) 10e6;
+            if (picture?.File == null)
+            {
+                Throw.NullArgument(nameof(picture));
+                return;
+            }
+
+            if (!ObjectId.TryParse(id, out var objectId))
+            {
+                Throw.NotFound<Resident>(id);
+                return;
+            }
+
+            try
+            {
+                var bytes = picture.ConvertToBytes(maxFileSize);
+
+                await DataService.UpdatePropertyAsync(objectId, x => x.ImagePicture, bytes);
+            }
+            catch (FileToLargeException)
+            {
+                Throw.FileToLarge(maxFileSize);
+            }
+        }
+
+        #endregion put (update)
+
         #region delete
 
         [HttpDelete(RemoveMusicTemplate)]
@@ -289,7 +330,7 @@ namespace WebService.Controllers
             }
 
             // remove the media from the database
-            await ((IResidentsService)DataService).RemoveMediaAsync(residentObjectId, mediaObjectId, mediaType);
+            await ((IResidentsService) DataService).RemoveMediaAsync(residentObjectId, mediaObjectId, mediaType);
         }
 
         [HttpDelete(RemoveColorTemplate)]
@@ -315,7 +356,7 @@ namespace WebService.Controllers
             await ((IResidentsService) DataService)
                 .RemoveSubItemAsync(residentObjectId, x => x.Colors, mediaObjectId);
         }
-        
+
         #endregion delete
 
         #endregion METHODS

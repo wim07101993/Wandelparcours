@@ -155,9 +155,9 @@ namespace WebService.Services.Data.Mock
             });
         }
 
-        /// <inheritdoc cref="IDataService{T}.GetAsync(ObjectId,IEnumerable{Expression{System.Func{T,object}}})" />
+        /// <inheritdoc cref="IDataService{T}.GetOneAsync" />
         /// <summary>
-        /// GetAsync returns the <see cref="T"/> with the given id from the database. 
+        /// GetOneAsync returns the <see cref="T"/> with the given id from the database. 
         /// <para/>
         /// It only fills the properties passed in the <see cref="propertiesToInclude"/> parameter. The id is always passed and 
         /// if the <see cref="propertiesToInclude"/> parameter is null (which it is by default), all the properties are included. 
@@ -166,7 +166,7 @@ namespace WebService.Services.Data.Mock
         /// <param name="propertiesToInclude">are the properties that should be included in the objects</param>
         /// <returns>An <see cref="IEnumerable{T}"/> filled with all the ts in the database.</returns>
         /// <exception cref="NotFoundException">when there is no item found with the given id</exception>
-        public async Task<T> GetAsync(ObjectId id, IEnumerable<Expression<Func<T, object>>> propertiesToInclude = null)
+        public async Task<T> GetOneAsync(ObjectId id, IEnumerable<Expression<Func<T, object>>> propertiesToInclude = null)
         {
             // get the index of the item
             var index = MockData.FindIndex(x => x.Id == id);

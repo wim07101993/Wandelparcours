@@ -14,7 +14,7 @@ using WebService.Services.Logging;
 namespace WebAPIUnitTests.ControllerTests.ResidentsControllerTests
 {
     [TestClass]
-    public class ResidentsControllerTestsTests : IResidentsControllerTests
+    public class ResidentsControllerTestsTests// : IResidentsControllerTests
     {
         #region CREATE
 

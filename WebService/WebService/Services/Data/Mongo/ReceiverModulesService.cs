@@ -52,7 +52,7 @@ namespace WebService.Services.Data.Mongo
 
         /// <inheritdoc cref="IReceiverModulesService.GetAsync(string,IEnumerable{Expression{Func{ReceiverModule,object}}})" />
         /// <summary>
-        /// GetAsync returns the receiver module with the given mac.
+        /// GetOneAsync returns the receiver module with the given mac.
         /// </summary>
         /// <param name="mac">is the mac address of the receiver module to fetch</param>
         /// <param name="propertiesToInclude">are the properties that should be included in the objects</param>
