@@ -219,8 +219,8 @@ namespace WebService.Controllers
                         new Expression<Func<Resident, object>>[] {x => x.Images})).Images;
                     break;
                 case nameof(Resident.Colors):
-                    data = (await ((IResidentsService)DataService).GetAsync(tag,
-                        new Expression<Func<Resident, object>>[] { x => x.Colors })).Colors;
+                    data = (await ((IResidentsService) DataService).GetAsync(tag,
+                        new Expression<Func<Resident, object>>[] {x => x.Colors})).Colors;
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
@@ -258,11 +258,35 @@ namespace WebService.Controllers
         public override Task UpdatePropertyAsync(string id, string propertyName, [FromBody] string jsonValue)
             => base.UpdatePropertyAsync(id, propertyName, jsonValue);
 
+        [HttpPut("{id}/picture")]
+        public async Task UpdatePictureAsync(string id, [FromForm] MultiPartFile picture)
+        {
+            const int maxFileSize = (int) 10e6;
+            if (picture?.File == null)
+            {
+                Throw.NullArgument(nameof(picture));
+                return;
+            }
+
+            if (!ObjectId.TryParse(id, out var objectId))
+            {
+                Throw.NotFound<Resident>(id);
+                return;
+            }
+
+            try
+            {
+                var bytes = picture.ConvertToBytes(maxFileSize);
+
+                await DataService.UpdatePropertyAsync(objectId, x => x.ImagePicture, bytes);
+            }
+            catch (FileToLargeException)
+            {
+                Throw.FileToLarge(maxFileSize);
+            }
+        }
+
         #endregion put (update)
-
-
-
-
 
         #region delete
 
