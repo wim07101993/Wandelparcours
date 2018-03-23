@@ -1,25 +1,118 @@
 <app-senior></app-senior>
 
-    <div class="row personalia-row">
-        <div class="col">
-            <div class="card">
-                <div class="card-image">
-                    <img src="/images/boss.png">
-                    <span class="card-title">{{resident.firstName}}, {{resident.lastName}} </span>
-                </div>
-                <div class="card-content">
-                    <p>
-                        Kamer: {{resident.room}}
-                    </p>
-                    <p>
-                        Geboortedatum: {{resident.birthday | date:'dd-MM-yyyy'}}
-                    </p>
-                    <p>
-                        Huisarts: {{resident.doctor.name}} <br /> Tel: {{resident.doctor.phoneNumber}}
-                    </p>
-                </div>
+<div class="row personalia-row">
+    <div class="col s12">
+        
+        <div class="row">
+            <div class="col s4 center-align">
+                <img src="/images/resident.jpg" class="circle responsive-img"/>
+            </div>
+            
+            <div class="col s8">
+                <h5>Gekoppelde beacons</h5>
+                <table class="striped responsive-table centered">
+                    <thead>
+                    <tr>
+                        <th>Beacon-id</th>
+                        <th>Major</th>
+                        <th>Minor</th>
+                        <th>Action</th>
+                    </tr>
+                    </thead>
+
+                    <tbody>
+                    <tr>
+                        <td>2345678</td>
+                        <td>1000</td>
+                        <td>1002</td>
+                        <td><i class="material-icons blue-text pointer">edit</i> <i class="material-icons red-text pointer">delete</i></td>
+                    
+                    </tr>
+                    <tr>
+                        <td>2333678</td>
+                        <td>1000</td>
+                        <td>1003</td>
+                        <td><i class="material-icons blue-text pointer">edit</i> <i class="material-icons red-text pointer">delete</i></td>
+
+                    </tr>
+                    <tr>
+                        <td>2377678</td>
+                        <td>1000</td>
+                        <td>1004</td>
+                        <td><i class="material-icons blue-text pointer">edit</i> <i class="material-icons red-text pointer">delete</i></td>
+
+                    </tr>
+                    
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col s12 m8 offset-m4">
+                <h5>Persoonlijke informatie</h5>
+                <table class="striped responsive-table">
+                    
+                    <tbody>
+                    <tr>
+                        <th>Voornoam: </th>
+                        <td>{{resident.firstName}}</td>
+                        <th>Naam: </th>
+                        <td>{{resident.lastName}}</td>
+                    </tr>
+                    <tr>
+                        <th>GebDatum: </th>
+                        <td>{{resident.birthday | date:'dd-MM-yyyy'}}</td>
+                        <th>Kamer: </th>
+                        <td>{{resident.room}}</td>
+                    </tr>
+                    <tr>
+                        <th>Arts:</th>
+                        <td>{{resident.doctor.name}}</td>
+                        <th>tel:</th>
+                        <td>{{resident.doctor.phoneNumber}}</td>
+                    </tr>
+                    </tbody>
+
+                </table>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col s6 m3">
+                <a [routerLink]="['/resident', id, 'picture']">
+                <div class="card">
+                    <div class="card-content center-align blue-grey lighten-5 card-photo">
+                        <i class="large material-icons">photo</i>
+                    </div>
+                    <span class="badge amber darken-2 white-text">foto: 14</span>
+                </div></a>
+            </div>
+            <div class="col s6 m3">
+                <a [routerLink]="['/resident', id, 'video']">
+                <div class="card">
+                    <div class="card-content center-align card-video">
+                        <i class="large material-icons">ondemand_video</i>
+                    </div>
+                    <span class="badge orange darken-2 white-text">video: 9</span>
+                </div></a>
+            </div>
+            <div class="col s6 m3">
+                <a [routerLink]="['/resident', id, 'audio']">
+                <div class="card">
+                    <div class="card-content blue-grey lighten-5 center-align card-audio">
+                        <i class="large material-icons">audiotrack</i>
+                    </div> <span class="badge amber darken-2 white-text">audio: 2</span>
+                </div></a>
+            </div>
+            <div class="col s6 m3">
+                <a [routerLink]="['/resident', id, 'game']">
+                <div class="card">
+                    <div class="card-content center-align card-game">
+                        <i class="large material-icons">videogame_asset</i>
+                    </div>
+                    <span class="badge orange darken-2 white-text">spel: 8</span>
+                </div></a>
             </div>
         </div>
     </div>
-
+</div>
 
