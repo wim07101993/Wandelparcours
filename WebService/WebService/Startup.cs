@@ -5,7 +5,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Serialization;
 using WebService.Helpers.Extensions;
-using WebService.Models;
+using WebService.Services.Authorization;
 using WebService.Services.Data;
 using WebService.Services.Data.Mock;
 using WebService.Services.Data.Mongo;
@@ -32,11 +32,15 @@ namespace WebService
                 .AddSingleton(typeof(ILogger), new LoggerCollection {new ConsoleLogger(), new FileLogger()})
                 .AddSingleton<IRandomizer, Randomizer>()
                 .AddSingleton<IThrow, Throw>()
-                //.AddSingleton<IDataService<Resident>, MockResidentsService>()
-                //.AddSingleton<IDataService<ReceiverModule>, ReceiverModulesService>();
-                .AddSingleton<IDataService<MediaData>, MediaService>()
-                .AddSingleton<IDataService<Resident>, ResidentsService>()
-                .AddSingleton<IDataService<ReceiverModule>, ReceiverModulesService>();
+                .AddSingleton<IMediaService, MockMediaService>()
+                .AddSingleton<IResidentsService, MockResidentsService>()
+                .AddSingleton<IReceiverModulesService, ReceiverModulesService>()
+                .AddSingleton<IUsersService, MockUsersService>()
+                //.AddSingleton<IMediaService, MediaService>()
+                //.AddSingleton<IResidentsService, ResidentsService>()
+                //.AddSingleton<IReceiverModulesService, ReceiverModulesService>()
+                //.AddSingleton<IUsersService, UsersService>()
+                .AddSingleton<ITokenService, TokenService>();
 
             services
                 .AddMvc()
@@ -45,7 +49,6 @@ namespace WebService
                     options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
                 });
             services.AddCors();
-
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -70,6 +73,7 @@ namespace WebService
             app.UseCors((option) => { option.AllowAnyOrigin().AllowAnyMethod(); });
 
             app.UseExceptionMiddleware()
+                .UseAuthorizationMiddleware()
                 .UseStaticFiles()
                 .UseMvc(routes =>
                 {

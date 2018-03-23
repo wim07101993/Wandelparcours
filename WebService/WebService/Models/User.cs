@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
+using WebService.Helpers.Extensions;
 using WebService.Models.Bases;
 
 namespace WebService.Models
@@ -40,6 +41,10 @@ namespace WebService.Models
         /// In the database the value is stored under the field "authLevel"
         /// </summary>
         [BsonElement("authLevel")]
-        public EAuthLevel AuthLevel { get; set; }
+        public EAuthLevel AuthLevel { get; set; } = EAuthLevel.Guest;
+
+
+        [BsonElement("residents")]
+        public IEnumerable<Resident> Residents { get; set; }
     }
 }

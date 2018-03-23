@@ -27,6 +27,18 @@ namespace WebService.Controllers.Bases
     {
         #region FIELDS
 
+        public const string CreateTemplate = "";
+        public const string AddItemToListTemplate = "{id}/{propertyName}";
+
+        public const string GetAllTemplate = "";
+        public const string GetOneTemplate = "{id}";
+        public const string GetPropertyTemplate = "{id}/{propertyName}";
+
+        public const string UpdateTemplate = "";
+        public const string UpdatePropertyTemplate = "{id}/{propertyName}";
+
+        public const string DeleteTemplate = "{id}";
+
         protected readonly IThrow Throw;
 
         /// <summary>
@@ -38,7 +50,7 @@ namespace WebService.Controllers.Bases
         /// _logger is used to handle the logging of messages.
         /// </summary>
         protected readonly ILogger Logger;
-
+        
         #endregion FIELDS
 
 
@@ -73,7 +85,7 @@ namespace WebService.Controllers.Bases
         /// and as values the selectors.
         /// </summary>
         public abstract IDictionary<string, Expression<Func<T, object>>> PropertySelectors { get; }
-
+        
         #endregion PROPERTIES
 
 
@@ -105,6 +117,7 @@ namespace WebService.Controllers.Bases
         /// </summary>
         /// <param name="item">is the <see cref="T"/> to save in the database</param>
         /// <exception cref="Exception">When the item could not be created</exception>
+        [HttpPost(CreateTemplate)]
         public virtual async Task<StatusCodeResult> CreateAsync([FromBody] T item)
         {
             if (item == null)
@@ -118,7 +131,9 @@ namespace WebService.Controllers.Bases
             return StatusCode((int) HttpStatusCode.Created);
         }
 
-        public virtual async Task<StatusCodeResult> AddItemToList(string id, string propertyName, string jsonValue)
+        [HttpPost(AddItemToListTemplate)]
+        public virtual async Task<StatusCodeResult> AddItemToListAsync(string id, string propertyName,
+            [FromBody] string jsonValue)
         {
             var property = typeof(T)
                 .GetProperties()
@@ -167,7 +182,8 @@ namespace WebService.Controllers.Bases
         /// <param name="propertiesToInclude">are the properties of which the values should be returned</param>
         /// <returns>All <see cref="T"/>s in the database but only the given properties are filled in</returns>
         /// <exception cref="WebArgumentException">When one ore more properties could not be converted to selectors</exception>
-        public virtual async Task<IEnumerable<T>> GetAsync([FromQuery] string[] propertiesToInclude)
+        [HttpGet(GetAllTemplate)]
+        public virtual async Task<IEnumerable<T>> GetAllAsync([FromQuery] string[] propertiesToInclude)
         {
             // convert the property names to selectors, if there are any
             var selectors = !EnumerableExtensions.IsNullOrEmpty(propertiesToInclude)
@@ -190,7 +206,8 @@ namespace WebService.Controllers.Bases
         /// <returns>The <see cref="T"/> in the database that has the given id</returns>
         /// <exception cref="NotFoundException">When the id cannot be parsed or <see cref="T"/> not found</exception>
         /// <exception cref="WebArgumentException">When one ore more properties could not be converted to selectors</exception>
-        public virtual async Task<T> GetAsync(string id, [FromQuery] string[] propertiesToInclude)
+        [HttpGet(GetOneTemplate)]
+        public virtual async Task<T> GetOneAsync(string id, [FromQuery] string[] propertiesToInclude)
         {
             // parse the id
             if (!ObjectId.TryParse(id, out var objectId))
@@ -221,6 +238,7 @@ namespace WebService.Controllers.Bases
         /// <returns>The jsonValue of the asked property</returns>
         /// <exception cref="NotFoundException">When the id cannot be parsed or <see cref="T"/> not found</exception>
         /// <exception cref="WebArgumentException">When the property could not be found on <see cref="T"/></exception>
+        [HttpGet(GetPropertyTemplate)]
         public virtual async Task<object> GetPropertyAsync(string id, string propertyName)
         {
             // check if the property exists on the item
@@ -252,6 +270,7 @@ namespace WebService.Controllers.Bases
         /// <param name="properties">contains the properties that should be updated</param>
         /// <exception cref="NotFoundException">When the id cannot be parsed or <see cref="T"/> not found</exception>
         /// <exception cref="WebArgumentException">When one ore more properties could not be converted to selectors</exception>
+        [HttpPut(UpdateTemplate)]
         public virtual async Task UpdateAsync([FromBody] T item, [FromQuery] string[] properties)
         {
             // convert the property names to selectors, if there are any
@@ -273,6 +292,7 @@ namespace WebService.Controllers.Bases
         /// <exception cref="NotFoundException">When the id cannot be parsed or <see cref="T"/> not found</exception>
         /// <exception cref="WebArgumentException">When the property could not be found on <see cref="T"/> or the jsonValue could not be assigned</exception>
         /// <exception cref="Exception">When the update failed</exception>
+        [HttpPut(UpdatePropertyTemplate)]
         public virtual async Task UpdatePropertyAsync(string id, string propertyName, [FromBody] string jsonValue)
         {
             var property = typeof(T)
@@ -317,6 +337,7 @@ namespace WebService.Controllers.Bases
         /// </summary>
         /// <param name="id">is the id of the <see cref="T"/> to remove from the database</param>
         /// <exception cref="NotFoundException">When the id cannot be parsed or <see cref="T"/> not found</exception>
+        [HttpDelete(DeleteTemplate)]
         public virtual async Task DeleteAsync(string id)
         {
             // parse the id

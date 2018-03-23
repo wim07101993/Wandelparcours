@@ -19,11 +19,13 @@ namespace WebService.Services.Data.Mock
     /// <para/>
     /// It handles the saving and retrieving data to and from a list of Residents in memory. It does not store anything in a database.
     /// </summary>
-    public partial class MockResidentsService : AMockDataService<Resident>, IResidentsService
+    public class MockResidentsService : AMockDataService<Resident>, IResidentsService
     {
         public MockResidentsService(IThrow iThrow) : base(iThrow)
         {
         }
+
+        public override List<Resident> MockData { get; } = Mock.MockData.MockResidents;
 
         public override Resident CreateNewItem(ObjectId id)
             => new Resident {Id = id};
@@ -65,6 +67,12 @@ namespace WebService.Services.Data.Mock
 
             // return the item
             return itemToReturn;
+        }
+
+        public Task<object> GetPropertyAsync(int tag, Expression<Func<Resident, object>> propertyToSelect)
+        {
+            //TODO
+            throw new NotImplementedException();
         }
 
         public async Task AddMediaAsync(ObjectId residentId, string title, byte[] data, EMediaType mediaType)

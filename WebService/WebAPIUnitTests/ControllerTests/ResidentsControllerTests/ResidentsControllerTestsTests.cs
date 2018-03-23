@@ -223,7 +223,7 @@ namespace WebAPIUnitTests.ControllerTests.ResidentsControllerTests
         public void GetRandomMediaBadTagNullMediaType()
         {
             new ResidentsController(new Throw(), new TestResidentsService(), new ConsoleLogger())
-                .GetRandomMedia(-1, null)
+                .GetRandomElementFromPropertyAsync(-1, null)
                 .ShouldCatchException<NotFoundException>("there is no resident that has tag -1");
         }
 
@@ -231,7 +231,7 @@ namespace WebAPIUnitTests.ControllerTests.ResidentsControllerTests
         public void GetRandomMediaBadTagBadMediaType()
         {
             new ResidentsController(new Throw(), new TestResidentsService(), new ConsoleLogger())
-                .GetRandomMedia(-1, "badMediaType")
+                .GetRandomElementFromPropertyAsync(-1, "badMediaType")
                 .ShouldCatchException<NotFoundException>("there is no resident that has tag -1");
         }
 
@@ -239,7 +239,7 @@ namespace WebAPIUnitTests.ControllerTests.ResidentsControllerTests
         public void GetRandomMediaBadTagExistingMediaType()
         {
             new ResidentsController(new Throw(), new TestResidentsService(), new ConsoleLogger())
-                .GetRandomMedia(-1, EMediaType.Audio.ToString())
+                .GetRandomElementFromPropertyAsync(-1, EMediaType.Audio.ToString())
                 .ShouldCatchException<NotFoundException>("there is no resident that has tag -1");
         }
 
@@ -252,7 +252,7 @@ namespace WebAPIUnitTests.ControllerTests.ResidentsControllerTests
             var controller = new ResidentsController(new Throw(), dataService, new ConsoleLogger());
 
             controller
-                .GetRandomMedia(tag, null)
+                .GetRandomElementFromPropertyAsync(tag, null)
                 .ShouldCatchArgumentException<WebArgumentNullException>("the media type cannot be null");
         }
 
@@ -265,7 +265,7 @@ namespace WebAPIUnitTests.ControllerTests.ResidentsControllerTests
             var controller = new ResidentsController(new Throw(), dataService, new ConsoleLogger());
 
             controller
-                .GetRandomMedia(tag, "bad mediaType")
+                .GetRandomElementFromPropertyAsync(tag, "bad mediaType")
                 .ShouldCatchException<NotFoundException>("the media type doesn't exist");
         }
 
@@ -277,7 +277,7 @@ namespace WebAPIUnitTests.ControllerTests.ResidentsControllerTests
 
             var controller = new ResidentsController(new Throw(), dataService, new ConsoleLogger());
 
-            var obj = controller.GetRandomMedia(tag, EMediaType.Image.ToString()).Result;
+            var obj = controller.GetRandomElementFromPropertyAsync(tag, EMediaType.Image.ToString()).Result;
             obj.Should().NotBeNull("it holds an image");
         }
 

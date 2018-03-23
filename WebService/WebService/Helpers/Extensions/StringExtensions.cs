@@ -1,4 +1,7 @@
-﻿using System.Text;
+﻿using System.Linq;
+using System.Text;
+using MongoDB.Bson;
+using WebService.Services.Randomizer;
 
 namespace WebService.Helpers.Extensions
 {
@@ -143,5 +146,28 @@ namespace WebService.Helpers.Extensions
         public static bool EqualsWithCamelCasing(this string This, string propertyName)
             // check if the string's are equal after converting them to lower case
             => This.ToLowerCamelCase() == propertyName.ToLowerCamelCase();
+
+        public static string Hash(this string stringToHash, ObjectId id, bool useSalt = true, bool usePepper = true)
+        {
+            if (useSalt && usePepper)
+                return BCrypt.Net.BCrypt.HashPassword($"{stringToHash}{id}{Randomizer.Instance.NextChar()}");
+            if (useSalt)
+                return BCrypt.Net.BCrypt.HashPassword($"{stringToHash}{id}");
+            if (usePepper)
+                return BCrypt.Net.BCrypt.HashPassword($"{stringToHash}{Randomizer.Instance.NextChar()}");
+            return BCrypt.Net.BCrypt.HashPassword(stringToHash);
+        }
+
+        public static bool EqualsToHash(this string stringToCompare, ObjectId id, string hash, bool useSalt = true,
+            bool usePepper = true)
+        {
+            if (useSalt && usePepper)
+                return Randomizer.Instance.Chars.Any(c => BCrypt.Net.BCrypt.Verify($"{stringToCompare}{id}{c}", hash));
+            if (useSalt)
+                return BCrypt.Net.BCrypt.Verify($"{stringToCompare}{id}", hash);
+            if (usePepper)
+                return Randomizer.Instance.Chars.Any(c => BCrypt.Net.BCrypt.Verify($"{stringToCompare}{c}", hash));
+            return BCrypt.Net.BCrypt.Verify(stringToCompare, hash);
+        }
     }
 }

@@ -14,7 +14,7 @@ namespace WebService.Controllers
     [Route("api/v1/[controller]")]
     public class MediaController : ARestControllerBase<MediaData>, IMediaController
     {
-        public MediaController(IThrow iThrow, IDataService<MediaData> dataService, ILogger logger) : base(iThrow,
+        public MediaController(IThrow iThrow, IMediaService dataService, ILogger logger) : base(iThrow,
             dataService, logger)
         {
         }
@@ -28,8 +28,8 @@ namespace WebService.Controllers
                 {nameof(MediaData.Data), x => x.Data}
             };
 
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetAsync(string id) 
-            => File((await base.GetAsync(id, null)).Data, "image/jpg");
+        [HttpGet(GetOneTemplate)]
+        public async Task<IActionResult> GetOneAsync(string id) 
+            => File((await base.GetOneAsync(id, null)).Data, "image/jpg");
     }
 }

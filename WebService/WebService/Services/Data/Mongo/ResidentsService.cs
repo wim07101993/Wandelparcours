@@ -25,7 +25,7 @@ namespace WebService.Services.Data.Mongo
     {
         private readonly IDataService<MediaData> _mediaService;
 
-        public ResidentsService(IConfiguration config, IThrow iThrow, IDataService<MediaData> mediaService)
+        public ResidentsService(IConfiguration config, IThrow iThrow, IMediaService mediaService)
             : base(iThrow)
         {
             _mediaService = mediaService;

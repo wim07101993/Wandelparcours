@@ -1,13 +1,18 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using MongoDB.Bson;
+using Moq;
 using WebAPIUnitTests.TestHelpers.Extensions;
 using WebAPIUnitTests.TestServices.ReceiverModules;
 using WebService.Controllers;
 using WebService.Helpers.Exceptions;
 using WebService.Helpers.Extensions;
 using WebService.Models;
+using WebService.Services.Data;
 using WebService.Services.Exceptions;
 using WebService.Services.Logging;
 
@@ -32,48 +37,54 @@ namespace WebAPIUnitTests.ControllerTests.ReceiverModulesControllerTests
         [TestMethod]
         public void CreateDuplicate()
         {
-            var dataService = new TestReceiverModulesService();
+            var item = new ReceiverModule {Id = ObjectId.GenerateNewId()};
+            var duplicate = new ReceiverModule {Id = item.Id};
 
-            var controller = new ReceiverModulesController(new Throw(), dataService, new ConsoleLogger());
+            var list = new List<ReceiverModule> {item};
 
-            var id = dataService.GetFirst().Id;
+            var mock = new Mock<IReceiverModulesService>();
+            mock.Setup(x => x.CreateAsync(duplicate)).Callback(new Action<ReceiverModule>(x => list.Add(x)));
 
-            var duplicate = new ReceiverModule
-            {
-                Mac = null,
-                Id = id
-            };
+            var controller = new ReceiverModulesController(new Throw(), mock.Object, new ConsoleLogger());
 
             controller
                 .CreateAsync(duplicate)
-                .Wait();
-
-            dataService
-                .GetAsync(id).Result
-                .Mac
+                .Result
+                .StatusCode
                 .Should()
-                .NotBe(duplicate.Mac, "this is not update and create should give a new id to the item");
+                .Be((int) HttpStatusCode.Created, "the item should have been created but the id should have changed");
+
+            list
+                .Should()
+                .HaveCount(2)
+                .And
+                .ContainSingle(x => x.Id == item.Id);
         }
 
         [TestMethod]
         public void CreateItem()
         {
-            var dataService = new TestReceiverModulesService();
+            var item = new ReceiverModule {Id = ObjectId.GenerateNewId()};
 
-            var controller = new ReceiverModulesController(new Throw(), dataService, new ConsoleLogger());
+            var list = new List<ReceiverModule>();
 
-            var item = new ReceiverModule {Mac = "fakeMac"};
+            var mock = new Mock<IReceiverModulesService>();
+            mock.Setup(x => x.CreateAsync(item)).Callback(new Action<ReceiverModule>(x => list.Add(x)));
+
+            var controller = new ReceiverModulesController(new Throw(), mock.Object, new ConsoleLogger());
 
             controller
                 .CreateAsync(item)
-                .Wait();
-
-            dataService
-                .GetAsync(item.Mac).Result
-                .Position
-                .TimeStamp
+                .Result
+                .StatusCode
                 .Should()
-                .NotBe(default(DateTime), "the time stamp should automatically be created");
+                .Be((int) HttpStatusCode.Created, "the item should have been created but the id should have changed");
+
+            list
+                .Should()
+                .HaveCount(1)
+                .And
+                .Contain(x => x == item);
         }
 
         #endregion CREATE
@@ -82,102 +93,42 @@ namespace WebAPIUnitTests.ControllerTests.ReceiverModulesControllerTests
         #region READ
 
         [TestMethod]
-        public void GetNullMacNullProperties()
+        public void GetNullMac()
         {
             var controller =
-                new ReceiverModulesController(new Throw(), new TestReceiverModulesService(), new ConsoleLogger());
+                new ReceiverModulesController(
+                    new Throw(),
+                    new Mock<IReceiverModulesService>().Object,
+                    new ConsoleLogger());
 
             controller
-                .GetAsync(null, null)
+                .GetOneAsync(null, null)
                 .ShouldCatchException<NotFoundException>("there is no item with a null mac");
         }
 
         [TestMethod]
-        public void GetNullMacEmptyProperties()
+        public void GetBadMac()
         {
             var controller =
-                new ReceiverModulesController(new Throw(), new TestReceiverModulesService(), new ConsoleLogger());
+                new ReceiverModulesController(
+                    new Throw(),
+                    new Mock<IReceiverModulesService>().Object,
+                    new ConsoleLogger());
 
             controller
-                .GetAsync(null, new string[0])
-                .ShouldCatchException<NotFoundException>("there is no item with a null mac");
-        }
-
-        [TestMethod]
-        public void GetNullMacBadproperties()
-        {
-            var controller =
-                new ReceiverModulesController(new Throw(), new TestReceiverModulesService(), new ConsoleLogger());
-
-            controller
-                .GetAsync(null, new[] {"bad property", nameof(ReceiverModule.IsActive)})
-                .ShouldCatchException<NotFoundException>("there is no item with a null mac");
-        }
-
-        [TestMethod]
-        public void GetNullMacSomeProeprties()
-        {
-            var controller =
-                new ReceiverModulesController(new Throw(), new TestReceiverModulesService(), new ConsoleLogger());
-
-            controller
-                .GetAsync(null, new[] {nameof(ReceiverModule.Mac), nameof(ReceiverModule.IsActive)})
-                .ShouldCatchException<NotFoundException>("there is no item with a null mac");
-        }
-
-        [TestMethod]
-        public void GetBadMacNullProperties()
-        {
-            var controller =
-                new ReceiverModulesController(new Throw(), new TestReceiverModulesService(), new ConsoleLogger());
-
-            controller
-                .GetAsync("a", null)
+                .GetOneAsync("bad mac", null)
                 .ShouldCatchException<NotFoundException>("there is no item with that mac");
         }
 
         [TestMethod]
-        public void GetBadMacEmptyProperties()
-        {
-            var controller =
-                new ReceiverModulesController(new Throw(), new TestReceiverModulesService(), new ConsoleLogger());
-
-            controller
-                .GetAsync("a", new string[0])
-                .ShouldCatchException<NotFoundException>("there is no item with that mac");
-        }
-
-        [TestMethod]
-        public void GetBadMacBadProperties()
-        {
-            var controller =
-                new ReceiverModulesController(new Throw(), new TestReceiverModulesService(), new ConsoleLogger());
-
-            controller
-                .GetAsync("a", new[] {"bad property", nameof(ReceiverModule.IsActive)})
-                .ShouldCatchException<NotFoundException>("there no property 'bad property' in a receiver module");
-        }
-
-        [TestMethod]
-        public void GetBadMacSomeProperties()
-        {
-            var controller =
-                new ReceiverModulesController(new Throw(), new TestReceiverModulesService(), new ConsoleLogger());
-
-            controller
-                .GetAsync("a", new[] {nameof(ReceiverModule.Mac), nameof(ReceiverModule.IsActive)})
-                .ShouldCatchException<NotFoundException>("there is no item with that mac");
-        }
-
-        [TestMethod]
-        public void GetExistingMacNullProperties()
+        public void GetNullProperties()
         {
             var dataService = new TestReceiverModulesService();
             var controller = new ReceiverModulesController(new Throw(), dataService, new ConsoleLogger());
 
             var mac = dataService.GetFirst().Mac;
 
-            var item = controller.GetAsync(mac, null).Result;
+            var item = controller.GetOneAsync(mac, null).Result;
             var original = dataService.GetAsync(mac).Result;
 
             foreach (var property in typeof(ReceiverModule).GetProperties())
@@ -188,14 +139,14 @@ namespace WebAPIUnitTests.ControllerTests.ReceiverModulesControllerTests
         }
 
         [TestMethod]
-        public void GetExistingMacEmptyProperties()
+        public void GetEmptyProperties()
         {
             var dataService = new TestReceiverModulesService();
             var controller = new ReceiverModulesController(new Throw(), dataService, new ConsoleLogger());
 
             var mac = dataService.GetFirst().Mac;
 
-            var item = controller.GetAsync(mac, new string[0]).Result;
+            var item = controller.GetOneAsync(mac, new string[0]).Result;
             var original = dataService.GetAsync(mac).Result;
 
             item.Mac
@@ -214,7 +165,7 @@ namespace WebAPIUnitTests.ControllerTests.ReceiverModulesControllerTests
         }
 
         [TestMethod]
-        public void GetExistingMacBadProperties()
+        public void GetBadProperties()
         {
             var dataService = new TestReceiverModulesService();
             var controller = new ReceiverModulesController(new Throw(), dataService, new ConsoleLogger());
@@ -222,19 +173,20 @@ namespace WebAPIUnitTests.ControllerTests.ReceiverModulesControllerTests
             var mac = dataService.GetFirst().Mac;
 
             controller
-                .GetAsync(mac, new[] {"bad property", nameof(ReceiverModule.IsActive)})
-                .ShouldCatchException<PropertyNotFoundException>("there no property 'bad property' in a receiver module");
+                .GetOneAsync(mac, new[] {"bad property", nameof(ReceiverModule.IsActive)})
+                .ShouldCatchException<PropertyNotFoundException>(
+                    "there no property 'bad property' in a receiver module");
         }
 
         [TestMethod]
-        public void GetExistingMacSomeProerties()
+        public void Get()
         {
             var dataService = new TestReceiverModulesService();
             var controller = new ReceiverModulesController(new Throw(), dataService, new ConsoleLogger());
 
             var mac = dataService.GetFirst().Mac;
 
-            var item = controller.GetAsync(mac, new[] {nameof(ReceiverModule.Mac), nameof(ReceiverModule.IsActive)})
+            var item = controller.GetOneAsync(mac, new[] {nameof(ReceiverModule.Mac), nameof(ReceiverModule.IsActive)})
                 .Result;
             var original = dataService.GetAsync(mac).Result;
 
@@ -258,5 +210,21 @@ namespace WebAPIUnitTests.ControllerTests.ReceiverModulesControllerTests
         }
 
         #endregion READ
+
+        #region DELETE
+
+
+        public void DeleteNullMac()
+        {
+           
+        }
+
+        public void DeleteBadMac()
+        {
+            throw new NotImplementedException();
+        }
+
+
+        #endregion DELETE
     }
 }

@@ -1,10 +1,11 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using WebService.Models;
 
 namespace WebService.Controllers.Bases
 {
-    public interface IMediaController
+    public interface IMediaController : IRestController<MediaData>
     {
-        Task<IActionResult> GetAsync(string id);
+        Task<IActionResult> GetOneAsync(string id);
     }
 }
