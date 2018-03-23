@@ -179,7 +179,7 @@ namespace WebAPIUnitTests.ControllerTests.ReceiverModulesControllerTests
         }
 
         [TestMethod]
-        public void GetSomeProerties()
+        public void Get()
         {
             var dataService = new TestReceiverModulesService();
             var controller = new ReceiverModulesController(new Throw(), dataService, new ConsoleLogger());
@@ -210,5 +210,21 @@ namespace WebAPIUnitTests.ControllerTests.ReceiverModulesControllerTests
         }
 
         #endregion READ
+
+        #region DELETE
+
+
+        public void DeleteNullMac()
+        {
+           
+        }
+
+        public void DeleteBadMac()
+        {
+            throw new NotImplementedException();
+        }
+
+
+        #endregion DELETE
     }
 }

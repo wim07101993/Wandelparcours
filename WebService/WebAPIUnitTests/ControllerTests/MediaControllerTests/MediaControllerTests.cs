@@ -1,11 +1,12 @@
 ﻿using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using MongoDB.Bson;
+using Moq;
 using WebAPIUnitTests.TestHelpers.Extensions;
 using WebAPIUnitTests.TestServices.Media;
 using WebService.Controllers;
 using WebService.Helpers.Exceptions;
+using WebService.Services.Data;
 using WebService.Services.Exceptions;
 using WebService.Services.Logging;
 
@@ -17,9 +18,7 @@ namespace WebAPIUnitTests.ControllerTests.MediaControllerTests
         [TestMethod]
         public void GetNullId()
         {
-            var controller = new MediaController(new Throw(), new TestMediaService(), new ConsoleLogger());
-
-            controller
+            new MediaController(new Throw(), new Mock<IMediaService>().Object, new ConsoleLogger())
                 .GetOneAsync(null)
                 .ShouldCatchException<NotFoundException>("there is no item with id null");
         }
@@ -27,15 +26,15 @@ namespace WebAPIUnitTests.ControllerTests.MediaControllerTests
         [TestMethod]
         public void GetBadId()
         {
-            var controller = new MediaController(new Throw(), new TestMediaService(), new ConsoleLogger());
+            var controller = new MediaController(new Throw(), new Mock<IMediaService>().Object, new ConsoleLogger());
 
             controller
-                .GetOneAsync(ObjectId.GenerateNewId().ToString())
+                .GetOneAsync("a")
                 .ShouldCatchException<NotFoundException>("there is no item with the given id null");
         }
 
         [TestMethod]
-        public void GetExistingId()
+        public void Get()
         {
             var dataService = new TestMediaService();
 
