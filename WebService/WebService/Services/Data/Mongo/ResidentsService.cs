@@ -44,7 +44,8 @@ namespace WebService.Services.Data.Mongo
 
         #region CREATE
 
-        public async Task AddMediaAsync(ObjectId residentId, string title, byte[] data, EMediaType mediaType)
+        public async Task AddMediaAsync(ObjectId residentId, string title, byte[] data, EMediaType mediaType,
+            string extension = null)
         {
             // if the data is null, throw an exception
             if (data == null)
@@ -54,10 +55,14 @@ namespace WebService.Services.Data.Mongo
             }
 
             var mediaId = ObjectId.GenerateNewId();
-            await _mediaService.CreateAsync(new MediaData {Id = mediaId, Data = data});
+            // add media to the database
+            await _mediaService.CreateAsync(new MediaData {Id = mediaId, Data = data, Extension = extension});
 
-            // add the mediaData
-            await AddMediaAsync(residentId, new MediaUrl {Id = mediaId, Title = title}, mediaType);
+            // add the mediaData to the resident
+            await AddMediaAsync(
+                residentId,
+                new MediaUrl {Id = mediaId, Title = title, Extension = extension},
+                mediaType);
         }
 
         public async Task AddMediaAsync(ObjectId residentId, string url, EMediaType mediaType)
@@ -151,6 +156,37 @@ namespace WebService.Services.Data.Mongo
                 .FirstOrDefaultAsync();
         }
 
+        public virtual async Task<object> GetPropertyAsync(int tag, Expression<Func<Resident, object>> propertyToSelect)
+        {
+            // if the property to select is null, throw exception
+            if (propertyToSelect == null)
+            {
+                Throw?.NullArgument(nameof(propertyToSelect));
+                return null;
+            }
+
+            // get the item with the given id
+            var find = MongoCollection.Find(x => x.Tags.Contains(tag));
+
+            // if there is no item with the given id, throw exception
+            if (find.Count() <= 0)
+            {
+                Throw?.NotFound<Resident>(tag);
+                return null;
+            }
+
+            // create a property filter
+            var selector = Builders<Resident>.Projection.Include(propertyToSelect);
+
+            // execute the query
+            var item = await find
+                .Project<Resident>(selector)
+                .FirstOrDefaultAsync();
+
+            // return only the asked property
+            return propertyToSelect.Compile()(item);
+        }
+
         #endregion READ
 
 
@@ -214,12 +250,14 @@ namespace WebService.Services.Data.Mongo
             return resident;
         }
 
-        public Task RemoveSubItemAsync(ObjectId residentId, Expression<Func<Resident, IEnumerable>> selector, object item)
+        public Task RemoveSubItemAsync(ObjectId residentId, Expression<Func<Resident, IEnumerable>> selector,
+            object item)
         {
             throw new NotImplementedException();
         }
 
-        public async Task RemoveSubItemAsync(ObjectId residentId,Expression<Func<Resident, IEnumerable<object>>> selector, object item)
+        public async Task RemoveSubItemAsync(ObjectId residentId,
+            Expression<Func<Resident, IEnumerable<object>>> selector, object item)
         {
             // create filter to select the correct resident
             var filter = Builders<Resident>.Filter.Eq(x => x.Id, residentId);

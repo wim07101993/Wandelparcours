@@ -67,14 +67,22 @@ namespace WebService.Services.Data.Mock
             return itemToReturn;
         }
 
-        public async Task AddMediaAsync(ObjectId residentId, string title, byte[] data, EMediaType mediaType)
+        public Task<object> GetPropertyAsync(int tag, Expression<Func<Resident, object>> propertyToSelect)
+        {
+            //TODO
+            throw new NotImplementedException();
+        }
+
+        public async Task AddMediaAsync(ObjectId residentId, string title, byte[] data, EMediaType mediaType,
+            string extension = null)
         {
             // if the data is null, throw an exception
             if (data == null)
                 throw new ArgumentNullException(nameof(data), "data to add cannot be null");
 
             // add the mediaData
-            AddMedia(residentId, new MediaUrl {Id = ObjectId.GenerateNewId(), Title = title}, mediaType);
+            AddMedia(residentId, new MediaUrl {Id = ObjectId.GenerateNewId(), Title = title, Extension = extension},
+                mediaType);
         }
 
         public async Task AddMediaAsync(ObjectId residentId, string url, EMediaType mediaType)

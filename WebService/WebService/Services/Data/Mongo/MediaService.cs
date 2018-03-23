@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
+using MongoDB.Bson;
 using MongoDB.Driver;
 using WebService.Models;
 using WebService.Services.Exceptions;
@@ -24,7 +25,6 @@ namespace WebService.Services.Data.Mongo
 
         public override async Task CreateAsync(MediaData item)
         {
-            // if the item is null, throw exception
             if (item == null)
             {
                 Throw?.NullArgument(nameof(item));
@@ -33,13 +33,27 @@ namespace WebService.Services.Data.Mongo
 
             try
             {
-                // save the new item to the database
-                await MongoCollection.InsertOneAsync(item);
+                 await MongoCollection.InsertOneAsync(item);
             }
             catch (Exception)
             {
                 Throw.Database<MediaData>(EDatabaseMethod.Create);
             }
+        }
+
+        public async Task<byte[]> GetAsync(ObjectId id, string extension)
+        {
+            var find = MongoCollection.Find(x => x.Id == id && x.Extension == extension);
+
+           if (find.Count() <= 0)
+                Throw?.NotFound<MediaData>(id);
+
+            var selector = Builders<MediaData>.Projection.Include(x => x.Data);
+
+            return (await find
+                    .Project<MediaData>(selector)
+                    .FirstOrDefaultAsync())
+                .Data;
         }
     }
 }
