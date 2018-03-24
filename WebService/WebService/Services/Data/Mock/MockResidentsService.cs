@@ -190,5 +190,4 @@ namespace WebService.Services.Data.Mock
             ((IList) selector.Compile()(MockData[residentIndex])).Remove(x => x.Equals(item));
         }
     }
-#pragma warning restore 1998
 }

@@ -52,12 +52,6 @@ namespace WebService.Services.Data.Mongo
 
         #region create
 
-        /// <inheritdoc cref="IDataService{T}.CreateAsync" />
-        /// <summary>
-        /// Create saves the passed <see cref="T"/> to the database.
-        /// </summary>
-        /// <param name="item">is the <see cref="T"/> to save in the database</param>
-        /// <exception cref="ArgumentNullException">when the item to create is null</exception>
         public virtual async Task CreateAsync(T item)
         {
             // if the item is null, throw exception
@@ -81,8 +75,8 @@ namespace WebService.Services.Data.Mongo
             }
         }
 
-        public virtual async Task AddItemToListProperty(ObjectId id,
-            Expression<Func<T, IEnumerable<object>>> propertyToAddItemTo, object itemToAdd)
+        public virtual async Task AddItemToListProperty<TValue>(ObjectId id,
+            Expression<Func<T, IEnumerable<TValue>>> propertyToAddItemTo, TValue itemToAdd)
         {
             if (itemToAdd == null)
             {
@@ -188,16 +182,17 @@ namespace WebService.Services.Data.Mongo
         /// </summary>
         /// <param name="id">is the id of the <see cref="T"/> to get the property from</param>
         /// <param name="propertyToSelect">is the selector to select the property to return</param>
+        /// <typeparam name="TOut">is the type of the value of the property</typeparam>
         /// <returns>The value of the asked property</returns>
         /// <exception cref="ArgumentNullException">when the property to select is null</exception>
         /// <exception cref="NotFoundException">when there is no item with the given id</exception>
-        public virtual async Task<object> GetPropertyAsync(ObjectId id, Expression<Func<T, object>> propertyToSelect)
+        public virtual async Task<TOut> GetPropertyAsync<TOut>(ObjectId id, Expression<Func<T, TOut>> propertyToSelect)
         {
             // if the property to select is null, throw exception
             if (propertyToSelect == null)
             {
                 Throw?.NullArgument(nameof(propertyToSelect));
-                return null;
+                return default(TOut);
             }
 
             // get the item with the given id
@@ -207,11 +202,12 @@ namespace WebService.Services.Data.Mongo
             if (find.Count() <= 0)
             {
                 Throw?.NotFound<T>(id);
-                return null;
+                return default(TOut);
             }
 
+            var fieldDef = new ExpressionFieldDefinition<T>(propertyToSelect);
             // create a property filter
-            var selector = Builders<T>.Projection.Include(propertyToSelect);
+            var selector = Builders<T>.Projection.Include(fieldDef);
 
             // execute the query
             var item = await find

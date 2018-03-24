@@ -61,8 +61,8 @@ namespace WebService.Services.Data.Mock
             MockData.Add(item);
         }
 
-        public virtual async Task AddItemToListProperty(ObjectId id,
-            Expression<Func<T, IEnumerable<object>>> propertyToAddItemTo, object itemToAdd)
+        public virtual async Task AddItemToListProperty<TValue>(ObjectId id,
+            Expression<Func<T, IEnumerable<TValue>>> propertyToAddItemTo, TValue itemToAdd)
         {
             if (itemToAdd == null)
             {
@@ -166,7 +166,7 @@ namespace WebService.Services.Data.Mock
         /// <param name="propertiesToInclude">are the properties that should be included in the objects</param>
         /// <returns>An <see cref="IEnumerable{T}"/> filled with all the ts in the database.</returns>
         /// <exception cref="NotFoundException">when there is no item found with the given id</exception>
-        public async Task<T> GetOneAsync(ObjectId id, IEnumerable<Expression<Func<T, object>>> propertiesToInclude = null)
+        public async Task<T> GetOneAsync(ObjectId id, IEnumerable<Expression<Func<T, object>>> propertiesToInclude = null) 
         {
             // get the index of the item
             var index = MockData.FindIndex(x => x.Id == id);
@@ -200,7 +200,7 @@ namespace WebService.Services.Data.Mock
             return itemToReturn;
         }
 
-        /// <inheritdoc cref="IDataService{T}.GetPropertyAsync"/>
+        /// <inheritdoc cref="IDataService{T}.GetPropertyAsync{TOut}"/>
         /// <summary>
         /// GetPropertyAsync is supposed to return a single property of the <see cref="T"/> with the given id
         /// </summary>
@@ -209,7 +209,7 @@ namespace WebService.Services.Data.Mock
         /// <returns>The value of the asked property</returns>
         /// <exception cref="ArgumentNullException">when the property to select is null</exception>
         /// <exception cref="NotFoundException">when there is no item with the given id</exception>
-        public virtual async Task<object> GetPropertyAsync(ObjectId id, Expression<Func<T, object>> propertyToSelect)
+        public virtual async Task<TOut> GetPropertyAsync<TOut>(ObjectId id, Expression<Func<T, TOut>> propertyToSelect)
         {
             // if the property to select is null, throw exception
             if (propertyToSelect == null)
@@ -306,7 +306,7 @@ namespace WebService.Services.Data.Mock
             MockData[index] = newItem;
         }
 
-        /// <inheritdoc cref="IDataService{T}.UpdatePropertyAsync" />
+        /// <inheritdoc cref="IDataService{T}.UpdatePropertyAsync{TValue}" />
         /// <summary>
         /// GetPropertyAsync updates a single property of the <see cref="T"/> with the given id
         /// </summary>
@@ -371,5 +371,4 @@ namespace WebService.Services.Data.Mock
 
         #endregion DELETE
     }
-#pragma warning restore CS1998
 }

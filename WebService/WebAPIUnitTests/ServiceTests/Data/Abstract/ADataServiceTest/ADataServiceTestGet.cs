@@ -218,7 +218,7 @@ namespace WebAPIUnitTests.ServiceTests.Data.Abstract
         {
             ActionExtensions.ShouldCatchArgumentException<WebArgumentNullException>(
                 () => CreateNewDataService()
-                    .GetPropertyAsync(ObjectId.GenerateNewId(), null)
+                    .GetPropertyAsync<object>(ObjectId.GenerateNewId(), null)
                     .Wait(),
                 "propertyToSelect",
                 "there must be a property to select");
@@ -240,7 +240,7 @@ namespace WebAPIUnitTests.ServiceTests.Data.Abstract
             var dataService = CreateNewDataService();
 
             ActionExtensions.ShouldCatchArgumentException<WebArgumentNullException>(
-                () => dataService.GetPropertyAsync(dataService.GetFirst().Id, null).Wait(),
+                () => dataService.GetPropertyAsync<object>(dataService.GetFirst().Id, null).Wait(),
                 "propertyToSelect",
                 "the selector cannot be null");
         }
