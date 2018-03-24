@@ -8,7 +8,7 @@
         SysAdmin = 0,
         Nurse = 1,
         User = 2,
-        ReadOnlyUser = 3,
+        Module = 3,
         Guest = 4
     }
 }

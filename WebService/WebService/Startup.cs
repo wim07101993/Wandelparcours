@@ -69,7 +69,7 @@ namespace WebService
             app.UseCors((option) => { option.AllowAnyOrigin().AllowAnyMethod(); });
 
             app.UseExceptionMiddleware()
-                .UseAuthorizationMiddleware()
+              //  .UseAuthorizationMiddleware()
                 .UseStaticFiles()
                 .UseMvc(routes =>
                 {

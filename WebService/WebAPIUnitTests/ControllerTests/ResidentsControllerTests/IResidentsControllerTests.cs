@@ -63,7 +63,6 @@
         void RemoveColorNullResidentId();
         void RemoveColorBadResidentId();
         void RemoveColorNullColor();
-        void RemoveColorBadColor();
         void RemoveColor();
 
         #endregion DELETE
