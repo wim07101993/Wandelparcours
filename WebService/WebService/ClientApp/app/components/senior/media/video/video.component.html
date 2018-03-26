@@ -1,43 +1,21 @@
-
-
-
 <app-senior></app-senior>
 
-<div id="videos" class="row">
-    <div class="col s12">
-
-        <div class="row">
-            <div class="col s6 m4 l3" *ngFor="let link of fullLinks">
-                
-                    <video width="320" height="240" controls>
-                        <source [src]="link.videos.url">
-                    </video>
-                    <!--<i class="material-icons red-text pointer" (click)="deleteResidentMediaByUniqueId(link.images.id)">delete_forever</i>-->
-                    <i class="material-icons red-text pointer" (click)="deleteModal(link);">delete_forever</i>
+<div class="columns is-multiline">
+    <div class="align-center" *ngFor="let link of fullLinks">
+        <div class="column">
+            <div class="col s6 m4">
+                <video controls>
+                    <source [src]="link.videos.url">
+                </video>
+                <i class="material-icons red-text pointer" (click)="deleteResidentMediaByUniqueId(link.videos.id)">delete</i>
             </div>
+           
         </div>
-
-        <div id="deleteModal" class="modal">
-            <div class="modal-content">
-                <div class="container">
-                    <div class="row valign-wrapper">
-                        <div class="col s2 m2">
-                            <i class="large material-icons red-text">warning</i>
-                        </div>
-                        <div class="col s10 m8">
-                            Dit is <em>geen</em> test, ik herhaal dit is <u>geen</u> test
-                            {{deleteResidentImage.videos.id}}
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col s12 right-align">
-                            <a (click)="CloseModal()" class="modal-action modal-close waves-effect waves-green btn-flat">Annuleren</a>
-                            <a (click)="deleteResidentMediaByUniqueId(deleteResidentImage.videos.id)" class=" waves-effect waves-red btn-flat red-text">Verwijderen</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+       
+        
     </div>
-    <div class="center"><app-upload (reload)="reload()" [type]="typeOfMedia"></app-upload></div>
+    
 </div>
+
+
+<app-upload [type]="typeOfMedia"  (reload)="reload()"></app-upload>

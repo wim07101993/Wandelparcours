@@ -1,7 +1,12 @@
 #videos{
-    margin-left: 7%;
+    margin-left: 10%;
 }
 
+video{
+    max-height: 320px;
+    min-height: 320px;
+    width:100%;
+}
 table {
     box-shadow: 0 2px 2px 0 rgba(0,0,0,0.2);
     border-collapse: separate;
