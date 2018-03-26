@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Bson;
 using WebService.Controllers.Bases;
+using WebService.Helpers.Attributes;
 using WebService.Helpers.Exceptions;
 using WebService.Helpers.Extensions;
 using WebService.Services.Logging;
@@ -36,11 +37,13 @@ namespace WebService.Controllers
 
         public const string AddMusicUrlTemplate = "{residentId}/Music/url";
         public const string AddVideoUrlTemplate = "{residentId}/Videos/url";
-        public const string AddMImageUrlTemplate = "{residentId}/Images/url";
+        public const string AddImageUrlTemplate = "{residentId}/Images/url";
 
         public const string GetByTagTemplate = "byTag/{tag}";
         public const string GetRandomElementFromPropertyTemplate = "byTag/{tag}/{propertyName}/random";
         public const string GetPropertyByTagTemplate = "byTag/{tag}/{propertyName}";
+
+        public const string UpdatePictureTemplate = "{id}/picture";
 
         public const string RemoveMusicTemplate = "{residentId}/Music/{musicId}";
         public const string RemoveVideoTemplate = "{residentId}/Videos/{videoId}";
@@ -99,14 +102,22 @@ namespace WebService.Controllers
 
         #region post (create)
 
+        [Authorize(EUserType.SysAdmin, EUserType.Nurse)]
+        [HttpPost(CreateTemplate)]
+        public override Task<StatusCodeResult> CreateAsync([FromBody] Resident item)
+            => base.CreateAsync(item);
+
+        [Authorize(EUserType.SysAdmin, EUserType.Nurse, EUserType.User)]
         [HttpPost(AddMusicDataTemplate)]
         public Task<StatusCodeResult> AddMusicAsync(string residentId, [FromForm] MultiPartFile musicData)
             => AddMediaAsync(residentId, musicData, EMediaType.Audio, (int) 20e6);
 
+        [Authorize(EUserType.SysAdmin, EUserType.Nurse, EUserType.User)]
         [HttpPost(AddVideoDataTemplate)]
         public Task<StatusCodeResult> AddVideoAsync(string residentId, [FromForm] MultiPartFile videoData)
             => AddMediaAsync(residentId, videoData, EMediaType.Video, (int) 1e9);
 
+        [Authorize(EUserType.SysAdmin, EUserType.Nurse, EUserType.User)]
         [HttpPost(AddImageDataTemplate)]
         public Task<StatusCodeResult> AddImageAsync(string residentId, [FromForm] MultiPartFile imageData)
             => AddMediaAsync(residentId, imageData, EMediaType.Image, (int) 20e6);
@@ -134,15 +145,18 @@ namespace WebService.Controllers
             }
         }
 
+        [Authorize(EUserType.SysAdmin, EUserType.Nurse, EUserType.User)]
         [HttpPost(AddMusicUrlTemplate)]
         public Task<StatusCodeResult> AddMusicAsync(string residentId, [FromBody] string url)
             => AddMediaAsync(residentId, url, EMediaType.Audio);
 
+        [Authorize(EUserType.SysAdmin, EUserType.Nurse, EUserType.User)]
         [HttpPost(AddVideoUrlTemplate)]
         public Task<StatusCodeResult> AddVideoAsync(string residentId, [FromBody] string url)
             => AddMediaAsync(residentId, url, EMediaType.Video);
 
-        [HttpPost("{residentId}/Images/url")]
+        [Authorize(EUserType.SysAdmin, EUserType.Nurse, EUserType.User)]
+        [HttpPost(AddImageUrlTemplate)]
         public Task<StatusCodeResult> AddImageAsync(string residentId, [FromBody] string url)
             => AddMediaAsync(residentId, url, EMediaType.Image);
 
@@ -156,7 +170,8 @@ namespace WebService.Controllers
         }
 
 
-        [HttpPost("{residentId}/Colors/data")]
+        [Authorize(EUserType.SysAdmin, EUserType.Nurse, EUserType.User)]
+        [HttpPost(AddColorTemplate)]
         public async Task<StatusCodeResult> AddColorAsync(string residentId, [FromBody] Color colorData)
         {
             if (!ObjectId.TryParse(residentId, out var residentObjectId))
@@ -171,6 +186,22 @@ namespace WebService.Controllers
 
         #region get (read)
 
+        [Authorize(EUserType.SysAdmin, EUserType.Nurse, EUserType.Module, EUserType.User)]
+        [HttpGet(GetAllTemplate)]
+        public override Task<IEnumerable<Resident>> GetAllAsync(string[] propertiesToInclude)
+            => base.GetAllAsync(propertiesToInclude);
+
+        [Authorize(EUserType.SysAdmin, EUserType.Nurse, EUserType.Module, EUserType.User)]
+        [HttpGet(GetOneTemplate)]
+        public override Task<Resident> GetOneAsync(string id, string[] propertiesToInclude) =>
+            base.GetOneAsync(id, propertiesToInclude);
+
+        [Authorize(EUserType.SysAdmin, EUserType.Nurse, EUserType.Module, EUserType.User)]
+        [HttpGet(GetPropertyTemplate)]
+        public override Task<object> GetPropertyAsync(string id, string propertyName) =>
+            base.GetPropertyAsync(id, propertyName);
+
+        [Authorize(EUserType.SysAdmin, EUserType.Nurse, EUserType.Module)]
         [HttpGet(GetByTagTemplate)]
         public async Task<Resident> GetByTagAsync(int tag, [FromQuery] string[] propertiesToInclude)
         {
@@ -188,6 +219,7 @@ namespace WebService.Controllers
             return resident;
         }
 
+        [Authorize(EUserType.SysAdmin, EUserType.Nurse, EUserType.Module)]
         [HttpGet(GetRandomElementFromPropertyTemplate)]
         public async Task<object> GetRandomElementFromPropertyAsync(int tag, string propertyName)
         {
@@ -222,7 +254,8 @@ namespace WebService.Controllers
             return data.RandomItem();
         }
 
-        [HttpGet(GetPropertyTemplate)]
+        [Authorize(EUserType.SysAdmin, EUserType.Nurse, EUserType.Module)]
+        [HttpGet(GetPropertyByTagTemplate)]
         public async Task<object> GetPropertyAsync(int tag, string propertyName)
         {
             if (!typeof(Resident).GetProperties().Any(x => x.Name.EqualsWithCamelCasing(propertyName)))
@@ -237,15 +270,18 @@ namespace WebService.Controllers
 
         #region put (update)
 
-        [HttpPut]
+        [Authorize(EUserType.SysAdmin, EUserType.Nurse, EUserType.User)]
+        [HttpPut(UpdateTemplate)]
         public override Task UpdateAsync([FromBody] Resident item, [FromQuery] string[] properties)
             => base.UpdateAsync(item, properties);
 
-        [HttpPut("{id}/{propertyName}")]
+        [Authorize(EUserType.SysAdmin, EUserType.Nurse, EUserType.User)]
+        [HttpPut(UpdatePropertyTemplate)]
         public override Task UpdatePropertyAsync(string id, string propertyName, [FromBody] string jsonValue)
             => base.UpdatePropertyAsync(id, propertyName, jsonValue);
 
-        [HttpPut("{id}/picture")]
+        [Authorize(EUserType.SysAdmin, EUserType.Nurse, EUserType.User)]
+        [HttpPut(UpdatePictureTemplate)]
         public async Task UpdatePictureAsync(string id, [FromForm] MultiPartFile picture)
         {
             const int maxFileSize = (int) 10e6;
@@ -269,16 +305,24 @@ namespace WebService.Controllers
 
         #endregion put (update)
 
+
         #region delete
 
+        [Authorize(EUserType.SysAdmin, EUserType.Nurse)]
+        [HttpDelete(DeleteTemplate)]
+        public override Task DeleteAsync(string id) => base.DeleteAsync(id);
+
+        [Authorize(EUserType.SysAdmin, EUserType.Nurse, EUserType.Module, EUserType.User)]
         [HttpDelete(RemoveMusicTemplate)]
         public Task RemoveMusicAsync(string residentId, string musicId)
             => RemoveMediaAsync(residentId, musicId, EMediaType.Audio);
 
+        [Authorize(EUserType.SysAdmin, EUserType.Nurse, EUserType.Module, EUserType.User)]
         [HttpDelete(RemoveVideoTemplate)]
         public Task RemoveVideoAsync(string residentId, string videoId)
             => RemoveMediaAsync(residentId, videoId, EMediaType.Video);
 
+        [Authorize(EUserType.SysAdmin, EUserType.Nurse, EUserType.Module, EUserType.User)]
         [HttpDelete(RemoveImageTemplate)]
         public Task RemoveImageAsync(string residentId, string imageId)
             => RemoveMediaAsync(residentId, imageId, EMediaType.Image);
@@ -297,6 +341,7 @@ namespace WebService.Controllers
             await ((IResidentsService) DataService).RemoveMediaAsync(residentObjectId, mediaObjectId, mediaType);
         }
 
+        [Authorize(EUserType.SysAdmin, EUserType.Nurse, EUserType.Module, EUserType.User)]
         [HttpDelete(RemoveColorTemplate)]
         public async Task RemoveColorAsync(string residentId, [FromBody] Color color)
         {

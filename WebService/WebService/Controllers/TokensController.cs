@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Bson;
 using WebService.Services.Authorization;
@@ -21,6 +22,7 @@ namespace WebService.Controllers
             _usersService = usersService;
         }
 
+        [Authorize]
         [HttpPost(CreateTokenTemplate)]
         public async Task<string> CreateTokenAsync([FromHeader] string userName, [FromHeader] string password)
         {

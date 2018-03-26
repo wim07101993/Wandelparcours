@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Bson;
 using WebService.Controllers.Bases;
+using WebService.Helpers.Attributes;
 using WebService.Helpers.Exceptions;
 using WebService.Helpers.Extensions;
 using WebService.Models;
@@ -33,7 +34,6 @@ namespace WebService.Controllers
                 x => x.UserType
             };
 
-
         public override IDictionary<string, Expression<Func<User, object>>> PropertySelectors { get; } =
             new Dictionary<string, Expression<Func<User, object>>>
             {
@@ -44,7 +44,33 @@ namespace WebService.Controllers
                 {nameof(Models.User.UserType), x => x.UserType},
                 {nameof(Models.User.Residents), x => x.Residents},
             };
-        
+
+
+        #region METHDOS
+
+        [Authorize(EUserType.SysAdmin, EUserType.Nurse)]
+        [HttpPost(CreateTemplate)]
+        public override Task<StatusCodeResult> CreateAsync([FromBody] User item)
+            => base.CreateAsync(item);
+
+
+        [Authorize(EUserType.SysAdmin, EUserType.Nurse)]
+        [HttpGet(GetAllTemplate)]
+        public override Task<IEnumerable<User>> GetAllAsync(string[] propertiesToInclude)
+            => base.GetAllAsync(propertiesToInclude);
+
+        [Authorize(EUserType.SysAdmin, EUserType.Nurse, EUserType.User)]
+        [HttpGet(GetOneTemplate)]
+        public override Task<User> GetOneAsync(string id, string[] propertiesToInclude) =>
+            base.GetOneAsync(id, propertiesToInclude);
+
+        [Authorize(EUserType.SysAdmin, EUserType.Nurse, EUserType.User)]
+        [HttpGet(GetPropertyTemplate)]
+        public override Task<object> GetPropertyAsync(string id, string propertyName) =>
+            base.GetPropertyAsync(id, propertyName);
+
+
+        [Authorize(EUserType.SysAdmin, EUserType.Nurse, EUserType.User)]
         [HttpPut(UpdateTemplate)]
         public override async Task UpdateAsync([FromBody] User item, [FromQuery] string[] properties)
         {
@@ -67,6 +93,7 @@ namespace WebService.Controllers
             await DataService.UpdatePropertyAsync(user.Id, x => x.Password, user.Password);
         }
 
+        [Authorize(EUserType.SysAdmin, EUserType.Nurse, EUserType.User)]
         [HttpPut(UpdatePropertyTemplate)]
         public override async Task UpdatePropertyAsync(string id, string propertyName, [FromQuery] string jsonValue)
         {
@@ -81,5 +108,12 @@ namespace WebService.Controllers
 
             await ((IUsersService) DataService).UpdatePasswordAsync(objectId, jsonValue);
         }
+
+
+        [Authorize(EUserType.SysAdmin, EUserType.Nurse, EUserType.User)]
+        [HttpDelete(DeleteTemplate)]
+        public override Task DeleteAsync(string id) => base.DeleteAsync(id);
+
+        #endregion METHODS
     }
 }

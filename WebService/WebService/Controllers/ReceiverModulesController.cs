@@ -5,6 +5,7 @@ using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using WebService.Controllers.Bases;
+using WebService.Helpers.Attributes;
 using WebService.Helpers.Exceptions;
 using WebService.Helpers.Extensions;
 using WebService.Models;
@@ -59,6 +60,7 @@ namespace WebService.Controllers
 
         #region post (create)
 
+        [Authorize(EUserType.SysAdmin)]
         [HttpPost(CreateTemplate)]
         public override async Task<StatusCodeResult> CreateAsync([FromBody] ReceiverModule item)
         {
@@ -77,6 +79,11 @@ namespace WebService.Controllers
 
         #region get (read)
 
+        [Authorize(EUserType.SysAdmin)]
+        [HttpGet(GetAllTemplate)]
+        public override Task<IEnumerable<ReceiverModule>> GetAllAsync(string[] propertiesToInclude) => base.GetAllAsync(propertiesToInclude);
+
+        [Authorize(EUserType.SysAdmin)]
         [HttpGet(GetOneTemplate)]
         public override async Task<ReceiverModule> GetOneAsync(string mac, [FromQuery] string[] propertiesToInclude)
         {
@@ -95,6 +102,7 @@ namespace WebService.Controllers
 
         #region delete
 
+        [Authorize(EUserType.SysAdmin)]
         [HttpDelete(DeleteTemplate)]
         public override Task DeleteAsync(string mac)
             => ((IReceiverModulesService) DataService).RemoveAsync(mac);
