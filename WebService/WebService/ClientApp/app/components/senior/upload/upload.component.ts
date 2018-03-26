@@ -58,20 +58,36 @@ export class UploadComponent implements OnInit {
                   }
               
               }
+              
+              
+
+              $("#add-picture").modal("close");
           
           }
           //clear selected files
           this.selectedFile = [];
           if (this.check) {
+              $(".preview").empty();
               this.reload.emit();
               this.loading = "Uploaded!"
           } else{
               this.router.navigate(["/error"]);
           }
 
+        $(".preview").html("<p>Momenteel geen bestanden geselecteerd</p>");
+
           
-      }    
+      }
+      
 
-
-
+        /**
+         *
+         * Open modal in edit mode and fill modal with resident
+         *
+         */
+        addPhotoModal(){
+            $("#add-picture").modal();
+            $("#add-picture").modal("open");
+        }
+        
 }
