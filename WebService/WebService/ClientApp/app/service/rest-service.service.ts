@@ -11,7 +11,7 @@ import { CustomErrorHandler } from './customErrorHandler';
 export class RestServiceService {
     [x: string]: any;
 
-    restUrl = "http://192.168.137.1:5000/";
+    restUrl = "http://localhost:5000/";
 
     constructor(private http: Http, private customErrorHandler: CustomErrorHandler) {}
 
