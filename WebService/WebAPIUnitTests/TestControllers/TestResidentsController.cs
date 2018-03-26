@@ -5,7 +5,6 @@ using WebAPIUnitTests.TestServices.Residents;
 using WebService.Controllers;
 using WebService.Helpers.Extensions;
 using WebService.Models;
-using WebService.Services.Exceptions;
 using WebService.Services.Logging;
 
 namespace WebAPIUnitTests.TestControllers
@@ -13,7 +12,7 @@ namespace WebAPIUnitTests.TestControllers
     public class TestResidentsController : ResidentsController, ITestResidentsController
     {
         public TestResidentsController()
-            : base(new Throw(), new TestResidentsService(), new ConsoleLogger())
+            : base(new TestResidentsService(), new ConsoleLogger())
         {
         }
 

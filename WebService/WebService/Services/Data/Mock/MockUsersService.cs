@@ -8,7 +8,6 @@ using MongoDB.Bson;
 using WebService.Helpers.Exceptions;
 using WebService.Helpers.Extensions;
 using WebService.Models;
-using WebService.Services.Exceptions;
 
 #pragma warning disable CS1998 // disable warning async methods that not use await operator
 
@@ -16,10 +15,6 @@ namespace WebService.Services.Data.Mock
 {
     public class MockUsersService : AMockDataService<User>, IUsersService
     {
-        public MockUsersService(IThrow iThrow) : base(iThrow)
-        {
-        }
-
         public override List<User> MockData { get; } = Mock.MockData.MockUsers;
 
         public override User CreateNewItem(ObjectId id)
@@ -50,7 +45,7 @@ namespace WebService.Services.Data.Mock
 
             // if the item doesn't exist, throw exception
             if (index < 0)
-                throw new NotFoundException($"no {typeof(User).Name} with user name {userName} is found");
+                throw new NotFoundException<User>(nameof(User.UserName), userName);
 
             // if there are no properties to select, select them all
             if (propertiesToInclude == null)
@@ -82,7 +77,7 @@ namespace WebService.Services.Data.Mock
         {
             // if the property to select is null, throw exception
             if (propertyToSelect == null)
-                throw new ArgumentNullException(nameof(propertyToSelect),
+                throw new System.ArgumentNullException(nameof(propertyToSelect),
                     "the property to select selector cannot be null");
 
             // get the item
@@ -90,7 +85,7 @@ namespace WebService.Services.Data.Mock
 
             // if there are no items, throw exception
             if (item == null)
-                throw new NotFoundException($"no {typeof(User).Name} with user name {userName} is found");
+                throw new NotFoundException<User>(nameof(User.UserName), userName);
 
             // return the property
             return propertyToSelect.Compile()(item);

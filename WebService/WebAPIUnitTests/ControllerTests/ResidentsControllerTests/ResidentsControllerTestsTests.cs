@@ -8,7 +8,6 @@ using WebAPIUnitTests.TestServices.Residents;
 using WebService.Controllers;
 using WebService.Helpers.Exceptions;
 using WebService.Models;
-using WebService.Services.Exceptions;
 using WebService.Services.Logging;
 
 namespace WebAPIUnitTests.ControllerTests.ResidentsControllerTests
@@ -21,7 +20,7 @@ namespace WebAPIUnitTests.ControllerTests.ResidentsControllerTests
         [TestMethod]
         public void AddMediaNullId()
         {
-            new ResidentsController(new Throw(), new TestResidentsService(), new ConsoleLogger())
+            new ResidentsController(new TestResidentsService(), new ConsoleLogger())
                 .AddMediaAsync(null, null, EMediaType.Image, 50)
                 .ShouldCatchException<NotFoundException>("there is no resident with a null id");
         }
@@ -29,7 +28,7 @@ namespace WebAPIUnitTests.ControllerTests.ResidentsControllerTests
         [TestMethod]
         public void AddMediaBadId()
         {
-            new ResidentsController(new Throw(), new TestResidentsService(), new ConsoleLogger())
+            new ResidentsController(new TestResidentsService(), new ConsoleLogger())
                 .AddMediaAsync("a", null, EMediaType.Image, 50)
                 .ShouldCatchException<NotFoundException>("the id cannot be parsed");
         }
@@ -40,7 +39,7 @@ namespace WebAPIUnitTests.ControllerTests.ResidentsControllerTests
             var dataService = new TestResidentsService();
             var id = dataService.GetFirst().Id;
 
-            new ResidentsController(new Throw(), dataService, new ConsoleLogger())
+            new ResidentsController(dataService, new ConsoleLogger())
                 .AddMediaAsync(id.ToString(), null, EMediaType.Image, 50)
                 .ShouldCatchException<NotFoundException>("there is no resident with id a");
         }
@@ -51,7 +50,7 @@ namespace WebAPIUnitTests.ControllerTests.ResidentsControllerTests
             var dataService = new TestResidentsService();
             var id = dataService.GetFirst().Id;
 
-            new ResidentsController(new Throw(), dataService, new ConsoleLogger())
+            new ResidentsController(dataService, new ConsoleLogger())
                 .AddMediaAsync(id.ToString(), new MultiPartFile(), EMediaType.Image, 50)
                 .ShouldCatchException<NotFoundException>("there is no resident with id a");
         }
@@ -69,9 +68,9 @@ namespace WebAPIUnitTests.ControllerTests.ResidentsControllerTests
             var dataService = new TestResidentsService();
             var id = dataService.GetFirst().Id;
 
-            new ResidentsController(new Throw(), new TestResidentsService(), new ConsoleLogger())
+            new ResidentsController(new TestResidentsService(), new ConsoleLogger())
                 .AddMediaAsync(id.ToString(), null, EMediaType.Image)
-                .ShouldCatchException<WebArgumentNullException>("the url to add cannot be null");
+                .ShouldCatchException<ArgumentNullException>("the url to add cannot be null");
         }
 
         [TestMethod]
@@ -82,7 +81,7 @@ namespace WebAPIUnitTests.ControllerTests.ResidentsControllerTests
             var count = dataService.GetAll().Count();
 
 
-            new ResidentsController(new Throw(), new TestResidentsService(), new ConsoleLogger())
+            new ResidentsController(new TestResidentsService(), new ConsoleLogger())
                 .AddMediaAsync(id.ToString(), "dummy url", EMediaType.Image)
                 .Wait();
 
@@ -97,7 +96,7 @@ namespace WebAPIUnitTests.ControllerTests.ResidentsControllerTests
         [TestMethod]
         public void AddNullColor()
         {
-            new ResidentsController(new Throw(), new TestResidentsService(), new ConsoleLogger())
+            new ResidentsController(new TestResidentsService(), new ConsoleLogger())
                 .AddColorAsync(null, null)
                 .ShouldCatchException<NotFoundException>("there is no resident with a null id");
         }
@@ -109,7 +108,7 @@ namespace WebAPIUnitTests.ControllerTests.ResidentsControllerTests
             var id = dataService.GetFirst().Id;
             var count = dataService.GetAll().Count();
 
-            new ResidentsController(new Throw(), dataService, new ConsoleLogger())
+            new ResidentsController(dataService, new ConsoleLogger())
                 .AddColorAsync(id.ToString(), new Color()).ShouldReturnStatus(HttpStatusCode.Created,
                     "when an item is created, that is the status-code");
 
@@ -128,7 +127,7 @@ namespace WebAPIUnitTests.ControllerTests.ResidentsControllerTests
         [TestMethod]
         public void GetByBadTag()
         {
-            new ResidentsController(new Throw(), new TestResidentsService(), new ConsoleLogger())
+            new ResidentsController(new TestResidentsService(), new ConsoleLogger())
                 .GetByTagAsync(123456, null)
                 .ShouldCatchException<NotFoundException>("there is no resident with tag 123456");
         }
@@ -139,7 +138,7 @@ namespace WebAPIUnitTests.ControllerTests.ResidentsControllerTests
             var dataService = new TestResidentsService();
             var tag = dataService.GetFirst().Tags[0];
 
-            new ResidentsController(new Throw(), dataService, new ConsoleLogger())
+            new ResidentsController(dataService, new ConsoleLogger())
                 .GetByTagAsync(tag, null).Result
                 .Should()
                 .BeEquivalentTo(dataService.GetFirst());
@@ -151,7 +150,7 @@ namespace WebAPIUnitTests.ControllerTests.ResidentsControllerTests
             var dataService = new TestResidentsService();
             var tag = dataService.GetFirst().Tags[0];
 
-            new ResidentsController(new Throw(), dataService, new ConsoleLogger())
+            new ResidentsController(dataService, new ConsoleLogger())
                 .GetByTagAsync(tag, null).Result
                 .Should()
                 .BeEquivalentTo(dataService.MockData.Select(x => new Resident {Id = x.Id}).First());
@@ -163,9 +162,9 @@ namespace WebAPIUnitTests.ControllerTests.ResidentsControllerTests
             var dataService = new TestResidentsService();
             var tag = dataService.GetFirst().Tags[0];
 
-            new ResidentsController(new Throw(), dataService, new ConsoleLogger())
+            new ResidentsController(dataService, new ConsoleLogger())
                 .GetByTagAsync(tag, new[] {"bad property"})
-                .ShouldCatchArgumentException<WebArgumentException>("propertiesToInclude",
+                .ShouldCatchArgumentException<ArgumentException>("propertiesToInclude",
                     "the given property doesn't exist");
         }
 
@@ -175,7 +174,7 @@ namespace WebAPIUnitTests.ControllerTests.ResidentsControllerTests
             var dataService = new TestResidentsService();
             var tag = dataService.GetFirst().Tags[0];
 
-            new ResidentsController(new Throw(), dataService, new ConsoleLogger())
+            new ResidentsController(dataService, new ConsoleLogger())
                 .GetByTagAsync(tag, new[] {nameof(Resident.FirstName), nameof(Resident.LastName)}).Result
                 .Should()
                 .BeEquivalentTo(dataService.MockData
@@ -187,7 +186,7 @@ namespace WebAPIUnitTests.ControllerTests.ResidentsControllerTests
         [TestMethod]
         public void GetRandomElementFromPropertyWithBadTag()
         {
-            new ResidentsController(new Throw(), new TestResidentsService(), new ConsoleLogger())
+            new ResidentsController(new TestResidentsService(), new ConsoleLogger())
                 .GetRandomElementFromPropertyAsync(123456, nameof(Resident.Colors))
                 .ShouldCatchException<NotFoundException>("there is no resident with tag 123456");
         }
@@ -195,7 +194,7 @@ namespace WebAPIUnitTests.ControllerTests.ResidentsControllerTests
         [TestMethod]
         public void GetRandomElementFromPropertyNullPropertyName()
         {
-            new ResidentsController(new Throw(), new TestResidentsService(), new ConsoleLogger())
+            new ResidentsController(new TestResidentsService(), new ConsoleLogger())
                 .GetRandomElementFromPropertyAsync(123456, null)
                 .ShouldCatchException<NotFoundException>("the property to get cannot be null");
         }
@@ -206,9 +205,9 @@ namespace WebAPIUnitTests.ControllerTests.ResidentsControllerTests
             var dataService = new TestResidentsService();
             var tag = dataService.GetFirst().Tags[0];
 
-            new ResidentsController(new Throw(), dataService, new ConsoleLogger())
+            new ResidentsController(dataService, new ConsoleLogger())
                 .GetRandomElementFromPropertyAsync(tag, "bad property")
-                .ShouldCatchArgumentException<WebArgumentException>("propertiesToInclude",
+                .ShouldCatchArgumentException<ArgumentException>("propertiesToInclude",
                     "the given property doesn't exist");
         }
 
@@ -218,7 +217,7 @@ namespace WebAPIUnitTests.ControllerTests.ResidentsControllerTests
             var dataService = new TestResidentsService();
             var tag = dataService.GetFirst().Tags[0];
 
-            var color = new ResidentsController(new Throw(), dataService, new ConsoleLogger())
+            var color = new ResidentsController(dataService, new ConsoleLogger())
                 .GetRandomElementFromPropertyAsync(tag, nameof(Resident.Colors)).Result;
 
             dataService
@@ -232,7 +231,7 @@ namespace WebAPIUnitTests.ControllerTests.ResidentsControllerTests
         [TestMethod]
         public void GetPropertyBadTag()
         {
-            new ResidentsController(new Throw(), new TestResidentsService(), new ConsoleLogger())
+            new ResidentsController(new TestResidentsService(), new ConsoleLogger())
                 .GetPropertyAsync(123456, nameof(Resident.FirstName))
                 .ShouldCatchException<NotFoundException>("there is no resident tag 123456");
         }
@@ -243,7 +242,7 @@ namespace WebAPIUnitTests.ControllerTests.ResidentsControllerTests
             var dataService = new TestResidentsService();
             var tag = dataService.GetFirst().Tags[0];
 
-            new ResidentsController(new Throw(), dataService, new ConsoleLogger())
+            new ResidentsController(dataService, new ConsoleLogger())
                 .GetPropertyAsync(tag, null)
                 .ShouldCatchException<NotFoundException>("there must be a property name to get");
         }
@@ -254,7 +253,7 @@ namespace WebAPIUnitTests.ControllerTests.ResidentsControllerTests
             var dataService = new TestResidentsService();
             var tag = dataService.GetFirst().Tags[0];
 
-            new ResidentsController(new Throw(), dataService, new ConsoleLogger())
+            new ResidentsController(dataService, new ConsoleLogger())
                 .GetPropertyAsync(tag, "bad property")
                 .ShouldCatchException<NotFoundException>("the property 'bad property' doesn't exist");
         }
@@ -265,7 +264,7 @@ namespace WebAPIUnitTests.ControllerTests.ResidentsControllerTests
             var dataService = new TestResidentsService();
             var tag = dataService.GetFirst().Tags[0];
 
-            new ResidentsController(new Throw(), dataService, new ConsoleLogger())
+            new ResidentsController(dataService, new ConsoleLogger())
                 .GetPropertyAsync(tag, nameof(Resident.FirstName)).Result
                 .Should()
                 .BeEquivalentTo(dataService.GetFirst().FirstName);
@@ -282,7 +281,7 @@ namespace WebAPIUnitTests.ControllerTests.ResidentsControllerTests
             var dataService = new TestResidentsService();
             var id = dataService.GetFirst().Images.First().Id;
 
-            new ResidentsController(new Throw(), dataService, new ConsoleLogger())
+            new ResidentsController(dataService, new ConsoleLogger())
                 .RemoveMediaAsync(null, id.ToString(), EMediaType.Image)
                 .ShouldCatchException<NotFoundException>("there is no resident with a null id");
         }
@@ -293,7 +292,7 @@ namespace WebAPIUnitTests.ControllerTests.ResidentsControllerTests
             var dataService = new TestResidentsService();
             var id = dataService.GetFirst().Images.First().Id;
 
-            new ResidentsController(new Throw(), dataService, new ConsoleLogger())
+            new ResidentsController(dataService, new ConsoleLogger())
                 .RemoveMediaAsync("a", id.ToString(), EMediaType.Image)
                 .ShouldCatchException<NotFoundException>("there is no resident with id a");
         }
@@ -304,7 +303,7 @@ namespace WebAPIUnitTests.ControllerTests.ResidentsControllerTests
             var dataService = new TestResidentsService();
             var id = dataService.GetFirst().Id;
 
-            new ResidentsController(new Throw(), dataService, new ConsoleLogger())
+            new ResidentsController(dataService, new ConsoleLogger())
                 .RemoveMediaAsync(id.ToString(), null, EMediaType.Image)
                 .ShouldCatchException<NotFoundException>("there is no media with a null id");
         }
@@ -315,7 +314,7 @@ namespace WebAPIUnitTests.ControllerTests.ResidentsControllerTests
             var dataService = new TestResidentsService();
             var id = dataService.GetFirst().Id;
 
-            new ResidentsController(new Throw(), dataService, new ConsoleLogger())
+            new ResidentsController(dataService, new ConsoleLogger())
                 .RemoveMediaAsync(id.ToString(), "a", EMediaType.Image)
                 .ShouldCatchException<NotFoundException>("there is no media with a id a");
         }
@@ -327,7 +326,7 @@ namespace WebAPIUnitTests.ControllerTests.ResidentsControllerTests
             var residentId = dataService.GetFirst().Id;
             var mediaId = dataService.GetFirst().Images.First().Id;
 
-            new ResidentsController(new Throw(), dataService, new ConsoleLogger())
+            new ResidentsController(dataService, new ConsoleLogger())
                 .RemoveMediaAsync(residentId.ToString(), mediaId.ToString(), EMediaType.Image)
                 .Wait();
 
@@ -345,7 +344,7 @@ namespace WebAPIUnitTests.ControllerTests.ResidentsControllerTests
             var dataService = new TestResidentsService();
             var color = dataService.GetFirst().Colors.First();
 
-            new ResidentsController(new Throw(), dataService, new ConsoleLogger())
+            new ResidentsController(dataService, new ConsoleLogger())
                 .RemoveColorAsync(null, color)
                 .ShouldCatchException<NotFoundException>("there is no resident with a null id");
         }
@@ -356,7 +355,7 @@ namespace WebAPIUnitTests.ControllerTests.ResidentsControllerTests
             var dataService = new TestResidentsService();
             var color = dataService.GetFirst().Colors.First();
 
-            new ResidentsController(new Throw(), dataService, new ConsoleLogger())
+            new ResidentsController(dataService, new ConsoleLogger())
                 .RemoveColorAsync("a", color)
                 .ShouldCatchException<NotFoundException>("there is no resident with a id a");
         }
@@ -367,7 +366,7 @@ namespace WebAPIUnitTests.ControllerTests.ResidentsControllerTests
             var dataService = new TestResidentsService();
             var id = dataService.GetFirst().Id;
 
-            new ResidentsController(new Throw(), dataService, new ConsoleLogger())
+            new ResidentsController(dataService, new ConsoleLogger())
                 .RemoveColorAsync(id.ToString(), null)
                 .ShouldCatchException<NotFoundException>("there is no resident with a null id");
         }
@@ -379,7 +378,7 @@ namespace WebAPIUnitTests.ControllerTests.ResidentsControllerTests
             var id = dataService.GetFirst().Id;
             var color = dataService.GetFirst().Colors.First();
 
-            new ResidentsController(new Throw(), dataService, new ConsoleLogger())
+            new ResidentsController(dataService, new ConsoleLogger())
                 .RemoveColorAsync(id.ToString(), color)
                 .Wait();
 

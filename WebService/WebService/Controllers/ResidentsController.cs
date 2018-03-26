@@ -13,8 +13,9 @@ using WebService.Helpers.Exceptions;
 using WebService.Helpers.Extensions;
 using WebService.Services.Logging;
 using WebService.Models;
+using WebService.Models.Bases;
 using WebService.Services.Data;
-using WebService.Services.Exceptions;
+using ArgumentNullException = WebService.Helpers.Exceptions.ArgumentNullException;
 
 namespace WebService.Controllers
 {
@@ -51,8 +52,8 @@ namespace WebService.Controllers
 
         #region CONSTRUCTOR
 
-        public ResidentsController(IThrow iThrow, IResidentsService dataService, ILogger logger)
-            : base(iThrow, dataService, logger)
+        public ResidentsController(IResidentsService dataService, ILogger logger)
+            : base(dataService, logger)
         {
         }
 
@@ -114,18 +115,10 @@ namespace WebService.Controllers
             int maxFileSize = int.MaxValue)
         {
             if (data?.File == null)
-            {
-                Throw.NullArgument(nameof(data));
-                return null;
-            }
+                throw new ArgumentNullException(nameof(data));
 
-            // parse the id
             if (!ObjectId.TryParse(residentId, out var residentObjectId))
-            {
-                // if it fails, throw not found exception
-                Throw.NotFound<Resident>(residentId);
-                return null;
-            }
+                throw new NotFoundException<Resident>(nameof(IModelWithID.Id), residentId);
 
             try
             {
@@ -137,10 +130,8 @@ namespace WebService.Controllers
             }
             catch (FileToLargeException)
             {
-                Throw.FileToLarge(maxFileSize);
+                throw new FileToLargeException(maxFileSize);
             }
-
-            return null;
         }
 
         [HttpPost(AddMusicUrlTemplate)]
@@ -157,15 +148,9 @@ namespace WebService.Controllers
 
         public async Task<StatusCodeResult> AddMediaAsync(string residentId, string url, EMediaType mediaType)
         {
-            // parse the id
             if (!ObjectId.TryParse(residentId, out var residentObjectId))
-            {
-                // if it fails, throw not found exception
-                Throw.NotFound<Resident>(residentId);
-                return null;
-            }
+                throw new NotFoundException<Resident>(nameof(IModelWithID.Id), residentId);
 
-            // use the data service to create a new updater
             await ((IResidentsService) DataService).AddMediaAsync(residentObjectId, url, mediaType);
             return StatusCode((int) HttpStatusCode.Created);
         }
@@ -174,13 +159,8 @@ namespace WebService.Controllers
         [HttpPost("{residentId}/Colors/data")]
         public async Task<StatusCodeResult> AddColorAsync(string residentId, [FromBody] Color colorData)
         {
-            // parse the id
             if (!ObjectId.TryParse(residentId, out var residentObjectId))
-            {
-                // if it fails, throw not found exception
-                Throw.NotFound<Resident>(residentId);
-                return null;
-            }
+                throw new NotFoundException<Resident>(nameof(IModelWithID.Id), residentId);
 
             await DataService.AddItemToListProperty(residentObjectId, x => x.Colors, colorData);
             return StatusCode((int) HttpStatusCode.Created);
@@ -203,10 +183,7 @@ namespace WebService.Controllers
 
             // return the fetched resident, if it is null, throw a not found exception
             if (resident == null)
-            {
-                Throw.NotFound<Resident>(tag);
-                return null;
-            }
+                throw new ElementNotFoundException<Resident>(nameof(Resident.Tags), "tag");
 
             return resident;
         }
@@ -219,23 +196,27 @@ namespace WebService.Controllers
             switch (propertyName.ToUpperCamelCase())
             {
                 case nameof(Resident.Music):
-                    data = (await ((IResidentsService) DataService).GetAsync(tag,
-                        new Expression<Func<Resident, object>>[] {x => x.Music})).Music;
+                    data = (await ((IResidentsService) DataService)
+                            .GetAsync(tag, new Expression<Func<Resident, object>>[] {x => x.Music}))
+                        .Music;
                     break;
                 case nameof(Resident.Videos):
-                    data = (await ((IResidentsService) DataService).GetAsync(tag,
-                        new Expression<Func<Resident, object>>[] {x => x.Videos})).Videos;
+                    data = (await ((IResidentsService) DataService)
+                            .GetAsync(tag, new Expression<Func<Resident, object>>[] {x => x.Videos}))
+                        .Videos;
                     break;
                 case nameof(Resident.Images):
-                    data = (await ((IResidentsService) DataService).GetAsync(tag,
-                        new Expression<Func<Resident, object>>[] {x => x.Images})).Images;
+                    data = (await ((IResidentsService) DataService)
+                            .GetAsync(tag, new Expression<Func<Resident, object>>[] {x => x.Images}))
+                        .Images;
                     break;
                 case nameof(Resident.Colors):
-                    data = (await ((IResidentsService) DataService).GetAsync(tag,
-                        new Expression<Func<Resident, object>>[] {x => x.Colors})).Colors;
+                    data = (await ((IResidentsService) DataService)
+                            .GetAsync(tag, new Expression<Func<Resident, object>>[] {x => x.Colors}))
+                        .Colors;
                     break;
                 default:
-                    throw new ArgumentOutOfRangeException();
+                    throw new PropertyNotFoundException<Resident>(propertyName);
             }
 
             return data.RandomItem();
@@ -244,12 +225,9 @@ namespace WebService.Controllers
         [HttpGet(GetPropertyTemplate)]
         public async Task<object> GetPropertyAsync(int tag, string propertyName)
         {
-            // check if the property exists on the item
             if (!typeof(Resident).GetProperties().Any(x => x.Name.EqualsWithCamelCasing(propertyName)))
-                throw new WebArgumentException(
-                    $"Property {propertyName} cannot be found on {typeof(Resident).Name}", nameof(propertyName));
+                throw new PropertyNotFoundException<Resident>(nameof(propertyName));
 
-            // get the property from the database
             return await ((IResidentsService) DataService).GetPropertyAsync(tag,
                 PropertySelectors[propertyName.ToUpperCamelCase()]);
         }
@@ -272,16 +250,10 @@ namespace WebService.Controllers
         {
             const int maxFileSize = (int) 10e6;
             if (picture?.File == null)
-            {
-                Throw.NullArgument(nameof(picture));
-                return;
-            }
+                throw new ArgumentNullException(nameof(picture));
 
             if (!ObjectId.TryParse(id, out var objectId))
-            {
-                Throw.NotFound<Resident>(id);
-                return;
-            }
+                throw new NotFoundException<Resident>(nameof(IModelWithID.Id), id);
 
             try
             {
@@ -291,7 +263,7 @@ namespace WebService.Controllers
             }
             catch (FileToLargeException)
             {
-                Throw.FileToLarge(maxFileSize);
+                throw new FileToLargeException(maxFileSize);
             }
         }
 
@@ -315,19 +287,11 @@ namespace WebService.Controllers
         {
             // parse the resident id
             if (!ObjectId.TryParse(residentId, out var residentObjectId))
-            {
-                // if it fails, throw not found exception
-                Throw.NotFound<Resident>(residentId);
-                return;
-            }
+                throw new NotFoundException<Resident>(nameof(IModelWithID.Id), residentId);
 
             // parse the media id
             if (!ObjectId.TryParse(mediaId, out var mediaObjectId))
-            {
-                // if it fails, throw not found exception
-                Throw.NotFound<MediaData>(mediaId);
-                return;
-            }
+                throw new ElementNotFoundException<Resident>(mediaType.ToString(), "media");
 
             // remove the media from the database
             await ((IResidentsService) DataService).RemoveMediaAsync(residentObjectId, mediaObjectId, mediaType);
@@ -336,15 +300,9 @@ namespace WebService.Controllers
         [HttpDelete(RemoveColorTemplate)]
         public async Task RemoveColorAsync(string residentId, [FromBody] Color color)
         {
-            // parse the resident id
             if (!ObjectId.TryParse(residentId, out var residentObjectId))
-            {
-                // if it fails, throw not found exception
-                Throw.NotFound<Resident>(residentId);
-                return;
-            }
+                throw new NotFoundException<Resident>(nameof(IModelWithID.Id), residentId);
 
-            // remove the media from the database
             await ((IResidentsService) DataService)
                 .RemoveSubItemAsync(residentObjectId, x => x.Colors, color);
         }

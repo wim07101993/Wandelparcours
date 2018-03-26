@@ -14,8 +14,8 @@ using WebService.Helpers.Extensions;
 using WebService.Models;
 using WebService.Models.Bases;
 using WebService.Services.Data;
-using WebService.Services.Exceptions;
 using WebService.Services.Logging;
+using ArgumentNullException = WebService.Helpers.Exceptions.ArgumentNullException;
 
 namespace WebService.Controllers.Bases
 {
@@ -41,8 +41,6 @@ namespace WebService.Controllers.Bases
 
         public const string DeleteTemplate = "{id}";
 
-        protected readonly IThrow Throw;
-
         /// <summary>
         /// _dataService is used to handle the data traffic to and from the database.
         /// </summary>
@@ -61,13 +59,11 @@ namespace WebService.Controllers.Bases
         /// <summary>
         /// ARestControllerBase creates an instance of the <see cref="ARestControllerBase{T}"/> class. 
         /// </summary>
-        /// <param name="iThrow"></param>
         /// <param name="dataService">is a service to handle the database connection</param>
         /// <param name="logger">is a service to handle the logging of messages</param>
-        protected ARestControllerBase(IThrow iThrow, IDataService<T> dataService, ILogger logger)
+        protected ARestControllerBase(IDataService<T> dataService, ILogger logger)
         {
             // initiate the services
-            Throw = iThrow;
             DataService = dataService;
             Logger = logger;
         }
@@ -100,18 +96,12 @@ namespace WebService.Controllers.Bases
         /// </summary>
         /// <param name="propertyNames">are the property names to convert to a selector</param>
         /// <returns>An <see cref="Func{TInput,TResult}"/> that contains the converted selector</returns>
-        /// <exception cref="WebArgumentException">When the property could not be converted to a selector</exception>
+        /// <exception cref="PropertyNotFoundException{T}">When the property could not be converted to a selector</exception>
         public IEnumerable<Expression<Func<T, object>>> ConvertStringsToSelectors(IEnumerable<string> propertyNames)
             => propertyNames
                 .Select(x =>
-                {
-                    var selector = PropertySelectors.FirstOrDefault(y => y.Key.EqualsWithCamelCasing(x)).Value;
-                    if (selector != null)
-                        return selector;
-
-                    Throw.PropertyNotKnown<T>(x);
-                    return null;
-                });
+                    PropertySelectors.FirstOrDefault(y => y.Key.EqualsWithCamelCasing(x)).Value ??
+                    throw new PropertyNotFoundException<T>(x));
 
         #region create
 
@@ -120,12 +110,8 @@ namespace WebService.Controllers.Bases
         public virtual async Task<StatusCodeResult> CreateAsync([FromBody] T item)
         {
             if (item == null)
-            {
-                Throw.NullArgument("item");
-                return null;
-            }
+                throw new ArgumentNullException(nameof(item));
 
-            // use the data service to create a new item
             await DataService.CreateAsync(item);
             return StatusCode((int) HttpStatusCode.Created);
         }
@@ -140,15 +126,11 @@ namespace WebService.Controllers.Bases
                                      x.PropertyType.IsGenericType &&
                                      typeof(IEnumerable).IsAssignableFrom(x.PropertyType));
 
-            // check if the property exists on the item
             if (property == null)
-                throw new WebArgumentException(
-                    $"Property {propertyName} cannot be found on {typeof(T).Name}", nameof(propertyName));
+                throw new PropertyNotFoundException<T>(nameof(propertyName));
 
-            // parse the id
             if (!ObjectId.TryParse(id, out var objectId))
-                // if it fails, throw not found exception
-                throw new NotFoundException($"The {typeof(T).Name} with id {id} could not be found");
+                throw new NotFoundException<T>(nameof(IModelWithID.Id), id);
 
             var valueType = property.PropertyType.GetGenericArguments()[0];
 
@@ -156,14 +138,14 @@ namespace WebService.Controllers.Bases
             {
                 var value = JsonConvert.DeserializeObject(jsonValue, valueType);
                 await DataService.AddItemToListProperty(objectId,
+                    // ReSharper disable once SuspiciousTypeConversion.Global
                     PropertySelectors[propertyName.ToUpperCamelCase()] as Expression<Func<T, IEnumerable<object>>>,
                     value);
                 return StatusCode((int) HttpStatusCode.Created);
             }
             catch (Exception)
             {
-                Throw.WrongTypeArgument(valueType, null);
-                return null;
+                throw new WrongArgumentTypeException(jsonValue, valueType);
             }
         }
 
@@ -175,12 +157,10 @@ namespace WebService.Controllers.Bases
         [HttpGet(GetAllTemplate)]
         public virtual async Task<IEnumerable<T>> GetAllAsync([FromQuery] string[] propertiesToInclude)
         {
-            // convert the property names to selectors, if there are any
             var selectors = !EnumerableExtensions.IsNullOrEmpty(propertiesToInclude)
                 ? ConvertStringsToSelectors(propertiesToInclude)
                 : PropertiesToSendOnGetAll;
 
-            // return the items got from the data service
             return await DataService.GetAsync(selectors);
         }
 
@@ -188,23 +168,17 @@ namespace WebService.Controllers.Bases
         [HttpGet(GetOneTemplate)]
         public virtual async Task<T> GetOneAsync(string id, [FromQuery] string[] propertiesToInclude)
         {
-            // parse the id
             if (!ObjectId.TryParse(id, out var objectId))
-                // if it fails, throw not found exception
-                throw new NotFoundException($"The {typeof(T).Name} with id {id} could not be found");
+                throw new NotFoundException<T>(nameof(IModelWithID.Id), id);
 
-            // convert the property names to selectors, if there are any
             var selectors = !EnumerableExtensions.IsNullOrEmpty(propertiesToInclude)
                 ? ConvertStringsToSelectors(propertiesToInclude)
                 : null;
 
-            // get the jsonValue from the data service
             var item = await DataService.GetOneAsync(objectId, selectors);
 
             return Equals(item, default(T))
-                // if the item is null, throw a not found exception
-                ? throw new NotFoundException($"The {typeof(T).Name} with id {id} could not be found")
-                // else return the values
+                ? throw new NotFoundException<T>(nameof(IModelWithID.Id), id)
                 : item;
         }
 
@@ -212,17 +186,12 @@ namespace WebService.Controllers.Bases
         [HttpGet(GetPropertyTemplate)]
         public virtual async Task<object> GetPropertyAsync(string id, string propertyName)
         {
-            // check if the property exists on the item
             if (!typeof(T).GetProperties().Any(x => x.Name.EqualsWithCamelCasing(propertyName)))
-                throw new WebArgumentException(
-                    $"Property {propertyName} cannot be found on {typeof(T).Name}", nameof(propertyName));
+                throw new PropertyNotFoundException<T>(nameof(propertyName));
 
-            // parse the id
             if (!ObjectId.TryParse(id, out var objectId))
-                // if it fails, throw not found exception
-                throw new NotFoundException($"The {typeof(T).Name} with id {id} could not be found");
+                throw new NotFoundException<T>(nameof(IModelWithID.Id), id);
 
-            // get the property from the database
             return await DataService.GetPropertyAsync(objectId, PropertySelectors[propertyName.ToUpperCamelCase()]);
         }
 
@@ -234,12 +203,10 @@ namespace WebService.Controllers.Bases
         [HttpPut(UpdateTemplate)]
         public virtual async Task UpdateAsync([FromBody] T item, [FromQuery] string[] properties)
         {
-            // convert the property names to selectors, if there are any
             var selectors = !EnumerableExtensions.IsNullOrEmpty(properties)
                 ? ConvertStringsToSelectors(properties)
                 : null;
 
-            // update the item in the database
             await DataService.UpdateAsync(item, selectors);
         }
 
@@ -251,31 +218,22 @@ namespace WebService.Controllers.Bases
                 .GetProperties()
                 .FirstOrDefault(propertyInfo => propertyInfo.Name.EqualsWithCamelCasing(propertyName));
 
-            // check if the property exists on the item
             if (property == null)
-                throw new WebArgumentException(
-                    $"Property {propertyName} cannot be found on {typeof(T).Name}", nameof(propertyName));
+                throw new PropertyNotFoundException<T>(nameof(propertyName));
 
             object value;
             try
             {
-                // try to convert the jsonValue to the type of the property
                 value = JsonConvert.DeserializeObject(jsonValue, property.PropertyType);
             }
             catch (JsonException)
             {
-                // if it fails, throw web argument exception
-                throw new WebArgumentException(
-                    $"The passed jsonValue is not assignable to the property {propertyName} of type {typeof(T).Name}",
-                    jsonValue);
+                throw new WrongArgumentTypeException(jsonValue, property.PropertyType);
             }
 
-
             if (!ObjectId.TryParse(id, out var objectId))
-                // if it fails, throw not found exception
-                throw new NotFoundException($"The {typeof(T).Name} with id {id} could not be found");
+                throw new NotFoundException<T>(nameof(IModelWithID.Id), id);
 
-            // update the property int the database
             await DataService.UpdatePropertyAsync(objectId, PropertySelectors[propertyName], value);
         }
 
@@ -287,12 +245,9 @@ namespace WebService.Controllers.Bases
         [HttpDelete(DeleteTemplate)]
         public virtual async Task DeleteAsync(string id)
         {
-            // parse the id
             if (!ObjectId.TryParse(id, out var objectId))
-                // if it fails, throw not found exception
-                throw new NotFoundException($"The {typeof(T).Name} with id {id} could not be found");
+                throw new NotFoundException<T>(nameof(IModelWithID.Id), id);
 
-            // use the data service to remove the item
             await DataService.RemoveAsync(objectId);
         }
 

@@ -10,9 +10,9 @@ using WebService.Helpers.Attributes;
 using WebService.Helpers.Exceptions;
 using WebService.Helpers.Extensions;
 using WebService.Models;
+using WebService.Models.Bases;
 using WebService.Services.Authorization;
 using WebService.Services.Data;
-using WebService.Services.Exceptions;
 using WebService.Services.Logging;
 
 namespace WebService.Controllers
@@ -26,21 +26,18 @@ namespace WebService.Controllers
 
         private readonly IUsersService _usersService;
         private readonly ITokenService _tokenService;
-        private readonly IResidentsService _residentsService;
 
         #endregion FIELDS
 
 
         #region COSNTRUCTROS
 
-        public MediaController(IThrow iThrow, IMediaService dataService, IUsersService usersService, ILogger logger,
-            ITokenService tokenService,
-            IResidentsService residentsService)
-            : base(iThrow, dataService, logger)
+        public MediaController(IMediaService dataService, IUsersService usersService, ILogger logger,
+            ITokenService tokenService)
+            : base(dataService, logger)
         {
             _usersService = usersService;
             _tokenService = tokenService;
-            _residentsService = residentsService;
         }
 
         #endregion CONSTRUCTORS
@@ -68,24 +65,22 @@ namespace WebService.Controllers
         [HttpGet(GetOneWithExtensionTemplate)]
         public async Task<FileContentResult> GetOneAsync(string id, string extension, [FromHeader] string token)
         {
-            // parse the id
             if (!ObjectId.TryParse(id, out var objectId))
-                // if it fails, throw not found exception
-                throw new NotFoundException($"The {typeof(MediaData).Name} with id {id} could not be found");
+                throw new NotFoundException<MediaData>(nameof(IModelWithID.Id), id);
 
             if (string.IsNullOrWhiteSpace(extension))
-                throw new NotFoundException("there is no data with no extension");
+                throw new NotFoundException<MediaData>(nameof(MediaData.Extension), extension);
 
-            var residentId = (ObjectId) await ((IMediaService) DataService).GetPropertyAsync(objectId, x => x.OwnerId);
+            var residentId = await ((IMediaService) DataService).GetPropertyAsync(objectId, x => x.OwnerId);
             var userId = await _tokenService.GetIdFromToken(token);
 
             var userResidents = (IEnumerable<ObjectId>) await _usersService.GetPropertyAsync(userId, x => x.Residents);
             if (userResidents.All(x => x != residentId))
-                throw new NotFoundException($"The {typeof(MediaData).Name} with id {id} could not be found");
+                throw new NotFoundException<MediaData>(nameof(IModelWithID.Id), id);
 
             var data = await ((IMediaService) DataService).GetOneAsync(objectId, extension);
             if (data == null)
-                throw new NotFoundException($"The {typeof(MediaData).Name} with id {id} could not be found");
+                throw new NotFoundException<MediaData>(nameof(IModelWithID.Id), id);
 
             var mediaType = extension.GetEMediaTypeFromExtension();
             return File(data, $"{mediaType.ToString().ToLower()}/{extension}");
@@ -95,19 +90,14 @@ namespace WebService.Controllers
         [HttpGet(GetOneTemplate)]
         public async Task<FileContentResult> GetOneAsync(string id)
         {
-            // parse the id
             if (!ObjectId.TryParse(id, out var objectId))
-                // if it fails, throw not found exception
-                throw new NotFoundException($"The {typeof(MediaData).Name} with id {id} could not be found");
+                throw new NotFoundException<MediaData>(nameof(IModelWithID.Id), id);
 
-            // get the jsonValue from the data service
             var media = await ((IMediaService) DataService).GetOneAsync(objectId,
                 new Expression<Func<MediaData, object>>[] {x => x.Data});
 
             return Equals(media, default(MediaData))
-                // if the item is null, throw a not found exception
-                ? throw new NotFoundException($"The {typeof(MediaData).Name} with id {id} could not be found")
-                // else return the values
+                ? throw new NotFoundException<MediaData>(nameof(IModelWithID.Id), id)
                 : File(media.Data, "image/jpg");
         }
 

@@ -7,8 +7,10 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using MongoDB.Bson;
 using MongoDB.Driver;
+using WebService.Helpers.Exceptions;
 using WebService.Models;
-using WebService.Services.Exceptions;
+using WebService.Models.Bases;
+using ArgumentNullException = System.ArgumentNullException;
 
 namespace WebService.Services.Data.Mongo
 {
@@ -25,8 +27,7 @@ namespace WebService.Services.Data.Mongo
     {
         private readonly IDataService<MediaData> _mediaService;
 
-        public ResidentsService(IConfiguration config, IThrow iThrow, IMediaService mediaService)
-            : base(iThrow)
+        public ResidentsService(IConfiguration config, IMediaService mediaService)
         {
             _mediaService = mediaService;
 
@@ -49,10 +50,7 @@ namespace WebService.Services.Data.Mongo
         {
             // if the data is null, throw an exception
             if (data == null)
-            {
-                Throw.NullArgument(nameof(data));
-                return;
-            }
+                throw new ArgumentNullException(nameof(data));
 
             var mediaId = ObjectId.GenerateNewId();
             // add media to the database
@@ -69,10 +67,7 @@ namespace WebService.Services.Data.Mongo
         {
             // if the url is null, throw an exception
             if (url == null)
-            {
-                Throw.NullArgument(nameof(url));
-                return;
-            }
+                throw new ArgumentNullException(nameof(url));
 
             // add the mediaData
             await AddMediaAsync(residentId, new MediaUrl {Id = ObjectId.GenerateNewId(), Url = url}, mediaType);
@@ -111,10 +106,7 @@ namespace WebService.Services.Data.Mongo
 
             // if there was no resident that matched, throw exception
             if (resident == null)
-            {
-                Throw.NotFound<Resident>(residentId);
-                return null;
-            }
+                throw new NotFoundException<Resident>(nameof(IModelWithID.Id), residentId.ToString());
 
             // return the resident
             return resident;
@@ -133,10 +125,7 @@ namespace WebService.Services.Data.Mongo
 
             // if there is no resident with the given tag, throw NotFoundException
             if (findResult.Count() <= 0)
-            {
-                Throw?.NotFound<Resident>(tag);
-                return default(Resident);
-            }
+                throw new ElementNotFoundException<Resident>(nameof(Resident.Tags), "tag");
 
             // if the properties to include are null, return all the properties
             if (propertiesToInclude == null)
@@ -160,20 +149,14 @@ namespace WebService.Services.Data.Mongo
         {
             // if the property to select is null, throw exception
             if (propertyToSelect == null)
-            {
-                Throw?.NullArgument(nameof(propertyToSelect));
-                return null;
-            }
+                throw new ArgumentNullException(nameof(propertyToSelect));
 
             // get the item with the given id
             var find = MongoCollection.Find(x => x.Tags.Contains(tag));
 
             // if there is no item with the given id, throw exception
             if (find.Count() <= 0)
-            {
-                Throw?.NotFound<Resident>(tag);
-                return null;
-            }
+                throw new ElementNotFoundException<Resident>(nameof(Resident.Tags), "tag");
 
             // create a property filter
             var selector = Builders<Resident>.Projection.Include(propertyToSelect);
@@ -221,7 +204,7 @@ namespace WebService.Services.Data.Mongo
 
             // if the resident did not have the mediaData, throw exception
             if (!containsMedia)
-                Throw.NotFound<MediaData>(mediaId);
+                throw new ElementNotFoundException<Resident>(mediaType.ToString(), "media");
         }
 
         private async Task<Resident> RemoveMediaAsync(ObjectId residentId,
@@ -241,10 +224,7 @@ namespace WebService.Services.Data.Mongo
 
             // if there was no resident to match, throw exception
             if (resident == null)
-            {
-                Throw.NotFound<Resident>(residentId);
-                return null;
-            }
+                throw new NotFoundException<Resident>(nameof(IModelWithID.Id), residentId.ToString());
 
             // return the original resident
             return resident;
@@ -271,9 +251,7 @@ namespace WebService.Services.Data.Mongo
 
             // if there was no resident to match, throw exception
             if (resident == null)
-            {
-                Throw.NotFound<Resident>(residentId);
-            }
+                throw new NotFoundException<Resident>(nameof(IModelWithID.Id), residentId.ToString());
         }
 
         #endregion DELETE

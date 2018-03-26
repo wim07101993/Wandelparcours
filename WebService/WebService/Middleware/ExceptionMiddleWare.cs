@@ -59,22 +59,22 @@ namespace WebService.Middleware
                 await _next.Invoke(context);
             }
             // check for bad arguments by the client
-            catch (WebArgumentException e)
+            catch (Helpers.Exceptions.ArgumentException e)
             {
                 // respond with a 400 bad request status code
-                context.Response.StatusCode = (int) HttpStatusCode.BadRequest;
+                context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
 
                 // respond a message
                 await context.Response.WriteAsync("The arguments you passed just destroyed Luxembourg...\n\n");
 
                 // respond the error
-                await context.Response.WriteAsync(e.Message);
+                await context.Response.WriteAsync((string)e.Message);
             }
             // check if some recourse is not found
             catch (NotFoundException e)
             {
                 // respond with a 404 not found status code
-                context.Response.StatusCode = (int) HttpStatusCode.NotFound;
+                context.Response.StatusCode = (int)HttpStatusCode.NotFound;
 
                 // respond a message
                 await context.Response.WriteAsync("These are not the droids you're looking for.\n\n");
@@ -86,7 +86,7 @@ namespace WebService.Middleware
             catch (UnauthorizedException e)
             {
                 // respond with a 404 not found status code
-                context.Response.StatusCode = (int) HttpStatusCode.Unauthorized;
+                context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
 
                 // respond a message
                 await context.Response.WriteAsync("You shall not pass!!\n\n");
@@ -100,7 +100,7 @@ namespace WebService.Middleware
             catch (Exception e)
             {
                 // respond with  500 internal server error status code
-                context.Response.StatusCode = (int) HttpStatusCode.InternalServerError;
+                context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
 
                 // log the exception
                 _logger.Log(this, ELogLevel.Error, e);

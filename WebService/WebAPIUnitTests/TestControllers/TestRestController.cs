@@ -4,7 +4,6 @@ using System.Linq.Expressions;
 using WebAPIUnitTests.TestControllers.bases;
 using WebAPIUnitTests.TestModels;
 using WebAPIUnitTests.TestServices.Abstract;
-using WebService.Services.Exceptions;
 using WebService.Services.Logging;
 
 namespace WebAPIUnitTests.TestControllers
@@ -12,12 +11,12 @@ namespace WebAPIUnitTests.TestControllers
     public class TestRestController : ATestRestController<TestEntity>
     {
         public TestRestController()
-            : base(new Throw(), new TestDataService(), new ConsoleLogger())
+            : base( new TestDataService(), new ConsoleLogger())
         {
         }
 
         public TestRestController(ITestDataService<TestEntity> dataService)
-            : base(new Throw(), dataService, new ConsoleLogger())
+            : base( dataService, new ConsoleLogger())
         {
             
         }

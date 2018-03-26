@@ -5,7 +5,6 @@ using WebAPIUnitTests.TestServices.ReceiverModules;
 using WebService.Controllers;
 using WebService.Helpers.Extensions;
 using WebService.Models;
-using WebService.Services.Exceptions;
 using WebService.Services.Logging;
 
 namespace WebAPIUnitTests.TestControllers
@@ -13,7 +12,7 @@ namespace WebAPIUnitTests.TestControllers
     public class TestReceiverModuleController : ReceiverModulesController, ITestController<ReceiverModule>
     {
         public TestReceiverModuleController()
-            : base(new Throw(), new TestReceiverModulesService(), new ConsoleLogger())
+            : base(new TestReceiverModulesService(), new ConsoleLogger())
         {
         }
 

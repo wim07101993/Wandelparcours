@@ -9,8 +9,8 @@ using WebService.Helpers.Exceptions;
 using WebService.Helpers.Extensions;
 using WebService.Models;
 using WebService.Services.Data;
-using WebService.Services.Exceptions;
 using WebService.Services.Logging;
+using ArgumentNullException = WebService.Helpers.Exceptions.ArgumentNullException;
 
 namespace WebService.Controllers
 {
@@ -31,8 +31,8 @@ namespace WebService.Controllers
 
         #region CONSTRUCTOR
 
-        public ReceiverModulesController(IThrow iThrow, IReceiverModulesService dataService, ILogger logger)
-            : base(iThrow, dataService, logger)
+        public ReceiverModulesController(IReceiverModulesService dataService, ILogger logger)
+            : base(dataService, logger)
         {
         }
 
@@ -63,10 +63,7 @@ namespace WebService.Controllers
         public override async Task<StatusCodeResult> CreateAsync([FromBody] ReceiverModule item)
         {
             if (item == null)
-            {
-                Throw.NullArgument(nameof(item));
-                return null;
-            }
+                throw new ArgumentNullException(nameof(item));
 
             if (item.Position == null)
                 item.Position = new Point();
@@ -84,20 +81,14 @@ namespace WebService.Controllers
         public override async Task<ReceiverModule> GetOneAsync(string mac, [FromQuery] string[] propertiesToInclude)
         {
             if (mac == null)
-            {
-                Throw.NotFound<ReceiverModule>(null);
-                return null;
-            }
+                throw new NotFoundException<ReceiverModule>(nameof(ReceiverModule.Mac), null);
 
-            // convert the property names to selectors, if there are any
             var selectors = !EnumerableExtensions.IsNullOrEmpty(propertiesToInclude)
                 ? ConvertStringsToSelectors(propertiesToInclude)
                 : new Expression<Func<ReceiverModule, object>>[0];
 
-            // get the value from the data service
             return await ((IReceiverModulesService) DataService).GetAsync(mac, selectors)
-                   ?? throw new NotFoundException(
-                       $"The {typeof(ReceiverModule).Name} with id {mac} could not be found");
+                   ?? throw new NotFoundException<ReceiverModule>(nameof(ReceiverModule.Mac), mac);
         }
 
         #endregion get (read)
@@ -106,7 +97,6 @@ namespace WebService.Controllers
 
         [HttpDelete(DeleteTemplate)]
         public override Task DeleteAsync(string mac)
-            // use the data service to remove the item
             => ((IReceiverModulesService) DataService).RemoveAsync(mac);
 
         #endregion delete

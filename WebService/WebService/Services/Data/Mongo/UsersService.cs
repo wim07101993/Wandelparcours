@@ -6,15 +6,17 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using MongoDB.Bson;
 using MongoDB.Driver;
+using WebService.Helpers.Exceptions;
 using WebService.Helpers.Extensions;
 using WebService.Models;
-using WebService.Services.Exceptions;
+using WebService.Models.Bases;
+using ArgumentNullException = System.ArgumentNullException;
 
 namespace WebService.Services.Data.Mongo
 {
     public class UsersService : AMongoDataService<User>, IUsersService
     {
-        public UsersService(IConfiguration config, IThrow iThrow) : base(iThrow)
+        public UsersService(IConfiguration config)
         {
             MongoCollection =
                 // create a new client
@@ -32,10 +34,7 @@ namespace WebService.Services.Data.Mongo
         {
             // if the item is null, throw exception
             if (item == null)
-            {
-                Throw?.NullArgument(nameof(item));
-                return;
-            }
+                throw new ArgumentNullException(nameof(item));
 
             // create a new id for the new item
             item.Id = ObjectId.GenerateNewId();
@@ -48,7 +47,7 @@ namespace WebService.Services.Data.Mongo
             }
             catch (Exception e)
             {
-                Throw.Database<User>(EDatabaseMethod.Create);
+                throw new DatabaseException(EDatabaseMethod.Create, e);
             }
         }
 
@@ -73,10 +72,7 @@ namespace WebService.Services.Data.Mongo
 
             // if there is no item with the given id, throw exception
             if (find.Count() <= 0)
-            {
-                Throw?.NotFound<User>(userName);
-                return default(User);
-            }
+                throw new NotFoundException<User>(nameof(User.UserName), userName);
 
             // if the properties are null or there are none, return all the properties
             if (propertiesToInclude == null)
@@ -101,20 +97,14 @@ namespace WebService.Services.Data.Mongo
         {
             // if the property to select is null, throw exception
             if (propertyToSelect == null)
-            {
-                Throw?.NullArgument(nameof(propertyToSelect));
-                return null;
-            }
+                throw new ArgumentNullException(nameof(propertyToSelect));
 
             // get the item with the given id
             var find = MongoCollection.Find(x => x.UserName == userName);
 
             // if there is no item with the given id, throw exception
             if (find.Count() <= 0)
-            {
-                Throw?.NotFound<User>(userName);
-                return null;
-            }
+                throw new NotFoundException<User>(nameof(User.UserName), userName);
 
             // create a property filter
             var selector = Builders<User>.Projection.Include(propertyToSelect);

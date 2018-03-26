@@ -25,7 +25,8 @@ namespace WebAPIUnitTests.ControllerTests.RestControllerBaseTests
 
             controller
                 .CreateAsync(null)
-                .ShouldCatchArgumentException<WebArgumentNullException>("item", "the item to create cannot be null");
+                .ShouldCatchArgumentException<WebService.Helpers.Exceptions.ArgumentNullException>("item",
+                    "the item to create cannot be null");
         }
 
         [TestMethod]
@@ -58,7 +59,7 @@ namespace WebAPIUnitTests.ControllerTests.RestControllerBaseTests
         [TestMethod]
         public void Create()
         {
-            var item = new TestEntity {Id = ObjectId.GenerateNewId(), S="some strange string"};
+            var item = new TestEntity {Id = ObjectId.GenerateNewId(), S = "some strange string"};
 
             var list = new List<TestEntity>();
 

@@ -9,8 +9,8 @@ using WebService.Controllers.Bases;
 using WebService.Helpers.Exceptions;
 using WebService.Helpers.Extensions;
 using WebService.Models;
+using WebService.Models.Bases;
 using WebService.Services.Data;
-using WebService.Services.Exceptions;
 using WebService.Services.Logging;
 
 namespace WebService.Controllers
@@ -18,8 +18,8 @@ namespace WebService.Controllers
     [Route("api/v1/[controller]")]
     public class UsersController : ARestControllerBase<User>
     {
-        public UsersController(IThrow iThrow, IUsersService dataService, ILogger logger)
-            : base(iThrow, dataService, logger)
+        public UsersController(IUsersService dataService, ILogger logger)
+            : base(dataService, logger)
         {
         }
 
@@ -77,8 +77,7 @@ namespace WebService.Controllers
             }
 
             if (!ObjectId.TryParse(id, out var objectId))
-                // if it fails, throw not found exception
-                throw new NotFoundException($"The {typeof(User).Name} with id {id} could not be found");
+                throw new NotFoundException<User>(nameof(IModelWithID.Id), id);
 
             await ((IUsersService) DataService).UpdatePasswordAsync(objectId, jsonValue);
         }

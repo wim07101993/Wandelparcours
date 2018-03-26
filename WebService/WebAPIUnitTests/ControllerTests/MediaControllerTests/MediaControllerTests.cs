@@ -7,7 +7,6 @@ using WebAPIUnitTests.TestServices.Media;
 using WebService.Controllers;
 using WebService.Helpers.Exceptions;
 using WebService.Services.Data;
-using WebService.Services.Exceptions;
 using WebService.Services.Logging;
 
 namespace WebAPIUnitTests.ControllerTests.MediaControllerTests

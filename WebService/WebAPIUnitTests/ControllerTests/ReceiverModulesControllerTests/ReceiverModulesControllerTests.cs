@@ -13,7 +13,6 @@ using WebService.Helpers.Exceptions;
 using WebService.Helpers.Extensions;
 using WebService.Models;
 using WebService.Services.Data;
-using WebService.Services.Exceptions;
 using WebService.Services.Logging;
 
 namespace WebAPIUnitTests.ControllerTests.ReceiverModulesControllerTests
@@ -27,11 +26,12 @@ namespace WebAPIUnitTests.ControllerTests.ReceiverModulesControllerTests
         public void CreateNullItem()
         {
             var controller =
-                new ReceiverModulesController(new Throw(), new TestReceiverModulesService(), new ConsoleLogger());
+                new ReceiverModulesController(new TestReceiverModulesService(), new ConsoleLogger());
 
             controller
                 .CreateAsync(null)
-                .ShouldCatchArgumentException<WebArgumentNullException>("item", "the item to create cannot be null");
+                .ShouldCatchArgumentException<WebService.Helpers.Exceptions.ArgumentNullException>("item",
+                    "the item to create cannot be null");
         }
 
         [TestMethod]
@@ -45,7 +45,7 @@ namespace WebAPIUnitTests.ControllerTests.ReceiverModulesControllerTests
             var mock = new Mock<IReceiverModulesService>();
             mock.Setup(x => x.CreateAsync(duplicate)).Callback(new Action<ReceiverModule>(x => list.Add(x)));
 
-            var controller = new ReceiverModulesController(new Throw(), mock.Object, new ConsoleLogger());
+            var controller = new ReceiverModulesController(mock.Object, new ConsoleLogger());
 
             controller
                 .CreateAsync(duplicate)
@@ -77,7 +77,7 @@ namespace WebAPIUnitTests.ControllerTests.ReceiverModulesControllerTests
             var mock = new Mock<IReceiverModulesService>();
             mock.Setup(x => x.CreateAsync(item)).Callback(new Action<ReceiverModule>(x => list.Add(x)));
 
-            var controller = new ReceiverModulesController(new Throw(), mock.Object, new ConsoleLogger());
+            var controller = new ReceiverModulesController(mock.Object, new ConsoleLogger());
 
             controller
                 .CreateAsync(item)
@@ -103,7 +103,6 @@ namespace WebAPIUnitTests.ControllerTests.ReceiverModulesControllerTests
         {
             var controller =
                 new ReceiverModulesController(
-                    new Throw(),
                     new Mock<IReceiverModulesService>().Object,
                     new ConsoleLogger());
 
@@ -117,7 +116,6 @@ namespace WebAPIUnitTests.ControllerTests.ReceiverModulesControllerTests
         {
             var controller =
                 new ReceiverModulesController(
-                    new Throw(),
                     new Mock<IReceiverModulesService>().Object,
                     new ConsoleLogger());
 
@@ -130,7 +128,7 @@ namespace WebAPIUnitTests.ControllerTests.ReceiverModulesControllerTests
         public void GetNullProperties()
         {
             var dataService = new TestReceiverModulesService();
-            var controller = new ReceiverModulesController(new Throw(), dataService, new ConsoleLogger());
+            var controller = new ReceiverModulesController(dataService, new ConsoleLogger());
 
             var mac = dataService.GetFirst().Mac;
 
@@ -148,7 +146,7 @@ namespace WebAPIUnitTests.ControllerTests.ReceiverModulesControllerTests
         public void GetEmptyProperties()
         {
             var dataService = new TestReceiverModulesService();
-            var controller = new ReceiverModulesController(new Throw(), dataService, new ConsoleLogger());
+            var controller = new ReceiverModulesController(dataService, new ConsoleLogger());
 
             var mac = dataService.GetFirst().Mac;
 
@@ -174,13 +172,13 @@ namespace WebAPIUnitTests.ControllerTests.ReceiverModulesControllerTests
         public void GetBadProperties()
         {
             var dataService = new TestReceiverModulesService();
-            var controller = new ReceiverModulesController(new Throw(), dataService, new ConsoleLogger());
+            var controller = new ReceiverModulesController(dataService, new ConsoleLogger());
 
             var mac = dataService.GetFirst().Mac;
 
             controller
                 .GetOneAsync(mac, new[] {"bad property", nameof(ReceiverModule.IsActive)})
-                .ShouldCatchException<PropertyNotFoundException>(
+                .ShouldCatchException<PropertyNotFoundException<ReceiverModule>>(
                     "there no property 'bad property' in a receiver module");
         }
 
@@ -188,7 +186,7 @@ namespace WebAPIUnitTests.ControllerTests.ReceiverModulesControllerTests
         public void Get()
         {
             var dataService = new TestReceiverModulesService();
-            var controller = new ReceiverModulesController(new Throw(), dataService, new ConsoleLogger());
+            var controller = new ReceiverModulesController(dataService, new ConsoleLogger());
 
             var mac = dataService.GetFirst().Mac;
 
@@ -220,17 +218,14 @@ namespace WebAPIUnitTests.ControllerTests.ReceiverModulesControllerTests
 
         #region DELETE
 
-
         public void DeleteNullMac()
         {
-           
         }
 
         public void DeleteBadMac()
         {
             throw new NotImplementedException();
         }
-
 
         #endregion DELETE
     }

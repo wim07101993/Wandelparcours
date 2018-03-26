@@ -2,7 +2,6 @@ using System.Linq;
 using System.Text;
 using MongoDB.Bson;
 using WebService.Services.Randomizer;
-using System.Text;
 using WebService.Models;
 
 namespace WebService.Helpers.Extensions

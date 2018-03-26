@@ -94,7 +94,7 @@ namespace WebService.Controllers.Bases
         /// <param name="propertiesToInclude">are the properties of which the values should be returned</param>
         /// <returns>The <see cref="Resident"/> in the database that has the given id</returns>
         /// <exception cref="NotFoundException">When the id cannot be parsed or <see cref="Resident"/> not found</exception>
-        /// <exception cref="WebArgumentException">When one ore more properties could not be converted to selectors</exception>
+        /// <exception cref="ArgumentException">When one ore more properties could not be converted to selectors</exception>
         Task<Resident> GetByTagAsync(int tag, string[] propertiesToInclude);
 
         Task<object> GetRandomElementFromPropertyAsync(int tag, string mediaType);

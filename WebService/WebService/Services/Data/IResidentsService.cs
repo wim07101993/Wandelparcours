@@ -34,7 +34,7 @@ namespace WebService.Services.Data
         /// <param name="data">is the data of the media to add</param>
         /// <param name="mediaType">is the type of media to add</param>
         /// <param name="extension">is the extension of the media to add</param>
-        /// <exception cref="ArgumentNullException">when the data is null</exception>
+        /// <exception cref="System.ArgumentNullException">when the data is null</exception>
         /// <exception cref="NotFoundException">when there is no <see cref="Resident"/> found with the given <see cref="AModelWithID.Id"/></exception>
         /// <exception cref="ArgumentOutOfRangeException">when the media type doesn't exist</exception>
         Task AddMediaAsync(ObjectId residentId, string title, byte[] data, EMediaType mediaType, string extension = null);
@@ -46,7 +46,7 @@ namespace WebService.Services.Data
         /// <param name="residentId">is the id of the <see cref="Resident"/> add the media to</param>
         /// <param name="url">is the url to the media to add</param>
         /// <param name="mediaType">is the type of media to add</param>
-        /// <exception cref="ArgumentNullException">when the url is null</exception>
+        /// <exception cref="System.ArgumentNullException">when the url is null</exception>
         /// <exception cref="NotFoundException">when there is no <see cref="Resident"/> found with the given <see cref="AModelWithID.Id"/></exception>
         /// <exception cref="ArgumentOutOfRangeException">when the media type doesn't exist</exception>
         Task AddMediaAsync(ObjectId residentId, string url, EMediaType mediaType);

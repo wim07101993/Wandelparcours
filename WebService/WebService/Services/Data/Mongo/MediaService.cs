@@ -3,14 +3,16 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using MongoDB.Bson;
 using MongoDB.Driver;
+using WebService.Helpers.Exceptions;
 using WebService.Models;
-using WebService.Services.Exceptions;
+using WebService.Models.Bases;
+using ArgumentNullException = System.ArgumentNullException;
 
 namespace WebService.Services.Data.Mongo
 {
     public class MediaService : AMongoDataService<MediaData>, IMediaService
     {
-        public MediaService(IConfiguration config, IThrow iThrow) : base(iThrow)
+        public MediaService(IConfiguration config)
         {
             MongoCollection =
                 // create a new client
@@ -26,18 +28,15 @@ namespace WebService.Services.Data.Mongo
         public override async Task CreateAsync(MediaData item)
         {
             if (item == null)
-            {
-                Throw?.NullArgument(nameof(item));
-                return;
-            }
+                throw new ArgumentNullException(nameof(item));
 
             try
             {
                  await MongoCollection.InsertOneAsync(item);
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                Throw.Database<MediaData>(EDatabaseMethod.Create);
+                throw new DatabaseException(EDatabaseMethod.Create, e);
             }
         }
 
@@ -46,7 +45,7 @@ namespace WebService.Services.Data.Mongo
             var find = MongoCollection.Find(x => x.Id == id && x.Extension == extension);
 
            if (find.Count() <= 0)
-                Throw?.NotFound<MediaData>(id);
+               throw new NotFoundException<MediaData>(nameof(IModelWithID.Id), id.ToString());
 
             var selector = Builders<MediaData>.Projection.Include(x => x.Data);
 

@@ -7,9 +7,8 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using MongoDB.Bson;
-using WebService.Models;
+using WebService.Helpers.Exceptions;
 using WebService.Services.Data;
-using WebService.Services.Exceptions;
 using WebService.Services.Logging;
 
 namespace WebService.Services.Authorization
@@ -20,17 +19,14 @@ namespace WebService.Services.Authorization
 
         private readonly IConfiguration _configuration;
         private readonly IUsersService _usersService;
-        private readonly IThrow _iThrow;
         private readonly ILogger _logger;
         private readonly IDictionary<string, ObjectId> _issuedTokens = new Dictionary<string, ObjectId>();
 
 
-        public TokenService(IConfiguration configuration, IUsersService usersService, IThrow iThrow,
-            ILogger logger)
+        public TokenService(IConfiguration configuration, IUsersService usersService, ILogger logger)
         {
             _configuration = configuration;
             _usersService = usersService;
-            _iThrow = iThrow;
             _logger = logger;
 
             RunTokenGarbageCollectorAsync();
@@ -44,7 +40,7 @@ namespace WebService.Services.Authorization
         public async Task<string> CreateTokenAsync(ObjectId id, string password)
         {
             if (!await _usersService.CheckCredentialsAsync(id, password))
-                _iThrow.Unauthorized();
+                throw new WrongCredentialsException();
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
