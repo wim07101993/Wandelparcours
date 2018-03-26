@@ -45,6 +45,6 @@ namespace WebService.Models
 
 
         [BsonElement("residents")]
-        public IEnumerable<Resident> Residents { get; set; }
+        public IEnumerable<ObjectId> Residents { get; set; }
     }
 }

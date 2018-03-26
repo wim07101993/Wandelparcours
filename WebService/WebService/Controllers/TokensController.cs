@@ -17,7 +17,7 @@ namespace WebService.Controllers
         private readonly ITokenService _tokenService;
         private readonly IUsersService _usersService;
 
-        public TokensController(ITokenService tokenService, IUsersService usersService)
+        public TokensController(ITokenService tokenService, IUsersService usersService) : base(usersService)
         {
             _tokenService = tokenService;
             _usersService = usersService;

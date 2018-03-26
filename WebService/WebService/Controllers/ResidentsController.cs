@@ -55,8 +55,8 @@ namespace WebService.Controllers
 
         #region CONSTRUCTOR
 
-        public ResidentsController(IResidentsService dataService, ILogger logger)
-            : base(dataService, logger)
+        public ResidentsController(IResidentsService dataService, ILogger logger, IUsersService usersService)
+            : base(dataService, logger, usersService)
         {
         }
 
@@ -100,6 +100,22 @@ namespace WebService.Controllers
 
         #region METHODS
 
+        private async Task<bool> IsCurrentUserResponsibleForResident(ObjectId residentId)
+        {
+            var properties = new Expression<Func<User, object>>[] {x => x.Residents, x => x.UserType};
+            var user = await GetCurrentUser(properties);
+            switch (user.UserType)
+            {
+                case EUserType.SysAdmin:
+                case EUserType.Nurse:
+                    return true;
+                case EUserType.User:
+                    return user.Residents.Contains(residentId);
+                default:
+                    return false;
+            }
+        }
+
         #region post (create)
 
         [Authorize(EUserType.SysAdmin, EUserType.Nurse)]
@@ -128,7 +144,8 @@ namespace WebService.Controllers
             if (data?.File == null)
                 throw new ArgumentNullException(nameof(data));
 
-            if (!ObjectId.TryParse(residentId, out var residentObjectId))
+            if (!ObjectId.TryParse(residentId, out var residentObjectId)
+                && await IsCurrentUserResponsibleForResident(residentObjectId))
                 throw new NotFoundException<Resident>(nameof(IModelWithID.Id), residentId);
 
             try
@@ -174,7 +191,8 @@ namespace WebService.Controllers
         [HttpPost(AddColorTemplate)]
         public async Task<StatusCodeResult> AddColorAsync(string residentId, [FromBody] Color colorData)
         {
-            if (!ObjectId.TryParse(residentId, out var residentObjectId))
+            if (!ObjectId.TryParse(residentId, out var residentObjectId)
+                && await IsCurrentUserResponsibleForResident(residentObjectId))
                 throw new NotFoundException<Resident>(nameof(IModelWithID.Id), residentId);
 
             await DataService.AddItemToListProperty(residentObjectId, x => x.Colors, colorData);
@@ -188,8 +206,22 @@ namespace WebService.Controllers
 
         [Authorize(EUserType.SysAdmin, EUserType.Nurse, EUserType.Module, EUserType.User)]
         [HttpGet(GetAllTemplate)]
-        public override Task<IEnumerable<Resident>> GetAllAsync(string[] propertiesToInclude)
-            => base.GetAllAsync(propertiesToInclude);
+        public async override Task<IEnumerable<Resident>> GetAllAsync(string[] propertiesToInclude)
+        {
+            var properties = new Expression<Func<User, object>>[] {x => x.Residents, x => x.UserType};
+            var user = await GetCurrentUser(properties);
+
+            switch (user.UserType)
+            {
+                case EUserType.SysAdmin:
+                case EUserType.Nurse:
+                    return await base.GetAllAsync(propertiesToInclude);
+                case EUserType.User:
+                    return await base.GetAllAsync(propertiesToInclude);
+                default:
+                    throw new UnauthorizedException(EUserType.SysAdmin, EUserType.Nurse, EUserType.User);
+            }
+        }
 
         [Authorize(EUserType.SysAdmin, EUserType.Nurse, EUserType.Module, EUserType.User)]
         [HttpGet(GetOneTemplate)]

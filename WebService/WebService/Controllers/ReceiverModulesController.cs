@@ -32,8 +32,8 @@ namespace WebService.Controllers
 
         #region CONSTRUCTOR
 
-        public ReceiverModulesController(IReceiverModulesService dataService, ILogger logger)
-            : base(dataService, logger)
+        public ReceiverModulesController(IReceiverModulesService dataService, ILogger logger, IUsersService usersService)
+            : base(dataService, logger, usersService)
         {
         }
 

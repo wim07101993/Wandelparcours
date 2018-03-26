@@ -9,17 +9,17 @@ using WebService.Services.Logging;
 
 namespace WebAPIUnitTests.TestControllers
 {
-    public class TestResidentsController : ResidentsController, ITestResidentsController
+    public class TestResidentsController// : ResidentsController, ITestResidentsController
     {
-        public TestResidentsController()
-            : base(new TestResidentsService(), new ConsoleLogger())
-        {
-        }
+        //public TestResidentsController()
+        //    : base(new TestResidentsService(), new ConsoleLogger())
+        //{
+        //}
 
-        public IEnumerable<Resident> GetAll()
-            => DataService.GetAsync().Result.Clone();
+        //public IEnumerable<Resident> GetAll()
+        //    => DataService.GetAsync().Result.Clone();
 
-        public Resident GetFirst()
-            => DataService.GetAsync().Result.FirstOrDefault().Clone();
+        //public Resident GetFirst()
+        //    => DataService.GetAsync().Result.FirstOrDefault().Clone();
     }
 }

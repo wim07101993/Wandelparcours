@@ -34,7 +34,7 @@ namespace WebService.Controllers
 
         public MediaController(IMediaService dataService, IUsersService usersService, ILogger logger,
             ITokenService tokenService)
-            : base(dataService, logger)
+            : base(dataService, logger, usersService)
         {
             _usersService = usersService;
             _tokenService = tokenService;

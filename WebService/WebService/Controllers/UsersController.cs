@@ -19,8 +19,8 @@ namespace WebService.Controllers
     [Route("api/v1/[controller]")]
     public class UsersController : ARestControllerBase<User>
     {
-        public UsersController(IUsersService dataService, ILogger logger)
-            : base(dataService, logger)
+        public UsersController(IUsersService dataService, ILogger logger, IUsersService usersService)
+            : base(dataService, logger, usersService)
         {
         }
 

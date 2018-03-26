@@ -16,7 +16,7 @@ namespace WebService.Helpers.Exceptions
         {
         }
 
-        public UnauthorizedException(EUserType[] minAuthLevels)
+        public UnauthorizedException(params EUserType[] minAuthLevels)
             : base($"you need to ask access to one of the these people: {minAuthLevels.Serialize()}")
         {
             MinAuthLevels = minAuthLevels;

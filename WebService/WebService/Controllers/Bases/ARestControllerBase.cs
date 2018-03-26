@@ -61,7 +61,8 @@ namespace WebService.Controllers.Bases
         /// </summary>
         /// <param name="dataService">is a service to handle the database connection</param>
         /// <param name="logger">is a service to handle the logging of messages</param>
-        protected ARestControllerBase(IDataService<T> dataService, ILogger logger)
+        /// <param name="usersService">is the service to get the current user from</param>
+        protected ARestControllerBase(IDataService<T> dataService, ILogger logger, IUsersService usersService) : base(usersService)
         {
             // initiate the services
             DataService = dataService;
