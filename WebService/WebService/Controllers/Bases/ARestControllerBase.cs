@@ -105,7 +105,7 @@ namespace WebService.Controllers.Bases
 
         #region create
 
-        [CanAccess]
+        [Authorize]
         [HttpPost(CreateTemplate)]
         public virtual async Task<StatusCodeResult> CreateAsync([FromBody] T item)
         {
@@ -153,7 +153,6 @@ namespace WebService.Controllers.Bases
 
         #region read
 
-        [CanAccess]
         [HttpGet(GetAllTemplate)]
         public virtual async Task<IEnumerable<T>> GetAllAsync([FromQuery] string[] propertiesToInclude)
         {
@@ -164,7 +163,6 @@ namespace WebService.Controllers.Bases
             return await DataService.GetAsync(selectors);
         }
 
-        [CanAccess]
         [HttpGet(GetOneTemplate)]
         public virtual async Task<T> GetOneAsync(string id, [FromQuery] string[] propertiesToInclude)
         {
@@ -182,7 +180,6 @@ namespace WebService.Controllers.Bases
                 : item;
         }
 
-        [CanAccess]
         [HttpGet(GetPropertyTemplate)]
         public virtual async Task<object> GetPropertyAsync(string id, string propertyName)
         {
@@ -199,7 +196,6 @@ namespace WebService.Controllers.Bases
 
         #region update
 
-        [CanAccess]
         [HttpPut(UpdateTemplate)]
         public virtual async Task UpdateAsync([FromBody] T item, [FromQuery] string[] properties)
         {
@@ -210,7 +206,6 @@ namespace WebService.Controllers.Bases
             await DataService.UpdateAsync(item, selectors);
         }
 
-        [CanAccess]
         [HttpPut(UpdatePropertyTemplate)]
         public virtual async Task UpdatePropertyAsync(string id, string propertyName, [FromBody] string jsonValue)
         {
@@ -241,7 +236,6 @@ namespace WebService.Controllers.Bases
 
         #region delete
 
-        [CanAccess]
         [HttpDelete(DeleteTemplate)]
         public virtual async Task DeleteAsync(string id)
         {

@@ -14,9 +14,10 @@ namespace WebService.Helpers.Exceptions
         }
     }
 
-    public abstract class NotFoundException : Exception
+    public class NotFoundException : Exception
     {
-        protected NotFoundException()
+        public NotFoundException()
+            : base("This page doesn't exist.")
         {
         }
 

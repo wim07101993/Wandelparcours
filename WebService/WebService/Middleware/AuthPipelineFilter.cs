@@ -36,13 +36,20 @@ namespace WebService.Middleware
                 return;
             }
 
-            var allowedUserTypes = ((CanAccessAttribute) method
-                    .GetCustomAttributes()
-                    .FirstOrDefault(x => x is CanAccessAttribute))
-                ?.AllowedUsers;
+            var authorizeAttribute = (AuthorizeAttribute) method
+                .GetCustomAttributes()
+                .FirstOrDefault(x => x is AuthorizeAttribute);
+
+            if (authorizeAttribute == null)
+                throw new NotFoundException();
+
+            var allowedUserTypes = authorizeAttribute.AllowedUsers;
 
             if (EnumerableExtensions.IsNullOrEmpty(allowedUserTypes))
-                throw new UnauthorizedException();
+            {
+                await next();
+                return;
+            }
 
             var headers = context.HttpContext.Request.Headers;
             if (!headers.ContainsKey("token"))

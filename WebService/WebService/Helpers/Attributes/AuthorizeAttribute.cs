@@ -3,11 +3,11 @@ using WebService.Models;
 
 namespace WebService.Helpers.Attributes
 {
-    public class CanAccessAttribute : Attribute
+    public class AuthorizeAttribute : Attribute
     {
         public EUserType[] AllowedUsers { get; }
 
-        public CanAccessAttribute(params EUserType[] userTypes)
+        public AuthorizeAttribute(params EUserType[] userTypes)
         {
             AllowedUsers = userTypes;
         }

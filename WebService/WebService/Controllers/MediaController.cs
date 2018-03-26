@@ -61,7 +61,7 @@ namespace WebService.Controllers
 
         #region read
 
-        [CanAccess(EUserType.Module, EUserType.SysAdmin, EUserType.User, EUserType.User)]
+        [Authorize(EUserType.Module, EUserType.SysAdmin, EUserType.User, EUserType.User)]
         [HttpGet(GetOneWithExtensionTemplate)]
         public async Task<FileContentResult> GetOneAsync(string id, string extension, [FromHeader] string token)
         {
@@ -86,7 +86,7 @@ namespace WebService.Controllers
             return File(data, $"{mediaType.ToString().ToLower()}/{extension}");
         }
 
-        [CanAccess(EUserType.Module, EUserType.SysAdmin, EUserType.User, EUserType.User)]
+        [Authorize(EUserType.Module, EUserType.SysAdmin, EUserType.User, EUserType.User)]
         [HttpGet(GetOneTemplate)]
         public async Task<FileContentResult> GetOneAsync(string id)
         {
