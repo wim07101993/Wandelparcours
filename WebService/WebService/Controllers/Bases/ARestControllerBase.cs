@@ -88,6 +88,8 @@ namespace WebService.Controllers.Bases
         /// </summary>
         public abstract IDictionary<string, Expression<Func<T, object>>> PropertySelectors { get; }
 
+        public new User User { get; set; }
+
         #endregion PROPERTIES
 
 
@@ -113,12 +115,7 @@ namespace WebService.Controllers.Bases
 
         #region create
 
-        /// <inheritdoc cref="IRestController{T}.CreateAsync" />
-        /// <summary>
-        /// Create is supposed to save the passed <see cref="T"/> to the database.
-        /// </summary>
-        /// <param name="item">is the <see cref="T"/> to save in the database</param>
-        /// <exception cref="Exception">When the item could not be created</exception>
+        [CanAccess]
         [HttpPost(CreateTemplate)]
         public virtual async Task<StatusCodeResult> CreateAsync([FromBody] T item)
         {
@@ -174,18 +171,8 @@ namespace WebService.Controllers.Bases
 
         #region read
 
-        /// <inheritdoc cref="IRestController{T}.GetAsync(string[])" />
-        /// <summary>
-        /// Get is supposed to return all the Items in the database. 
-        /// To limit data traffic it is possible to select only a number of properties.
-        /// <para/>
-        /// By default only the properties in the selector <see cref="PropertiesToSendOnGetAll"/> are returned.
-        /// </summary>
-        /// <param name="propertiesToInclude">are the properties of which the values should be returned</param>
-        /// <returns>All <see cref="T"/>s in the database but only the given properties are filled in</returns>
-        /// <exception cref="WebArgumentException">When one ore more properties could not be converted to selectors</exception>
+        [CanAccess]
         [HttpGet(GetAllTemplate)]
-        [CanAccess(EUserType.Nurse, EUserType.SysAdmin, EUserType.Module)]
         public virtual async Task<IEnumerable<T>> GetAllAsync([FromQuery] string[] propertiesToInclude)
         {
             // convert the property names to selectors, if there are any
@@ -197,18 +184,7 @@ namespace WebService.Controllers.Bases
             return await DataService.GetAsync(selectors);
         }
 
-        /// <inheritdoc cref="IRestController{T}.GetAsync(string, string[])" />
-        /// <summary>
-        /// Get is supposed to return the <see cref="T"/> with the given id in the database. 
-        /// To limit data traffic it is possible to select only a number of properties.
-        /// <para/>
-        /// By default all properties are returned.
-        /// </summary>
-        /// <param name="id">is the id of the <see cref="T"/> to get</param>
-        /// <param name="propertiesToInclude">are the properties of which the values should be returned</param>
-        /// <returns>The <see cref="T"/> in the database that has the given id</returns>
-        /// <exception cref="NotFoundException">When the id cannot be parsed or <see cref="T"/> not found</exception>
-        /// <exception cref="WebArgumentException">When one ore more properties could not be converted to selectors</exception>
+        [CanAccess]
         [HttpGet(GetOneTemplate)]
         public virtual async Task<T> GetOneAsync(string id, [FromQuery] string[] propertiesToInclude)
         {
@@ -232,15 +208,7 @@ namespace WebService.Controllers.Bases
                 : item;
         }
 
-        /// <inheritdoc cref="IRestController{T}.GetPropertyAsync" />
-        /// <summary>
-        /// GetProperty returns the jsonValue of the asked property of the asked <see cref="T"/>.
-        /// </summary>
-        /// <param name="id">is the id of the <see cref="T"/></param>
-        /// <param name="propertyName">is the name of the property to return</param>
-        /// <returns>The jsonValue of the asked property</returns>
-        /// <exception cref="NotFoundException">When the id cannot be parsed or <see cref="T"/> not found</exception>
-        /// <exception cref="WebArgumentException">When the property could not be found on <see cref="T"/></exception>
+        [CanAccess]
         [HttpGet(GetPropertyTemplate)]
         public virtual async Task<object> GetPropertyAsync(string id, string propertyName)
         {
@@ -262,17 +230,7 @@ namespace WebService.Controllers.Bases
 
         #region update
 
-        /// <inheritdoc cref="IRestController{T}.UpdateAsync" />
-        /// <summary>
-        /// Update updates the fields of the <see cref="T"/> that are specified in the <see cref="properties"/> parameter.
-        /// If the item doesn't exist, a new is created in the database.
-        /// <para/>
-        /// By default all properties are updated.
-        /// </summary>
-        /// <param name="item">is the <see cref="T"/> to update</param>
-        /// <param name="properties">contains the properties that should be updated</param>
-        /// <exception cref="NotFoundException">When the id cannot be parsed or <see cref="T"/> not found</exception>
-        /// <exception cref="WebArgumentException">When one ore more properties could not be converted to selectors</exception>
+        [CanAccess]
         [HttpPut(UpdateTemplate)]
         public virtual async Task UpdateAsync([FromBody] T item, [FromQuery] string[] properties)
         {
@@ -285,16 +243,7 @@ namespace WebService.Controllers.Bases
             await DataService.UpdateAsync(item, selectors);
         }
 
-        /// <inheritdoc cref="IRestController{T}.UpdatePropertyAsync"/>
-        /// <summary>
-        /// UpdatePropertyAsync is supposed to update the jsonValue of the asked property of the asked <see cref="T"/>.
-        /// </summary>
-        /// <param name="id">is the id of the <see cref="T"/></param>
-        /// <param name="propertyName">is the name of the property to update</param>
-        /// <param name="jsonValue">is the new jsonValue of the property</param>
-        /// <exception cref="NotFoundException">When the id cannot be parsed or <see cref="T"/> not found</exception>
-        /// <exception cref="WebArgumentException">When the property could not be found on <see cref="T"/> or the jsonValue could not be assigned</exception>
-        /// <exception cref="Exception">When the update failed</exception>
+        [CanAccess]
         [HttpPut(UpdatePropertyTemplate)]
         public virtual async Task UpdatePropertyAsync(string id, string propertyName, [FromBody] string jsonValue)
         {
@@ -334,12 +283,7 @@ namespace WebService.Controllers.Bases
 
         #region delete
 
-        /// <inheritdoc cref="IRestController{T}.DeleteAsync" />
-        /// <summary>
-        /// Delete is supposed to remove the <see cref="T"/> with the passed id from the database.
-        /// </summary>
-        /// <param name="id">is the id of the <see cref="T"/> to remove from the database</param>
-        /// <exception cref="NotFoundException">When the id cannot be parsed or <see cref="T"/> not found</exception>
+        [CanAccess]
         [HttpDelete(DeleteTemplate)]
         public virtual async Task DeleteAsync(string id)
         {

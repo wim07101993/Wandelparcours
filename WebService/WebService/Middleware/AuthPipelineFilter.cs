@@ -3,53 +3,64 @@ using System.Reflection;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Mvc.Filters;
+using MongoDB.Bson;
+using WebService.Controllers;
 using WebService.Helpers.Attributes;
+using WebService.Helpers.Exceptions;
+using WebService.Helpers.Extensions;
 using WebService.Services.Authorization;
 using WebService.Services.Data;
-using WebService.Services.Exceptions;
 
 namespace WebService.Middleware
 {
     public class AuthPipelineFilter : IAsyncActionFilter
     {
-        private readonly IThrow _iThrow;
         private readonly ITokenService _tokenService;
         private readonly IUsersService _usersService;
 
-        public AuthPipelineFilter(IThrow iThrow, ITokenService tokenService, IUsersService usersService)
+        public AuthPipelineFilter(ITokenService tokenService, IUsersService usersService)
         {
-            _iThrow = iThrow;
             _tokenService = tokenService;
             _usersService = usersService;
         }
 
         public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
         {
-            if (context.ActionDescriptor is ControllerActionDescriptor controllerActionDescriptor)
+            if (!(context.ActionDescriptor is ControllerActionDescriptor controllerActionDescriptor))
+                throw new UnauthorizedException();
+
+            var method = controllerActionDescriptor.MethodInfo;
+            if (context.Controller is TokensController && method.Name == nameof(TokensController.CreateTokenAsync))
             {
-                var allowedUserTypes = ((CanAccessAttribute) controllerActionDescriptor
-                        .MethodInfo
-                        .GetCustomAttributes()
-                        .FirstOrDefault(x => x is CanAccessAttribute))
-                    ?.AllowedUsers;
-
-                if (allowedUserTypes != null)
-                {
-                    var headers = context.HttpContext.Request.Headers;
-                    if (!headers.ContainsKey("token"))
-                        _iThrow.Unauthorized(allowedUserTypes);
-
-                    var strToken = headers["token"];
-                    if (!_tokenService.ValidateToken(strToken))
-                        _iThrow.Unauthorized(allowedUserTypes);
-
-                    var userId = await _tokenService.GetIdFromToken(strToken);
-                    var userType = await _usersService.GetPropertyAsync(userId, x => x.UserType);
-
-                    if (!allowedUserTypes.Contains(userType))
-                        _iThrow.Unauthorized(allowedUserTypes);
-                }
+                await next();
+                return;
             }
+
+            var allowedUserTypes = ((CanAccessAttribute) method
+                    .GetCustomAttributes()
+                    .FirstOrDefault(x => x is CanAccessAttribute))
+                ?.AllowedUsers;
+
+            if (EnumerableExtensions.IsNullOrEmpty(allowedUserTypes))
+                throw new UnauthorizedException();
+
+            var headers = context.HttpContext.Request.Headers;
+            if (!headers.ContainsKey("token"))
+                throw new UnauthorizedException();
+
+            var strToken = headers["token"];
+            if (!_tokenService.ValidateToken(strToken))
+                throw new UnauthorizedException();
+
+            var userId = await _tokenService.GetIdFromToken(strToken);
+            if (userId == ObjectId.Empty)
+                throw new UnauthorizedException(allowedUserTypes);
+
+            var userType = await _usersService.GetPropertyAsync(userId, x => x.UserType);
+
+            // ReSharper disable once AssignNullToNotNullAttribute
+            if (!allowedUserTypes.Contains(userType))
+                throw new UnauthorizedException(allowedUserTypes);
 
             await next();
         }
