@@ -45,3 +45,4 @@ WebService/WebService.userprefs
 *.userprefs
 *.userprefs
 kiosk/.idea/
+kiosk/node_modules/
