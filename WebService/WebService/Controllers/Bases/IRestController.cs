@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using WebService.Helpers.Exceptions;
 using WebService.Models.Bases;
 
 namespace WebService.Controllers.Bases
@@ -11,7 +9,7 @@ namespace WebService.Controllers.Bases
     /// IRestController defines the methods a REST controller should have
     /// </summary>
     /// <typeparam name="T">is the type of the data to handle. It should be assignable to an <see cref="IModelWithID"/></typeparam>
-    public interface IRestController<T> where T : IModelWithID
+    public interface IRestController<T> : IController where T : IModelWithID
     {
         #region CREATE
 

@@ -3,13 +3,14 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Bson;
+using WebService.Controllers.Bases;
 using WebService.Services.Authorization;
 using WebService.Services.Data;
 
 namespace WebService.Controllers
 {
     [Route("api/v1/[controller]")]
-    public class TokensController : Controller
+    public class TokensController : AControllerBase, ITokenController
     {
         public const string CreateTokenTemplate = "";
 

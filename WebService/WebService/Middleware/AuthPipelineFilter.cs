@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Mvc.Filters;
 using MongoDB.Bson;
 using WebService.Controllers;
+using WebService.Controllers.Bases;
 using WebService.Helpers.Attributes;
 using WebService.Helpers.Exceptions;
 using WebService.Helpers.Extensions;
@@ -68,6 +69,9 @@ namespace WebService.Middleware
             // ReSharper disable once AssignNullToNotNullAttribute
             if (!allowedUserTypes.Contains(userType))
                 throw new UnauthorizedException(allowedUserTypes);
+
+            if (context.Controller is IController controller)
+                controller.UserId = userId;
 
             await next();
         }

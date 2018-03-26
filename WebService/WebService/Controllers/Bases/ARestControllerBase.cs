@@ -25,7 +25,7 @@ namespace WebService.Controllers.Bases
     /// ARestControllerBase is an abstract class that holds the methods to Get, Create, Delete and Update data to a database.
     /// </summary>
     /// <typeparam name="T">is the type of the data to handle</typeparam>
-    public abstract class ARestControllerBase<T> : Controller, IRestController<T> where T : IModelWithID
+    public abstract class ARestControllerBase<T> : AControllerBase, IRestController<T> where T : IModelWithID
     {
         #region FIELDS
 
@@ -83,9 +83,7 @@ namespace WebService.Controllers.Bases
         /// and as values the selectors.
         /// </summary>
         public abstract IDictionary<string, Expression<Func<T, object>>> PropertySelectors { get; }
-
-        public new User User { get; set; }
-
+        
         #endregion PROPERTIES
 
 
