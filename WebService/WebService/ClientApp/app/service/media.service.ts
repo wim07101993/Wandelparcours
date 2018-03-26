@@ -6,7 +6,7 @@ import { Resident } from "../models/resident";
 export class MediaService {
     fullLinks: any = [];
     check: any;
-    url: any = "http://localhost:5000/api/v1/media/";
+    url: any = "http://192.168.137.1:5000/api/v1/media/";
     constructor(private service: RestServiceService) { }
 
     /**
