@@ -5,6 +5,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Serialization;
 using WebService.Helpers.Extensions;
+using WebService.Middleware;
 using WebService.Services.Authorization;
 using WebService.Services.Data;
 using WebService.Services.Data.Mock;
@@ -31,18 +32,18 @@ namespace WebService
                 .AddSingleton(typeof(ILogger), new LoggerCollection {new ConsoleLogger(), new FileLogger()})
                 .AddSingleton<IRandomizer, Randomizer>()
                 .AddSingleton<IThrow, Throw>()
-                .AddSingleton<IMediaService, MockMediaService>()
-                .AddSingleton<IResidentsService, MockResidentsService>()
-                .AddSingleton<IReceiverModulesService, ReceiverModulesService>()
-                .AddSingleton<IUsersService, MockUsersService>()
-                //.AddSingleton<IMediaService, MediaService>()
-                //.AddSingleton<IResidentsService, ResidentsService>()
+                //.AddSingleton<IMediaService, MockMediaService>()
+                //.AddSingleton<IResidentsService, MockResidentsService>()
                 //.AddSingleton<IReceiverModulesService, ReceiverModulesService>()
-                //.AddSingleton<IUsersService, UsersService>()
+                //.AddSingleton<IUsersService, MockUsersService>()
+                .AddSingleton<IMediaService, MediaService>()
+                .AddSingleton<IResidentsService, ResidentsService>()
+                .AddSingleton<IReceiverModulesService, ReceiverModulesService>()
+                .AddSingleton<IUsersService, UsersService>()
                 .AddSingleton<ITokenService, TokenService>();
 
             services
-                .AddMvc()
+                .AddMvc(options => { options.Filters.Add<AuthPipelineFilter>(); })
                 .AddJsonOptions(options =>
                 {
                     options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
@@ -69,7 +70,6 @@ namespace WebService
             app.UseCors((option) => { option.AllowAnyOrigin().AllowAnyMethod(); });
 
             app.UseExceptionMiddleware()
-              //  .UseAuthorizationMiddleware()
                 .UseStaticFiles()
                 .UseMvc(routes =>
                 {

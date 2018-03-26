@@ -15,8 +15,5 @@ namespace WebService.Helpers.Extensions
         /// <returns>The modified <see cref="IApplicationBuilder"/></returns>
         public static IApplicationBuilder UseExceptionMiddleware(this IApplicationBuilder This)
             => This.UseMiddleware<ExceptionMiddleware>();
-
-        public static IApplicationBuilder UseAuthorizationMiddleware(this IApplicationBuilder This)
-            => This.UseMiddleware<AuthorizationMiddleware>();
     }
 }

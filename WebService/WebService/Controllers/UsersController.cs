@@ -30,7 +30,7 @@ namespace WebService.Controllers
                 x => x.Id,
                 x => x.UserName,
                 x => x.Email,
-                x => x.AuthLevel
+                x => x.UserType
             };
 
 
@@ -41,7 +41,7 @@ namespace WebService.Controllers
                 {nameof(Models.User.UserName), x => x.UserName},
                 {nameof(Models.User.Email), x => x.Email},
                 {nameof(Models.User.Password), x => x.Password},
-                {nameof(Models.User.AuthLevel), x => x.AuthLevel},
+                {nameof(Models.User.UserType), x => x.UserType},
                 {nameof(Models.User.Residents), x => x.Residents},
             };
         

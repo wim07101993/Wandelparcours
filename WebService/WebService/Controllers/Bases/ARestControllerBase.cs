@@ -8,8 +8,10 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Bson;
 using Newtonsoft.Json;
+using WebService.Helpers.Attributes;
 using WebService.Helpers.Exceptions;
 using WebService.Helpers.Extensions;
+using WebService.Models;
 using WebService.Models.Bases;
 using WebService.Services.Data;
 using WebService.Services.Exceptions;
@@ -50,7 +52,7 @@ namespace WebService.Controllers.Bases
         /// _logger is used to handle the logging of messages.
         /// </summary>
         protected readonly ILogger Logger;
-        
+
         #endregion FIELDS
 
 
@@ -85,7 +87,7 @@ namespace WebService.Controllers.Bases
         /// and as values the selectors.
         /// </summary>
         public abstract IDictionary<string, Expression<Func<T, object>>> PropertySelectors { get; }
-        
+
         #endregion PROPERTIES
 
 
@@ -183,6 +185,7 @@ namespace WebService.Controllers.Bases
         /// <returns>All <see cref="T"/>s in the database but only the given properties are filled in</returns>
         /// <exception cref="WebArgumentException">When one ore more properties could not be converted to selectors</exception>
         [HttpGet(GetAllTemplate)]
+        [CanAccess(EUserType.Nurse, EUserType.SysAdmin, EUserType.Module)]
         public virtual async Task<IEnumerable<T>> GetAllAsync([FromQuery] string[] propertiesToInclude)
         {
             // convert the property names to selectors, if there are any

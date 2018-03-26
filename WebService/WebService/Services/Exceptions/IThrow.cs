@@ -26,7 +26,7 @@ namespace WebService.Services.Exceptions
 
         void Exception(string message = null);
 
-        void Unauthorized(params EAuthLevel[] minAuthLevels);
+        void Unauthorized(params EUserType[] allowedUserTypes);
         void Unauthorized();
     }
 }

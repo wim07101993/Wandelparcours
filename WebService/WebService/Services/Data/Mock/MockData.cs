@@ -176,7 +176,7 @@ namespace WebService.Services.Data.Mock
             new User
             {
                 Email = "wim.vanlaer@student.ucll.be",
-                AuthLevel = EAuthLevel.SysAdmin,
+                UserType = EUserType.SysAdmin,
                 UserName = "wim",
                 Password = "$2b$10$cGq2TPUjn.VLBCg1EIUqNOaMgvyXd17pInQTbC1s8g0/hjIVrOofq",
                 Id = ObjectId.Parse("5ab394c95180773ed87c8684")

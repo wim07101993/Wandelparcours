@@ -3,12 +3,12 @@
     /// <summary>
     /// EAuthLevel is an indication of to what an user is authorized
     /// </summary>
-    public enum EAuthLevel
+    public enum EUserType
     {
-        SysAdmin = 0,
-        Nurse = 1,
-        User = 2,
-        Module = 3,
-        Guest = 4
+        SysAdmin,
+        Nurse,
+        User,
+        Module,
+        Guest
     }
 }

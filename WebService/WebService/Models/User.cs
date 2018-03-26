@@ -36,12 +36,12 @@ namespace WebService.Models
         public string Password { get; set; }
 
         /// <summary>
-        /// AuthLevel is the level of authorization of the User
+        /// UserType is the level of authorization of the User
         /// <para/>
         /// In the database the value is stored under the field "authLevel"
         /// </summary>
-        [BsonElement("authLevel")]
-        public EAuthLevel AuthLevel { get; set; } = EAuthLevel.Guest;
+        [BsonElement("userType")]
+        public EUserType UserType { get; set; } = EUserType.Guest;
 
 
         [BsonElement("residents")]
