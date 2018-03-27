@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
-using WebService.Helpers.Extensions;
 using WebService.Models.Bases;
 
 namespace WebService.Models
@@ -43,8 +42,10 @@ namespace WebService.Models
         [BsonElement("userType")]
         public EUserType UserType { get; set; } = EUserType.Guest;
 
-
         [BsonElement("residents")]
         public IEnumerable<ObjectId> Residents { get; set; }
+
+        [BsonElement("group")]
+        public string Group { get; set; }
     }
 }

@@ -5,6 +5,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Net;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Bson;
@@ -102,13 +103,16 @@ namespace WebService.Controllers
 
         private async Task<bool> IsCurrentUserResponsibleForResident(ObjectId residentId)
         {
-            var properties = new Expression<Func<User, object>>[] {x => x.Residents, x => x.UserType};
+            var properties = new Expression<Func<User, object>>[] {x => x.Residents, x => x.UserType, x => x.Group};
             var user = await GetCurrentUser(properties);
             switch (user.UserType)
             {
                 case EUserType.SysAdmin:
-                case EUserType.Nurse:
                     return true;
+                case EUserType.Nurse:
+                    var residentRoom = await DataService.GetPropertyAsync(residentId, x => x.Room);
+                    var regex = new Regex($@"^{residentRoom}[0-9]*$");
+                    return regex.IsMatch(user.Group);
                 case EUserType.User:
                     return user.Residents.Contains(residentId);
                 default:
