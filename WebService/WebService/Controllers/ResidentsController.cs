@@ -169,6 +169,19 @@ namespace WebService.Controllers
             return StatusCode((int) HttpStatusCode.Created);
         }
 
+        [HttpPost("{id}/tags")]
+        public async Task<IEnumerable<int>> AddTag(string id)
+        {
+            if (!ObjectId.TryParse(id, out var objectId))
+                throw new NotFoundException($"The {typeof(Resident).Name} with id {id} could not be found");
+
+            var maxTag = await ((IResidentsService) DataService).GetHighestTagNumberAsync();
+            maxTag++;
+
+            await DataService.AddItemToListProperty(objectId, x => x.Tags, maxTag);
+            return await DataService.GetPropertyAsync(objectId, x => x.Tags) as IEnumerable<int>;
+        }
+
         #endregion post (create)
 
         #region get (read)

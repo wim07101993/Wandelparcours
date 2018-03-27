@@ -29,4 +29,8 @@ export class PersonaliaComponent implements OnInit {
             this.router.navigate(['/error']);
         }
     }
+
+    async addTag(){
+        this.resident.tags = await this.service.addTagToResident(this.resident.id);
+    }
 }
