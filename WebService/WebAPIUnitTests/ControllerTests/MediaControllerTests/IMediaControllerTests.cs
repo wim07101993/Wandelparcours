@@ -4,6 +4,6 @@
     {
         void GetNullId();
         void GetBadId();
-        void GetExistingId();
+        void Get();
     }
 }

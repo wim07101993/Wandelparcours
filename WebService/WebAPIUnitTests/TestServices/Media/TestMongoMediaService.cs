@@ -5,13 +5,12 @@ using WebAPIUnitTests.TestModels;
 using WebService.Helpers.Extensions;
 using WebService.Models;
 using WebService.Services.Data.Mongo;
-using WebService.Services.Exceptions;
 
 namespace WebAPIUnitTests.TestServices.Media
 {
     public class TestMongoMediaService : MediaService, ITestMediaService
     {
-        public TestMongoMediaService() : base(new TestMongoConfiguration("mockMedia"), new Throw())
+        public TestMongoMediaService() : base(new TestMongoConfiguration("mockMedia"))
         {
             if (!GetAll().Any())
                 MongoCollection.InsertMany(TestData.TestMediaData);

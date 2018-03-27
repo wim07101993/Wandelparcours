@@ -3,16 +3,11 @@ using MongoDB.Bson;
 using WebAPIUnitTests.TestModels;
 using WebService.Helpers.Extensions;
 using WebService.Services.Data.Mock;
-using WebService.Services.Exceptions;
 
 namespace WebAPIUnitTests.TestServices.Abstract
 {
     public class TestDataService : AMockDataService<TestEntity>, ITestDataService<TestEntity>
     {
-        public TestDataService() : base(new Throw())
-        {
-        }
-
         public override List<TestEntity> MockData { get; } = TestData.TestEntities.Clone();
 
         public override TestEntity CreateNewItem(ObjectId id)

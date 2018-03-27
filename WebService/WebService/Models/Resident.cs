@@ -33,7 +33,7 @@ namespace WebService.Models
         /// In the database the value is stored under the field "picture"
         /// </summary>
         [BsonElement("picture")]
-        public byte[] ImagePicture { get; set; } = { };
+        public byte[] ImagePicture { get; set; } 
 
         /// <summary>
         /// Room is the room of the Value
@@ -65,7 +65,7 @@ namespace WebService.Models
         /// In the database the value is stored under the field "tags"
         /// </summary>
         [BsonElement("tags")]
-        public List<int> Tags { get; set; } = new List<int>();
+        public List<int> Tags { get; set; } 
 
         /// <summary>
         /// Music is the music-collection of the Value
@@ -73,7 +73,7 @@ namespace WebService.Models
         /// In the database the value is stored under the field "music"
         /// </summary>
         [BsonElement("music")]
-        public List<MediaUrl> Music { get; set; } = new List<MediaUrl>();
+        public List<MediaUrl> Music { get; set; }
 
         /// <summary>
         /// Videos is the video-collection of the Value
@@ -81,7 +81,7 @@ namespace WebService.Models
         /// In the database the value is stored under the field "videos"
         /// </summary>
         [BsonElement("videos")]
-        public List<MediaUrl> Videos { get; set; } = new List<MediaUrl>();
+        public List<MediaUrl> Videos { get; set; }
 
         /// <summary>
         /// Images is the image-collection of the Value
@@ -89,7 +89,7 @@ namespace WebService.Models
         /// In the database the value is stored under the field "images"
         /// </summary>
         [BsonElement("images")]
-        public List<MediaUrl> Images { get; set; } = new List<MediaUrl>();
+        public List<MediaUrl> Images { get; set; }
 
         /// <summary>
         /// Colors are the favorite colors of the Value
@@ -97,7 +97,7 @@ namespace WebService.Models
         /// In the database the value is stored under the field "colors"
         /// </summary>
         [BsonElement("colors")]
-        public List<byte[]> Colors { get; set; } = new List<byte[]>();
+        public List<Color> Colors { get; set; }
 
         /// <summary>
         /// LastRecordedPosition is position where the resident has last been tracked
@@ -113,6 +113,6 @@ namespace WebService.Models
         /// In the database the value is stored under the field "locations"
         /// </summary>
         [BsonElement("locations")]
-        public List<Point> Locations { get; set; } = new List<Point>();
+        public List<Point> Locations { get; set; }
     }
 }

@@ -5,12 +5,13 @@ using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using WebService.Controllers.Bases;
+using WebService.Helpers.Attributes;
 using WebService.Helpers.Exceptions;
 using WebService.Helpers.Extensions;
 using WebService.Models;
 using WebService.Services.Data;
-using WebService.Services.Exceptions;
 using WebService.Services.Logging;
+using ArgumentNullException = WebService.Helpers.Exceptions.ArgumentNullException;
 
 namespace WebService.Controllers
 {
@@ -21,10 +22,18 @@ namespace WebService.Controllers
     [Route("api/v1/[controller]")]
     public class ReceiverModulesController : ARestControllerBase<ReceiverModule>, IReceiverModulesController
     {
+        #region FIELDS
+
+        public new const string GetOneTemplate = "{mac}";
+        public new const string DeleteTemplate = "{mac}";
+
+        #endregion FIELDS
+
+
         #region CONSTRUCTOR
 
-        public ReceiverModulesController(IThrow iThrow, IDataService<ReceiverModule> dataService, ILogger logger)
-            : base(iThrow, dataService, logger)
+        public ReceiverModulesController(IReceiverModulesService dataService, ILogger logger, IUsersService usersService)
+            : base(dataService, logger, usersService)
         {
         }
 
@@ -51,14 +60,12 @@ namespace WebService.Controllers
 
         #region post (create)
 
-        [HttpPost]
+        [Authorize(EUserType.SysAdmin)]
+        [HttpPost(CreateTemplate)]
         public override async Task<StatusCodeResult> CreateAsync([FromBody] ReceiverModule item)
         {
             if (item == null)
-            {
-                Throw.NullArgument(nameof(item));
-                return null;
-            }
+                throw new ArgumentNullException(nameof(item));
 
             if (item.Position == null)
                 item.Position = new Point();
@@ -72,53 +79,32 @@ namespace WebService.Controllers
 
         #region get (read)
 
-        [HttpGet("{id}/{propertyName}")]
-        public override Task<object> GetPropertyAsync(string id, string propertyName)
-            => base.GetPropertyAsync(id, propertyName);
+        [Authorize(EUserType.SysAdmin)]
+        [HttpGet(GetAllTemplate)]
+        public override Task<IEnumerable<ReceiverModule>> GetAllAsync(string[] propertiesToInclude) => base.GetAllAsync(propertiesToInclude);
 
-        [HttpGet("{mac}")]
-        public override async Task<ReceiverModule> GetAsync(string mac, [FromQuery] string[] propertiesToInclude)
+        [Authorize(EUserType.SysAdmin)]
+        [HttpGet(GetOneTemplate)]
+        public override async Task<ReceiverModule> GetOneAsync(string mac, [FromQuery] string[] propertiesToInclude)
         {
             if (mac == null)
-            {
-                Throw.NotFound<ReceiverModule>(null);
-                return null;
-            }
+                throw new NotFoundException<ReceiverModule>(nameof(ReceiverModule.Mac), null);
 
-            // convert the property names to selectors, if there are any
             var selectors = !EnumerableExtensions.IsNullOrEmpty(propertiesToInclude)
                 ? ConvertStringsToSelectors(propertiesToInclude)
                 : new Expression<Func<ReceiverModule, object>>[0];
 
-            // get the value from the data service
             return await ((IReceiverModulesService) DataService).GetAsync(mac, selectors)
-                   ?? throw new NotFoundException(
-                       $"The {typeof(ReceiverModule).Name} with id {mac} could not be found");
+                   ?? throw new NotFoundException<ReceiverModule>(nameof(ReceiverModule.Mac), mac);
         }
-
-        [HttpGet]
-        public override Task<IEnumerable<ReceiverModule>> GetAsync([FromQuery] string[] propertiesToInclude)
-            => base.GetAsync(propertiesToInclude);
 
         #endregion get (read)
 
-        #region put (update)
-
-        [HttpPut]
-        public override Task UpdateAsync([FromBody] ReceiverModule item, [FromQuery] string[] propertiesToUpdate)
-            => base.UpdateAsync(item, propertiesToUpdate);
-
-        [HttpPut("{id}/{propertyName}")]
-        public override Task UpdatePropertyAsync(string id, string propertyName, [FromBody] string jsonValue)
-            => base.UpdatePropertyAsync(id, propertyName, jsonValue);
-
-        #endregion put (update)
-
         #region delete
 
-        [HttpDelete("{mac}")]
+        [Authorize(EUserType.SysAdmin)]
+        [HttpDelete(DeleteTemplate)]
         public override Task DeleteAsync(string mac)
-            // use the data service to remove the item
             => ((IReceiverModulesService) DataService).RemoveAsync(mac);
 
         #endregion delete

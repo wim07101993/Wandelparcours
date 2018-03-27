@@ -10,6 +10,7 @@
 
         #endregion CREATE
 
+
         #region READ
 
         void GetAllNullProperties();
@@ -17,68 +18,38 @@
         void GetAllSomeProperties();
 
 
-        void GetOneNullIdNullProperties();
-        void GetOneNullIdEmptyProperties();
-        void GetOneNullIdBadProperties();
-        void GetOneNullIdSomeProperties();
-
-        void GetOneExistingIdNullProperties();
-        void GetOneExistingIdEmptyProperties();
-        void GetOneExistingIdBadProperties();
-        void GetOneExistingIdSomeProperties();
-
-        void GetOneBadIdNullProperties();
-        void GetOneBadIdEmptyProperties();
-        void GetOneBadIdBadProperties();
-        void GetOneBadIdSomeProperties();
+        void GetOneNullId();
+        void GetOneBadId();
+        void GetOneNullProperties();
+        void GetOneEmptyProperties();
+        void GetOneBadProperties();
+        void GetOne();
 
 
-        void GetNullPropertyNullId();
-        void GetNullPropertyExistingId();
-        void GetNullPropertyBadId();
-
-        void GetBadPropertyNullId();
-        void GetBadPropertyExistingId();
-        void GetBadPropertyBadId();
-
-        void GetExistingPropertyNullId();
-        void GetExistingPropertyExistingId();
-        void GetExistingPropertyBadId();
+        void GetNullProperty();
+        void GetBadProperty();
+        void GetPropertyNullID();
+        void GetPropertyBadId();
+        void GetProperty();
 
         #endregion READ
 
+
         #region UPDATE
 
-        void UpdateNullItemNullProperties();
-        void UpdateNullItemEmptyProperties();
-        void UpdateNullItemBadProperties();
-        void UpdateNullItemSomeProperties();
+        void UpdateNullItem();
+        void UpdateBadItem();
+        void UpdateNullProperties();
+        void UpdateEmptyProperties();
+        void UpdatedBadProperties();
+        void Update();
 
-        void UpdateBadIdNullProperties();
-        void UpdateBadIdEmptyProperties();
-        void UpdateBadIdBadProperties();
-        void UpdateBadIdSomeProperties();
-
-        void UpdateExistingIdNullProperties();
-        void UpdateExistingIdEmptyProperties();
-        void UpdateExistingIdBadProperties();
-        void UpdateExistingIdSomeProperties();
-
-
-        void UpdateNullIdNullProperty();
-        void UpdateNullIdBadProperty();
-        void UpdateNullIdExistingPropertyBadValue();
-        void UpdateNullIdExistingPropertyGoodValue();
-
-        void UpdateBadIdNullProperty();
-        void UpdateBadIdBadProperty();
-        void UpdateBadIdExistingPropertyBadValue();
-        void UpdateBadIdExistingPropertyGoodValue();
-
-        void UpdateExistingIdNullProperty();
-        void UpdateExistingIdBadProperty();
-        void UpdateExistingIdExistingPropertyBadValue();
-        void UpdateExistingIdExistingPropertyGoodValue();
+        void UpdatePropertyNullId();
+        void UpdatePropertyBadId();
+        void UpdateNullProperty();
+        void UpdateBadProperty();
+        void UpdatePropertyBadValue();
+        void UpdateProperty();
 
         #endregion UPDATE
 
@@ -87,7 +58,7 @@
 
         void DeleteNullId();
         void DeleteBadId();
-        void DeleteExistingId();
+        void Delete();
 
         #endregion DELETE
     }

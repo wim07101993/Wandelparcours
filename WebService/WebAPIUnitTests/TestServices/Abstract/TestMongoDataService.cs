@@ -3,13 +3,12 @@ using System.Linq;
 using MongoDB.Driver;
 using WebAPIUnitTests.TestModels;
 using WebService.Services.Data.Mongo;
-using WebService.Services.Exceptions;
 
 namespace WebAPIUnitTests.TestServices.Abstract
 {
     public class TestMongoDataService : AMongoDataService<TestEntity>, ITestDataService<TestEntity>
     {
-        public TestMongoDataService() : base(new Throw())
+        public TestMongoDataService()
         {
             // create a new client and get the database from it
             var db = new MongoClient("mongodb://localhost:27017").GetDatabase("toermalienTestDb");
