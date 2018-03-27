@@ -52,7 +52,7 @@
 }
 #menuButton{
     position:fixed;
-    right: 1%;
+    
     z-index: 99;
     left: 1%;
 }

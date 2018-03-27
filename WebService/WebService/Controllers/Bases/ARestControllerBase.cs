@@ -4,8 +4,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Net;
+using System.Runtime.InteropServices.ComTypes;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using MongoDB.Bson;
 using Newtonsoft.Json;
 using WebService.Helpers.Exceptions;
@@ -287,8 +289,15 @@ namespace WebService.Controllers.Bases
             object value;
             try
             {
-                // try to convert the jsonValue to the type of the property
-                value = JsonConvert.DeserializeObject(jsonValue, property.PropertyType);
+                // try to convert the jsonValue to the type of the property       
+                if (typeof(String)==property.PropertyType)
+                {
+                    value = jsonValue;
+                }
+                else
+                {
+                    value = JsonConvert.DeserializeObject(jsonValue, property.PropertyType);
+                }
             }
             catch (JsonException)
             {

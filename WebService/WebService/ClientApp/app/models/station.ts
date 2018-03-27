@@ -3,7 +3,6 @@ export class Station{
     isActive:boolean;
     mac:string;
     position:Position;
-    
     constructor(){
         
         this.isActive=false;

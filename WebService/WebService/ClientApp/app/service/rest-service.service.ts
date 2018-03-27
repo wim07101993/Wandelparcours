@@ -221,6 +221,16 @@ export class RestServiceService {
 
     }
 
+    UpdateStation(id:string,newMac:string){
+        return new Promise(resolve => {
+            this.http.put(this.restUrl+"api/v1/receivermodules/"+id+"/Mac",newMac).subscribe(response => {
+                resolve(true);
+            },error=>{
+                resolve(false);
+            });
+            
+        });
+    }
 
     LoadStations(parent:any){
             if (parent.stations!=undefined)
@@ -233,14 +243,15 @@ export class RestServiceService {
 
                 this.http.get(this.restUrl+"api/v1/receivermodules").subscribe(response => {
 
-                        let tryParse=<Array<Station>>(response.json());
+                        let tryParse=<Array<any>>(response.json());
 
-                        let station:Station;
+                        let station:any;
                         if (tryParse!=undefined){
                             for (station of tryParse){
                                 if (station==undefined)continue;
                                 parent.stationMacAdresses.push(station.mac);
                                 parent.stations.set(station.mac,station.position);
+                                parent.stationsIds.set(station.mac,station.id);
                             }
                         }
                         resolve(true);
