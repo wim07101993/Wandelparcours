@@ -24,15 +24,16 @@ namespace WebService.Controllers
     {
         #region FIELDS
 
-        public new const string GetOneTemplate = "{mac}";
-        public new const string DeleteTemplate = "{mac}";
+        public const string GetOneByMacTemplate = "{mac}";
+        public const string DeleteByMacTemplate = "{mac}";
 
         #endregion FIELDS
 
 
         #region CONSTRUCTOR
 
-        public ReceiverModulesController(IReceiverModulesService dataService, ILogger logger, IUsersService usersService)
+        public ReceiverModulesController(IReceiverModulesService dataService, ILogger logger,
+            IUsersService usersService)
             : base(dataService, logger, usersService)
         {
         }
@@ -81,11 +82,12 @@ namespace WebService.Controllers
 
         [Authorize(EUserType.SysAdmin)]
         [HttpGet(GetAllTemplate)]
-        public override Task<IEnumerable<ReceiverModule>> GetAllAsync(string[] propertiesToInclude) => base.GetAllAsync(propertiesToInclude);
+        public override Task<IEnumerable<ReceiverModule>> GetAllAsync(string[] propertiesToInclude)
+            => base.GetAllAsync(propertiesToInclude);
 
         [Authorize(EUserType.SysAdmin)]
-        [HttpGet(GetOneTemplate)]
-        public override async Task<ReceiverModule> GetOneAsync(string mac, [FromQuery] string[] propertiesToInclude)
+        [HttpGet(GetOneByMacTemplate)]
+        public async Task<ReceiverModule> GetOneByMacAsync(string mac, [FromQuery] string[] propertiesToInclude)
         {
             if (mac == null)
                 throw new NotFoundException<ReceiverModule>(nameof(ReceiverModule.Mac), null);
@@ -98,14 +100,24 @@ namespace WebService.Controllers
                    ?? throw new NotFoundException<ReceiverModule>(nameof(ReceiverModule.Mac), mac);
         }
 
+        [Authorize(EUserType.SysAdmin)]
+        [HttpGet(GetOneTemplate)]
+        public override Task<ReceiverModule> GetOneAsync(string id, [FromQuery] string[] propertiesToInclude)
+            => base.GetOneAsync(id, propertiesToInclude);
+
         #endregion get (read)
 
         #region delete
 
         [Authorize(EUserType.SysAdmin)]
-        [HttpDelete(DeleteTemplate)]
-        public override Task DeleteAsync(string mac)
+        [HttpDelete(DeleteByMacTemplate)]
+        public Task DeleteByMacAsync(string mac)
             => ((IReceiverModulesService) DataService).RemoveAsync(mac);
+
+        [Authorize(EUserType.SysAdmin)]
+        [HttpDelete(DeleteTemplate)]
+        public override Task DeleteAsync(string id)
+            => base.DeleteAsync(id);
 
         #endregion delete
 
