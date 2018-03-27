@@ -124,7 +124,7 @@ namespace WebService.Controllers
 
         [Authorize(EUserType.SysAdmin, EUserType.Nurse)]
         [HttpPost(CreateTemplate)]
-        public override Task<StatusCodeResult> CreateAsync([FromBody] Resident item)
+        public override Task<string> CreateAsync([FromBody] Resident item)
             => base.CreateAsync(item);
 
         [Authorize(EUserType.SysAdmin, EUserType.Nurse, EUserType.User)]

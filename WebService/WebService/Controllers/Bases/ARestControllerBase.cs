@@ -62,7 +62,8 @@ namespace WebService.Controllers.Bases
         /// <param name="dataService">is a service to handle the database connection</param>
         /// <param name="logger">is a service to handle the logging of messages</param>
         /// <param name="usersService">is the service to get the current user from</param>
-        protected ARestControllerBase(IDataService<T> dataService, ILogger logger, IUsersService usersService) : base(usersService)
+        protected ARestControllerBase(IDataService<T> dataService, ILogger logger, IUsersService usersService) : base(
+            usersService)
         {
             // initiate the services
             DataService = dataService;
@@ -84,7 +85,7 @@ namespace WebService.Controllers.Bases
         /// and as values the selectors.
         /// </summary>
         public abstract IDictionary<string, Expression<Func<T, object>>> PropertySelectors { get; }
-        
+
         #endregion PROPERTIES
 
 
@@ -106,13 +107,13 @@ namespace WebService.Controllers.Bases
 
         [Authorize]
         [HttpPost(CreateTemplate)]
-        public virtual async Task<StatusCodeResult> CreateAsync([FromBody] T item)
+        public virtual async Task<string> CreateAsync([FromBody] T item)
         {
             if (item == null)
                 throw new ArgumentNullException(nameof(item));
 
             await DataService.CreateAsync(item);
-            return StatusCode((int) HttpStatusCode.Created);
+            return item.Id.ToString();
         }
 
         [HttpPost(AddItemToListTemplate)]

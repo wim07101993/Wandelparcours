@@ -4,6 +4,7 @@ using System.Linq.Expressions;
 using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using MongoDB.Bson;
 using WebService.Controllers.Bases;
 using WebService.Helpers.Attributes;
 using WebService.Helpers.Exceptions;
@@ -63,7 +64,7 @@ namespace WebService.Controllers
 
         [Authorize(EUserType.SysAdmin)]
         [HttpPost(CreateTemplate)]
-        public override async Task<StatusCodeResult> CreateAsync([FromBody] ReceiverModule item)
+        public override async Task<string> CreateAsync([FromBody] ReceiverModule item)
         {
             if (item == null)
                 throw new ArgumentNullException(nameof(item));
@@ -73,7 +74,7 @@ namespace WebService.Controllers
 
             item.Position.TimeStamp = DateTime.Now;
             await base.CreateAsync(item);
-            return StatusCode((int) HttpStatusCode.Created);
+            return item.Id.ToString();
         }
 
         #endregion post (create)

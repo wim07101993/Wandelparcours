@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using MongoDB.Bson;
 using WebService.Models.Bases;
 
 namespace WebService.Controllers.Bases
@@ -18,7 +20,7 @@ namespace WebService.Controllers.Bases
         /// </summary>
         /// <param name="item">is the <see cref="T"/> to save in the database</param>
         /// <exception cref="Exception">When the item could not be created</exception>
-        Task<StatusCodeResult> CreateAsync([FromBody] T item);
+        Task<string> CreateAsync([FromBody] T item);
 
         Task<StatusCodeResult> AddItemToListAsync(string id, string property, string jsonValue);
 

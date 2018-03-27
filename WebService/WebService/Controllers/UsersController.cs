@@ -50,7 +50,7 @@ namespace WebService.Controllers
 
         [Authorize(EUserType.SysAdmin, EUserType.Nurse)]
         [HttpPost(CreateTemplate)]
-        public override Task<StatusCodeResult> CreateAsync([FromBody] User item)
+        public override Task<string> CreateAsync([FromBody] User item)
             => base.CreateAsync(item);
 
 
