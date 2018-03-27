@@ -5,21 +5,19 @@ namespace WebService.Helpers.Exceptions
 {
     public class DatabaseException : Exception
     {
-        /// <inheritdoc cref="Exception()" />
-        /// <summary>
-        /// Initializes a new instance of the <see cref="NotFoundException"></see> class.
-        /// </summary>
         public DatabaseException()
         {
         }
 
-        /// <inheritdoc cref="Exception(string)"/>
-        /// <summary>
-        /// Initializes a new instance of the <see cref="NotFoundException"></see> class with a specified error message.
-        /// </summary>
-        /// <param name="message">The error message that explains the reason for the exception.</param>
-        /// <param name="databaseMethod">The method used in the database</param>
-        public DatabaseException(string message, EDatabaseMethod databaseMethod) : base(message)
+        public DatabaseException(EDatabaseMethod databaseMethod)
+            : base($"Could not {databaseMethod.ToString()} to the database.")
+        {
+            DatabaseMethod = databaseMethod;
+        }
+
+        public DatabaseException(EDatabaseMethod databaseMethod, Exception e)
+            : base(
+                $"Something went wrong while trying to {databaseMethod.ToString()} an element to the database: \n{e.Message}")
         {
             DatabaseMethod = databaseMethod;
         }

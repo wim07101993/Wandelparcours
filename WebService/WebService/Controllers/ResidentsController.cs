@@ -5,16 +5,19 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Net;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Bson;
 using WebService.Controllers.Bases;
+using WebService.Helpers.Attributes;
 using WebService.Helpers.Exceptions;
 using WebService.Helpers.Extensions;
 using WebService.Services.Logging;
 using WebService.Models;
+using WebService.Models.Bases;
 using WebService.Services.Data;
-using WebService.Services.Exceptions;
+using ArgumentNullException = WebService.Helpers.Exceptions.ArgumentNullException;
 
 namespace WebService.Controllers
 {
@@ -26,10 +29,35 @@ namespace WebService.Controllers
     [SuppressMessage("ReSharper", "SpecifyACultureInStringConversionExplicitly")]
     public class ResidentsController : ARestControllerBase<Resident>, IResidentsController
     {
+        #region FIELDS
+
+        public const string AddMusicDataTemplate = "{residentId}/Music/data";
+        public const string AddVideoDataTemplate = "{residentId}/Videos/data";
+        public const string AddImageDataTemplate = "{residentId}/Images/data";
+        public const string AddColorTemplate = "{residentId}/Colors/data";
+
+        public const string AddMusicUrlTemplate = "{residentId}/Music/url";
+        public const string AddVideoUrlTemplate = "{residentId}/Videos/url";
+        public const string AddImageUrlTemplate = "{residentId}/Images/url";
+
+        public const string GetByTagTemplate = "byTag/{tag}";
+        public const string GetRandomElementFromPropertyTemplate = "byTag/{tag}/{propertyName}/random";
+        public const string GetPropertyByTagTemplate = "byTag/{tag}/{propertyName}";
+
+        public const string UpdatePictureTemplate = "{id}/picture";
+
+        public const string RemoveMusicTemplate = "{residentId}/Music/{musicId}";
+        public const string RemoveVideoTemplate = "{residentId}/Videos/{videoId}";
+        public const string RemoveImageTemplate = "{residentId}/Images/{imageId}";
+        public const string RemoveColorTemplate = "{residentId}/Colors";
+
+        #endregion FIELDS
+
+
         #region CONSTRUCTOR
 
-        public ResidentsController(IThrow iThrow, IDataService<Resident> dataService, ILogger logger)
-            : base(iThrow, dataService, logger)
+        public ResidentsController(IResidentsService dataService, ILogger logger, IUsersService usersService)
+            : base(dataService, logger, usersService)
         {
         }
 
@@ -73,21 +101,44 @@ namespace WebService.Controllers
 
         #region METHODS
 
+        private async Task<bool> IsCurrentUserResponsibleForResident(ObjectId residentId)
+        {
+            var properties = new Expression<Func<User, object>>[] {x => x.Residents, x => x.UserType, x => x.Group};
+            var user = await GetCurrentUser(properties);
+            switch (user.UserType)
+            {
+                case EUserType.SysAdmin:
+                    return true;
+                case EUserType.Nurse:
+                    var residentRoom = await DataService.GetPropertyAsync(residentId, x => x.Room);
+                    var regex = new Regex($@"^{residentRoom}[0-9]*$");
+                    return regex.IsMatch(user.Group);
+                case EUserType.User:
+                    return user.Residents.Contains(residentId);
+                default:
+                    return false;
+            }
+        }
+
         #region post (create)
 
-        [HttpPost]
+        [Authorize(EUserType.SysAdmin, EUserType.Nurse)]
+        [HttpPost(CreateTemplate)]
         public override Task<StatusCodeResult> CreateAsync([FromBody] Resident item)
             => base.CreateAsync(item);
 
-        [HttpPost("{residentId}/Music/data")]
+        [Authorize(EUserType.SysAdmin, EUserType.Nurse, EUserType.User)]
+        [HttpPost(AddMusicDataTemplate)]
         public Task<StatusCodeResult> AddMusicAsync(string residentId, [FromForm] MultiPartFile musicData)
             => AddMediaAsync(residentId, musicData, EMediaType.Audio, (int) 20e6);
 
-        [HttpPost("{residentId}/Videos/data")]
+        [Authorize(EUserType.SysAdmin, EUserType.Nurse, EUserType.User)]
+        [HttpPost(AddVideoDataTemplate)]
         public Task<StatusCodeResult> AddVideoAsync(string residentId, [FromForm] MultiPartFile videoData)
             => AddMediaAsync(residentId, videoData, EMediaType.Video, (int) 1e9);
 
-        [HttpPost("{residentId}/Images/data")]
+        [Authorize(EUserType.SysAdmin, EUserType.Nurse, EUserType.User)]
+        [HttpPost(AddImageDataTemplate)]
         public Task<StatusCodeResult> AddImageAsync(string residentId, [FromForm] MultiPartFile imageData)
             => AddMediaAsync(residentId, imageData, EMediaType.Image, (int) 20e6);
 
@@ -95,75 +146,58 @@ namespace WebService.Controllers
             int maxFileSize = int.MaxValue)
         {
             if (data?.File == null)
-            {
-                Throw.NullArgument(nameof(data));
-                return null;
-            }
+                throw new ArgumentNullException(nameof(data));
 
-            // parse the id
-            if (!ObjectId.TryParse(residentId, out var residentObjectId))
-            {
-                // if it fails, throw not found exception
-                Throw.NotFound<Resident>(residentId);
-                return null;
-            }
+            if (!ObjectId.TryParse(residentId, out var residentObjectId)
+                && await IsCurrentUserResponsibleForResident(residentObjectId))
+                throw new NotFoundException<Resident>(nameof(IModelWithID.Id), residentId);
 
             try
             {
                 var bytes = data.ConvertToBytes(maxFileSize);
                 var title = data.File.FileName;
-
                 await ((IResidentsService) DataService).AddMediaAsync(residentObjectId, title, bytes, mediaType,
                     data.File.ContentType.Split('/')[1]);
                 return StatusCode((int) HttpStatusCode.Created);
             }
             catch (FileToLargeException)
             {
-                Throw.FileToLarge(maxFileSize);
+                throw new FileToLargeException(maxFileSize);
             }
-
-            return null;
         }
 
-
-        [HttpPost("{residentId}/Music/url")]
+        [Authorize(EUserType.SysAdmin, EUserType.Nurse, EUserType.User)]
+        [HttpPost(AddMusicUrlTemplate)]
         public Task<StatusCodeResult> AddMusicAsync(string residentId, [FromBody] string url)
             => AddMediaAsync(residentId, url, EMediaType.Audio);
 
-        [HttpPost("{residentId}/Videos/url")]
+        [Authorize(EUserType.SysAdmin, EUserType.Nurse, EUserType.User)]
+        [HttpPost(AddVideoUrlTemplate)]
         public Task<StatusCodeResult> AddVideoAsync(string residentId, [FromBody] string url)
             => AddMediaAsync(residentId, url, EMediaType.Video);
 
-        [HttpPost("{residentId}/Images/url")]
+        [Authorize(EUserType.SysAdmin, EUserType.Nurse, EUserType.User)]
+        [HttpPost(AddImageUrlTemplate)]
         public Task<StatusCodeResult> AddImageAsync(string residentId, [FromBody] string url)
             => AddMediaAsync(residentId, url, EMediaType.Image);
 
         public async Task<StatusCodeResult> AddMediaAsync(string residentId, string url, EMediaType mediaType)
         {
-            // parse the id
             if (!ObjectId.TryParse(residentId, out var residentObjectId))
-            {
-                // if it fails, throw not found exception
-                Throw.NotFound<Resident>(residentId);
-                return null;
-            }
+                throw new NotFoundException<Resident>(nameof(IModelWithID.Id), residentId);
 
-            // use the data service to create a new updater
             await ((IResidentsService) DataService).AddMediaAsync(residentObjectId, url, mediaType);
             return StatusCode((int) HttpStatusCode.Created);
         }
 
 
-        [HttpPost("{residentId}/Colors/data")]
-        public async Task<StatusCodeResult> AddColorAsync(string residentId, [FromBody] byte[] colorData)
+        [Authorize(EUserType.SysAdmin, EUserType.Nurse, EUserType.User)]
+        [HttpPost(AddColorTemplate)]
+        public async Task<StatusCodeResult> AddColorAsync(string residentId, [FromBody] Color colorData)
         {
-            // parse the id
-            if (!ObjectId.TryParse(residentId, out var residentObjectId))
-            {
-                // if it fails, throw not found exception
-                Throw.NotFound<Resident>(residentId);
-                return null;
-            }
+            if (!ObjectId.TryParse(residentId, out var residentObjectId)
+                && await IsCurrentUserResponsibleForResident(residentObjectId))
+                throw new NotFoundException<Resident>(nameof(IModelWithID.Id), residentId);
 
             await DataService.AddItemToListProperty(residentObjectId, x => x.Colors, colorData);
             return StatusCode((int) HttpStatusCode.Created);
@@ -171,18 +205,41 @@ namespace WebService.Controllers
 
         #endregion post (create)
 
+
         #region get (read)
 
-        [HttpGet]
-        public override Task<IEnumerable<Resident>> GetAsync([FromQuery] string[] propertiesToInclude)
-            => base.GetAsync(propertiesToInclude);
+        [Authorize(EUserType.SysAdmin, EUserType.Nurse, EUserType.Module, EUserType.User)]
+        [HttpGet(GetAllTemplate)]
+        public override async Task<IEnumerable<Resident>> GetAllAsync(string[] propertiesToInclude)
+        {
+            var properties = new Expression<Func<User, object>>[] {x => x.Residents, x => x.UserType};
+            var user = await GetCurrentUser(properties);
 
-        [HttpGet("{id}")]
-        public override Task<Resident> GetAsync(string id, [FromQuery] string[] propertiesToInclude)
-            => base.GetAsync(id, propertiesToInclude);
+            switch (user.UserType)
+            {
+                case EUserType.SysAdmin:
+                case EUserType.Nurse:
+                    return await base.GetAllAsync(propertiesToInclude);
+                case EUserType.User:
+                    return await base.GetAllAsync(propertiesToInclude);
+                default:
+                    throw new UnauthorizedException(EUserType.SysAdmin, EUserType.Nurse, EUserType.User);
+            }
+        }
 
-        [HttpGet("byTag/{tag}")]
-        public async Task<Resident> GetAsync(int tag, [FromQuery] string[] propertiesToInclude)
+        [Authorize(EUserType.SysAdmin, EUserType.Nurse, EUserType.Module, EUserType.User)]
+        [HttpGet(GetOneTemplate)]
+        public override Task<Resident> GetOneAsync(string id, string[] propertiesToInclude) =>
+            base.GetOneAsync(id, propertiesToInclude);
+
+        [Authorize(EUserType.SysAdmin, EUserType.Nurse, EUserType.Module, EUserType.User)]
+        [HttpGet(GetPropertyTemplate)]
+        public override Task<object> GetPropertyAsync(string id, string propertyName) =>
+            base.GetPropertyAsync(id, propertyName);
+
+        [Authorize(EUserType.SysAdmin, EUserType.Nurse, EUserType.Module)]
+        [HttpGet(GetByTagTemplate)]
+        public async Task<Resident> GetByTagAsync(int tag, [FromQuery] string[] propertiesToInclude)
         {
             // convert the property names to selectors, if there are any
             var selectors = !EnumerableExtensions.IsNullOrEmpty(propertiesToInclude)
@@ -193,88 +250,82 @@ namespace WebService.Controllers
 
             // return the fetched resident, if it is null, throw a not found exception
             if (resident == null)
-            {
-                Throw.NotFound<Resident>(tag);
-                return null;
-            }
+                throw new ElementNotFoundException<Resident>(nameof(Resident.Tags), "tag");
 
             return resident;
         }
 
-        [HttpGet("byTag/{tag}/{propertyName}/random")]
-        public async Task<object> GetRandomElementFromProperty(int tag, string propertyName)
+        [Authorize(EUserType.SysAdmin, EUserType.Nurse, EUserType.Module)]
+        [HttpGet(GetRandomElementFromPropertyTemplate)]
+        public async Task<object> GetRandomElementFromPropertyAsync(int tag, string propertyName)
         {
             IList data;
 
             switch (propertyName.ToUpperCamelCase())
             {
                 case nameof(Resident.Music):
-                    data = (await ((IResidentsService) DataService).GetAsync(tag,
-                        new Expression<Func<Resident, object>>[] {x => x.Music})).Music;
+                    data = (await ((IResidentsService) DataService)
+                            .GetAsync(tag, new Expression<Func<Resident, object>>[] {x => x.Music}))
+                        .Music;
                     break;
                 case nameof(Resident.Videos):
-                    data = (await ((IResidentsService) DataService).GetAsync(tag,
-                        new Expression<Func<Resident, object>>[] {x => x.Videos})).Videos;
+                    data = (await ((IResidentsService) DataService)
+                            .GetAsync(tag, new Expression<Func<Resident, object>>[] {x => x.Videos}))
+                        .Videos;
                     break;
                 case nameof(Resident.Images):
-                    data = (await ((IResidentsService) DataService).GetAsync(tag,
-                        new Expression<Func<Resident, object>>[] {x => x.Images})).Images;
+                    data = (await ((IResidentsService) DataService)
+                            .GetAsync(tag, new Expression<Func<Resident, object>>[] {x => x.Images}))
+                        .Images;
                     break;
                 case nameof(Resident.Colors):
-                    data = (await ((IResidentsService) DataService).GetAsync(tag,
-                        new Expression<Func<Resident, object>>[] {x => x.Colors})).Colors;
+                    data = (await ((IResidentsService) DataService)
+                            .GetAsync(tag, new Expression<Func<Resident, object>>[] {x => x.Colors}))
+                        .Colors;
                     break;
                 default:
-                    throw new ArgumentOutOfRangeException();
+                    throw new PropertyNotFoundException<Resident>(propertyName);
             }
 
             return data.RandomItem();
         }
 
-        [HttpGet("{id}/{propertyName}")]
-        public override Task<object> GetPropertyAsync(string id, string propertyName)
-            => base.GetPropertyAsync(id, propertyName);
-
-        [HttpGet("byTag/{tag}/{propertyName}")]
+        [Authorize(EUserType.SysAdmin, EUserType.Nurse, EUserType.Module)]
+        [HttpGet(GetPropertyByTagTemplate)]
         public async Task<object> GetPropertyAsync(int tag, string propertyName)
         {
-            // check if the property exists on the item
             if (!typeof(Resident).GetProperties().Any(x => x.Name.EqualsWithCamelCasing(propertyName)))
-                throw new WebArgumentException(
-                    $"Property {propertyName} cannot be found on {typeof(Resident).Name}", nameof(propertyName));
+                throw new PropertyNotFoundException<Resident>(nameof(propertyName));
 
-            // get the property from the database
             return await ((IResidentsService) DataService).GetPropertyAsync(tag,
                 PropertySelectors[propertyName.ToUpperCamelCase()]);
         }
 
         #endregion get (read)
 
+
         #region put (update)
 
-        [HttpPut]
+        [Authorize(EUserType.SysAdmin, EUserType.Nurse, EUserType.User)]
+        [HttpPut(UpdateTemplate)]
         public override Task UpdateAsync([FromBody] Resident item, [FromQuery] string[] properties)
             => base.UpdateAsync(item, properties);
 
-        [HttpPut("{id}/{propertyName}")]
+        [Authorize(EUserType.SysAdmin, EUserType.Nurse, EUserType.User)]
+        [HttpPut(UpdatePropertyTemplate)]
         public override Task UpdatePropertyAsync(string id, string propertyName, [FromBody] string jsonValue)
             => base.UpdatePropertyAsync(id, propertyName, jsonValue);
 
-        [HttpPut("{id}/picture")]
+        [Authorize(EUserType.SysAdmin, EUserType.Nurse, EUserType.User)]
+        [HttpPut(UpdatePictureTemplate)]
         public async Task UpdatePictureAsync(string id, [FromForm] MultiPartFile picture)
         {
             const int maxFileSize = (int) 10e6;
             if (picture?.File == null)
-            {
-                Throw.NullArgument(nameof(picture));
-                return;
-            }
+                throw new ArgumentNullException(nameof(picture));
 
             if (!ObjectId.TryParse(id, out var objectId))
-            {
-                Throw.NotFound<Resident>(id);
-                return;
-            }
+                throw new NotFoundException<Resident>(nameof(IModelWithID.Id), id);
 
             try
             {
@@ -284,74 +335,57 @@ namespace WebService.Controllers
             }
             catch (FileToLargeException)
             {
-                Throw.FileToLarge(maxFileSize);
+                throw new FileToLargeException(maxFileSize);
             }
         }
 
         #endregion put (update)
 
+
         #region delete
 
-        [HttpDelete("{id}")]
-        public override Task DeleteAsync(string id)
-            => base.DeleteAsync(id);
+        [Authorize(EUserType.SysAdmin, EUserType.Nurse)]
+        [HttpDelete(DeleteTemplate)]
+        public override Task DeleteAsync(string id) => base.DeleteAsync(id);
 
-        [HttpDelete("{residentId}/Videos/{videoId}")]
-        public Task RemoveVideoAsync(string residentId, string videoId)
-            => RemoveMediaAsync(residentId, videoId, EMediaType.Video);
-
-        [HttpDelete("{residentId}/Music/{musicId}")]
+        [Authorize(EUserType.SysAdmin, EUserType.Nurse, EUserType.Module, EUserType.User)]
+        [HttpDelete(RemoveMusicTemplate)]
         public Task RemoveMusicAsync(string residentId, string musicId)
             => RemoveMediaAsync(residentId, musicId, EMediaType.Audio);
 
-        [HttpDelete("{residentId}/Images/{imageId}")]
+        [Authorize(EUserType.SysAdmin, EUserType.Nurse, EUserType.Module, EUserType.User)]
+        [HttpDelete(RemoveVideoTemplate)]
+        public Task RemoveVideoAsync(string residentId, string videoId)
+            => RemoveMediaAsync(residentId, videoId, EMediaType.Video);
+
+        [Authorize(EUserType.SysAdmin, EUserType.Nurse, EUserType.Module, EUserType.User)]
+        [HttpDelete(RemoveImageTemplate)]
         public Task RemoveImageAsync(string residentId, string imageId)
             => RemoveMediaAsync(residentId, imageId, EMediaType.Image);
-
-        [HttpDelete("{residentId}/Colors/{colorId}")]
-        public async Task RemoveColorAsync(string residentId, string colorId)
-        {
-            // parse the resident id
-            if (!ObjectId.TryParse(residentId, out var residentObjectId))
-            {
-                // if it fails, throw not found exception
-                Throw.NotFound<Resident>(residentId);
-                return;
-            }
-
-            // parse the media id
-            if (!ObjectId.TryParse(colorId, out var mediaObjectId))
-            {
-                // if it fails, throw not found exception
-                Throw.NotFound<byte[]>(colorId);
-                return;
-            }
-
-            // remove the media from the database
-            await ((IResidentsService) DataService)
-                .RemoveSubItemAsync(residentObjectId, x => x.Colors, mediaObjectId);
-        }
 
         public async Task RemoveMediaAsync(string residentId, string mediaId, EMediaType mediaType)
         {
             // parse the resident id
             if (!ObjectId.TryParse(residentId, out var residentObjectId))
-            {
-                // if it fails, throw not found exception
-                Throw.NotFound<Resident>(residentId);
-                return;
-            }
+                throw new NotFoundException<Resident>(nameof(IModelWithID.Id), residentId);
 
             // parse the media id
             if (!ObjectId.TryParse(mediaId, out var mediaObjectId))
-            {
-                // if it fails, throw not found exception
-                Throw.NotFound<MediaData>(mediaId);
-                return;
-            }
+                throw new ElementNotFoundException<Resident>(mediaType.ToString(), "media");
 
             // remove the media from the database
             await ((IResidentsService) DataService).RemoveMediaAsync(residentObjectId, mediaObjectId, mediaType);
+        }
+
+        [Authorize(EUserType.SysAdmin, EUserType.Nurse, EUserType.Module, EUserType.User)]
+        [HttpDelete(RemoveColorTemplate)]
+        public async Task RemoveColorAsync(string residentId, [FromBody] Color color)
+        {
+            if (!ObjectId.TryParse(residentId, out var residentObjectId))
+                throw new NotFoundException<Resident>(nameof(IModelWithID.Id), residentId);
+
+            await ((IResidentsService) DataService)
+                .RemoveSubItemAsync(residentObjectId, x => x.Colors, color);
         }
 
         #endregion delete

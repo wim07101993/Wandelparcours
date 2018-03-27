@@ -1,351 +1,276 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using System;
+using System.Collections.Generic;
+using System.Net;
+using FluentAssertions;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using MongoDB.Bson;
+using Moq;
+using WebAPIUnitTests.TestControllers;
+using WebAPIUnitTests.TestHelpers.Extensions;
+using WebAPIUnitTests.TestModels;
+using WebAPIUnitTests.TestServices.Abstract;
+using WebService.Helpers.Exceptions;
 
 namespace WebAPIUnitTests.ControllerTests.RestControllerBaseTests
 {
     [TestClass]
-    public class RestControllerBaseTests : IRestControllerTests
+    public class RestControllerBaseTests // : IRestControllerTests
     {
-        #region CREATE
-
-        [TestMethod]
-        public void Create()
-        {
-            // TODO create test
-        }
-
-        [TestMethod]
-        public void CreateNull()
-        {
-            // TODO create test
-        }
-
-        [TestMethod]
-        public void CreateDuplicate()
-        {
-            // TODO create test
-        }
-
-        #endregion CREATE
-
-
-        #region READ
-
-        [TestMethod]
-        public void GetAllNullProperties()
-        {
-            // TODO create test
-        }
-
-        [TestMethod]
-        public void GetAllEmptyProperties()
-        {
-            // TODO create test
-        }
-
-        [TestMethod]
-        public void GetAllSomeProperties()
-        {
-            // TODO create test
-        }
-
-        [TestMethod]
-        public void GetOneNullIdNullProperties()
-        {
-            // TODO create test
-        }
-
-        [TestMethod]
-        public void GetOneNullIdEmptyProperties()
-        {
-            // TODO create test
-        }
-
-        [TestMethod]
-        public void GetOneNullIdBadProperties()
-        {
-            // TODO create test
-        }
-
-        [TestMethod]
-        public void GetOneNullIdSomeProperties()
-        {
-            // TODO create test
-        }
-
-        [TestMethod]
-        public void GetOneExistingIdNullProperties()
-        {
-            // TODO create test
-        }
-
-        [TestMethod]
-        public void GetOneExistingIdEmptyProperties()
-        {
-            // TODO create test
-        }
-
-        [TestMethod]
-        public void GetOneExistingIdBadProperties()
-        {
-            // TODO create test
-        }
-
-        [TestMethod]
-        public void GetOneExistingIdSomeProperties()
-        {
-            // TODO create test
-        }
-
-        [TestMethod]
-        public void GetOneBadIdNullProperties()
-        {
-            // TODO create test
-        }
-
-        [TestMethod]
-        public void GetOneBadIdEmptyProperties()
-        {
-            // TODO create test
-        }
-
-        [TestMethod]
-        public void GetOneBadIdBadProperties()
-        {
-            // TODO create test
-        }
-
-        [TestMethod]
-        public void GetOneBadIdSomeProperties()
-        {
-            // TODO create test
-        }
-
-        [TestMethod]
-        public void GetNullPropertyNullId()
-        {
-            // TODO create test
-        }
-
-        [TestMethod]
-        public void GetNullPropertyExistingId()
-        {
-            // TODO create test
-        }
-
-        [TestMethod]
-        public void GetNullPropertyBadId()
-        {
-            // TODO create test
-        }
-
-        [TestMethod]
-        public void GetBadPropertyNullId()
-        {
-            // TODO create test
-        }
-
-        [TestMethod]
-        public void GetBadPropertyExistingId()
-        {
-            // TODO create test
-        }
-
-        [TestMethod]
-        public void GetBadPropertyBadId()
-        {
-            // TODO create test
-        }
-
-        [TestMethod]
-        public void GetExistingPropertyNullId()
-        {
-            // TODO create test
-        }
-
-        [TestMethod]
-        public void GetExistingPropertyExistingId()
-        {
-            // TODO create test
-        }
-
-        [TestMethod]
-        public void GetExistingPropertyBadId()
-        {
-            // TODO create test
-        }
-
-        #endregion READ
-
-
-        #region UPDATE
-
-        [TestMethod]
-        public void UpdateNullItemNullProperties()
-        {
-            // TODO create test
-        }
-
-        [TestMethod]
-        public void UpdateNullItemEmptyProperties()
-        {
-            // TODO create test
-        }
-
-        [TestMethod]
-        public void UpdateNullItemBadProperties()
-        {
-            // TODO create test
-        }
-
-        [TestMethod]
-        public void UpdateNullItemSomeProperties()
-        {
-            // TODO create test
-        }
-
-        [TestMethod]
-        public void UpdateBadIdNullProperties()
-        {
-            // TODO create test
-        }
-
-        [TestMethod]
-        public void UpdateBadIdEmptyProperties()
-        {
-            // TODO create test
-        }
-
-        [TestMethod]
-        public void UpdateBadIdBadProperties()
-        {
-            // TODO create test
-        }
-
-        [TestMethod]
-        public void UpdateBadIdSomeProperties()
-        {
-            // TODO create test
-        }
-
-        [TestMethod]
-        public void UpdateExistingIdNullProperties()
-        {
-            // TODO create test
-        }
-
-        [TestMethod]
-        public void UpdateExistingIdEmptyProperties()
-        {
-            // TODO create test
-        }
-
-        [TestMethod]
-        public void UpdateExistingIdBadProperties()
-        {
-            // TODO create test
-        }
-
-        [TestMethod]
-        public void UpdateExistingIdSomeProperties()
-        {
-            // TODO create test
-        }
-
-        [TestMethod]
-        public void UpdateNullIdNullProperty()
-        {
-            // TODO create test
-        }
-
-        [TestMethod]
-        public void UpdateNullIdBadProperty()
-        {
-            // TODO create test
-        }
-
-        [TestMethod]
-        public void UpdateNullIdExistingPropertyBadValue()
-        {
-            // TODO create test
-        }
-
-        [TestMethod]
-        public void UpdateNullIdExistingPropertyGoodValue()
-        {
-            // TODO create test
-        }
-
-        [TestMethod]
-        public void UpdateBadIdNullProperty()
-        {
-            // TODO create test
-        }
-
-        [TestMethod]
-        public void UpdateBadIdBadProperty()
-        {
-            // TODO create test
-        }
-
-        [TestMethod]
-        public void UpdateBadIdExistingPropertyBadValue()
-        {
-            // TODO create test
-        }
-
-        [TestMethod]
-        public void UpdateBadIdExistingPropertyGoodValue()
-        {
-            // TODO create test
-        }
-
-        [TestMethod]
-        public void UpdateExistingIdNullProperty()
-        {
-            // TODO create test
-        }
-
-        [TestMethod]
-        public void UpdateExistingIdBadProperty()
-        {
-            // TODO create test
-        }
-
-        [TestMethod]
-        public void UpdateExistingIdExistingPropertyBadValue()
-        {
-            // TODO create test
-        }
-
-        [TestMethod]
-        public void UpdateExistingIdExistingPropertyGoodValue()
-        {
-            // TODO create test
-        }
-
-        #endregion UPDATE
-
-
-        #region DELETE
-
-        [TestMethod]
-        public void DeleteNullId()
-        {
-            // TODO create test
-        }
-
-        [TestMethod]
-        public void DeleteBadId()
-        {
-            // TODO create test
-        }
-
-        [TestMethod]
-        public void DeleteExistingId()
-        {
-            // TODO create test
-        }
-
-        #endregion DELETE
+        //#region CREATE
+
+        //[TestMethod]
+        //public void CreateNull()
+        //{
+        //    var controller = new TestRestController();
+
+        //    controller
+        //        .CreateAsync(null)
+        //        .ShouldCatchArgumentException<WebService.Helpers.Exceptions.ArgumentNullException>("item",
+        //            "the item to create cannot be null");
+        //}
+
+        //[TestMethod]
+        //public void CreateDuplicate()
+        //{
+        //    var item = new TestEntity {Id = ObjectId.GenerateNewId()};
+        //    var duplicate = new TestEntity {Id = item.Id};
+
+        //    var list = new List<TestEntity> {item};
+
+        //    var mock = new Mock<ITestDataService<TestEntity>>();
+        //    mock.Setup(x => x.CreateAsync(duplicate)).Callback(new Action<TestEntity>(x => list.Add(x)));
+
+        //    var controller = new TestRestController(mock.Object);
+
+        //    controller
+        //        .CreateAsync(duplicate)
+        //        .Result
+        //        .StatusCode
+        //        .Should()
+        //        .Be((int) HttpStatusCode.Created, "the item should have been created but the id should have changed");
+
+        //    list
+        //        .Should()
+        //        .HaveCount(2)
+        //        .And
+        //        .ContainSingle(x => x.Id == item.Id);
+        //}
+
+        //[TestMethod]
+        //public void Create()
+        //{
+        //    var item = new TestEntity {Id = ObjectId.GenerateNewId(), S = "some strange string"};
+
+        //    var list = new List<TestEntity>();
+
+        //    var mock = new Mock<ITestDataService<TestEntity>>();
+        //    mock.Setup(x => x.CreateAsync(item)).Callback(new Action<TestEntity>(x => list.Add(x)));
+
+        //    var controller = new TestRestController(mock.Object);
+
+        //    controller
+        //        .CreateAsync(item)
+        //        .Result
+        //        .StatusCode
+        //        .Should()
+        //        .Be((int) HttpStatusCode.Created, "the item should have been created but the id should have changed");
+
+        //    list
+        //        .Should()
+        //        .HaveCount(1)
+        //        .And
+        //        .Contain(x => x.S == item.S);
+        //}
+
+        //#endregion CREATE
+
+
+        //#region READ
+
+        //[TestMethod]
+        //public void GetAllNullProperties()
+        //{
+        //    throw new System.NotImplementedException();
+        //}
+
+        //[TestMethod]
+        //public void GetAllEmptyProperties()
+        //{
+        //    throw new System.NotImplementedException();
+        //}
+
+        //[TestMethod]
+        //public void GetAllSomeProperties()
+        //{
+        //    throw new System.NotImplementedException();
+        //}
+
+        //[TestMethod]
+        //public void GetOneNullId()
+        //{
+        //    throw new System.NotImplementedException();
+        //}
+
+        //[TestMethod]
+        //public void GetOneBadId()
+        //{
+        //    throw new System.NotImplementedException();
+        //}
+
+        //[TestMethod]
+        //public void GetOneNullProperties()
+        //{
+        //    throw new System.NotImplementedException();
+        //}
+
+        //[TestMethod]
+        //public void GetOneEmptyProperties()
+        //{
+        //    throw new System.NotImplementedException();
+        //}
+
+        //[TestMethod]
+        //public void GetOneBadProperties()
+        //{
+        //    throw new System.NotImplementedException();
+        //}
+
+        //[TestMethod]
+        //public void GetOne()
+        //{
+        //    throw new System.NotImplementedException();
+        //}
+
+        //[TestMethod]
+        //public void GetNullProperty()
+        //{
+        //    throw new System.NotImplementedException();
+        //}
+
+        //[TestMethod]
+        //public void GetBadProperty()
+        //{
+        //    throw new System.NotImplementedException();
+        //}
+
+        //[TestMethod]
+        //public void GetPropertyNullID()
+        //{
+        //    throw new System.NotImplementedException();
+        //}
+
+        //[TestMethod]
+        //public void GetPropertyBadId()
+        //{
+        //    throw new System.NotImplementedException();
+        //}
+
+        //[TestMethod]
+        //public void GetProperty()
+        //{
+        //    throw new System.NotImplementedException();
+        //}
+
+        //#endregion READ
+
+
+        //#region UPDATE
+
+        //[TestMethod]
+        //public void UpdateNullItem()
+        //{
+        //    throw new System.NotImplementedException();
+        //}
+
+        //[TestMethod]
+        //public void UpdateBadItem()
+        //{
+        //    throw new System.NotImplementedException();
+        //}
+
+        //[TestMethod]
+        //public void UpdateNullProperties()
+        //{
+        //    throw new System.NotImplementedException();
+        //}
+
+        //[TestMethod]
+        //public void UpdateEmptyProperties()
+        //{
+        //    throw new System.NotImplementedException();
+        //}
+
+        //[TestMethod]
+        //public void UpdatedBadProperties()
+        //{
+        //    throw new System.NotImplementedException();
+        //}
+
+        //[TestMethod]
+        //public void Update()
+        //{
+        //    throw new System.NotImplementedException();
+        //}
+
+        //[TestMethod]
+        //public void UpdatePropertyNullId()
+        //{
+        //    throw new System.NotImplementedException();
+        //}
+
+        //[TestMethod]
+        //public void UpdatePropertyBadId()
+        //{
+        //    throw new System.NotImplementedException();
+        //}
+
+        //[TestMethod]
+        //public void UpdateNullProperty()
+        //{
+        //    throw new System.NotImplementedException();
+        //}
+
+        //[TestMethod]
+        //public void UpdateBadProperty()
+        //{
+        //    throw new System.NotImplementedException();
+        //}
+
+        //[TestMethod]
+        //public void UpdatePropertyBadValue()
+        //{
+        //    throw new System.NotImplementedException();
+        //}
+
+        //[TestMethod]
+        //public void UpdateProperty()
+        //{
+        //    throw new System.NotImplementedException();
+        //}
+
+        //#endregion UPDATE
+
+
+        //#region DELETE
+
+        //[TestMethod]
+        //public void DeleteNullId()
+        //{
+        //    // TODO create test
+        //}
+
+        //[TestMethod]
+        //public void DeleteBadId()
+        //{
+        //    // TODO create test
+        //}
+
+        //[TestMethod]
+        //public void Delete()
+        //{
+        //    // TODO create test
+        //}
+
+        //#endregion DELETE
     }
 }
