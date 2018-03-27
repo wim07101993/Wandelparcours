@@ -207,7 +207,7 @@ namespace WebService.Controllers
         public async Task<IEnumerable<int>> AddTag(string id)
         {
             if (!ObjectId.TryParse(id, out var objectId))
-                throw new NotFoundException($"The {typeof(Resident).Name} with id {id} could not be found");
+                throw new NotFoundException<Resident>(nameof(AModelWithID.Id), id);
 
             var maxTag = await ((IResidentsService) DataService).GetHighestTagNumberAsync();
             maxTag++;
