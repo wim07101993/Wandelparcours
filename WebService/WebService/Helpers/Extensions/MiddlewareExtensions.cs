@@ -9,7 +9,7 @@ namespace WebService.Helpers.Extensions
     public static class MiddlewareExtensions
     {
         /// <summary>
-        /// UseExceptionMiddleware addes the <see cref="ExceptionMiddleware"/> to the pipeline of the <see cref="IApplicationBuilder"/>.
+        /// UseExceptionMiddleware adds the <see cref="ExceptionMiddleware"/> to the pipeline of the <see cref="IApplicationBuilder"/>.
         /// </summary>
         /// <param name="This">is the <see cref="IApplicationBuilder"/> to add the middleware to</param>
         /// <returns>The modified <see cref="IApplicationBuilder"/></returns>

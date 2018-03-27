@@ -47,7 +47,7 @@ namespace WebAPIUnitTests.ServiceTests.Data.Residents
             var original = dataService.GetFirst();
 
             dataService
-                .GetAsync(original.Id).Result
+                .GetOneAsync(original.Id).Result
                 .Should()
                 .BeEquivalentTo(original, "it is the same item and all properties are passed");
         }
