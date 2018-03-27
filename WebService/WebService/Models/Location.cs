@@ -1,6 +1,8 @@
 ﻿using System;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
+using Newtonsoft.Json;
+using WebService.Helpers.JsonConverters;
 using WebService.Models.Bases;
 
 namespace WebService.Models
@@ -21,7 +23,8 @@ namespace WebService.Models
         /// In the database the value is stored under the field "x"
         /// </summary>
         [BsonElement("residentId")]
-        public ObjectId ResidentId { get; set; }
+        [JsonConverter(typeof(ObjectIdConverter))]
+         public ObjectId ResidentId { get; set; }
         
         
         

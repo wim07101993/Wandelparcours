@@ -34,6 +34,7 @@ namespace WebService
                 .AddSingleton<IThrow, Throw>()
                 //.AddSingleton<IDataService<Resident>, MockResidentsService>()
                 //.AddSingleton<IDataService<ReceiverModule>, ReceiverModulesService>();
+                .AddSingleton<IDataService<Location>,LocationService>()
                 .AddSingleton<IDataService<MediaData>, MediaService>()
                 .AddSingleton<IDataService<Resident>, ResidentsService>()
                 .AddSingleton<IDataService<ReceiverModule>, ReceiverModulesService>();
