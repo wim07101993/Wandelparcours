@@ -3,6 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { RestServiceService } from '../../../../service/rest-service.service';
 import { Resident } from '../../../../models/resident';
 import { MediaService } from '../../../../service/media.service';
+declare var $: any;
 
 @Component({
   selector: 'app-video',
@@ -15,6 +16,7 @@ export class VideoComponent implements OnInit {
     id: string = this.route.snapshot.params['id'];
     check: any;
 
+    deleteResidentVideo: Resident;
     videos: Resident[];
     fullLinks: any = [];
     url: any = "http://localhost:5000/api/v1/media/";
@@ -22,6 +24,7 @@ export class VideoComponent implements OnInit {
     constructor(private route: ActivatedRoute, private media: MediaService, private router: Router) {
         this.typeOfMedia = "video/*";
         this.getAllVideos();
+        this.deleteResidentVideo = <Resident>{videos: {}}
     }
     /**
      * reload the page
@@ -51,9 +54,31 @@ export class VideoComponent implements OnInit {
         } else {
             this.router.navigate(["/error"]);
         }
+        $("#deleteModalVideo").modal("close");
     }
 
     ngOnInit() {
+    }
+
+    /*
+    *   Closes the modal to add a station 
+    */
+    async CloseModal() {
+        $("#deleteModalVideo").modal("close");
+    }
+
+    /*
+    *   Opens modal to delete a station 
+    */
+    async deleteModal(resident: Resident) {
+
+        this.deleteResidentVideo = resident;
+        console.log(resident.images.id);
+        // noinspection JSJQueryEfficiency
+        $("#deleteModalVideo").modal();
+        // noinspection JSJQueryEfficiency
+        $("#deleteModalVideo").modal("open");
+
     }
 
 }
