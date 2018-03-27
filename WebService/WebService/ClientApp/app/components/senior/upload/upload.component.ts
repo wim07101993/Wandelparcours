@@ -37,18 +37,24 @@ export class UploadComponent implements OnInit {
           this.selectedFile = <any>event.target.files; 
           
           console.log(this.selectedFile.length);
+
+          for(let i = 0; i<this.selectedFile.length; i++){
+              if (event.target.files && event.target.files[i]) {
+                  let reader = new FileReader();
+                  reader.onload = (event: any) => {
+                      this.localUrl = event.target.result;
+                  };
+                  reader.readAsDataURL(event.target.files[i]);
+                  $('.preview').append('test');
+                 
+              }
+          }
+
+        
           
-          let reader = new FileReader();
-          
-            reader.onload = (event: any) => {
-                this.localUrl = event.target.result;
-            };
-            reader.readAsDataURL(event.target.files[0]);
-            console.log(reader);
- 
           
             
-          //$('.preview').html(this.selectedFile[0].name);
+          //$('.preview').html('<img [src]="localUrl" *ngIf="localUrl" class="imgPlaceholder">');
           
       }
 
