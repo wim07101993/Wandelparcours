@@ -108,14 +108,14 @@ export class RestServiceService {
     addResident(data: any){
         console.log(data);
         return new Promise(resolve => {
-            this.http.post(this.restUrl + 'api/v1/residents', data).subscribe(response => {
+           this.http.post(this.restUrl + 'api/v1/residents', data).subscribe(response => {
                 console.log("Saved resident to database");
-                resolve(true);
+                resolve(response);
             }, error => {
                 console.log("Could not save resident to database!");
                 this.customErrorHandler.updateMessage(error);
-                resolve(false);
-            });
+                resolve(undefined);
+                });
         });
     }
 

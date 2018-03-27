@@ -190,6 +190,14 @@
                         <label for="atelefoon" class="active">Telefoon</label>
                     </div>
                 </div>
+                <div class="row center">
+                    <div class="input-field col s6">
+                        <input class="center" type="file" name="aProfilePicure" id="aProfilePicture" (change)="onFileSelected($event)" accept="image/*" /><sup style="color:#ff2200;">*</sup>       
+                    </div>
+                    <div class="input-field col s6">
+                        <img [src]="profilePic" alt="Geen foto geselecteerd" for="aProfilePicture" height="200" width="200" />
+                    </div>
+                </div>
                 <div class="modal-footer">
                     <button class="btn waves-effect waves-light green lighten-1" type="submit" name="action" [disabled]="!f.valid">
                         Toevoegen

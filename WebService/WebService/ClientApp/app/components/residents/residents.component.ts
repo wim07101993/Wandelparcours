@@ -7,6 +7,9 @@ import { async } from '@angular/core/testing';
 import { NgForm } from "@angular/forms";
 import { Router } from '@angular/router';
 import { CustomErrorHandler } from '../../service/customErrorHandler';
+import { UploadComponent } from '../senior/upload/upload.component';
+
+
 declare var $:any;
 declare var Materialize:any;
 
@@ -26,6 +29,11 @@ export class ResidentsComponent implements OnInit {
     modalResident: Resident;
     updateResident: any;
     search: boolean = false;
+    profilePic: any;
+    selectedFile: any;
+    reader: any;
+    selectedFileImage: any;
+    fd: any 
 
     /**
      * Injects the service and router
@@ -35,6 +43,7 @@ export class ResidentsComponent implements OnInit {
     constructor(private service: RestServiceService, private router: Router) {
         this.showAllResidents();
         this.residents = [];
+        this.profilePic = [];
 
         /*Creates empty modals to avoid collision with previous existing modals should they not be deleted*/
         this.modalResident = <Resident>{
@@ -54,6 +63,21 @@ export class ResidentsComponent implements OnInit {
         setTimeout(() => {
             $('#focusToInput').focus();
         }, 200);
+
+    }
+
+    /**
+     * Observer event if anything changes
+     * @param event
+     */
+    onFileSelected(event: any) {
+        //this.loading = "Upload"
+        this.selectedFile = <any>event.target.files;
+        this.reader = new FileReader();
+        this.reader.readAsDataURL(event.target.files[0])
+        this.reader.onload = (nt: any) => {
+            this.profilePic = nt.target.result;
+        }
 
     }
 
@@ -187,12 +211,23 @@ export class ResidentsComponent implements OnInit {
     * @param form of type NgForm
     */   
    async addResident(form: NgForm){
-
         // Workaround for dateformat
         let birthday = $("#abirthdate").val();
         let a;
         if (birthday != "") {
             a = new Date(birthday);
+        }
+
+        for (const file in this.selectedFile) {
+            const index = parseInt(file);
+            if (!isNaN(index)) {
+                //this.loading = "uploading...";
+                this.fd = new FormData();
+                this.fd.append("File", this.selectedFile[index], this.selectedFile[index].name);
+                if (this.selectedFile[index].type.indexOf("image") != -1) {
+                 this.selectedFileImage = this.selectedFile[index]//   this.check = await this.restService.addCorrectMediaToDatabase(this.id, fd, this.addPicture);
+                }
+            }
         }
 
         // Get data from form-inputs
@@ -201,23 +236,23 @@ export class ResidentsComponent implements OnInit {
              lastName: form.value.aLastName, 
              room: form.value.aRoom, 
              birthday: a, 
-             doctor: { name: form.value.aDoctor, phoneNumber: form.value.aTelefoon }
-         };
+             doctor: { name: form.value.aDoctor, phoneNumber: form.value.aTelefoon },
+        };
+        // console.log(this.fd)
 
         // Send gathered data over the resrService
-
-        if (await this.service.addResident(data)){    
+        const id = await this.service.addResident(data);
+        if (id != undefined) {
+            await this.service.addProfilePic(id, this.fd);
             Materialize.toast(`bewoner: ${data.firstName} ${data.lastName} succesvol toegevoegd`, 5000);
         }else{
             Materialize.toast(`niet gelukt lan`, 5000);
             this.router.navigate(["/error"]);
-        }
-
+         }
 
         // Reset Residents form
-
         form.reset();
-
+        
         //close modal/form and 'reload' page 
         $("#add-resident-modal").modal("close");
         this.showAllResidents();
@@ -249,6 +284,7 @@ export class ResidentsComponent implements OnInit {
             closeOnSelect: true // Close upon selecting a date,
         });
 
+       
     }
 
     /**
@@ -256,7 +292,7 @@ export class ResidentsComponent implements OnInit {
      * @param resident of type Resident
      */
     navigateTo(resident: Resident) {
-        console.log(resident.id);
+        //console.log(resident.id);
         this.router.navigate(['/resident/' + resident.id]);
     }
         

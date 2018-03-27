@@ -55,3 +55,17 @@ export class Videos {
         this.name = "";
     }
 }
+
+export class ProfilePicture {
+    id: string
+    url: string
+    type: string
+    name: string
+
+    constructor() {
+        this.id = "";
+        this.id = "";
+        this.type = "";
+        this.name = "";
+    }
+}
