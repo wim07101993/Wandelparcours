@@ -6,7 +6,7 @@ import { Resident } from "../models/resident";
 export class MediaService {
     fullLinks: any = [];
     check: any;
-    url: any = "http://192.168.137.1:5000/api/v1/media/";
+    url: any = "http://localhost:5000/api/v1/media/";
     constructor(private service: RestServiceService) { }
 
     /**
@@ -19,7 +19,7 @@ export class MediaService {
         this.fullLinks = [];
         let mediaType = await this.service.getCorrectMediaOfResidentBasedOnId(id, media);
         for (let a of mediaType) {
-            let url2 = this.url + a.id;
+            let url2 = this.url + a.id + "/file";
             let fullLinks = new Resident();
 
             if (media === "/images") {

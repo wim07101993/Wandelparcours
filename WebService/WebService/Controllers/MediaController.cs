@@ -22,7 +22,8 @@ namespace WebService.Controllers
     {
         #region FIELDS
 
-        public const string GetOneWithExtensionTemplate = "{id}.{extension}";
+        public const string GetOneFileWithExtensionTemplate = "{id}/file.{extension}";
+        public const string GetFileTemplate = "{id}/file";
 
         private readonly IUsersService _usersService;
         private readonly ITokenService _tokenService;
@@ -62,7 +63,7 @@ namespace WebService.Controllers
         #region read
 
         [Authorize(EUserType.Module, EUserType.SysAdmin, EUserType.User, EUserType.User)]
-        [HttpGet(GetOneWithExtensionTemplate)]
+        [HttpGet(GetOneFileWithExtensionTemplate)]
         public async Task<FileContentResult> GetOneAsync(string id, string extension, [FromHeader] string token)
         {
             if (!ObjectId.TryParse(id, out var objectId))
@@ -87,8 +88,8 @@ namespace WebService.Controllers
         }
 
         [Authorize(EUserType.Module, EUserType.SysAdmin, EUserType.User, EUserType.User)]
-        [HttpGet(GetOneTemplate)]
-        public async Task<FileContentResult> GetOneAsync(string id)
+        [HttpGet(GetFileTemplate)]
+        public async Task<FileContentResult> GetFileAsync(string id)
         {
             if (!ObjectId.TryParse(id, out var objectId))
                 throw new NotFoundException<MediaData>(nameof(IModelWithID.Id), id);
@@ -100,7 +101,7 @@ namespace WebService.Controllers
                 ? throw new NotFoundException<MediaData>(nameof(IModelWithID.Id), id)
                 : File(media.Data, "image/jpg");
         }
-
+        
         #endregion read
 
         #endregion METHDOS
