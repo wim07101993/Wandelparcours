@@ -8,36 +8,12 @@ using MongoDB.Bson;
 using MongoDB.Driver;
 using WebService.Helpers.Exceptions;
 using WebService.Models.Bases;
-using WebService.Services.Exceptions;
+using ArgumentNullException = WebService.Helpers.Exceptions.ArgumentNullException;
 
 namespace WebService.Services.Data.Mongo
 {
     public abstract class AMongoDataService<T> : IDataService<T> where T : IModelWithID
     {
-        #region FIELDS
-
-        /// <summary>
-        /// Throw is an object that handles exception throwing
-        /// </summary>
-        protected readonly IThrow Throw;
-
-        #endregion FIELDS
-
-
-        #region CONSTRUCTOR
-
-        /// <summary>
-        /// AMongoDataServcie creates an instance of the <see cref="AMongoDataService{T}"/> class
-        /// </summary>
-        /// <param name="iThrow">is the object that handles exception throwing</param>
-        protected AMongoDataService(IThrow iThrow)
-        {
-            Throw = iThrow;
-        }
-
-        #endregion CONSTRUCTOR
-
-
         #region PROPERTIES
 
         /// <summary>
@@ -52,22 +28,11 @@ namespace WebService.Services.Data.Mongo
 
         #region create
 
-        /// <inheritdoc cref="IDataService{T}.CreateAsync" />
-        /// <summary>
-        /// Create saves the passed <see cref="T"/> to the database.
-        /// </summary>
-        /// <param name="item">is the <see cref="T"/> to save in the database</param>
-        /// <exception cref="ArgumentNullException">when the item to create is null</exception>
         public virtual async Task CreateAsync(T item)
         {
-            // if the item is null, throw exception
             if (item == null)
-            {
-                Throw?.NullArgument(nameof(item));
-                return;
-            }
+                throw new ArgumentNullException(nameof(item));
 
-            // create a new id for the new item
             item.Id = ObjectId.GenerateNewId();
 
             try
@@ -75,20 +40,17 @@ namespace WebService.Services.Data.Mongo
                 // save the new item to the database
                 await MongoCollection.InsertOneAsync(item);
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                Throw.Database<T>(EDatabaseMethod.Create);
+                throw new DatabaseException(EDatabaseMethod.Create, e);
             }
         }
 
-        public virtual async Task AddItemToListProperty(ObjectId id,
-            Expression<Func<T, IEnumerable<object>>> propertyToAddItemTo, object itemToAdd)
+        public virtual async Task AddItemToListProperty<TValue>(ObjectId id,
+            Expression<Func<T, IEnumerable<TValue>>> propertyToAddItemTo, TValue itemToAdd)
         {
             if (itemToAdd == null)
-            {
-                Throw.NullArgument(nameof(itemToAdd));
-                return;
-            }
+                throw new ArgumentNullException(nameof(itemToAdd));
 
             var filter = Builders<T>.Filter.Eq(x => x.Id, id);
             var updater = Builders<T>.Update.Push(propertyToAddItemTo, itemToAdd);
@@ -99,7 +61,7 @@ namespace WebService.Services.Data.Mongo
             var result = await MongoCollection.FindOneAndUpdateAsync(filter, updater);
 
             if (result == null)
-                Throw.NotFound<T>(id);
+                throw new NotFoundException<T>(nameof(IModelWithID.Id), id.ToString());
         }
 
         #endregion create
@@ -140,9 +102,9 @@ namespace WebService.Services.Data.Mongo
                 .ToList();
         }
 
-        /// <inheritdoc cref="IDataService{T}.GetAsync(ObjectId,IEnumerable{Expression{System.Func{T,object}}})" />
+        /// <inheritdoc cref="IDataService{T}.GetOneAsync" />
         /// <summary>
-        /// GetAsync returns the <see cref="T"/> with the given id from the database. 
+        /// GetOneAsync returns the <see cref="T"/> with the given id from the database. 
         /// <para/>
         /// It only fills the properties passed in the <see cref="propertiesToInclude"/> parameter. The id is always passed and 
         /// if the <see cref="propertiesToInclude"/> parameter is null (which it is by default), all the properties are included. 
@@ -151,7 +113,7 @@ namespace WebService.Services.Data.Mongo
         /// <param name="propertiesToInclude">are the properties that should be included in the objects</param>
         /// <returns>An <see cref="IEnumerable{T}"/> filled with all the ts in the database.</returns>
         /// <exception cref="NotFoundException">when there is no item found with the given id</exception>
-        public virtual async Task<T> GetAsync(ObjectId id,
+        public virtual async Task<T> GetOneAsync(ObjectId id,
             IEnumerable<Expression<Func<T, object>>> propertiesToInclude = null)
         {
             // get the item with the given id
@@ -159,10 +121,7 @@ namespace WebService.Services.Data.Mongo
 
             // if there is no item with the given id, throw exception
             if (find.Count() <= 0)
-            {
-                Throw?.NotFound<T>(id);
-                return default(T);
-            }
+                throw new NotFoundException<T>(nameof(IModelWithID.Id), id.ToString());
 
             // if the properties are null or there are none, return all the properties
             if (propertiesToInclude == null)
@@ -188,30 +147,26 @@ namespace WebService.Services.Data.Mongo
         /// </summary>
         /// <param name="id">is the id of the <see cref="T"/> to get the property from</param>
         /// <param name="propertyToSelect">is the selector to select the property to return</param>
+        /// <typeparam name="TOut">is the type of the value of the property</typeparam>
         /// <returns>The value of the asked property</returns>
-        /// <exception cref="ArgumentNullException">when the property to select is null</exception>
+        /// <exception cref="System.ArgumentNullException">when the property to select is null</exception>
         /// <exception cref="NotFoundException">when there is no item with the given id</exception>
-        public virtual async Task<object> GetPropertyAsync(ObjectId id, Expression<Func<T, object>> propertyToSelect)
+        public virtual async Task<TOut> GetPropertyAsync<TOut>(ObjectId id, Expression<Func<T, TOut>> propertyToSelect)
         {
             // if the property to select is null, throw exception
             if (propertyToSelect == null)
-            {
-                Throw?.NullArgument(nameof(propertyToSelect));
-                return null;
-            }
+                throw new ArgumentNullException(nameof(propertyToSelect));
 
             // get the item with the given id
             var find = MongoCollection.Find(x => x.Id == id);
 
             // if there is no item with the given id, throw exception
             if (find.Count() <= 0)
-            {
-                Throw?.NotFound<T>(id);
-                return null;
-            }
+                throw new NotFoundException<T>(nameof(IModelWithID.Id), id.ToString());
 
+            var fieldDef = new ExpressionFieldDefinition<T>(propertyToSelect);
             // create a property filter
-            var selector = Builders<T>.Projection.Include(propertyToSelect);
+            var selector = Builders<T>.Projection.Include(fieldDef);
 
             // execute the query
             var item = await find
@@ -235,7 +190,7 @@ namespace WebService.Services.Data.Mongo
         /// </summary>
         /// <param name="newItem">is the <see cref="T" /> to update</param>
         /// <param name="propertiesToUpdate">are the properties that need to be updated</param>
-        /// <exception cref="ArgumentNullException">when the new item is null</exception>
+        /// <exception cref="System.ArgumentNullException">when the new item is null</exception>
         /// <exception cref="MongoException">when the query was not acknowledged</exception>
         /// <exception cref="NotFoundException">when there was no item with the same id as the newItem</exception>
         public virtual async Task UpdateAsync(T newItem,
@@ -250,10 +205,7 @@ namespace WebService.Services.Data.Mongo
 
             // if the new item is null, throw exception
             if (newItem == null)
-            {
-                Throw.NullArgument(nameof(newItem));
-                return;
-            }
+                throw new ArgumentNullException(nameof(newItem));
 
             // create a filter that filters on id
             var filter = Builders<T>.Filter.Eq(x => x.Id, newItem.Id);
@@ -283,45 +235,35 @@ namespace WebService.Services.Data.Mongo
 
             // if the query is not acknowledged, throw exception
             if (!updateResult.IsAcknowledged)
-            {
-                Throw.Database<T>(EDatabaseMethod.Update, newItem.Id);
-                return;
-            }
-
+                throw new DatabaseException(EDatabaseMethod.Update);
             // if there is no item with the given id, throw exception
             if (updateResult.MatchedCount <= 0)
-                Throw.NotFound<T>(newItem.Id);
+                throw new NotFoundException<T>(nameof(IModelWithID.Id), newItem.Id.ToString());
         }
 
         /// <summary>
         /// ReplaceAsync replaces an item in the database with the new item. The item to replace is the item with the same id as the newItem
         /// </summary>
         /// <param name="newItem">is the new <see cref="T"/></param>
-        /// <exception cref="ArgumentNullException">when the new item is null</exception>
+        /// <exception cref="System.ArgumentNullException">when the new item is null</exception>
         /// <exception cref="MongoException">when the query was not acknowledged</exception>
         /// <exception cref="NotFoundException">when there was no item with the same id as the newItem</exception>
         protected virtual async Task ReplaceAsync(T newItem)
         {
             // if the new item is null, throw exception
             if (newItem == null)
-            {
-                Throw.NullArgument(nameof(newItem));
-                return;
-            }
+                throw new ArgumentNullException(nameof(newItem));
 
             // if there are no properties in the list, replace the document
             var replaceOneResult = await MongoCollection.ReplaceOneAsync(x => x.Id == newItem.Id, newItem);
 
             // if the query is not acknowledged, throw exception
             if (!replaceOneResult.IsAcknowledged)
-            {
-                Throw.Database<T>(EDatabaseMethod.Update, newItem.Id);
-                return;
-            }
+                throw new DatabaseException(EDatabaseMethod.Replace);
 
             // if there is no item with the given id, throw exception
             if (replaceOneResult.MatchedCount <= 0)
-                Throw.NotFound<T>(newItem.Id);
+                throw new NotFoundException<T>(nameof(IModelWithID.Id), newItem.Id.ToString());
         }
 
         /// <inheritdoc cref="IDataService{T}.UpdatePropertyAsync{TValue}" />
@@ -331,9 +273,9 @@ namespace WebService.Services.Data.Mongo
         /// <param name="id">is the id of the <see cref="T"/> to get the property from</param>
         /// <param name="propertyToUpdate">is the selector to select the property to update</param>
         /// <param name="value">is the new value of the property</param>
-        /// <exception cref="ArgumentNullException">when there is no property to update</exception>
-        /// <exception cref="ArgumentException">when the property does not exist on <see cref="T"/></exception>
-        /// <exception cref="ArgumentException">when the value is of the wrong type</exception>
+        /// <exception cref="System.ArgumentNullException">when there is no property to update</exception>
+        /// <exception cref="System.ArgumentException">when the property does not exist on <see cref="T"/></exception>
+        /// <exception cref="System.ArgumentException">when the value is of the wrong type</exception>
         /// <exception cref="MongoException">when the query was not acknowledged</exception>
         /// <exception cref="NotFoundException">when there was no item with the same id as the newItem</exception>
         public virtual async Task UpdatePropertyAsync<TValue>(ObjectId id, Expression<Func<T, TValue>> propertyToUpdate,
@@ -341,10 +283,7 @@ namespace WebService.Services.Data.Mongo
         {
             // if there is no property to update, throw exception
             if (propertyToUpdate == null)
-            {
-                Throw.NullArgument(nameof(propertyToUpdate));
-                return;
-            }
+                throw new ArgumentNullException(nameof(propertyToUpdate));
 
             // create a filter that filters on id
             var filter = Builders<T>.Filter.Eq(x => x.Id, id);
@@ -356,14 +295,11 @@ namespace WebService.Services.Data.Mongo
 
             // if the query is not acknowledged, throw exception
             if (!updateResult.IsAcknowledged)
-            {
-                Throw.Database<T>(EDatabaseMethod.Update, id);
-                return;
-            }
+                throw new DatabaseException(EDatabaseMethod.Update);
 
             // if there is no item with the given id, throw exception
             if (updateResult.MatchedCount <= 0)
-                Throw.NotFound<T>(id);
+                throw new NotFoundException<T>(nameof(IModelWithID.Id), id.ToString());
         }
 
         #endregion update
@@ -384,14 +320,11 @@ namespace WebService.Services.Data.Mongo
 
             // if the query is not acknowledged, throw exception
             if (!deleteResult.IsAcknowledged)
-            {
-                Throw.Database<T>(EDatabaseMethod.Update, id);
-                return;
-            }
+                throw new DatabaseException(EDatabaseMethod.Delete);
 
             // if there is no item with the given id, throw exception
             if (deleteResult.DeletedCount <= 0)
-                Throw.NotFound<T>(id);
+                throw new NotFoundException<T>(nameof(IModelWithID.Id), id.ToString());
         }
 
         #endregion delete

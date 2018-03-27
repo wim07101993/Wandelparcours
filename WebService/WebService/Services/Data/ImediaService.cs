@@ -6,6 +6,6 @@ namespace WebService.Services.Data
 {
     public interface IMediaService : IDataService<MediaData>
     {
-        Task<byte[]> GetAsync(ObjectId id, string extension);
+        Task<byte[]> GetOneAsync(ObjectId id, string extension);
     }
 }

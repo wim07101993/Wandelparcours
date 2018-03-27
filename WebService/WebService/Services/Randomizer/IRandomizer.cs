@@ -2,6 +2,8 @@
 {
     public interface IRandomizer
     {
+        char[] Chars { get; }
+
         double NextDouble();
 
         int Next();
@@ -11,5 +13,7 @@
         byte[] Next(byte[] buffer);
 
         string NextString(int length);
+
+        char NextChar();
     }
 }

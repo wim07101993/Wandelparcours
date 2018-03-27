@@ -6,14 +6,13 @@ using WebAPIUnitTests.TestServices.Media;
 using WebService.Helpers.Extensions;
 using WebService.Models;
 using WebService.Services.Data.Mongo;
-using WebService.Services.Exceptions;
 
 namespace WebAPIUnitTests.TestServices.Residents
 {
     public class TestMongoResidentsService : ResidentsService, ITestResidentsService
     {
-        public TestMongoResidentsService() : base(new TestMongoConfiguration("mockResidents"),
-            new Throw(), new TestMediaService())
+        public TestMongoResidentsService()
+            : base(new TestMongoConfiguration("mockResidents"), new TestMediaService())
         {
             if (!GetAll().Any())
                 MongoCollection.InsertMany(TestData.TestResidents);

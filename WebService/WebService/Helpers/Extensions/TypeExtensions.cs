@@ -3,7 +3,7 @@
 namespace WebService.Helpers.Extensions
 {
     /// <summary>
-    /// TypeExtensions is a static clast that holds extension methods for the <see cref="Type"/> class.
+    /// TypeExtensions is a static class that holds extension methods for the <see cref="Type"/> class.
     /// </summary>
     public static class TypeExtensions
     {
