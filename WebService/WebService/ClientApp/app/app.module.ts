@@ -22,6 +22,8 @@ import { GameComponent } from './components/senior/media/game/game.component';
 import { TrackingComponent } from './components/senior/tracking/tracking.component';
 import { PersonaliaComponent } from './components/senior/personalia/personalia.component';
 import { ErrorPageComponent } from './components/error-page/error-page.component';
+import { UploadComponent } from './components/senior/upload/upload.component';
+import { BrowserModule } from '@angular/platform-browser';
 
 const appRoutes: Routes = [
     { path: '', redirectTo: 'residents', pathMatch: 'full' },
@@ -60,6 +62,7 @@ const appRoutes: Routes = [
         TrackingComponent,
         PersonaliaComponent,
         ErrorPageComponent,
+        UploadComponent,
     ],
     imports: [
         CommonModule,
@@ -67,6 +70,8 @@ const appRoutes: Routes = [
         HttpModule,
         FormsModule,
         RouterModule.forRoot(appRoutes),
+        BrowserModule
+
     ]
 })
 export class AppModuleShared {

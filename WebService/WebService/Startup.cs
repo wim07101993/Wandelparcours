@@ -7,8 +7,11 @@ using Newtonsoft.Json.Serialization;
 using WebService.Helpers.Extensions;
 using WebService.Models;
 using WebService.Services.Data;
+using WebService.Services.Data.Mock;
 using WebService.Services.Data.Mongo;
+using WebService.Services.Exceptions;
 using WebService.Services.Logging;
+using WebService.Services.Randomizer;
 
 namespace WebService
 {
@@ -24,8 +27,14 @@ namespace WebService
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddCors();
             services
                 .AddSingleton(typeof(ILogger), new LoggerCollection {new ConsoleLogger(), new FileLogger()})
+                .AddSingleton<IRandomizer, Randomizer>()
+                .AddSingleton<IThrow, Throw>()
+                //.AddSingleton<IDataService<Resident>, MockResidentsService>()
+                //.AddSingleton<IDataService<ReceiverModule>, ReceiverModulesService>();
+                .AddSingleton<IDataService<MediaData>, MediaService>()
                 .AddSingleton<IDataService<Resident>, ResidentsService>()
                 .AddSingleton<IDataService<ReceiverModule>, ReceiverModulesService>();
 
@@ -35,6 +44,8 @@ namespace WebService
                 {
                     options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
                 });
+            services.AddCors();
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -52,6 +63,11 @@ namespace WebService
             {
                 app.UseExceptionHandler("/Home/Error");
             }
+            app.UseCors(
+                options => options.AllowAnyOrigin().AllowAnyMethod()
+            );
+
+            app.UseCors((option) => { option.AllowAnyOrigin().AllowAnyMethod(); });
 
             app.UseExceptionMiddleware()
                 .UseStaticFiles()

@@ -1,5 +1,7 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using FluentAssertions;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using WebAPIUnitTests.TestHelpers.Extensions;
+using WebService.Helpers.Exceptions;
 
 // ReSharper disable once CheckNamespace
 namespace WebAPIUnitTests.ServiceTests.Data.ReceiverModules
@@ -9,10 +11,8 @@ namespace WebAPIUnitTests.ServiceTests.Data.ReceiverModules
         [TestMethod]
         public void RemoveNullMac()
         {
-            ActionExtensions.ShouldCatchArgumentNullException(() =>
-                {
-                    var _ = CreateNewDataService().RemoveAsync(null).Result;
-                },
+            ActionExtensions.ShouldCatchArgumentException<WebArgumentNullException>(
+                () => CreateNewDataService().RemoveAsync(null).Wait(),
                 "mac",
                 "the mac address cannot be null");
         }
@@ -20,10 +20,7 @@ namespace WebAPIUnitTests.ServiceTests.Data.ReceiverModules
         [TestMethod]
         public void RemoveUnknownMac()
         {
-            ActionExtensions.ShouldCatchNotFoundException(() =>
-                {
-                    var _ = CreateNewDataService().RemoveAsync("").Result;
-                },
+            ActionExtensions.ShouldCatchException<NotFoundException>(() => CreateNewDataService().RemoveAsync("").Wait(),
                 "there is no module with that mac in the database");
         }
 
@@ -31,7 +28,14 @@ namespace WebAPIUnitTests.ServiceTests.Data.ReceiverModules
         public void RemoveMac()
         {
             var dataService = CreateNewDataService();
-            dataService.RemoveAsync(dataService.GetFirst().Mac);
+            var mac = dataService.GetFirst().Mac;
+
+            dataService.RemoveAsync(mac);
+
+            dataService
+                .GetAll()
+                .Should()
+                .NotContain(x => x.Mac == mac);
         }
     }
 }

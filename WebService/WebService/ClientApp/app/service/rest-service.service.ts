@@ -41,9 +41,9 @@ export class RestServiceService {
     * @returns {Resident} one resident of type Resident with only the requested properties or undefined   
     */
     getResidentBasedOnId(uniqueIdentifier: string) {
-        return new Promise<Resident[]>(resolve => {
+        return new Promise<Resident>(resolve => {
             this.http.get(this.restUrl + 'api/v1/residents/' + uniqueIdentifier + '?properties=firstName&properties=lastName&properties=room&properties=birthday&properties=doctor').subscribe(response => {
-                resolve(<Resident[]>response.json());
+                resolve(<Resident>response.json());
             },
                 error => {
                     this.customErrorHandler.updateMessage(error);
@@ -103,7 +103,7 @@ export class RestServiceService {
     /**
     * Add resident to database
     * @param data Object resident with all saved properties
-    * @returns Message "Saved resident to database" on succes or "Could not save resident to database" on error.
+    * @returns True or false based on succes and Console log Message "Saved resident to database" on succes or "Could not save resident to database" on error.
     */
     addResident(data: any){
         console.log(data);
@@ -123,23 +123,33 @@ export class RestServiceService {
     //MEDIA//
     /////////
 
-    addImagesToDatabase(uniqueIdentifier: any,images: any, options: any = null) {
+    /**
+     * Add correct media to database
+     * @param uniqueIdentifier string: unique resident ID
+     * @param media formdata: media data
+     * @param addMedia string: medialink
+     * Returns true or false or updates error message
+     */
+    addCorrectMediaToDatabase(uniqueIdentifier: any, media: any, addMedia: string) {
         return new Promise(resolve => {
-            this.http.post(this.restUrl + 'api/v1/residents/' + uniqueIdentifier + '/images/data', images).subscribe(response => {
-                console.log(images);
+            this.http.post(this.restUrl + 'api/v1/residents/' + uniqueIdentifier + addMedia , media).subscribe(response => {
                 resolve(true);
             }, error => {
-                console.log("Could not update data!");
                 this.customErrorHandler.updateMessage(error);
                 resolve(false);
             });
         });
     }
 
-
-    getImagesOfResidentBasedOnId(uniqueIdentifier: string) {
+    /**
+     * Get correct media of resident
+     * @param uniqueIdentifier string: resident id
+     * @param type string: urlLink of media
+     * returns true or false--> updates errormessage
+     */
+    getCorrectMediaOfResidentBasedOnId(uniqueIdentifier: string, type: string) {
         return new Promise<Resident[]>(resolve => {
-            this.http.get(this.restUrl + 'api/v1/residents/' + uniqueIdentifier + '/images').subscribe(response => {
+            this.http.get(this.restUrl + 'api/v1/residents/' + uniqueIdentifier + type).subscribe(response => {
                 resolve(<Resident[]>response.json());
             },
                 error => {
@@ -149,7 +159,28 @@ export class RestServiceService {
             );
         });
     }
+    
+    /**
+     * delete resident based on uniqueid
+     * @param uniqueIdentifier string: Resident id
+     * @param uniqueMediaIdentifier string: Media id
+     * @param type string: urlLink
+     * returns true or false --> updates errormessage
+     */
+    deleteResidentMediaByUniqueId(uniqueIdentifier: string, uniqueMediaIdentifier: string, type: string) {
+        return new Promise(resolve => {
+            this.http.delete(this.restUrl + 'api/v1/residents/' + uniqueIdentifier + type + '/' + uniqueMediaIdentifier).subscribe(response => {
+                resolve(true);
+            }, error => {
+                this.customErrorHandler.updateMessage(error);
+                resolve(false);
+            });
+        });
+    }
 
+    ////////////////
+    //LOCALISATION//
+    ////////////////
 
     async SaveStationToDatabase(station:Station){
         return new Promise(resolve => {

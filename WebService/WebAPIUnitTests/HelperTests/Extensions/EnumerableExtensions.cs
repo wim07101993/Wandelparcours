@@ -10,8 +10,7 @@ namespace WebAPIUnitTests.HelperTests.Extensions
         [TestMethod]
         public void IsNullOrEmptyOneItem()
         {
-            var list = new List<int> {1};
-            WebService.Helpers.Extensions.EnumerableExtensions.IsNullOrEmpty(list)
+            WebService.Helpers.Extensions.EnumerableExtensions.IsNullOrEmpty(new[] {1})
                 .Should()
                 .BeFalse("we gave a list with one item (that is not empty or null)");
         }
@@ -19,8 +18,7 @@ namespace WebAPIUnitTests.HelperTests.Extensions
         [TestMethod]
         public void IsNullOrEmptyMoreItems()
         {
-            var list = new List<string> {"a", "hello world", "test string"};
-            WebService.Helpers.Extensions.EnumerableExtensions.IsNullOrEmpty(list)
+            WebService.Helpers.Extensions.EnumerableExtensions.IsNullOrEmpty(new[] {"a", "hello world", "test string"})
                 .Should()
                 .BeFalse("we gave a list with three item (that is not empty or null)");
         }
@@ -28,9 +26,7 @@ namespace WebAPIUnitTests.HelperTests.Extensions
         [TestMethod]
         public void IsNullOrEmptyEmpty()
         {
-            // ReSharper disable once CollectionNeverUpdated.Local
-            var list = new List<int>();
-            WebService.Helpers.Extensions.EnumerableExtensions.IsNullOrEmpty(list)
+            WebService.Helpers.Extensions.EnumerableExtensions.IsNullOrEmpty(new int[] { })
                 .Should()
                 .BeTrue("we gave a list with no items (that is empty)");
         }
@@ -38,9 +34,7 @@ namespace WebAPIUnitTests.HelperTests.Extensions
         [TestMethod]
         public void IsNullOrEmptyNull()
         {
-            List<int> list = null;
-            // ReSharper disable once ExpressionIsAlwaysNull
-            WebService.Helpers.Extensions.EnumerableExtensions.IsNullOrEmpty(list)
+            WebService.Helpers.Extensions.EnumerableExtensions.IsNullOrEmpty(null as IEnumerable<int>)
                 .Should()
                 .BeTrue("we gave null");
         }

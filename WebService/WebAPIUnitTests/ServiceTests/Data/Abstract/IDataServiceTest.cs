@@ -25,6 +25,7 @@
 
         void CreateNullItem();
         void CreateItem();
+        void CreateItemWithId();
 
 
         void RemoveUnknownItem();
@@ -46,10 +47,8 @@
 
         void UpdatePropertyOfUnknownIdAndCorrectValue();
         void UpdateNullPropertyOfUnknownId();
-        void UpdatePropertyOfUnknownIdAndIncorrectValue();
 
         void UpdatePropertyOfKnownIdAndCorrectValue();
         void UpdateNullPropertyOfKnownId();
-        void UpdatePropertyOfKnownIdAndIncorrectValue();
     }
 }
