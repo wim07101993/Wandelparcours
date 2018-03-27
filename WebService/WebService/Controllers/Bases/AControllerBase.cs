@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -23,6 +24,8 @@ namespace WebService.Controllers.Bases
         protected AControllerBase(IUsersService usersService)
         {
             _usersService = usersService;
+            // disables auth
+            UserId = _usersService.GetAsync().Result.FirstOrDefault(x => x.UserType == EUserType.SysAdmin)?.Id ?? ObjectId.Empty;
         }
 
         #endregion CONSTRUCTRO

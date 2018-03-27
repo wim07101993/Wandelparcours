@@ -9,8 +9,10 @@ using WebService.Controllers.Bases;
 using WebService.Helpers.Attributes;
 using WebService.Helpers.Exceptions;
 using WebService.Helpers.Extensions;
+using WebService.Models;
 using WebService.Services.Authorization;
 using WebService.Services.Data;
+using WebService.Services.Data.Mongo;
 
 namespace WebService.Middleware
 {
@@ -70,8 +72,8 @@ namespace WebService.Middleware
             if (!allowedUserTypes.Contains(userType))
                 throw new UnauthorizedException(allowedUserTypes);
 
-            if (context.Controller is IController controller)
-                controller.UserId = userId;
+            //if (context.Controller is IController controller)
+            //    controller.UserId = userId;
 
             await next();
         }

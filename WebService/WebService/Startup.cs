@@ -8,7 +8,6 @@ using WebService.Helpers.Extensions;
 using WebService.Middleware;
 using WebService.Services.Authorization;
 using WebService.Services.Data;
-using WebService.Services.Data.Mock;
 using WebService.Services.Data.Mongo;
 using WebService.Services.Logging;
 using WebService.Services.Randomizer;
@@ -41,7 +40,10 @@ namespace WebService
                 .AddSingleton<ITokenService, TokenService>();
 
             services
-                .AddMvc(options => { options.Filters.Add<AuthPipelineFilter>(); })
+                .AddMvc(options =>
+                {
+                    //options.Filters.Add<AuthPipelineFilter>();
+                })
                 .AddJsonOptions(options =>
                 {
                     options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();

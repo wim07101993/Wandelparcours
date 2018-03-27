@@ -210,7 +210,7 @@ namespace WebService.Controllers
 
         [Authorize(EUserType.SysAdmin, EUserType.Nurse, EUserType.Module, EUserType.User)]
         [HttpGet(GetAllTemplate)]
-        public async override Task<IEnumerable<Resident>> GetAllAsync(string[] propertiesToInclude)
+        public override async Task<IEnumerable<Resident>> GetAllAsync(string[] propertiesToInclude)
         {
             var properties = new Expression<Func<User, object>>[] {x => x.Residents, x => x.UserType};
             var user = await GetCurrentUser(properties);
