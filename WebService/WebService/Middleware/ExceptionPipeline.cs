@@ -45,9 +45,12 @@ namespace WebService.Middleware
                 // invoke the next element in the pipeline
                 await next();
 
-                if (context.ActionDescriptor is ControllerActionDescriptor controllerActionDescriptor &&
-                    controllerActionDescriptor.MethodInfo.GetCustomAttributes().Any(x => x is HttpPostAttribute))
-                    context.HttpContext.Response.StatusCode = (int) HttpStatusCode.Created;
+                if (context.ActionDescriptor is ControllerActionDescriptor controllerActionDescriptor)
+                {
+                    var attributs = controllerActionDescriptor.MethodInfo.GetCustomAttributes();
+                    if (attributs.Any(x => x is HttpPostAttribute))
+                        context.HttpContext.Response.StatusCode = (int) HttpStatusCode.Created;
+                }
             }
             // check for bad arguments by the client
             catch (Helpers.Exceptions.ArgumentException e)
