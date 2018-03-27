@@ -16,3 +16,10 @@ label:hover {
     background-color: red;
     cursor: pointer;
 }
+
+.imgPlaceholder{
+    width:100%;
+}
+.modal.modal-fixed-footer{
+    height: 50%;
+}
