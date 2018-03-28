@@ -8,7 +8,7 @@ using MongoDB.Bson;
 using WebService.Helpers.Exceptions;
 using WebService.Helpers.Extensions;
 using WebService.Models;
-using WebService.Services.Exceptions;
+using WebService.Models.Bases;
 
 namespace WebService.Services.Data.Mock
 {
@@ -19,11 +19,9 @@ namespace WebService.Services.Data.Mock
     /// <para/>
     /// It handles the saving and retrieving data to and from a list of Residents in memory. It does not store anything in a database.
     /// </summary>
-    public partial class MockResidentsService : AMockDataService<Resident>, IResidentsService
+    public class MockResidentsService : AMockDataService<Resident>, IResidentsService
     {
-        public MockResidentsService(IThrow iThrow) : base(iThrow)
-        {
-        }
+        public override List<Resident> MockData { get; } = Mock.MockData.MockResidents;
 
         public override Resident CreateNewItem(ObjectId id)
             => new Resident {Id = id};
@@ -36,8 +34,7 @@ namespace WebService.Services.Data.Mock
 
             // if there is no resident with the given id, throw exception
             if (residentIndex < 0)
-                throw new NotFoundException($"{typeof(Resident).Name} with tag {tag} was not found");
-
+                throw new ElementNotFoundException<Resident>(nameof(Resident.Tags), "tag");
             // get the resident
             var resident = MockData[residentIndex];
 
@@ -73,12 +70,18 @@ namespace WebService.Services.Data.Mock
             throw new NotImplementedException();
         }
 
+        public Task<int> GetHighestTagNumberAsync()
+        {
+            // TODO
+            throw new NotImplementedException();
+        }
+
         public async Task AddMediaAsync(ObjectId residentId, string title, byte[] data, EMediaType mediaType,
             string extension = null)
         {
             // if the data is null, throw an exception
             if (data == null)
-                throw new ArgumentNullException(nameof(data), "data to add cannot be null");
+                throw new System.ArgumentNullException(nameof(data), "data to add cannot be null");
 
             // add the mediaData
             AddMedia(residentId, new MediaUrl {Id = ObjectId.GenerateNewId(), Title = title, Extension = extension},
@@ -89,7 +92,7 @@ namespace WebService.Services.Data.Mock
         {
             // if the url is null, throw an exception
             if (url == null)
-                throw new ArgumentNullException(nameof(url), "url to add cannot be null");
+                throw new System.ArgumentNullException(nameof(url), "url to add cannot be null");
 
             // add the mediaData
             AddMedia(residentId, new MediaUrl {Id = ObjectId.GenerateNewId(), Url = url}, mediaType);
@@ -102,7 +105,7 @@ namespace WebService.Services.Data.Mock
 
             // if there is no resident with the given id, throw exception
             if (index < 0)
-                throw new NotFoundException($"{typeof(Resident).Name} with id {residentId} was not found");
+                throw new NotFoundException<Resident>(nameof(IModelWithID.Id), residentId.ToString());
 
             // check the mediaData type and add the respectively mediaData.
             switch (mediaType)
@@ -128,7 +131,7 @@ namespace WebService.Services.Data.Mock
 
             // if there is no resident with the given id, throw exception
             if (residentIndex < 0)
-                throw new NotFoundException($"{typeof(Resident).Name} with id {residentId} was not found");
+                throw new NotFoundException<Resident>(nameof(IModelWithID.Id), residentId.ToString());
 
             int mediaIndex;
             // check the mediaData type and remove the respectively mediaData.
@@ -137,36 +140,33 @@ namespace WebService.Services.Data.Mock
                 case EMediaType.Audio:
                     // if the music is null, there is no music with the given id => exception
                     if (MockData[residentIndex].Music == null)
-                        throw new NotFoundException(
-                            $"the {typeof(Resident).Name} with id {residentId} has no {mediaType.ToString()}");
+                        throw new ElementNotFoundException<Resident>(nameof(Resident.Music), "track");
 
                     // check if there is music with the given id, if there isn't, throw exception
                     mediaIndex = MockData[residentIndex].Music.FindIndex(x => x.Id == mediaId);
                     if (mediaIndex < 0)
-                        throw new NotFoundException($"{mediaType.ToString()} with id {mediaId} was not found");
+                        throw new ElementNotFoundException<Resident>(nameof(Resident.Music), "track");
 
                     // remove the mediaData
                     MockData[residentIndex].Music.RemoveAt(mediaIndex);
                     break;
                 case EMediaType.Video:
                     if (MockData[residentIndex].Videos == null)
-                        throw new NotFoundException(
-                            $"the {typeof(Resident).Name} with id {residentId} has no {mediaType.ToString()}");
+                        throw new ElementNotFoundException<Resident>(nameof(Resident.Videos), "video");
 
                     mediaIndex = MockData[residentIndex].Videos.FindIndex(x => x.Id == mediaId);
                     if (mediaIndex < 0)
-                        throw new NotFoundException($"{mediaType.ToString()} with id {mediaId} was not found");
+                        throw new ElementNotFoundException<Resident>(nameof(Resident.Videos), "video");
 
                     MockData[residentIndex].Videos.RemoveAt(mediaIndex);
                     break;
                 case EMediaType.Image:
                     if (MockData[residentIndex].Images == null)
-                        throw new NotFoundException(
-                            $"the {typeof(Resident).Name} with id {residentId} has no {mediaType.ToString()}");
+                        throw new ElementNotFoundException<Resident>(nameof(Resident.Images), "image");
 
                     mediaIndex = MockData[residentIndex].Images.FindIndex(x => x.Id == mediaId);
                     if (mediaIndex < 0)
-                        throw new NotFoundException($"{mediaType.ToString()} with id {mediaId} was not found");
+                        throw new ElementNotFoundException<Resident>(nameof(Resident.Images), "image");
 
                     MockData[residentIndex].Images.RemoveAt(mediaIndex);
                     break;
@@ -183,10 +183,9 @@ namespace WebService.Services.Data.Mock
 
             // if there is no resident with the given id, throw exception
             if (residentIndex < 0)
-                throw new NotFoundException($"{typeof(Resident).Name} with id {residentId} was not found");
+                throw new NotFoundException<Resident>(nameof(IModelWithID.Id), residentId.ToString());
 
             ((IList) selector.Compile()(MockData[residentIndex])).Remove(x => x.Equals(item));
         }
     }
-#pragma warning restore 1998
 }

@@ -6,8 +6,9 @@ using System.Reflection;
 using System.Threading.Tasks;
 using MongoDB.Bson;
 using WebService.Helpers.Exceptions;
+using WebService.Helpers.Extensions;
 using WebService.Models.Bases;
-using WebService.Services.Exceptions;
+using ArgumentNullException = WebService.Helpers.Exceptions.ArgumentNullException;
 
 namespace WebService.Services.Data.Mock
 {
@@ -20,13 +21,6 @@ namespace WebService.Services.Data.Mock
     /// </summary>
     public abstract class AMockDataService<T> : IDataService<T> where T : IModelWithID
     {
-        protected readonly IThrow Throw;
-
-        protected AMockDataService(IThrow iThrow)
-        {
-            Throw = iThrow;
-        }
-
         /// <summary>
         /// MockData is the list of items to test the application.
         /// </summary>
@@ -48,12 +42,12 @@ namespace WebService.Services.Data.Mock
         /// Create saves the passed <see cref="T"/> to the database.
         /// </summary>
         /// <param name="item">is the <see cref="T"/> to save in the database</param>
-        /// <exception cref="ArgumentNullException">when the item to create is null</exception>
+        /// <exception cref="System.ArgumentNullException">when the item to create is null</exception>
         public virtual async Task CreateAsync(T item)
         {
             // if the item is null, throw exception
             if (item == null)
-                throw new ArgumentNullException(nameof(item));
+                throw new System.ArgumentNullException(nameof(item));
 
             // create a new id for the item
             item.Id = ObjectId.GenerateNewId();
@@ -61,14 +55,11 @@ namespace WebService.Services.Data.Mock
             MockData.Add(item);
         }
 
-        public virtual async Task AddItemToListProperty(ObjectId id,
-            Expression<Func<T, IEnumerable<object>>> propertyToAddItemTo, object itemToAdd)
+        public virtual async Task AddItemToListProperty<TValue>(ObjectId id,
+            Expression<Func<T, IEnumerable<TValue>>> propertyToAddItemTo, TValue itemToAdd)
         {
             if (itemToAdd == null)
-            {
-                Throw.NullArgument(nameof(itemToAdd));
-                return;
-            }
+                throw new ArgumentNullException(nameof(itemToAdd));
 
 
             if (itemToAdd is IModelWithID modelWithID)
@@ -79,7 +70,7 @@ namespace WebService.Services.Data.Mock
 
             // if the item doesn't exist, throw exception
             if (index < 0)
-                Throw.NotFound<T>(id);
+                throw new NotFoundException<T>(nameof(IModelWithID.Id), id.ToString());
 
 
             // get the property
@@ -90,18 +81,13 @@ namespace WebService.Services.Data.Mock
                 : ((MemberExpression) ((UnaryExpression) propertyToAddItemTo.Body).Operand).Member as PropertyInfo;
 
             if (prop == null)
-            {
-                Throw.PropertyNotKnown<T>("");
-                return;
-            }
+                throw new PropertyNotFoundException<T>();
 
             var oldValue = (prop.GetValue(MockData[index]) as IEnumerable<object>)?.ToList();
 
             if (oldValue == null)
-            {
-                Throw.Exception("could not convert property");
-                return;
-            }
+                throw new WrongArgumentTypeException(prop.GetValue(MockData[index]).Serialize(),
+                    typeof(IEnumerable<object>));
 
             oldValue.Add(itemToAdd);
 
@@ -155,9 +141,9 @@ namespace WebService.Services.Data.Mock
             });
         }
 
-        /// <inheritdoc cref="IDataService{T}.GetAsync(ObjectId,IEnumerable{Expression{System.Func{T,object}}})" />
+        /// <inheritdoc cref="IDataService{T}.GetOneAsync" />
         /// <summary>
-        /// GetAsync returns the <see cref="T"/> with the given id from the database. 
+        /// GetOneAsync returns the <see cref="T"/> with the given id from the database. 
         /// <para/>
         /// It only fills the properties passed in the <see cref="propertiesToInclude"/> parameter. The id is always passed and 
         /// if the <see cref="propertiesToInclude"/> parameter is null (which it is by default), all the properties are included. 
@@ -166,14 +152,15 @@ namespace WebService.Services.Data.Mock
         /// <param name="propertiesToInclude">are the properties that should be included in the objects</param>
         /// <returns>An <see cref="IEnumerable{T}"/> filled with all the ts in the database.</returns>
         /// <exception cref="NotFoundException">when there is no item found with the given id</exception>
-        public async Task<T> GetAsync(ObjectId id, IEnumerable<Expression<Func<T, object>>> propertiesToInclude = null)
+        public async Task<T> GetOneAsync(ObjectId id,
+            IEnumerable<Expression<Func<T, object>>> propertiesToInclude = null)
         {
             // get the index of the item
             var index = MockData.FindIndex(x => x.Id == id);
 
             // if the item doesn't exist, throw exception
             if (index < 0)
-                throw new NotFoundException($"no {typeof(T).Name} with id {id} is found");
+                throw new NotFoundException<T>(nameof(IModelWithID.Id), id.ToString());
 
             // if there are no properties to select, select them all
             if (propertiesToInclude == null)
@@ -200,20 +187,20 @@ namespace WebService.Services.Data.Mock
             return itemToReturn;
         }
 
-        /// <inheritdoc cref="IDataService{T}.GetPropertyAsync"/>
+        /// <inheritdoc cref="IDataService{T}.GetPropertyAsync{TOut}"/>
         /// <summary>
         /// GetPropertyAsync is supposed to return a single property of the <see cref="T"/> with the given id
         /// </summary>
         /// <param name="id">is the id of the <see cref="T"/> to get the property from</param>
         /// <param name="propertyToSelect">is the selector to select the property to return</param>
         /// <returns>The value of the asked property</returns>
-        /// <exception cref="ArgumentNullException">when the property to select is null</exception>
+        /// <exception cref="System.ArgumentNullException">when the property to select is null</exception>
         /// <exception cref="NotFoundException">when there is no item with the given id</exception>
-        public virtual async Task<object> GetPropertyAsync(ObjectId id, Expression<Func<T, object>> propertyToSelect)
+        public virtual async Task<TOut> GetPropertyAsync<TOut>(ObjectId id, Expression<Func<T, TOut>> propertyToSelect)
         {
             // if the property to select is null, throw exception
             if (propertyToSelect == null)
-                throw new ArgumentNullException(nameof(propertyToSelect),
+                throw new System.ArgumentNullException(nameof(propertyToSelect),
                     "the property to select selector cannot be null");
 
             // get the item
@@ -221,7 +208,7 @@ namespace WebService.Services.Data.Mock
 
             // if there are no items, throw exception
             if (item == null)
-                throw new NotFoundException($"no {typeof(T).Name} with id {id} is found");
+                throw new NotFoundException<T>(nameof(IModelWithID.Id), id.ToString());
 
             // return the property
             return propertyToSelect.Compile()(item);
@@ -241,7 +228,7 @@ namespace WebService.Services.Data.Mock
         /// </summary>
         /// <param name="newItem">is the <see cref="T" /> to update</param>
         /// <param name="propertiesToUpdate">are the properties that need to be updated</param>
-        /// <exception cref="ArgumentNullException">when the new item is null</exception>
+        /// <exception cref="System.ArgumentNullException">when the new item is null</exception>
         /// <exception cref="Exception">when the query was not acknowledged</exception>
         /// <exception cref="NotFoundException">when there was no item with the same id as the newItem</exception>
         public virtual async Task UpdateAsync(T newItem,
@@ -256,14 +243,14 @@ namespace WebService.Services.Data.Mock
 
             // if the new item is null, throw exception
             if (newItem == null)
-                throw new ArgumentNullException(nameof(newItem), "the item to update cannot be null");
+                throw new System.ArgumentNullException(nameof(newItem), "the item to update cannot be null");
 
             // get the index of the item to update
             var index = MockData.FindIndex(x => x.Id == newItem.Id);
 
             // if the item doesn't exist, throw exception
             if (index < 0)
-                Throw.NotFound<T>(newItem.Id);
+                throw new NotFoundException<T>(nameof(IModelWithID.Id), newItem.Id.ToString());
 
             // iterate over all the properties that need to be updated
             foreach (var selector in propertiesToUpdate)
@@ -286,27 +273,27 @@ namespace WebService.Services.Data.Mock
         /// ReplaceAsync replaces an item in the database with the new item. The item to replace is the item with the same id as the newItem
         /// </summary>
         /// <param name="newItem">is the new <see cref="T"/></param>
-        /// <exception cref="ArgumentNullException">when the new item is null</exception>
+        /// <exception cref="System.ArgumentNullException">when the new item is null</exception>
         /// <exception cref="Exception">when the query was not acknowledged</exception>
         /// <exception cref="NotFoundException">when there was no item with the same id as the newItem</exception>
         private async Task ReplaceAsync(T newItem)
         {
             // if the new item is null, throw exception
             if (newItem == null)
-                throw new ArgumentNullException(nameof(newItem), "the item to update cannot be null");
+                throw new System.ArgumentNullException(nameof(newItem), "the item to update cannot be null");
 
             // get the index of the item to update
             var index = MockData.FindIndex(x => x.Id == newItem.Id);
 
             // if the item doesn't exist, throw exception
             if (index < 0)
-                throw new NotFoundException($"no item with the id {newItem.Id} could be found");
+                throw new NotFoundException<T>(nameof(IModelWithID.Id), newItem.Id.ToString());
 
             // replace the old item
             MockData[index] = newItem;
         }
 
-        /// <inheritdoc cref="IDataService{T}.UpdatePropertyAsync" />
+        /// <inheritdoc cref="IDataService{T}.UpdatePropertyAsync{TValue}" />
         /// <summary>
         /// GetPropertyAsync updates a single property of the <see cref="T"/> with the given id
         /// </summary>
@@ -321,7 +308,7 @@ namespace WebService.Services.Data.Mock
             TValue value)
         {
             if (propertyToUpdate == null)
-                throw new ArgumentNullException(nameof(propertyToUpdate));
+                throw new System.ArgumentNullException(nameof(propertyToUpdate));
 
             // get the property
             var prop = propertyToUpdate.Body is MemberExpression expression
@@ -332,12 +319,11 @@ namespace WebService.Services.Data.Mock
 
             // check if the property exists
             if (prop == null)
-                throw new ArgumentException(
-                    $"the property {propertyToUpdate} could not be found on the type {typeof(T).Name}");
+                throw new PropertyNotFoundException<T>();
 
             var index = MockData.FindIndex(x => x.Id == id);
             if (index < 0)
-                throw new NotFoundException($"no item with the id {id} could be found");
+                throw new NotFoundException<T>(nameof(IModelWithID.Id), id.ToString());
 
             prop.SetValue(MockData[index], value);
         }
@@ -363,7 +349,7 @@ namespace WebService.Services.Data.Mock
 
             // if the index is -1 there was no item found
             if (index == -1)
-                throw new NotFoundException($"no item with the id {id} could be found");
+                throw new NotFoundException<T>(nameof(IModelWithID.Id), id.ToString());
 
             // remove the newItem
             MockData.RemoveAt(index);
@@ -371,5 +357,4 @@ namespace WebService.Services.Data.Mock
 
         #endregion DELETE
     }
-#pragma warning restore CS1998
 }
