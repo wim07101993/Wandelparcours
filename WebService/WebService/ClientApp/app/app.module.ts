@@ -24,6 +24,7 @@ import { PersonaliaComponent } from './components/senior/personalia/personalia.c
 import { ErrorPageComponent } from './components/error-page/error-page.component';
 import { UploadComponent } from './components/senior/upload/upload.component';
 import { BrowserModule } from '@angular/platform-browser';
+import { GlobaltrackingComponent } from './components/globaltracking/globaltracking.component';
 
 const appRoutes: Routes = [
     { path: '', redirectTo: 'residents', pathMatch: 'full' },
@@ -39,6 +40,7 @@ const appRoutes: Routes = [
     { path: 'modules', component: StationmanagementComponent },
     { path: 'error', component: ErrorPageComponent},
     { path: 'residents', component: ResidentsComponent },
+    { path: 'tracking', component: GlobaltrackingComponent },
     { path: '**', redirectTo: 'residents' }
     
 ];
@@ -63,6 +65,7 @@ const appRoutes: Routes = [
         PersonaliaComponent,
         ErrorPageComponent,
         UploadComponent,
+        GlobaltrackingComponent,
     ],
     imports: [
         CommonModule,
