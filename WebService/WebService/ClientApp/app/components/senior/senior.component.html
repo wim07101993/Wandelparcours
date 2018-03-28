@@ -1,9 +1,13 @@
-<ul id="slide-out" class="side-nav fixed orange" style="z-index: 0">
-    <li><a [routerLink]="['/resident', id]"><i class="material-icons">person</i>Personlia</a></li>
-    <li><a [routerLink]="['/resident', id, 'picture']" class="waves-effect"><i class="material-icons">photo</i>Foto's </a></li>
-    <li><a [routerLink]="['/resident', id, 'video']" class="waves-effect"><i class="material-icons">ondemand_video</i>Videos </a></li>
-    <li><a [routerLink]="['/resident', id, 'audio']" class="waves-effect"><i class="material-icons">audiotrack</i>Audio </a></li>
-    <li><a [routerLink]="['/resident', id, 'game']" class="waves-effect"><i class="material-icons">videogame_asset</i>Spel </a></li>
-    <li><a [routerLink]="['/resident', id, 'tracking']" class="waves-effect"><i class="material-icons">location_on</i>Tracking </a></li>
-    <!--<li><a [routerLink]="['/resident', id]" class="waves-effect"><i class="material-icons">keyboard_arrow_left</i>Terug </a></li>-->
-</ul>
+
+<div class="row">
+    <div class="col s12">
+        <ul class="tabs">
+            <li class="tab col s2"><a [ngClass]="{'active': type==='personalia'}"  [routerLink]="['/resident', id]" class="test">Personalia</a></li>
+            <li class="tab col s2"><a [ngClass]="{'active': type==='picture'}" [routerLink]="['/resident', id, 'picture']">Foto's </a></li>
+            <li class="tab col s2"><a [ngClass]="{'active': type==='video'}" [routerLink]="['/resident', id, 'video']">Videos </a></li>
+            <li class="tab col s2"><a [ngClass]="{'active': type==='audio'}" [routerLink]="['/resident', id, 'audio']">Audio </a></li>
+            <li class="tab col s2"><a [ngClass]="{'active': type==='game'}" [routerLink]="['/resident', id, 'game']">Game </a></li>
+            <li class="tab col s2"><a [ngClass]="{'active': type==='tracking'}" [routerLink]="['/resident', id, 'tracking']">Tracking </a></li>
+        </ul>
+    </div>
+</div>

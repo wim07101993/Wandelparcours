@@ -9,41 +9,27 @@
             </div>
             
             <div class="col s8">
-                <h5>Gekoppelde beacons</h5>
+                <h5>Gekoppelde tags</h5>
                 <table class="striped responsive-table centered">
                     <thead>
                     <tr>
-                        <th>Beacon-id</th>
-                        <th>Major</th>
-                        <th>Minor</th>
-                        <th>Action</th>
+                        <th>Tag</th>
+                        <th>Verwijderen</th>
                     </tr>
                     </thead>
 
                     <tbody>
-                    <tr>
-                        <td>2345678</td>
-                        <td>1000</td>
-                        <td>1002</td>
-                        <td><i class="material-icons blue-text pointer">edit</i> <i class="material-icons red-text pointer">delete</i></td>
-                    
+                    <tr *ngFor="let tag of resident.tags">
+                        <td>{{tag}}</td>
+                        <td><i class="material-icons red-text pointer">delete</i></td>
                     </tr>
-                    <tr>
-                        <td>2333678</td>
-                        <td>1000</td>
-                        <td>1003</td>
-                        <td><i class="material-icons blue-text pointer">edit</i> <i class="material-icons red-text pointer">delete</i></td>
-
-                    </tr>
-                    <tr>
-                        <td>2377678</td>
-                        <td>1000</td>
-                        <td>1004</td>
-                        <td><i class="material-icons blue-text pointer">edit</i> <i class="material-icons red-text pointer">delete</i></td>
-
-                    </tr>
-                    
                     </tbody>
+
+                    <div class="action-btn">
+                        <a class="btn-floating btn-large red modal-trigger" (click)="addTag()">
+                            <i class="material-icons">add</i>
+                        </a>
+                    </div>
                 </table>
             </div>
         </div>
@@ -76,7 +62,7 @@
                 </table>
             </div>
         </div>
-        <div class="row">
+        <div class="row" style="margin-top:60px;">
             <div class="col s6 m3">
                 <a [routerLink]="['/resident', id, 'picture']">
                 <div class="card">

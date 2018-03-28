@@ -9,6 +9,7 @@ export class Resident {
     doctor: Doctor
     images: Images
     videos: Videos
+    tags: number[]
     constructor() {
         this.images = new Images();
         this.id = "";
