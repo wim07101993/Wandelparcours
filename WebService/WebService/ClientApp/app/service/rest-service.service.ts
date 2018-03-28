@@ -105,17 +105,30 @@ export class RestServiceService {
     * @param data Object resident with all saved properties
     * @returns True or false based on succes and Console log Message "Saved resident to database" on succes or "Could not save resident to database" on error.
     */
+
     addResident(data: any){
         console.log(data);
         return new Promise(resolve => {
            this.http.post(this.restUrl + 'api/v1/residents', data).subscribe(response => {
                 console.log("Saved resident to database");
-                resolve(response);
+                resolve(response.text());
             }, error => {
                 console.log("Could not save resident to database!");
                 this.customErrorHandler.updateMessage(error);
                 resolve(undefined);
                 });
+        });
+    }
+    addProfilePic(uniqueIdentifier: any, picture: any) {
+        return new Promise(resolve => {
+            this.http.put(this.restUrl + 'api/v1/residents/' + uniqueIdentifier + "/picture", picture).subscribe(response => {
+                console.log("Saved residentimage to database");
+                resolve(true);
+            }, error => {
+                console.log("Could not save resident to database!");
+                this.customErrorHandler.updateMessage(error);
+                resolve(false);
+            });
         });
     }
 

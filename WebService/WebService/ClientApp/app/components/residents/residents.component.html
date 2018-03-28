@@ -155,7 +155,7 @@
 
 <!-- Modal Structure -->
 <!-- Form to add resident -->
-<div id="add-resident-modal" class="modal">
+<div id="add-resident-modal" *ngIf="addresidentmodal==true" class="modal">
     <div class="modal-content">
         <h6>Een nieuwe bewoner toevoegen</h6>
         <div class="row">
@@ -218,7 +218,7 @@
 <!-- Modal Trigger -->
 <!-- This will pop up the form to add a resident -->
 <div class="fixed-action-btn">
-    <a class="btn-floating btn-large red modal-trigger" (click)="openResidentAddModal()">
+    <a class="btn-floating btn-large red" (click)="openResidentAddModal()">
         <i class="large material-icons">person_add</i>
     </a>
 </div>

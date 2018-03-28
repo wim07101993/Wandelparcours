@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core'
+import { Component, OnInit, ViewChild } from '@angular/core'
 import { Resident } from '../../models/resident'
 import { RestServiceService } from '../../service/rest-service.service' 
 import { Response } from '@angular/http'
@@ -34,7 +34,9 @@ export class ResidentsComponent implements OnInit {
     reader: any;
     selectedFileImage: any;
     fd: any 
+    @ViewChild('frm') addresidentform :NgForm;
 
+    addresidentmodal = false;
     /**
      * Injects the service and router
      * @param service Restservice
@@ -214,6 +216,7 @@ export class ResidentsComponent implements OnInit {
         // Workaround for dateformat
         let birthday = $("#abirthdate").val();
         let a;
+
         if (birthday != "") {
             a = new Date(birthday);
         }
@@ -254,7 +257,9 @@ export class ResidentsComponent implements OnInit {
         form.reset();
         
         //close modal/form and 'reload' page 
-        $("#add-resident-modal").modal("close");
+        this.addresidentmodal = false
+        setTimeout(() => { $("#add-resident-modal").modal("close");}, 200);
+        
         this.showAllResidents();
 
     }
@@ -264,25 +269,34 @@ export class ResidentsComponent implements OnInit {
      */
     resetForm(form: NgForm){form.reset();}
 
-    openResidentAddModal(){
-        $("#add-resident-modal").modal();
-        $("#add-resident-modal").modal("open");
-        $('.datepicker').pickadate({
-            selectMonths: true, // Creates a dropdown to control month
-            selectYears: 110, // Creates a dropdown of 15 years to control year,
-            max: new Date(),
-            monthsFull: ['Januari', 'Februari', 'Maart', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'December'],
-            monthsShort: ['Jan','Feb','Maa','Apr','Mei','Jun','Jul','Aug','Sep','Okt','Nov','Dec'],
-            weekdaysShort: ['ma', 'di', 'wo', 'do', 'vr', 'zat', 'zon'],
-            today: 'Vandaag',
-            clear: 'Wissen',
-            close: 'Ok',
-            formatSubmit: 'mm-dd-yyyy',
-            dateFormat: 'mm-dd-yyyy',
-            format: 'mm-dd-yyyy', //hier loopt iets mis?
-            hiddenName: true,
-            closeOnSelect: true // Close upon selecting a date,
+    openResidentAddModal() {
+        this.addresidentmodal = false;
+        setTimeout(() => {
+            this.addresidentmodal = true;
+            this.resetForm(this.addresidentform);
         });
+        
+        setTimeout(() => {
+              $("#add-resident-modal").modal();
+                $("#add-resident-modal").modal("open");
+                $('.datepicker').pickadate({
+                    selectMonths: true, // Creates a dropdown to control month
+                    selectYears: 110, // Creates a dropdown of 15 years to control year,
+                    max: new Date(),
+                    monthsFull: ['Januari', 'Februari', 'Maart', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'December'],
+                    monthsShort: ['Jan','Feb','Maa','Apr','Mei','Jun','Jul','Aug','Sep','Okt','Nov','Dec'],
+                    weekdaysShort: ['ma', 'di', 'wo', 'do', 'vr', 'zat', 'zon'],
+                    today: 'Vandaag',
+                    clear: 'Wissen',
+                    close: 'Ok',
+                    formatSubmit: 'mm-dd-yyyy',
+                    dateFormat: 'mm-dd-yyyy',
+                    format: 'mm-dd-yyyy', //hier loopt iets mis?
+                    hiddenName: true,
+                    closeOnSelect: true // Close upon selecting a date,
+                });
+        }, 300);
+  
 
        
     }
