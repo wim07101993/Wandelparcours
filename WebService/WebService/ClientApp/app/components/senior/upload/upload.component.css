@@ -1,25 +1,23 @@
-img.aClassName{
-    width: 25% !important;
-}
 
+.modal.modal-fixed-footer{
+    height:15%;
+}
 label {
-    font-size: 1.25em;
-    font-weight: 700;
-    color: white;
-    background-color: orangered;
     padding: 20px;
+    color: white;
+    background-color: black;
     display: inline-block;
 }
 
 label,
 label:hover {
     background-color: red;
-    cursor: pointer;
 }
 
-.imgPlaceholder{
-    width:100%;
+label {
+    cursor: pointer; /* "hand" cursor */
 }
-.modal.modal-fixed-footer{
-    height: 50%;
+
+.modal{
+    width: 30%;
 }

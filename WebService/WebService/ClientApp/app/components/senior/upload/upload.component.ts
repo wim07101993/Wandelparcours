@@ -97,9 +97,6 @@ export class UploadComponent implements OnInit {
           } else{
               this.router.navigate(["/error"]);
           }
-
-        
-
           
       }
       

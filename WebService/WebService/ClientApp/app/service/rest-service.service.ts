@@ -84,7 +84,7 @@ export class RestServiceService {
         console.log(dataToUpdate);
         let s: string = "";
         let url: string = "?properties=" + changedProperties[0];
-        for (var _i = 1; _i < changedProperties.length; _i++) {
+        for (let _i = 1; _i < changedProperties.length; _i++) {
             url += "&properties=" + changedProperties[_i];
         }
 
