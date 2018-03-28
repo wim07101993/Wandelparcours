@@ -5,11 +5,10 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Serialization;
 using WebService.Helpers.Extensions;
-using WebService.Models;
+using WebService.Middleware;
+using WebService.Services.Authorization;
 using WebService.Services.Data;
-using WebService.Services.Data.Mock;
 using WebService.Services.Data.Mongo;
-using WebService.Services.Exceptions;
 using WebService.Services.Logging;
 using WebService.Services.Randomizer;
 
@@ -31,23 +30,27 @@ namespace WebService
             services
                 .AddSingleton(typeof(ILogger), new LoggerCollection {new ConsoleLogger(), new FileLogger()})
                 .AddSingleton<IRandomizer, Randomizer>()
-                .AddSingleton<IThrow, Throw>()
-                //.AddSingleton<IDataService<Resident>, MockResidentsService>()
-                //.AddSingleton<IDataService<ReceiverModule>, ReceiverModulesService>();
-                .AddSingleton<IDataService<Location>,LocationService>()
-                .AddSingleton<IDataService<MediaData>, MediaService>()
-                .AddSingleton<IDataService<Resident>, ResidentsService>()
+                //.AddSingleton<IMediaService, MockMediaService>()
+                //.AddSingleton<IResidentsService, MockResidentsService>()
+                //.AddSingleton<IReceiverModulesService, ReceiverModulesService>()
+                //.AddSingleton<IUsersService, MockUsersService>()
+                .AddSingleton<IMediaService, MediaService>()
                 .AddSingleton<IResidentsService, ResidentsService>()
-                .AddSingleton<IDataService<ReceiverModule>, ReceiverModulesService>();
+                .AddSingleton<IReceiverModulesService, ReceiverModulesService>()
+                .AddSingleton<IUsersService, UsersService>()
+                .AddSingleton<ITokenService, TokenService>();
 
             services
-                .AddMvc()
+                .AddMvc(options =>
+                {
+                    options.Filters.Add<ReturnCreatedIfPostSucceedsPipeline>();
+                    //options.Filters.Add<AuthPipelineFilter>();
+                })
                 .AddJsonOptions(options =>
                 {
                     options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
                 });
             services.AddCors();
-
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -71,8 +74,8 @@ namespace WebService
 
             app.UseCors((option) => { option.AllowAnyOrigin().AllowAnyMethod(); });
 
-            app.UseExceptionMiddleware()
-                .UseStaticFiles()
+            app.UseStaticFiles()
+                .UseExceptionMiddelware()
                 .UseMvc(routes =>
                 {
                     routes.MapRoute(

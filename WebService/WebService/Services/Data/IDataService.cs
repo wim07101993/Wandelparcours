@@ -17,11 +17,12 @@ namespace WebService.Services.Data
         /// </summary>
         /// <param name="id">is the id of the <see cref="T"/> to get the property from</param>
         /// <param name="propertyToSelect">is the selector to select the property to return</param>
+        /// <typeparam name="TOut">is the type of the properties value</typeparam>
         /// <returns>The value of the asked property</returns>
-        Task<object> GetPropertyAsync(ObjectId id, Expression<Func<T, object>> propertyToSelect);
+        Task<TOut> GetPropertyAsync<TOut>(ObjectId id, Expression<Func<T, TOut>> propertyToSelect);
 
         /// <summary>
-        /// GetAsync is supposed to return the <see cref="T"/> with the given id from the database. 
+        /// GetOneAsync is supposed to return the <see cref="T"/> with the given id from the database. 
         /// <para/>
         /// It should only fill the properties passed in the <see cref="propertiesToInclude"/> parameter. The id is always passed and 
         /// if the <see cref="propertiesToInclude"/> parameter is null (which it is by default), all the properties are included. 
@@ -29,10 +30,10 @@ namespace WebService.Services.Data
         /// <param name="id">is the id of the item that needs to be fetched</param>
         /// <param name="propertiesToInclude">are the properties that should be included in the objects</param>
         /// <returns>An <see cref="IEnumerable{T}"/> filled with all the ts in the database.</returns>
-        Task<T> GetAsync(ObjectId id, IEnumerable<Expression<Func<T, object>>> propertiesToInclude = null);
+        Task<T> GetOneAsync(ObjectId id, IEnumerable<Expression<Func<T, object>>> propertiesToInclude = null);
 
         /// <summary>
-        /// GetAsync is supposed to return all the ts from the database. 
+        /// GetOneAsync is supposed to return all the ts from the database. 
         /// <para/>
         /// It should only fill the properties passed in the <see cref="propertiesToInclude"/> parameter. The id is always passed and 
         /// if the <see cref="propertiesToInclude"/> parameter is null (which it is by default), all the properties are included. 
@@ -49,8 +50,8 @@ namespace WebService.Services.Data
         /// <param name="item">is the <see cref="T"/> to save in the database</param>
         Task CreateAsync(T item);
 
-        Task AddItemToListProperty(ObjectId id, Expression<Func<T, IEnumerable<object>>> propertyToAddItemTo,
-            object itemToAdd);
+        Task AddItemToListProperty<TValue>(ObjectId id, Expression<Func<T, IEnumerable<TValue>>> propertyToAddItemTo,
+            TValue itemToAdd);
 
         /// <summary>
         /// RemoveAsync is supposed to remove the <see cref="T"/> with the given id from the database.

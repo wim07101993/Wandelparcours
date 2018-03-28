@@ -7,68 +7,35 @@ using WebService.Services.Logging;
 
 namespace WebService.Middleware
 {
-    /// <summary>
-    /// ExceptionMiddleware is a middleware that handles all exceptions thrown in the Controllers.
-    /// </summary>
     public class ExceptionMiddleware
     {
-        #region FIELDS
-
-        /// <summary>
-        /// _next is the next <see cref="RequestDelegate"/> in the pipeline.
-        /// </summary>
         private readonly RequestDelegate _next;
-
-        /// <summary>
-        /// _logger is an instance of the <see cref="ILogger"/> interface to log messages.
-        /// </summary>
         private readonly ILogger _logger;
 
-        #endregion FIELDS
-
-
-        #region CONSTRUCTOR
-
-        /// <summary>
-        /// ExceptionMiddleware instantiates a new object of the <see cref="ExceptionMiddleware"/> class.
-        /// </summary>
-        /// <param name="next">is the next <see cref="RequestDelegate"/> in the pipeline</param>
-        /// <param name="logger">is an instance of the <see cref="ILogger"/> interface to log messages</param>
         public ExceptionMiddleware(RequestDelegate next, ILogger logger)
         {
-            // inject dependencies
             _next = next;
             _logger = logger;
         }
 
-        #endregion CONSTRUCTOR
-
-
-        #region METHODS
-
-        /// <summary>
-        /// Invoke invokes the next item in the pipeline and handles all exceptions thrown.
-        /// </summary>
-        /// <param name="context">is the context containing all HTTP elements (response, request,...)</param>
-        /// <returns>A task to execute</returns>
-        public async Task Invoke(HttpContext context)
+        public async Task InvokeAsync(HttpContext context)
         {
             try
             {
-                // invoke the next element in the pipeline
-                await _next.Invoke(context);
+                await _next(context);
             }
             // check for bad arguments by the client
-            catch (WebArgumentException e)
+            catch (Helpers.Exceptions.ArgumentException e)
             {
                 // respond with a 400 bad request status code
                 context.Response.StatusCode = (int) HttpStatusCode.BadRequest;
 
                 // respond a message
-                await context.Response.WriteAsync("The arguments you passed just destroyed Luxembourg...\n\n");
+                await context.Response.WriteAsync(
+                    "The arguments you passed just destroyed Luxembourg...\n\n");
 
                 // respond the error
-                await context.Response.WriteAsync(e.Message);
+                await context.Response.WriteAsync((string) e.Message);
             }
             // check if some recourse is not found
             catch (NotFoundException e)
@@ -81,6 +48,20 @@ namespace WebService.Middleware
 
                 // respond the error
                 await context.Response.WriteAsync(e.Message);
+            }
+            // check for unauthorized requests
+            catch (UnauthorizedException e)
+            {
+                // respond with a 404 not found status code
+                context.Response.StatusCode = (int) HttpStatusCode.Unauthorized;
+
+                // respond a message
+                await context.Response.WriteAsync("You shall not pass!!\n\n");
+
+                // respond the error
+                await context.Response.WriteAsync(e.Message);
+
+                _logger.Log(this, ELogLevel.Information, e);
             }
             // catch all other exceptions
             catch (Exception e)
@@ -95,7 +76,5 @@ namespace WebService.Middleware
                 await context.Response.WriteAsync("http://gph.is/1s201Ez");
             }
         }
-
-        # endregion METHODS
     }
 }
