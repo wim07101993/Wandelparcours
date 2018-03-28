@@ -1,6 +1,6 @@
 <div class="row myRow">
 
-    <div class="col s1 myCol">
+    <div class="col s1">
         <a class="btn-floating btn-large waves-effect waves-light blue" (click)="view='list-view'" *ngIf="view=='card-view'"><i class="material-icons pointer">view_list</i></a>
         <a class="btn-floating btn-large waves-effect waves-light blue" (click)="view='card-view'" *ngIf="view=='list-view'"><i class="material-icons pointer" >view_comfy</i></a>
     </div>
@@ -40,7 +40,7 @@
                     </tr>
                     <tr>
                         <th class="cardviewth right">arts:</th>
-                        <td class="cardviewtd">{{resident.doctor.name}}</td>
+                        <td class="cardviewtd test">{{resident.doctor.name}}</td>
                     </tr>
                     <tr>
                         <th class="cardviewth right">tel:</th>
@@ -194,7 +194,7 @@
                     </div>
                     <div class="input-field col s6">
                         <input id="abirthdate" type="text" class="datepicker validate" ngModel name="aBirthday">
-                        <label for="abirthdate">Geboortedatum<sup style="color:#ff2200;">*</sup></label>
+                        <label for="abirthdate">Geboortedatum</label>
                     </div>
                 </div>
                 <div class="row">

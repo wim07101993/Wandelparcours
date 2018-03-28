@@ -1,6 +1,6 @@
 ﻿@import url('https://fonts.googleapis.com/css?family=Questrial');
 body {
-     font-family: 'Questrial';
+     font-family: 'Questrial', sans-serif;
 }
 
 .holder{
@@ -13,13 +13,13 @@ body {
     background: rgba(0,0,0,0.45);
     padding: 10px 10px;
 }
+
 .loader {
     position: absolute;
     left: 50%;
     top: 50%;
     z-index: 1;
     margin: -90px 0 0 -90px;
-    z-index: 1;
     border: 16px solid #f3f3f3;
     border-radius: 50%;
     border-top: 16px solid blue;
