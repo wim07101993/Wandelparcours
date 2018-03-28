@@ -184,7 +184,7 @@ namespace WebService.Controllers.Bases
         public virtual async Task<object> GetPropertyAsync(string id, string propertyName)
         {
             if (!typeof(T).GetProperties().Any(x => x.Name.EqualsWithCamelCasing(propertyName)))
-                throw new PropertyNotFoundException<T>(nameof(propertyName));
+                throw new PropertyNotFoundException<T>(propertyName);
 
             if (!ObjectId.TryParse(id, out var objectId))
                 throw new NotFoundException<T>(nameof(IModelWithID.Id), id);
