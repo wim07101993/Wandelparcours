@@ -84,7 +84,7 @@ h6{
     box-shadow: 1px 1px 1px 1px rgba(0,0,0,0.15);
 }
 .color-grad{
-    background: #fffc00; /* fallback for old browsers */
-    background: -webkit-linear-gradient(to right, #fdfdfd, #fffc00); /* Chrome 10-25, Safari 5.1-6 */
-    background: linear-gradient(to right,#fdfdfd , #fffc00);
+    background: #edeae7; /* fallback for old browsers */
+    background: -webkit-linear-gradient(to right, #fdfdfd, #edeae7); /* Chrome 10-25, Safari 5.1-6 */
+    background: linear-gradient(to right,#fdfdfd , #edeae7);
 }

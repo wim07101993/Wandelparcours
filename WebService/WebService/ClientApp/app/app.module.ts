@@ -70,7 +70,8 @@ const appRoutes: Routes = [
         HttpModule,
         FormsModule,
         RouterModule.forRoot(appRoutes),
-        BrowserModule,
+        BrowserModule
+
     ]
 })
 export class AppModuleShared {

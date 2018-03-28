@@ -19,7 +19,7 @@ export class MediaService {
         this.fullLinks = [];
         let mediaType = await this.service.getCorrectMediaOfResidentBasedOnId(id, media);
         for (let a of mediaType) {
-            let url2 = this.url + a.id;
+            let url2 = this.url + a.id + "/file";
             let fullLinks = new Resident();
 
             if (media === "/images") {
