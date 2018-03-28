@@ -10,9 +10,16 @@ import {CustomErrorHandler} from './customErrorHandler';
 @Injectable()
 export class RestServiceService {
     [x: string]: any;
-
-    restUrl = "http://localhost:5000/";
-
+    url:string="";
+    get restUrl() :string{
+        if (this.url=="")
+            return document.getElementsByTagName('base')[0].href;
+        else
+            return this.url;
+    }
+    set restUrl(val:string){
+        this.url = val;
+    }
     constructor(private http: Http, private customErrorHandler: CustomErrorHandler) {
     }
 
