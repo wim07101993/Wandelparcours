@@ -40,6 +40,7 @@ namespace WebService.Controllers
         public const string AddVideoUrlTemplate = "{residentId}/Videos/url";
         public const string AddImageUrlTemplate = "{residentId}/Images/url";
 
+        public const string GetPictureTemplate = "{residentId}/picture";
         public const string GetByTagTemplate = "byTag/{tag}";
         public const string GetRandomElementFromPropertyTemplate = "byTag/{tag}/{propertyName}/random";
         public const string GetPropertyByTagTemplate = "byTag/{tag}/{propertyName}";
@@ -89,7 +90,7 @@ namespace WebService.Controllers
                 {nameof(Resident.LastRecordedPosition), x => x.LastRecordedPosition},
                 {nameof(Resident.Locations), x => x.Locations},
                 {nameof(Resident.Music), x => x.Music},
-                {nameof(Resident.ImagePicture), x => x.ImagePicture},
+                {nameof(Resident.Picture), x => x.Picture},
                 {nameof(Resident.Room), x => x.Room},
                 {nameof(Resident.Tags), x => x.Tags},
                 {nameof(Resident.Videos), x => x.Videos},
@@ -237,6 +238,20 @@ namespace WebService.Controllers
         public override Task<object> GetPropertyAsync(string id, string propertyName) =>
             base.GetPropertyAsync(id, propertyName);
 
+        [Authorize(EUserType.SysAdmin, EUserType.Nurse, EUserType.Module, EUserType.User)]
+        [HttpGet(GetPictureTemplate)]
+        public async Task<FileContentResult> GetPictureAsync(string residentId)
+        {
+            if (!ObjectId.TryParse(residentId, out var objectId))
+                throw new NotFoundException<Resident>(nameof(IModelWithID.Id), residentId);
+
+            var picture = await DataService.GetPropertyAsync(objectId, x => x.Picture);
+
+            return picture == null
+                ? throw new NotFoundException<Resident>(nameof(IModelWithID.Id), residentId)
+                : File(picture, "image/jpg");
+        }
+
         [Authorize(EUserType.SysAdmin, EUserType.Nurse, EUserType.Module)]
         [HttpGet(GetByTagTemplate)]
         public async Task<Resident> GetByTagAsync(int tag, [FromQuery] string[] propertiesToInclude)
@@ -331,7 +346,7 @@ namespace WebService.Controllers
             {
                 var bytes = picture.ConvertToBytes(maxFileSize);
 
-                await DataService.UpdatePropertyAsync(objectId, x => x.ImagePicture, bytes);
+                await DataService.UpdatePropertyAsync(objectId, x => x.Picture, bytes);
             }
             catch (FileToLargeException)
             {
