@@ -9,7 +9,7 @@ declare var $:any;
 export class HeaderComponent implements OnInit {
 
     gebruiker = 'Beheerder';
-    pageTitle = 'Pagina Titel'
+    pageTitle = 'UR MOM GAY';
 
     constructor() { 
     }
