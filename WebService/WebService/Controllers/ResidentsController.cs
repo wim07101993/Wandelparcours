@@ -109,7 +109,7 @@ namespace WebService.Controllers
 
             var properties = new Expression<Func<User, object>>[] {x => x.Residents, x => x.UserType, x => x.Group};
             var user = await GetCurrentUser(properties);
-            bool isResponsible;
+            var isResponsible = false;
             switch (user.UserType)
             {
                 case EUserType.SysAdmin:
@@ -141,7 +141,7 @@ namespace WebService.Controllers
 
             var properties = new Expression<Func<User, object>>[] {x => x.Residents, x => x.UserType, x => x.Group};
             var user = await GetCurrentUser(properties);
-            bool isResponsible;
+            var isResponsible = false;
             switch (user.UserType)
             {
                 case EUserType.SysAdmin:
