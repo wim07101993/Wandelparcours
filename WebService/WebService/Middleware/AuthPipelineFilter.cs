@@ -72,8 +72,8 @@ namespace WebService.Middleware
             if (!allowedUserTypes.Contains(userType))
                 throw new UnauthorizedException(allowedUserTypes);
 
-            //if (context.Controller is IController controller)
-            //    controller.UserId = userId;
+            if (context.Controller is IController controller)
+                controller.UserId = userId;
 
             await next();
         }

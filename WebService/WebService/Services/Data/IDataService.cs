@@ -59,6 +59,9 @@ namespace WebService.Services.Data
         /// <param name="id">is the id of the <see cref="T"/> to remove in the database</param>
         Task RemoveAsync(ObjectId id);
 
+        Task RemoveItemFromList<TValue>(ObjectId id, Expression<Func<T, IEnumerable<TValue>>> popertyToRemoveItemFrom,
+            TValue itemToRemove);
+
         /// <summary>
         /// UpdateAsync is supposed to update the <see cref="T"/> with the id of the given <see cref="T"/>.
         /// <para/>
