@@ -327,6 +327,21 @@ namespace WebService.Services.Data.Mongo
                 throw new NotFoundException<T>(nameof(IModelWithID.Id), id.ToString());
         }
 
+        public virtual async Task RemoveItemFromList<TValue>(ObjectId id,
+            Expression<Func<T, IEnumerable<TValue>>> popertyToRemoveItemFrom, TValue itemToRemove)
+        {
+            if (itemToRemove == null)
+                throw new ArgumentNullException(nameof(itemToRemove));
+
+            var filter = Builders<T>.Filter.Eq(x => x.Id, id);
+            var updater = Builders<T>.Update.Pull(popertyToRemoveItemFrom, itemToRemove);
+
+            var result = await MongoCollection.FindOneAndUpdateAsync(filter, updater);
+
+            if (result == null)
+                throw new NotFoundException<T>(nameof(IModelWithID.Id), id.ToString());
+        }
+
         #endregion delete
 
         #endregion METHODS
