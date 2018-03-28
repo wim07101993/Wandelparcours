@@ -102,7 +102,71 @@ namespace WebService.Controllers
 
         #region METHODS
 
-        private async Task<bool> IsCurrentUserResponsibleForResident(ObjectId residentId)
+        private async Task<ObjectId> CanWriteDataToResidentAsync(string residentId)
+        {
+            if (!ObjectId.TryParse(residentId, out var residentObjectId))
+                throw new NotFoundException<Resident>(nameof(IModelWithID.Id), residentId);
+
+            var properties = new Expression<Func<User, object>>[] {x => x.Residents, x => x.UserType, x => x.Group};
+            var user = await GetCurrentUser(properties);
+            bool isResponsible;
+            switch (user.UserType)
+            {
+                case EUserType.SysAdmin:
+                    isResponsible = true;
+                    break;
+                case EUserType.Nurse:
+                    var residentRoom = await DataService.GetPropertyAsync(residentObjectId, x => x.Room);
+                    isResponsible = new Regex($@"^{residentRoom}[0-9]*$").IsMatch(user.Group);
+                    break;
+                case EUserType.User:
+                    isResponsible = user.Residents.Contains(residentObjectId);
+                    break;
+                case EUserType.Guest:
+                case EUserType.Module:
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+
+            return isResponsible
+                ? residentObjectId
+                : throw new NotFoundException<Resident>(nameof(IModelWithID.Id), residentId);
+        }
+
+        private async Task<ObjectId> CanGetDataFromResidentAsync(string residentId)
+        {
+            if (!ObjectId.TryParse(residentId, out var residentObjectId))
+                throw new NotFoundException<Resident>(nameof(IModelWithID.Id), residentId);
+
+            var properties = new Expression<Func<User, object>>[] {x => x.Residents, x => x.UserType, x => x.Group};
+            var user = await GetCurrentUser(properties);
+            bool isResponsible;
+            switch (user.UserType)
+            {
+                case EUserType.SysAdmin:
+                case EUserType.Module:
+                    isResponsible = true;
+                    break;
+                case EUserType.Nurse:
+                    var residentRoom = await DataService.GetPropertyAsync(residentObjectId, x => x.Room);
+                    isResponsible = new Regex($@"^{residentRoom}[0-9]*$").IsMatch(user.Group);
+                    break;
+                case EUserType.User:
+                    isResponsible = user.Residents.Contains(residentObjectId);
+                    break;
+                case EUserType.Guest:
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+
+            return isResponsible
+                ? residentObjectId
+                : throw new NotFoundException<Resident>(nameof(IModelWithID.Id), residentId);
+        }
+
+        private async Task<bool> CanWriteDataToResidentAsync(int tag)
         {
             var properties = new Expression<Func<User, object>>[] {x => x.Residents, x => x.UserType, x => x.Group};
             var user = await GetCurrentUser(properties);
@@ -111,10 +175,27 @@ namespace WebService.Controllers
                 case EUserType.SysAdmin:
                     return true;
                 case EUserType.Nurse:
-                    var residentRoom = await DataService.GetPropertyAsync(residentId, x => x.Room);
-                    var regex = new Regex($@"^{residentRoom}[0-9]*$");
-                    return regex.IsMatch(user.Group);
+                    var residentRoom = await ((IResidentsService) DataService).GetPropertyAsync(tag, x => x.Room);
+                    return new Regex($@"^{residentRoom}[0-9]*$").IsMatch(user.Group);
+                default:
+                    return false;
+            }
+        }
+
+        private async Task<bool> CanGetDataFromResidentAsync(int tag)
+        {
+            var properties = new Expression<Func<User, object>>[] {x => x.Residents, x => x.UserType, x => x.Group};
+            var user = await GetCurrentUser(properties);
+            switch (user.UserType)
+            {
+                case EUserType.SysAdmin:
+                case EUserType.Module:
+                    return true;
+                case EUserType.Nurse:
+                    var residentRoom = await ((IResidentsService) DataService).GetPropertyAsync(tag, x => x.Room);
+                    return new Regex($@"^{residentRoom}[0-9]*$").IsMatch(user.Group);
                 case EUserType.User:
+                    var residentId = await ((IResidentsService) DataService).GetPropertyAsync(tag, x => x.Id);
                     return user.Residents.Contains(residentId);
                 default:
                     return false;
@@ -149,16 +230,14 @@ namespace WebService.Controllers
             if (data?.File == null)
                 throw new ArgumentNullException(nameof(data));
 
-            if (!ObjectId.TryParse(residentId, out var residentObjectId)
-                && await IsCurrentUserResponsibleForResident(residentObjectId))
-                throw new NotFoundException<Resident>(nameof(IModelWithID.Id), residentId);
+            var residentObjectId = await CanWriteDataToResidentAsync(residentId);
 
             try
             {
                 var bytes = data.ConvertToBytes(maxFileSize);
                 var title = data.File.FileName;
-                await ((IResidentsService) DataService).AddMediaAsync(residentObjectId, title, bytes, mediaType,
-                    data.File.ContentType.Split('/')[1]);
+                await ((IResidentsService) DataService)
+                    .AddMediaAsync(residentObjectId, title, bytes, mediaType, data.File.ContentType.Split('/')[1]);
                 return StatusCode((int) HttpStatusCode.Created);
             }
             catch (FileToLargeException)
@@ -184,8 +263,7 @@ namespace WebService.Controllers
 
         public async Task<StatusCodeResult> AddMediaAsync(string residentId, string url, EMediaType mediaType)
         {
-            if (!ObjectId.TryParse(residentId, out var residentObjectId))
-                throw new NotFoundException<Resident>(nameof(IModelWithID.Id), residentId);
+            var residentObjectId = await CanWriteDataToResidentAsync(residentId);
 
             await ((IResidentsService) DataService).AddMediaAsync(residentObjectId, url, mediaType);
             return StatusCode((int) HttpStatusCode.Created);
@@ -196,16 +274,13 @@ namespace WebService.Controllers
         [HttpPost(AddColorTemplate)]
         public async Task<StatusCodeResult> AddColorAsync(string residentId, [FromBody] Color colorData)
         {
-            if (!ObjectId.TryParse(residentId, out var residentObjectId)
-                && await IsCurrentUserResponsibleForResident(residentObjectId))
-                throw new NotFoundException<Resident>(nameof(IModelWithID.Id), residentId);
+            var residentObjectId = await CanWriteDataToResidentAsync(residentId);
 
             await DataService.AddItemToListProperty(residentObjectId, x => x.Colors, colorData);
             return StatusCode((int) HttpStatusCode.Created);
         }
 
         #endregion post (create)
-
 
         #region get (read)
 
@@ -242,8 +317,7 @@ namespace WebService.Controllers
         [HttpGet(GetPictureTemplate)]
         public async Task<FileContentResult> GetPictureAsync(string residentId)
         {
-            if (!ObjectId.TryParse(residentId, out var objectId))
-                throw new NotFoundException<Resident>(nameof(IModelWithID.Id), residentId);
+            var objectId = await CanGetDataFromResidentAsync(residentId);
 
             var picture = await DataService.GetPropertyAsync(objectId, x => x.Picture);
 
@@ -251,6 +325,7 @@ namespace WebService.Controllers
                 ? throw new NotFoundException<Resident>($"Resident with id {residentId} has no picture")
                 : File(picture, "image/jpg");
         }
+
 
         [Authorize(EUserType.SysAdmin, EUserType.Nurse, EUserType.Module)]
         [HttpGet(GetByTagTemplate)]
@@ -261,7 +336,10 @@ namespace WebService.Controllers
                 ? ConvertStringsToSelectors(propertiesToInclude)
                 : null;
 
-            var resident = await ((IResidentsService) DataService).GetAsync(tag, selectors);
+            if (!await CanGetDataFromResidentAsync(tag))
+                throw new ElementNotFoundException<Resident>(nameof(Resident.Tags), "tag");
+
+            var resident = await ((IResidentsService) DataService).GetOneAsync(tag, selectors);
 
             // return the fetched resident, if it is null, throw a not found exception
             if (resident == null)
@@ -274,28 +352,31 @@ namespace WebService.Controllers
         [HttpGet(GetRandomElementFromPropertyTemplate)]
         public async Task<object> GetRandomElementFromPropertyAsync(int tag, string propertyName)
         {
+            if (!await CanGetDataFromResidentAsync(tag))
+                throw new ElementNotFoundException<Resident>(nameof(Resident.Tags), "tag");
+
             IList data;
 
             switch (propertyName.ToUpperCamelCase())
             {
                 case nameof(Resident.Music):
                     data = (await ((IResidentsService) DataService)
-                            .GetAsync(tag, new Expression<Func<Resident, object>>[] {x => x.Music}))
+                            .GetOneAsync(tag, new Expression<Func<Resident, object>>[] {x => x.Music}))
                         .Music;
                     break;
                 case nameof(Resident.Videos):
                     data = (await ((IResidentsService) DataService)
-                            .GetAsync(tag, new Expression<Func<Resident, object>>[] {x => x.Videos}))
+                            .GetOneAsync(tag, new Expression<Func<Resident, object>>[] {x => x.Videos}))
                         .Videos;
                     break;
                 case nameof(Resident.Images):
                     data = (await ((IResidentsService) DataService)
-                            .GetAsync(tag, new Expression<Func<Resident, object>>[] {x => x.Images}))
+                            .GetOneAsync(tag, new Expression<Func<Resident, object>>[] {x => x.Images}))
                         .Images;
                     break;
                 case nameof(Resident.Colors):
                     data = (await ((IResidentsService) DataService)
-                            .GetAsync(tag, new Expression<Func<Resident, object>>[] {x => x.Colors}))
+                            .GetOneAsync(tag, new Expression<Func<Resident, object>>[] {x => x.Colors}))
                         .Colors;
                     break;
                 default:
@@ -312,12 +393,14 @@ namespace WebService.Controllers
             if (!typeof(Resident).GetProperties().Any(x => x.Name.EqualsWithCamelCasing(propertyName)))
                 throw new PropertyNotFoundException<Resident>(nameof(propertyName));
 
+            if (!await CanGetDataFromResidentAsync(tag))
+                throw new ElementNotFoundException<Resident>(nameof(Resident.Tags), "tag");
+
             return await ((IResidentsService) DataService).GetPropertyAsync(tag,
                 PropertySelectors[propertyName.ToUpperCamelCase()]);
         }
 
         #endregion get (read)
-
 
         #region put (update)
 
@@ -339,8 +422,7 @@ namespace WebService.Controllers
             if (picture?.File == null)
                 throw new ArgumentNullException(nameof(picture));
 
-            if (!ObjectId.TryParse(id, out var objectId))
-                throw new NotFoundException<Resident>(nameof(IModelWithID.Id), id);
+            var objectId = await CanGetDataFromResidentAsync(id);
 
             try
             {
@@ -355,7 +437,6 @@ namespace WebService.Controllers
         }
 
         #endregion put (update)
-
 
         #region delete
 
@@ -396,8 +477,7 @@ namespace WebService.Controllers
         [HttpDelete(RemoveColorTemplate)]
         public async Task RemoveColorAsync(string residentId, [FromBody] Color color)
         {
-            if (!ObjectId.TryParse(residentId, out var residentObjectId))
-                throw new NotFoundException<Resident>(nameof(IModelWithID.Id), residentId);
+            var residentObjectId = await CanWriteDataToResidentAsync(residentId);
 
             await ((IResidentsService) DataService)
                 .RemoveSubItemAsync(residentObjectId, x => x.Colors, color);

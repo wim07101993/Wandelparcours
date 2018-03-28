@@ -117,7 +117,7 @@ namespace WebService.Services.Data.Mongo
 
         #region READ
 
-        public async Task<Resident> GetAsync(int tag,
+        public async Task<Resident> GetOneAsync(int tag,
             IEnumerable<Expression<Func<Resident, object>>> propertiesToInclude = null)
         {
             // get the resident with the given tag
@@ -145,7 +145,7 @@ namespace WebService.Services.Data.Mongo
                 .FirstOrDefaultAsync();
         }
 
-        public virtual async Task<object> GetPropertyAsync(int tag, Expression<Func<Resident, object>> propertyToSelect)
+        public virtual async Task<TValue> GetPropertyAsync<TValue>(int tag, Expression<Func<Resident, TValue>> propertyToSelect)
         {
             // if the property to select is null, throw exception
             if (propertyToSelect == null)
@@ -158,8 +158,10 @@ namespace WebService.Services.Data.Mongo
             if (find.Count() <= 0)
                 throw new ElementNotFoundException<Resident>(nameof(Resident.Tags), "tag");
 
+            
+            var fieldDef = new ExpressionFieldDefinition<Resident>(propertyToSelect);
             // create a property filter
-            var selector = Builders<Resident>.Projection.Include(propertyToSelect);
+            var selector = Builders<Resident>.Projection.Include(fieldDef);
 
             // execute the query
             var item = await find

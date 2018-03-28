@@ -26,7 +26,7 @@ namespace WebService.Services.Data.Mock
         public override Resident CreateNewItem(ObjectId id)
             => new Resident {Id = id};
 
-        public async Task<Resident> GetAsync(int tag,
+        public async Task<Resident> GetOneAsync(int tag,
             IEnumerable<Expression<Func<Resident, object>>> propertiesToInclude = null)
         {
             // search for the resident index
@@ -64,7 +64,7 @@ namespace WebService.Services.Data.Mock
             return itemToReturn;
         }
 
-        public Task<object> GetPropertyAsync(int tag, Expression<Func<Resident, object>> propertyToSelect)
+        public Task<TValue> GetPropertyAsync<TValue>(int tag, Expression<Func<Resident, TValue>> propertyToSelect)
         {
             //TODO
             throw new NotImplementedException();

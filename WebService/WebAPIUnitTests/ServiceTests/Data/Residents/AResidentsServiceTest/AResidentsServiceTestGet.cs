@@ -16,7 +16,7 @@ namespace WebAPIUnitTests.ServiceTests.Data.Residents
         public void GetOneByUnknownTagAndNoPropertiestToInclude()
         {
             ActionExtensions.ShouldCatchException<NotFoundException>(
-                () => CreateNewDataService().GetAsync(-1).Wait(),
+                () => CreateNewDataService().GetOneAsync(-1).Wait(),
                 "the given tag address doesn't exist in the database");
         }
 
@@ -24,7 +24,7 @@ namespace WebAPIUnitTests.ServiceTests.Data.Residents
         public void GetOneByUnknownTagAndEmptyPropertiesToInclude()
         {
             ActionExtensions.ShouldCatchException<NotFoundException>(
-                () => CreateNewDataService().GetAsync(-1, new Expression<Func<Resident, object>>[] { }).Wait(),
+                () => CreateNewDataService().GetOneAsync(-1, new Expression<Func<Resident, object>>[] { }).Wait(),
                 "the given tag address doesn't exist in the database");
         }
 
@@ -33,7 +33,7 @@ namespace WebAPIUnitTests.ServiceTests.Data.Residents
         {
             ActionExtensions.ShouldCatchException<NotFoundException>(
                 () => CreateNewDataService()
-                    .GetAsync(-1, new Expression<Func<Resident, object>>[] {x => x.FirstName, x => x.LastName})
+                    .GetOneAsync(-1, new Expression<Func<Resident, object>>[] {x => x.FirstName, x => x.LastName})
                     .Wait(),
                 "the given tag address doesn't exist in the database");
         }
@@ -60,7 +60,7 @@ namespace WebAPIUnitTests.ServiceTests.Data.Residents
             var original = dataService.GetFirst();
 
             var result = dataService
-                .GetAsync(original.Tags.First(), new Expression<Func<Resident, object>>[] { })
+                .GetOneAsync(original.Tags.First(), new Expression<Func<Resident, object>>[] { })
                 .Result;
 
             var empty = new Resident();
@@ -88,7 +88,7 @@ namespace WebAPIUnitTests.ServiceTests.Data.Residents
             var original = dataService.GetFirst();
 
             var result = dataService
-                .GetAsync(original.Tags.First(), new Expression<Func<Resident, object>>[]
+                .GetOneAsync(original.Tags.First(), new Expression<Func<Resident, object>>[]
                 {
                     x => x.FirstName,
                     x => x.LastName

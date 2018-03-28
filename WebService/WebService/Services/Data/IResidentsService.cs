@@ -21,9 +21,9 @@ namespace WebService.Services.Data
         /// <param name="propertiesToInclude">are the properties that should be included in the objects</param>
         /// <returns>The <see cref="Resident"/> with the given id</returns>
         /// <exception cref="NotFoundException">when there is no <see cref="Resident"/> that holds the given tag</exception>
-        Task<Resident> GetAsync(int tag, IEnumerable<Expression<Func<Resident, object>>> propertiesToInclude = null);
+        Task<Resident> GetOneAsync(int tag, IEnumerable<Expression<Func<Resident, object>>> propertiesToInclude = null);
 
-        Task<object> GetPropertyAsync(int tag, Expression<Func<Resident, object>> propertyToSelect);
+        Task<TValue> GetPropertyAsync<TValue>(int tag, Expression<Func<Resident, TValue>> propertyToSelect);
 
         /// <summary>
         /// AddMediaAsync is supposed to add the <see cref="data"/> as media of the type <see cref="mediaType"/> to the <see cref="Resident"/>
