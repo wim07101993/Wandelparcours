@@ -16,8 +16,11 @@
     font-size: 48px;
 }
 
-.crd {
-    padding: 0 16px;
+.test{
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    max-width: 100%;
 }
 
 input.ng-invalid.ng-touched{
@@ -41,9 +44,8 @@ thead{
 input[type=text]:not(.browser-default){
     margin-bottom: 0;
 }
-.myCol {
-    padding-left: 0;
-}
+
+
 
 td.cardviewtd, th.cardviewth{
     padding-top:5px;
