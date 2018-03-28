@@ -33,7 +33,7 @@ namespace WebService.Models
         /// In the database the value is stored under the field "picture"
         /// </summary>
         [BsonElement("picture")]
-        public byte[] ImagePicture { get; set; } 
+        public byte[] Picture { get; set; } 
 
         /// <summary>
         /// Room is the room of the Value
