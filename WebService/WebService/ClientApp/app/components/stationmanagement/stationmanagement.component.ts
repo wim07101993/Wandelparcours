@@ -76,19 +76,26 @@ export class StationmanagementComponent implements OnInit {
 
     async UpdateStation(){
         try{
+            let mac = this.editmac;
+            let length = mac.length;
+            if (!(length > 15 && length < 20 && mac.split(":").length==6)) {
+                Materialize.toast('Station adres verkeerd', 4000);
+                return;
+            }
             
             let id = this.stationsIds.get(this.collidingElement);
             if (id==null|| id == undefined)
                 throw "no el";
+            
             let updateStatus= await this.service.UpdateStation(id, this.editmac);
             if (updateStatus==true){
-                await this.service.LoadStations(this);
-                this.CloseModal();
+                const response= await this.service.LoadStations(this);
+                $("#deleteModal").modal("close");
             }else{
-                Materialize.toast('Er ging iets mis!', 4000);
+                throw "error";
             }
         }catch (e){
-            
+            Materialize.toast('Er ging iets mis!', 4000);
         }
     }
     /*
