@@ -11,7 +11,7 @@ using MongoDB.Bson;
 using WebService.Controllers.Bases;
 using WebService.Models;
 using WebService.Services.Data;
-using WebService.Services.Exceptions;
+
 using WebService.Services.Logging;
 
 namespace WebService.Controllers
@@ -27,25 +27,25 @@ namespace WebService.Controllers
     {
         private readonly IResidentsService _residentService;
 
-        public LocationController(IThrow iThrow, IDataService<Location> dataService, ILogger logger, IResidentsService residentService) : base(iThrow, dataService, logger)
+        public LocationController(ILocationService dataService, ILogger logger, IResidentsService residentService, IUsersService us) : base(dataService, logger,us)
         {
             _residentService = residentService;
         }
         [HttpPost]
-        public override async Task<StatusCodeResult> CreateAsync([FromBody] Location item)
+        public override async Task<string> CreateAsync([FromBody] Location item)
         {
             item.TimeStamp=DateTime.Now;
             return await base.CreateAsync(item);
             
         }
 
-        [HttpGet("{id}/lastlocation")]
-        public async Task<Resident> GetLastLocation(string id)
+        [HttpGet("residents/{id}/lastlocation")]
+        public async Task<Resident> GetLastLocationOneResident(string id)
         {
             var selectors = new Expression<Func<Resident, object>>[] { x=> x.LastRecordedPosition, x=> x.Id,x=> x.LastName,x=> x.FirstName};
             if (ObjectId.TryParse(id, out var objectid))
             {
-                var lastposition = await this._residentService.GetAsync(objectid, selectors);
+                var lastposition = await this._residentService.GetOneAsync(objectid, selectors);
                 return lastposition;
             }
 
@@ -53,7 +53,16 @@ namespace WebService.Controllers
             return null;
         }
         
-        
+        [HttpGet("residents/lastlocation")]
+        public async Task<IEnumerable<Resident>> GetLastLocation()
+        {
+            var selectors = new Expression<Func<Resident, object>>[] { x=> x.LastRecordedPosition, x=> x.Id,x=> x.LastName,x=> x.FirstName};
+            
+            var lastposition = await this._residentService.GetAsync(selectors);
+            return lastposition;
+        }
+
+
         
         [HttpPost("{id}/lastlocation")]
         public async Task<Resident> SetLastLocation(string id, [FromBody]Point currentLocation)

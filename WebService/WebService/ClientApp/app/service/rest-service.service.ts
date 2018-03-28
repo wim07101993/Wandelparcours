@@ -11,8 +11,12 @@ import { CustomErrorHandler } from './customErrorHandler';
 export class RestServiceService {
     [x: string]: any;
 
-    restUrl = "http://localhost:5000/";
+    
 
+    static get restUrl() :string{
+        
+        return document.getElementsByTagName('base')[0].href;
+    }
     constructor(private http: Http, private customErrorHandler: CustomErrorHandler) {}
 
     /**

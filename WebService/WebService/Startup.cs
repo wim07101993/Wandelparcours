@@ -35,6 +35,7 @@ namespace WebService
                 //.AddSingleton<IReceiverModulesService, ReceiverModulesService>()
                 //.AddSingleton<IUsersService, MockUsersService>()
                 .AddSingleton<IMediaService, MediaService>()
+                .AddSingleton<ILocationService,LocationService>()
                 .AddSingleton<IResidentsService, ResidentsService>()
                 .AddSingleton<IReceiverModulesService, ReceiverModulesService>()
                 .AddSingleton<IUsersService, UsersService>()

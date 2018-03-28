@@ -6,13 +6,13 @@ using Microsoft.Extensions.Configuration;
 using MongoDB.Bson;
 using MongoDB.Driver;
 using WebService.Models;
-using WebService.Services.Exceptions;
+
 
 namespace WebService.Services.Data.Mongo
 {
     public class LocationService : AMongoDataService<Location>, ILocationService
     {
-        public LocationService(IThrow iThrow, IConfiguration config) : base(iThrow)
+        public LocationService(IConfiguration config) : base()
         { MongoCollection =
             // create a new client
             new MongoClient(config["Database:ConnectionString"])
