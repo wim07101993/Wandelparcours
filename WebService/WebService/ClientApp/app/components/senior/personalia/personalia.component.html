@@ -5,7 +5,7 @@
         
         <div class="row">
             <div class="col s4 center-align">
-                <img src="/images/resident.jpg" class="circle responsive-img"/>
+                <img src="http://localhost:5000/api/v1/residents/{{resident.id}}/picture" onError="this.onerror=null;this.src='/images/resident.jpg';" class="circle responsive-img"/>
             </div>
             
             <div class="col s8">
@@ -21,7 +21,7 @@
                     <tbody>
                     <tr *ngFor="let tag of resident.tags">
                         <td>{{tag}}</td>
-                        <td><i class="material-icons red-text pointer">delete</i></td>
+                        <td><i class="material-icons red-text pointer" (click)="deleteTag(tag)">delete</i></td>
                     </tr>
                     </tbody>
 

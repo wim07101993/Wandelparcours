@@ -139,6 +139,10 @@ export class RestServiceService {
         });
     }
 
+    ////////
+    //TAGS//
+    ////////
+
     addTagToResident(uniqueIdentifier: string) {
         return new Promise<number[]>(resolve => {
             this.http.post(this.restUrl + 'api/v1/residents/' + uniqueIdentifier + '/tags', null).subscribe(response => {
@@ -149,6 +153,18 @@ export class RestServiceService {
                 resolve(undefined);
             });
         })
+    }
+
+    deleteTagFromResident(uniqueIdentifier: string, uniqueTagId: string) {
+        return new Promise(resolve => {
+            this.http.delete(this.restUrl + 'api/v1/residents/' + uniqueIdentifier + "/" + uniqueTagId).subscribe(response => {
+                console.log(response);
+                resolve();
+            }, error => {
+                this.customErrorHandler.updateMessage(error);
+                resolve();
+            });
+        });
     }
 
     /////////
