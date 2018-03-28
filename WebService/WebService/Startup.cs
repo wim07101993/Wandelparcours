@@ -42,7 +42,7 @@ namespace WebService
             services
                 .AddMvc(options =>
                 {
-                    options.Filters.Add<ExceptionPipeline>();
+                    options.Filters.Add<ReturnCreatedIfPostSucceedsPipeline>();
                     //options.Filters.Add<AuthPipelineFilter>();
                 })
                 .AddJsonOptions(options =>
@@ -71,6 +71,7 @@ namespace WebService
             app.UseCors((option) => { option.AllowAnyOrigin().AllowAnyMethod(); });
 
             app.UseStaticFiles()
+                .UseExceptionMiddelware()
                 .UseMvc(routes =>
                 {
                     routes.MapRoute(

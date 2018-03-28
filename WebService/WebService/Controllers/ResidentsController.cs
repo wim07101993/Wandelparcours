@@ -248,7 +248,7 @@ namespace WebService.Controllers
             var picture = await DataService.GetPropertyAsync(objectId, x => x.Picture);
 
             return picture == null
-                ? throw new NotFoundException<Resident>(nameof(IModelWithID.Id), residentId)
+                ? throw new NotFoundException<Resident>($"Resident with id {residentId} has no picture")
                 : File(picture, "image/jpg");
         }
 

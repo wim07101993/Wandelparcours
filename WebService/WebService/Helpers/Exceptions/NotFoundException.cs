@@ -12,6 +12,11 @@ namespace WebService.Helpers.Exceptions
             : base($"The {typeof(T).Name} with {identifier} {value} was not found.")
         {
         }
+
+        public NotFoundException(string message)
+            : base(message)
+        {
+        }
     }
 
     public class NotFoundException : Exception

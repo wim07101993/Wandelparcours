@@ -8,6 +8,7 @@ namespace WebService.Helpers.Extensions
     /// </summary>
     public static class MiddlewareExtensions
     {
-  
+        public static IApplicationBuilder UseExceptionMiddelware(this IApplicationBuilder builder)
+            => builder.UseMiddleware<ExceptionMiddleware>();
     }
 }
