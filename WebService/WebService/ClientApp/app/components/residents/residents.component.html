@@ -22,7 +22,8 @@
     <div class="col s12 m6 l4" *ngFor="let resident of residents | filter:term">
         
         <div id="content" class="card">
-            <img src="/images/resident.jpg" class="ribbon" (click)="navigateTo(resident)" style="cursor:pointer"/>
+                <img onError="this.onerror=null;this.src='/images/resident.jpg';" style="cursor:pointer" src="http://localhost:5000/api/v1/residents/{{resident.id}}/picture" class="ribbon" (click)="navigateTo(resident)"/>
+       
             <div class="card-content">
                 
                 <table>
@@ -142,9 +143,25 @@
                     <label for="doctor_number" class="active">Tel:</label>
                 </div>
             </div>
+            <div class="row">
+                <div class="input-field col s6">
+                    <label>ProfielFoto</label>
+                </div>
+                <div class="input-field col s6">
+                    <img  src="/api/v1/residents/{{modalResident.id}}/picture" alt="Geen foto gevonden" height="200" width="200" onError="this.onerror=null;this.src='/images/resident.jpg';"/>
+                </div>
+            </div>
+            <div class="row">
+                <div class="input-field col s6">
+                        <input #myInput class="center" type="file" [(ngModel)]="updateResident.picture" name="aProfilePicure" id="aProfilePicture" (change)="onFileSelected($event)" accept="image/*" /><sup style="color:#ff2200;">*</sup>       
+                    </div>
+                    <div class="input-field col s6">
+                        <img [src]="profilePic" alt="Geen foto geselecteerd" for="aProfilePicture" height="200" width="200" />
+                    </div>
+            </div>
             <div class="right" style="margin-top: 30px">
-                <a class="modal-action modal-close waves-effect waves-red btn-flat green lighten-1 white-text" (click)="editResident(modalResident)">Wijzigen<i class="material-icons right">send</i></a>
-                <a class="modal-action modal-close waves-effect waves-green btn-flat red lighten-1 white-text" (click)="closeModal()">Annuleer<i class="material-icons right">cancel</i></a>
+                <a class="modal-action modal-close waves-effect waves-red btn-flat green lighten-1 white-text" (click)="editResident(modalResident); reset()">Wijzigen<i class="material-icons right">send</i></a>
+                <a class="modal-action modal-close waves-effect waves-green btn-flat red lighten-1 white-text" (click)="closeModal(); reset()">Annuleer<i class="material-icons right">cancel</i></a>
             </div>
 
 
@@ -199,7 +216,7 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button class="btn waves-effect waves-light green lighten-1" type="submit" (click)="reset()" name="action" [disabled]="!f.valid">
+                    <button class="btn waves-effect waves-light green lighten-1" type="submit" name="action" [disabled]="!f.valid">
                         Toevoegen
                         <i class="material-icons right">send</i>
                     </button>

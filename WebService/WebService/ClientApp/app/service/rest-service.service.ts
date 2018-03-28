@@ -119,6 +119,7 @@ export class RestServiceService {
                 });
         });
     }
+
     addProfilePic(uniqueIdentifier: any, picture: any) {
         return new Promise(resolve => {
             this.http.put(this.restUrl + 'api/v1/residents/' + uniqueIdentifier + "/picture", picture).subscribe(response => {

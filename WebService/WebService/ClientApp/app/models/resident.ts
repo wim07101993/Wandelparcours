@@ -3,6 +3,7 @@ export class Resident {
     firstName: string
     lastName: string
     picture: any
+    pictureUrl: any;
     room: string
     birthday: Date
     doctor: Doctor
@@ -15,6 +16,7 @@ export class Resident {
         this.lastName = "";
         this.room = "";
         this.picture = "";
+        this.pictureUrl = "";
         this.birthday = new Date();
         this.doctor = new Doctor();
         this.videos = new Videos();

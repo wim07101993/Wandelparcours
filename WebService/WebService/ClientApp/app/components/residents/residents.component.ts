@@ -30,11 +30,11 @@ export class ResidentsComponent implements OnInit {
     updateResident: any;
     search: boolean = false;
     profilePic: any;
-    selectedFile: any;
+    selectedFile: any = [];
     reader: any;
-    selectedFileImage: any;
+    selectedFileImage: any=[];
     fd: any 
-
+    
     @ViewChild('myInput') myInputVariable: any;
     /**
      * Injects the service and router
@@ -45,10 +45,10 @@ export class ResidentsComponent implements OnInit {
         this.showAllResidents();
         this.residents = [];
         this.profilePic = [];
-
+        
         /*Creates empty modals to avoid collision with previous existing modals should they not be deleted*/
         this.modalResident = <Resident>{
-            firstName: "", lastName: "", room: "", id: "", birthday: new Date(), doctor: { name: "", phoneNumber: "" }
+            firstName: "", lastName: "", room: "", id: "", birthday: new Date(), doctor: { name: "", phoneNumber: "" } , pictureUrl: ""
         };
         this.updateResident = {
             firstName: "", lastName: "", room: "", id: "", birthday: "", doctor: { name: "", phoneNumber: "" }
@@ -56,6 +56,7 @@ export class ResidentsComponent implements OnInit {
 
     }
 
+    
     /**
     * Focus to input for the searchbar --> input will be active if event 'button' has been pressed
     */
@@ -100,6 +101,7 @@ export class ResidentsComponent implements OnInit {
      */
     openEditModal(modalResident: Resident) {
         this.modalResident = modalResident;
+        console.log(this.modalResident);
         $("#editModalResident").modal();
         $("#editModalResident").modal("open");
         $('.datepicker').pickadate(
@@ -130,23 +132,21 @@ export class ResidentsComponent implements OnInit {
      * get all residents async from service
      */
     async showAllResidents() {
-            let residents: any = await this.service.getAllResidents();
-            console.log(residents);
-            if (residents != undefined)
+        let residents: any = await this.service.getAllResidents();
+        console.log(residents);
+        if (residents != undefined) {
                 this.residents = residents;
-            else {
-
-                //alert("oops! :( looks like something went wrong :(");
-                this.router.navigate(["/error"]);
-            }
-       
+        }
+        else {
+            this.router.navigate(["/error"]);
+        } 
     }
+
 
     /**
      * Delete resident async based on unique identifier --> "ID"
      * @param uniqueIdentifier
      */
-
     async deleteResident(uniqueIdentifier: string) {
         await this.service.deleteResidentByUniqueId(uniqueIdentifier);
         this.showAllResidents();
@@ -194,8 +194,33 @@ export class ResidentsComponent implements OnInit {
         $('#birthDay').val("");
 
         let updateData = this.updateResident;
+        console.log("test");
+       
+
+        for (const file in this.selectedFile) {
+            try {
+                const index = parseInt(file);
+                if (!isNaN(index)) {
+                    //this.loading = "uploading...";
+                    let fd = new FormData();
+                    fd.append("File", this.selectedFile[index], this.selectedFile[index].name);
+                    if (this.selectedFile[index].type.indexOf("image") != -1) {
+                        await this.service.addProfilePic(this.updateResident.id, fd);
+                    }
+                    else {
+                        alert("won't work");
+                    }
+
+                }
+            } catch (e) {
+                console.log(e);
+            }
+
+        }
 
         await this.service.editResidentWithData(updateData, changedProperties);
+
+
 
         this.updateResident = {
             firstName: "", lastName: "", room: "", id: "", birthday: "", doctor: { name: "", phoneNumber: "" }
@@ -240,7 +265,7 @@ export class ResidentsComponent implements OnInit {
              birthday: a, 
              doctor: { name: form.value.aDoctor, phoneNumber: form.value.aTelefoon },
         };
-        // console.log(this.fd)
+        console.log(this.fd)
 
         // Send gathered data over the resrService
         const id = await this.service.addResident(data);
@@ -254,7 +279,7 @@ export class ResidentsComponent implements OnInit {
 
         // Reset Residents form
         form.reset();
-        
+        this.reset();
         //close modal/form and 'reload' page 
         setTimeout(() => { $("#add-resident-modal").modal("close");}, 200);
         
