@@ -9,21 +9,10 @@ declare var $:any;
 export class HeaderComponent implements OnInit {
 
     gebruiker = 'Beheerder';
-    pageTitle = 'Pagina Titel'
+    pageTitle = 'Pagina Titel';
 
-    constructor() { 
-    }
+    constructor() {}
 
-    ngOnInit() {
-  }
-
-  /* function to Open and Close the sideNav */
-  openSideNav(){
-    $('.button-collapse').sideNav({
-                menuWidth: 240,
-                closeOnClick: true
-            });
-            $('.collapsible').collapsible();
-  }
+    ngOnInit() {}
 
 }
