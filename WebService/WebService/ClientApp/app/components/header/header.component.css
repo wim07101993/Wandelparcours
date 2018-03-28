@@ -1,7 +1,4 @@
-@import url('https://fonts.googleapis.com/css?family=Kalam');
-
 header {
-    font-family: 'Kalam';
     color: #222;
     background: #abbaab;  /* fallback for old browsers */
     background: -webkit-linear-gradient(to right, #ffffff, #abbaab);  /* Chrome 10-25, Safari 5.1-6 */
