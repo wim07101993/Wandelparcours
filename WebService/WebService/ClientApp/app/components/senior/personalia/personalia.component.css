@@ -1,6 +1,8 @@
 table {
-    box-shadow: 0 2px 2px 0 rgba(0,0,0,0.2);
     border-collapse: separate;
+}
+td, th{
+    text-transform: capitalize;
 }
 
 th {
@@ -10,7 +12,6 @@ th {
 
 img {
     margin-top: 0.82rem;
-    box-shadow: 0 2px 2px 0 rgba(0,0,0,0.5);
 }
 
 .card-photo {
