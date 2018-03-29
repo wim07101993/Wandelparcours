@@ -2,13 +2,14 @@
 
 
 <div class="row">
-    <div class="col s6" *ngFor="let link of fullLinks">
-        <div class="card">
-            <video controls>
+    <div class="col s12 m6" *ngFor="let link of fullLinks">
+        <div class="crd z-depth-2">
+            <video class="responsive-video" controls>
                 <source [src]="link.videos.url">
             </video>
             <i class="material-icons red-text pointer" (click)="deleteModal(link);">delete</i>
-        </div>
+        </div>    
+        
     </div>
 </div>
 

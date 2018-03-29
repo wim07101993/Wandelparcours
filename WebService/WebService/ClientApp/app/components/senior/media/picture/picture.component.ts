@@ -61,16 +61,16 @@ export class PictureComponent implements OnInit {
     }
 
     /*
-    *   Closes the modal to add a station 
+    *   Closes the modal to delete a picture 
     */
-    async CloseModal() {
+    CloseModal() {
         $("#deleteModal").modal("close");
     }
 
     /*
-    *   Opens modal to delete a station 
+    *   Opens modal to delete a picture
     */
-    async deleteModal(resident: Resident) {
+    deleteModal(resident: Resident) {
         
         this.deleteResidentImage = resident;
         console.log(resident.images.id);
