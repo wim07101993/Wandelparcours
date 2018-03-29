@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Resident } from '../../../models/resident';
 import { Router, ActivatedRoute } from '@angular/router';
 import { RestServiceService } from '../../../service/rest-service.service';
+import { MediaService } from '../../../service/media.service';
 
 @Component({
   selector: 'app-personalia',
@@ -13,11 +14,15 @@ export class PersonaliaComponent implements OnInit {
     updateResident: any;
     id: string = this.route.snapshot.params['id'];
     resident: Resident;
+    countI: number = 0;
+    countV: number = 0;
     //router: Router;
 
-    constructor(private service: RestServiceService, private route: ActivatedRoute, private router: Router) {
+    constructor(private service: RestServiceService, private media: MediaService, private route: ActivatedRoute, private router: Router) {
         this.resident = <Resident>{ firstName: "", lastName: "", room: "", id: "", birthday: new Date(), doctor: { name: "", phoneNumber: "" } };
         this.showOneResident();
+        this.getImageCount();
+        //this.getVideoCount();
     }
 
     async showOneResident() {
@@ -35,6 +40,18 @@ export class PersonaliaComponent implements OnInit {
         await this.service.deleteTagFromResident(this.id, tag);
         this.showOneResident();
     }
+
+    async getImageCount() {
+        let count = await this.media.getMedia(this.id, "/images");
+        let count2 = await this.media.getMedia(this.id, "/videos");
+        this.countV = count2.length
+        this.countI = count.length;
+    }
+
+    /*async getVideoCount() {
+        let count2 = await this.media.getMedia(this.id, "/videos");
+        this.countV = count2.length;
+    }*/
 
     async addTag() {
         this.resident.tags = await this.service.addTagToResident(this.resident.id);

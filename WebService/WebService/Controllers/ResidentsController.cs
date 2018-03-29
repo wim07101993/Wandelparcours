@@ -256,7 +256,7 @@ namespace WebService.Controllers
 
         [Authorize(EUserType.SysAdmin, EUserType.Nurse, EUserType.Module, EUserType.User)]
         [HttpGet(GetPictureTemplate)]
-        public async Task<FileContentResult> GetPictureAsync(string residentId)
+        public async Task<FileResult> GetPictureAsync(string residentId)
         {
             if (!ObjectId.TryParse(residentId, out var objectId))
                 throw new NotFoundException<Resident>(nameof(IModelWithID.Id), residentId);
@@ -264,7 +264,7 @@ namespace WebService.Controllers
             var picture = await DataService.GetPropertyAsync(objectId, x => x.Picture);
 
             return picture == null
-                ? throw new NotFoundException<Resident>(nameof(IModelWithID.Id), residentId)
+                ?(FileResult) File("/images/resident.jpg", "image/jpg")
                 : File(picture, "image/jpg");
         }
 
