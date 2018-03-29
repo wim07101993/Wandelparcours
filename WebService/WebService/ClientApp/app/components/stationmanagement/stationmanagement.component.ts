@@ -19,16 +19,23 @@ declare var Materialize: any;
 export class StationmanagementComponent extends ARenderComponent implements OnInit {
     position: Point;
     imageUrl = "";
-    markerUrl = "";
     collidingElement: any;
     saveStation: Station = new Station();
     menu: boolean = false;
     stations = new Map<string, Point>();
+    stationsIds = new Map<string, string>();
     stationMacAdresses: string[] = [];
+<<<<<<< HEAD
     markerscale = 25;
 
     markersize: number;
 
+=======
+ 
+    rawstations:any;
+    editing=false;
+    editmac:string;
+>>>>>>> location_tracking
     /**
      * Creating stationmanagement page.
      * @param {RestServiceService} service  - A constructer injected service holding the service for rest connection
@@ -37,11 +44,22 @@ export class StationmanagementComponent extends ARenderComponent implements OnIn
         super();
     }
 
+<<<<<<< HEAD
 
     async ngOnInit() {
 
         super.ngOnInit();
 
+=======
+    get markerUrl(){
+        return getBaseUrl() + "images/station.png";
+    }
+    async ngOnInit() {
+
+        super.ngOnInit();
+        await this.service.LoadStations(this);
+        
+>>>>>>> location_tracking
     }
 
     async Tick() {
@@ -54,10 +72,28 @@ export class StationmanagementComponent extends ARenderComponent implements OnIn
         }
     }
 
+    async UpdateStation(){
+        try{
+            
+            let id = this.stationsIds.get(this.collidingElement);
+            if (id==null|| id == undefined)
+                throw "no el";
+            let updateStatus= await this.service.UpdateStation(id, this.editmac);
+            if (updateStatus==true){
+                await this.service.LoadStations(this);
+                this.CloseModal();
+            }else{
+                Materialize.toast('Er ging iets mis!', 4000);
+            }
+        }catch (e){
+            
+        }
+    } 
     /*
     *   Closes the modal to add a station 
     */
-    static async CloseModal() {
+     async CloseModal() {
+        
         $("#markerModel").modal("close");
     }
 
@@ -68,6 +104,7 @@ export class StationmanagementComponent extends ARenderComponent implements OnIn
 
         if (id != undefined) {
             this.collidingElement = id;
+            this.editing = false;
             // noinspection JSJQueryEfficiency
             $("#deleteModal").modal();
             // noinspection JSJQueryEfficiency
@@ -180,10 +217,9 @@ export class StationmanagementComponent extends ARenderComponent implements OnIn
     *   This function will send request to the rest to save station 
     */
     async SaveNewStation() {
-        let reg = new RegExp("^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$");
         let mac = this.saveStation.mac;
-        if (reg.test(mac)) {
-
+        let length = mac.length;
+        if (length > 15 && length < 20 && mac.split(":").length==6) {
             await this.service.SaveStationToDatabase(this.saveStation);
             await this.service.LoadStations(this);
             this.saveStation = new Station();
@@ -193,5 +229,10 @@ export class StationmanagementComponent extends ARenderComponent implements OnIn
             Materialize.toast('Station adres verkeerd', 4000);
         }
 
+    }
+
+    ShowEditBox() {
+        this.editmac= (' ' + this.collidingElement).slice(1);
+        this.editing = !this.editing
     }
 }

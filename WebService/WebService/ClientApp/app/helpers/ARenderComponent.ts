@@ -33,6 +33,7 @@ export abstract class ARenderComponent {
         this.renderBuffer = new RenderBuffer(this);
         this.mouseEvents = new MouseEvents(this);
         //load the blueprint of the building
+        
         await this.LoadMap();
         await this.LoadComponent();
         await this.renderer.CleanAndUpdateRenderBuffer();
@@ -61,6 +62,7 @@ export abstract class ARenderComponent {
         try {
             await this.renderer.FixCanvas();
             await this.RecalculateMap();
+            
         } catch (ex) {
             console.log(ex);
         }

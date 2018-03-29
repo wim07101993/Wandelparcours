@@ -11,7 +11,7 @@
 
             <ul>
                 <li *ngFor="let station of stationMacAdresses">
-                <span (click)="deleteModal(station);">
+                <span (click)="spriteClicked(station);">
                 <div>{{station}} <i class="material-icons ">cancel</i> </div>
                 </span>
                 </li>
@@ -56,11 +56,15 @@
 
     <div id="deleteModal" class="modal">
         <div class="modal-content" *ngIf="collidingElement !=null">
-            <h4>{{collidingElement}}</h4>
+            <a class="btn-floating btn-large waves-effect waves-light grey right btn-small " (click)="ShowEditBox()" ><i class="material-icons">edit</i></a>
+            <h4 *ngIf="editing ==false">{{collidingElement}}</h4>
+            <input *ngIf="editing ==true" [(ngModel)]="editmac"  />
+
         </div>
         <div class="modal-footer">
             <a (click)="CloseModal()" class="modal-action modal-close waves-effect waves-green btn-flat">Close</a>
-            <a (click)="DeleteCurrentStation()" class=" waves-effect waves-red btn-flat">Verwijder</a>
+            <a (click)="DeleteCurrentStation()" *ngIf="editing ==false" class=" waves-effect waves-red btn-flat">Verwijder</a>
+            <a (click)="UpdateStation()" *ngIf="editing ==true" class=" waves-effect waves-green btn-flat">Wijzig</a>
         </div>
     </div>
 </div>

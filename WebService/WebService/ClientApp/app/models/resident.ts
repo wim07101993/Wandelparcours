@@ -1,15 +1,17 @@
+import { Position } from "./station";
 export class Resident {
     id: string;
     firstName: string;
     lastName: string;
     picture: any;
     pictureUrl: any;
-    room: string;
-    birthday: Date;
-    doctor: Doctor;
-    images: Images;
-    videos: Videos;
-    tags: number[];
+    room: string
+    birthday: Date
+    doctor: Doctor
+    images: Images
+    videos: Videos
+    tags: number[]=new Array();
+    lastRecordedPosition: Position = new Position();
     constructor() {
         this.images = new Images();
         this.id = "";
