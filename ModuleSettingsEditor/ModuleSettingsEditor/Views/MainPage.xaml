@@ -21,7 +21,7 @@
                             <TextBlock
                                 Margin="10,10,0,0"
                                 VerticalAlignment="Center"
-                                Text="{Binding Key}" />
+                                Text="{Binding DisplayName}" />
                             <TextBox
                                 Margin="10"
                                 VerticalAlignment="Center"

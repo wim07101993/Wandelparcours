@@ -7,35 +7,43 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using Windows.Storage;
 using Windows.UI.Popups;
+using ModuleSettingsEditor.Helpers;
 using ModuleSettingsEditor.Helpers.Extensions;
 using ModuleSettingsEditor.Helpers.Mvvm;
 using ModuleSettingsEditor.Helpers.Mvvm.Commands;
 using ModuleSettingsEditor.Models;
+using ModuleSettingsEditor.ViewModelInterfaces;
 using Newtonsoft.Json;
 
 namespace ModuleSettingsEditor.ViewModels
 {
-    public class MainWindowViewModel : BindableBase
+    public class MainWindowViewModel : BindableBase, IMainWindowViewModel
     {
-        private IDictionary<string, object> _properties;
+        private Settings _settings;
+        private IEnumerable<Property> _properties;
 
 
         public MainWindowViewModel()
         {
             Settings = new Settings();
 
-            SaveCommand = new DelegateCommand<IStorageFile>(async x => { await SaveSettingsToFileAsync(x, Settings); });
-            OpenCommand = new DelegateCommand<IStorageFile>(async x => await OpenSettingsFromFile(x));
+            SaveCommand = new DelegateCommand<IStorageFile>(async x => await SaveSettingsToFileAsync(x, Settings));
+            OpenCommand = new DelegateCommand<IStorageFile>(async x => Settings = await OpenSettingsFromFile(x));
         }
 
 
         public Settings Settings
         {
-            get => CreateSettingsFromDictionary(Properties);
-            set => Properties = CreateDictionaryFromSettings(value);
+            get => _settings;
+            set
+            {
+                if (!SetProperty(ref _settings, value))
+                    return;
+                Properties = CreatePropertiesFromSettings(value);
+            }
         }
 
-        public IDictionary<string, object> Properties
+        public IEnumerable<Property> Properties
         {
             get => _properties;
             set => SetProperty(ref _properties, value);
@@ -45,27 +53,12 @@ namespace ModuleSettingsEditor.ViewModels
         public ICommand OpenCommand { get; }
 
 
-        private static IDictionary<string, object> CreateDictionaryFromSettings(Settings settings)
+        private static IEnumerable<Property> CreatePropertiesFromSettings(Settings settings)
             => typeof(Settings)
                 .GetProperties()
                 .Where(x => x.IsBrowsable())
-                .ToDictionary(
-                    keySelector: property => property.GetDisplayName(),
-                    elementSelector: property => property.GetValue(settings));
-
-        private static Settings CreateSettingsFromDictionary(IDictionary<string, object> properties)
-        {
-            var settings = new Settings();
-
-            var settingsProperties = typeof(Settings).GetProperties();
-            foreach (var property in properties)
-                settingsProperties
-                    .FirstOrDefault(x => x.GetDisplayName() == property.Key)
-                    ?.SetValue(settings, property.Value);
-
-            return settings;
-        }
-
+                .Select(x => new Property(x, settings));
+        
         private static async Task<Settings> OpenSettingsFromFile(IStorageFile file)
         {
             try
