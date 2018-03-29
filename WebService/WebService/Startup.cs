@@ -20,29 +20,17 @@ namespace WebService
         {
             Configuration = configuration;
         }
-        
+
 
         public IConfiguration Configuration { get; }
 
-        
+
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddCors();
             services
-                .AddSingleton(typeof(ILogger), new LoggerCollection {new ConsoleLogger(), new FileLogger()})
-                .AddSingleton<IRandomizer, Randomizer>()
-                //.AddSingleton<IMediaService, MockMediaService>()
-                //.AddSingleton<IResidentsService, MockResidentsService>()
-                //.AddSingleton<IReceiverModulesService, ReceiverModulesService>()
-                //.AddSingleton<IUsersService, MockUsersService>()
-                .AddSingleton<IMediaService, MediaService>()
-                .AddSingleton<IResidentsService, ResidentsService>()
-                .AddSingleton<IReceiverModulesService, ReceiverModulesService>()
-                .AddSingleton<IUsersService, UsersService>()
-                .AddSingleton<ITokenService, TokenService>();
-
-            services
+                .AddCors()
+                .UseServices()
                 .AddMvc(options =>
                 {
                     options.Filters.Add<ReturnCreatedIfPostSucceedsPipeline>();
@@ -52,7 +40,6 @@ namespace WebService
                 {
                     options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
                 });
-            services.AddCors();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -71,9 +58,8 @@ namespace WebService
                 app.UseExceptionHandler("/Home/Error");
             }
 
-            app.UseCors(option => option.AllowAnyOrigin().AllowAnyMethod());
-
-            app.UseStaticFiles()
+            app.UseCors(option => option.AllowAnyOrigin().AllowAnyMethod())
+                .UseStaticFiles()
                 .UseExceptionMiddelware()
                 .UseMvc(routes =>
                 {
