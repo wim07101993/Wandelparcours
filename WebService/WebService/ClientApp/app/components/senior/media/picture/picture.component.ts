@@ -28,8 +28,7 @@ export class PictureComponent implements OnInit {
     constructor(private route: ActivatedRoute, private router: Router, private media: MediaService) {
         this.getAllImages();
         this.typeOfMedia = "image/*";
-        this.deleteResidentImage = <Resident>{images: {}}
-        ;
+        this.deleteResidentImage = <Resident>{images: {}};
     }
 
     /**

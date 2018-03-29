@@ -29,4 +29,14 @@ export class PersonaliaComponent implements OnInit {
             this.router.navigate(['/error']);
         }
     }
+
+    async deleteTag(tag: any) {
+        console.log(tag);
+        await this.service.deleteTagFromResident(this.id, tag);
+        this.showOneResident();
+    }
+
+    async addTag() {
+        this.resident.tags = await this.service.addTagToResident(this.resident.id);
+    }
 }

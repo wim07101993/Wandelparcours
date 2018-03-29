@@ -1,13 +1,13 @@
 import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
 import {Http} from '@angular/http';
 import {getBaseUrl} from "../../app.module.browser";
-import {MouseEvents, Point} from "./MouseEvents"
-import {Renderer} from "./Renderer"
-import {RenderBuffer,} from "./RenderBuffer"
+import {MouseEvents, Point} from "../../helpers/MouseEvents"
+import {Renderer} from "../../helpers/Renderer"
+import {RenderBuffer,} from "../../helpers/RenderBuffer"
 import {Station} from "../../models/station"
-import {Sprites} from "./Sprites"
+import {Sprites} from "../../helpers/Sprites"
 import {RestServiceService} from "../../service/rest-service.service"
-
+import {ARenderComponent} from "../../helpers/ARenderComponent"
 declare var $: any;
 declare var Materialize: any;
 
@@ -19,56 +19,42 @@ declare var Materialize: any;
 
 
 /** Class representing stationmanagement page. */
-export class StationmanagementComponent implements OnInit {
-    @ViewChild('myCanvas') canvasRef: ElementRef;
-
+export class StationmanagementComponent extends ARenderComponent implements OnInit {
     position: Point;
-    renderBuffer: RenderBuffer;
-    zoomFactor: number = 1;
-    mouseEvents: MouseEvents;
-    framerate = 5;
     imageUrl = "";
     markerUrl = "";
-    adMarker: boolean = false;
     collidingElement: any;
     saveStation: Station = new Station();
     menu: boolean = false;
     stations = new Map<string, Point>();
     stationMacAdresses: string[] = [];
     markerscale = 25;
-    renderer: Renderer;
+    
     markersize: number;
 
     /**
      * Creating stationmanagement page.
      * @param {RestServiceService} service  - A constructer injected service holding the service for rest connection
      */
-    constructor(private service: RestServiceService) {
+    constructor(private service : RestServiceService) {
+        super();
     }
 
-    /**
-     *      ngOnInit get called after the page is loaded
-     *      Renderer, Renderbuffer and MouseEvent instances get instatieded
-     *      images and the station locations get loaded, and the render buffer get cleaned and updated
-     *      And an interval starts named tick
-     */
+    
     async ngOnInit() {
-        //create renderer
-        this.renderer = new Renderer(this);
-        //set the imageurl
-        this.imageUrl = getBaseUrl() + "images/blueprint.jpg";
-        this.markerUrl = getBaseUrl() + "images/station.png";
-        this.renderBuffer = new RenderBuffer(this);
-        this.mouseEvents = new MouseEvents(this);
-        //load the blueprint of the building
-        await this.LoadMap();
-        await this.DownloadMarker();
-        await this.service.LoadStations(this);
-        await this.renderer.CleanAndUpdateRenderBuffer();
-        //load marker
-        setInterval(() => {
-            this.Tick()
-        }, 1000 / this.framerate);
+       
+        super.ngOnInit();
+       
+    }
+
+    async Tick() {
+        super.Tick();
+        try {
+            await this.RecalculateStations();
+            await this.DrawStationOnCursor();
+        } catch (ex) {
+            console.log(ex);
+        }
     }
 
     /*
@@ -81,7 +67,7 @@ export class StationmanagementComponent implements OnInit {
     /*
     *   Opens modal to delete a station 
     */
-    async deleteModal(id?: string) {
+    async spriteClicked(id?: string) {
 
         if (id != undefined) {
             this.collidingElement = id;
@@ -94,38 +80,12 @@ export class StationmanagementComponent implements OnInit {
 
     }
 
-    /*
-    *   this function is needed to zoomin
-    */
-    async ZoomIn() {
-        this.zoomFactor *= 2;
-        await this.Tick();
-    }
-
-    /*
-    *    this function is needed to zoomout
-    */
-    async ZoomOut() {
-
-        this.zoomFactor /= 2;
-
-        await this.Tick();
-    }
-
+ 
 
     /*
     *  tick does the needed calculatations for the render, and draws the rendering on the canvas
     */
-    async Tick() {
-        try {
-            await this.renderer.FixCanvas();
-            await this.RecalculateMap();
-            await this.RecalculateStations();
-            await this.DrawStationOnCursor();
-        } catch (ex) {
-            console.log(ex);
-        }
-    }
+    
 
     /*
      *  This function causes to draw a station on the cursor when add station button is clicked 
@@ -160,27 +120,13 @@ export class StationmanagementComponent implements OnInit {
         $("#markerModel").modal("open");
     }
 
-    /*
-    *   this function loads the image of the building
-    */
-    async LoadMap() {
-        //download the map
-        await this.renderer.LoadImages(this.imageUrl, Sprites.map);
-        //put it in a sprite
-        this.renderBuffer.map = await this.renderer.CreateSprite(Sprites.map);
-        //adjust height and width
-        this.renderBuffer.map.width = this.width;
-        this.renderBuffer.map.height = this.height;
 
-        return;
-
-
-    }
 
     /*
     *  load marker;
     */
-    async DownloadMarker() {
+    public async LoadComponent() {
+        try{
         await this.renderer.LoadImages(this.markerUrl, "marker");
         this.renderBuffer.cursorStation = this.renderer.CreateSprite(Sprites.marker);
         this.renderBuffer.cursorStation.width = 0;
@@ -188,70 +134,13 @@ export class StationmanagementComponent implements OnInit {
         this.renderBuffer.cursorStation.x = -99999;
         this.renderBuffer.cursorStation.y = -99999;
         console.log(this.renderBuffer.cursorStation);
-        return;
-    }
-
-    /*
-    *    Getter calculates relative the width of the image
-    */
-    get width() {
-        let width = 1;
-        let map = this.renderer.CreateSprite(Sprites.map);
-
-        if (map == undefined) return 0;
-        if (window.innerHeight > window.innerWidth) {
-            width = window.innerHeight / map.height * map.width;
-        } else {
-            width = window.innerWidth;
-        }
-        return width;
-    }
-
-    /*
-    *    Getter calculates relative the height of the image
-    */
-    get height() {
-        let height = 0;
-        let map = this.renderer.CreateSprite(Sprites.map);
-        if (map == undefined) return 0;
-        if (window.innerHeight > window.innerWidth) {
-            height = window.innerHeight;
-
-        } else {
-            height = window.innerWidth / map.width * map.height;
-        }
-        return height;
-    }
-
-    /*
-    * Recalculates location and size of the image 
-    */
-    async RecalculateMap() {
-        try {
-
-            this.canvasRef.nativeElement.height = window.innerHeight;
-            this.canvasRef.nativeElement.width = window.innerWidth;
-
-            //calculate zoom
-            let height = this.height * this.zoomFactor;
-            let width = this.width * this.zoomFactor;
-            //render
-            let map = this.renderBuffer.map;
-            map.width = width;
-            map.height = height ;
-            map.x = this.mouseEvents.position.x;
-            map.y = this.mouseEvents.position.y;
-            this.mouseEvents.mapPos = {
-                x: this.mouseEvents.position.x,
-                y: this.mouseEvents.position.y,
-                width: width,
-                height: height
-            };
-
-        } catch (ex) {
-            console.log(ex);
+        return true;
+        }catch (e){
+            return false;
         }
     }
+    
+
 
     /*
     * Recalculates location and size of all stations on the map 

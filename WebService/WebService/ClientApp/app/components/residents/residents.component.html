@@ -1,6 +1,6 @@
 <div class="row myRow">
 
-    <div class="col s1 myCol">
+    <div class="col s1">
         <a class="btn-floating btn-large waves-effect waves-light blue" (click)="view='list-view'" *ngIf="view=='card-view'"><i class="material-icons pointer">view_list</i></a>
         <a class="btn-floating btn-large waves-effect waves-light blue" (click)="view='card-view'" *ngIf="view=='list-view'"><i class="material-icons pointer" >view_comfy</i></a>
     </div>
@@ -22,7 +22,8 @@
     <div class="col s12 m6 l4" *ngFor="let resident of residents | filter:term">
         
         <div id="content" class="card">
-            <img src="/images/resident.jpg" class="ribbon" (click)="navigateTo(resident)" style="cursor:pointer"/>
+                <img onError="this.onerror=null;this.src='/images/resident.jpg';" style="cursor:pointer" src="http://localhost:5000/api/v1/residents/{{resident.id}}/picture" class="ribbon" (click)="navigateTo(resident)"/>
+       
             <div class="card-content">
                 
                 <table>
@@ -39,7 +40,7 @@
                     </tr>
                     <tr>
                         <th class="cardviewth right">arts:</th>
-                        <td class="cardviewtd">{{resident.doctor.name}}</td>
+                        <td class="cardviewtd test">{{resident.doctor.name}}</td>
                     </tr>
                     <tr>
                         <th class="cardviewth right">tel:</th>
@@ -142,9 +143,25 @@
                     <label for="doctor_number" class="active">Tel:</label>
                 </div>
             </div>
+            <div class="row">
+                <div class="input-field col s6">
+                    <label>ProfielFoto</label>
+                </div>
+                <div class="input-field col s6">
+                    <img  src="/api/v1/residents/{{modalResident.id}}/picture" alt="Geen foto gevonden" height="200" width="200" onError="this.onerror=null;this.src='/images/resident.jpg';"/>
+                </div>
+            </div>
+            <div class="row">
+                <div class="input-field col s6">
+                        <input #myInput class="center" type="file" [(ngModel)]="updateResident.picture" name="aProfilePicure" id="aProfilePicture" (change)="onFileSelected($event)" accept="image/*" /><sup style="color:#ff2200;">*</sup>       
+                    </div>
+                    <div class="input-field col s6">
+                        <img [src]="profilePic" alt="Geen foto geselecteerd" for="aProfilePicture" height="200" width="200" />
+                    </div>
+            </div>
             <div class="right" style="margin-top: 30px">
-                <a class="modal-action modal-close waves-effect waves-red btn-flat green lighten-1 white-text" (click)="editResident(modalResident)">Wijzigen<i class="material-icons right">send</i></a>
-                <a class="modal-action modal-close waves-effect waves-green btn-flat red lighten-1 white-text" (click)="closeModal()">Annuleer<i class="material-icons right">cancel</i></a>
+                <a class="modal-action modal-close waves-effect waves-red btn-flat green lighten-1 white-text" (click)="editResident(modalResident); reset()">Wijzigen<i class="material-icons right">send</i></a>
+                <a class="modal-action modal-close waves-effect waves-green btn-flat red lighten-1 white-text" (click)="closeModal(); reset()">Annuleer<i class="material-icons right">cancel</i></a>
             </div>
 
 
@@ -163,17 +180,17 @@
                 <div class="row">
                     <div class="input-field col s6">
                         <input id="afirst_name" type="text" class="validate" ngModel name="aFirstName" required>
-                        <label for="afirst_name">Voornaam</label>
+                        <label for="afirst_name">Voornaam<sup style="color:#ff2200;">*</sup></label>
                     </div>
                     <div class="input-field col s6">
                         <input id="alast_name" type="text" class="validate" ngModel name="aLastName" required>
-                        <label for="alast_name">Familienaam</label>
+                        <label for="alast_name">Familienaam<sup style="color:#ff2200;">*</sup></label>
                     </div>
                 </div>
                 <div class="row">
                     <div class="input-field col s6">
                         <input id="aroom" type="text" class="validate" ngModel name="aRoom" required>
-                        <label for="aroom">Kamer</label>
+                        <label for="aroom">Kamer<sup style="color:#ff2200;">*</sup></label>
                     </div>
                     <div class="input-field col s6">
                         <input id="abirthdate" type="text" class="datepicker validate" ngModel name="aBirthday">
@@ -190,12 +207,20 @@
                         <label for="atelefoon" class="active">Telefoon</label>
                     </div>
                 </div>
+                <div class="row center">
+                    <div class="input-field col s6">
+                        <input #myInput class="center" type="file" name="aProfilePicure" id="aProfilePicture" (change)="onFileSelected($event)" accept="image/*" /><sup style="color:#ff2200;">*</sup>       
+                    </div>
+                    <div class="input-field col s6">
+                        <img [src]="profilePic" alt="Geen foto geselecteerd" for="aProfilePicture" height="200" width="200" />
+                    </div>
+                </div>
                 <div class="modal-footer">
                     <button class="btn waves-effect waves-light green lighten-1" type="submit" name="action" [disabled]="!f.valid">
                         Toevoegen
                         <i class="material-icons right">send</i>
                     </button>
-                    <a (click)="resetForm(f)" class="btn waves-effect waves-light red lighten-1 modal-action modal-close">
+                    <a (click)="resetForm(f); reset()" class="btn waves-effect waves-light red lighten-1 modal-action modal-close">
                         Annuleren
                         <i class="material-icons right">cancel</i>
                     </a>
@@ -210,7 +235,7 @@
 <!-- Modal Trigger -->
 <!-- This will pop up the form to add a resident -->
 <div class="fixed-action-btn">
-    <a class="btn-floating btn-large red modal-trigger" (click)="openResidentAddModal()">
+    <a class="btn-floating btn-large red" (click)="openResidentAddModal()">
         <i class="large material-icons">person_add</i>
     </a>
 </div>

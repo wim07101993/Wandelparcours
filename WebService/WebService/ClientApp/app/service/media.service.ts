@@ -6,7 +6,11 @@ import { Resident } from "../models/resident";
 export class MediaService {
     fullLinks: any = [];
     check: any;
-    url: any = "http://localhost:5000/api/v1/media/";
+    
+    get url() :string{
+
+        return document.getElementsByTagName('base')[0].href+"api/v1/media/";
+    }
     constructor(private service: RestServiceService) { }
 
     /**

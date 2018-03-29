@@ -70,6 +70,12 @@ namespace WebService.Services.Data.Mock
             throw new NotImplementedException();
         }
 
+        public Task<int> GetHighestTagNumberAsync()
+        {
+            // TODO
+            throw new NotImplementedException();
+        }
+
         public async Task AddMediaAsync(ObjectId residentId, string title, byte[] data, EMediaType mediaType,
             string extension = null)
         {

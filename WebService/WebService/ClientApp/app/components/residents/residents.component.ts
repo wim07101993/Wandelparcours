@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core'
+import { Component, OnInit, ViewChild } from '@angular/core'
 import { Resident } from '../../models/resident'
 import { RestServiceService } from '../../service/rest-service.service' 
 import { Response } from '@angular/http'
@@ -7,6 +7,9 @@ import { async } from '@angular/core/testing';
 import { NgForm } from "@angular/forms";
 import { Router } from '@angular/router';
 import { CustomErrorHandler } from '../../service/customErrorHandler';
+import { UploadComponent } from '../senior/upload/upload.component';
+
+
 declare var $:any;
 declare var Materialize:any;
 
@@ -26,7 +29,13 @@ export class ResidentsComponent implements OnInit {
     modalResident: Resident;
     updateResident: any;
     search: boolean = false;
-
+    profilePic: any;
+    selectedFile: any = [];
+    reader: any;
+    selectedFileImage: any=[];
+    fd: any 
+    
+    @ViewChild('myInput') myInputVariable: any;
     /**
      * Injects the service and router
      * @param service Restservice
@@ -35,10 +44,11 @@ export class ResidentsComponent implements OnInit {
     constructor(private service: RestServiceService, private router: Router) {
         this.showAllResidents();
         this.residents = [];
-
+        this.profilePic = [];
+        
         /*Creates empty modals to avoid collision with previous existing modals should they not be deleted*/
         this.modalResident = <Resident>{
-            firstName: "", lastName: "", room: "", id: "", birthday: new Date(), doctor: { name: "", phoneNumber: "" }
+            firstName: "", lastName: "", room: "", id: "", birthday: new Date(), doctor: { name: "", phoneNumber: "" } , pictureUrl: ""
         };
         this.updateResident = {
             firstName: "", lastName: "", room: "", id: "", birthday: "", doctor: { name: "", phoneNumber: "" }
@@ -46,6 +56,7 @@ export class ResidentsComponent implements OnInit {
 
     }
 
+    
     /**
     * Focus to input for the searchbar --> input will be active if event 'button' has been pressed
     */
@@ -54,6 +65,21 @@ export class ResidentsComponent implements OnInit {
         setTimeout(() => {
             $('#focusToInput').focus();
         }, 200);
+
+    }
+
+    /**
+     * Observer event if anything changes
+     * @param event
+     */
+    onFileSelected(event: any) {
+        //this.loading = "Upload"
+        this.selectedFile = <any>event.target.files;
+        this.reader = new FileReader();
+        this.reader.readAsDataURL(event.target.files[0])
+        this.reader.onload = (nt: any) => {
+            this.profilePic = nt.target.result;
+        }
 
     }
 
@@ -75,6 +101,7 @@ export class ResidentsComponent implements OnInit {
      */
     openEditModal(modalResident: Resident) {
         this.modalResident = modalResident;
+        console.log(this.modalResident);
         $("#editModalResident").modal();
         $("#editModalResident").modal("open");
         $('.datepicker').pickadate(
@@ -105,23 +132,21 @@ export class ResidentsComponent implements OnInit {
      * get all residents async from service
      */
     async showAllResidents() {
-            let residents: any = await this.service.getAllResidents();
-            console.log(residents);
-            if (residents != undefined)
+        let residents: any = await this.service.getAllResidents();
+        console.log(residents);
+        if (residents != undefined) {
                 this.residents = residents;
-            else {
-
-                //alert("oops! :( looks like something went wrong :(");
-                this.router.navigate(["/error"]);
-            }
-       
+        }
+        else {
+            this.router.navigate(["/error"]);
+        } 
     }
+
 
     /**
      * Delete resident async based on unique identifier --> "ID"
      * @param uniqueIdentifier
      */
-
     async deleteResident(uniqueIdentifier: string) {
         await this.service.deleteResidentByUniqueId(uniqueIdentifier);
         this.showAllResidents();
@@ -169,8 +194,33 @@ export class ResidentsComponent implements OnInit {
         $('#birthDay').val("");
 
         let updateData = this.updateResident;
+        console.log("test");
+       
+
+        for (const file in this.selectedFile) {
+            try {
+                const index = parseInt(file);
+                if (!isNaN(index)) {
+                    //this.loading = "uploading...";
+                    let fd = new FormData();
+                    fd.append("File", this.selectedFile[index], this.selectedFile[index].name);
+                    if (this.selectedFile[index].type.indexOf("image") != -1) {
+                        await this.service.addProfilePic(this.updateResident.id, fd);
+                    }
+                    else {
+                        alert("won't work");
+                    }
+
+                }
+            } catch (e) {
+                console.log(e);
+            }
+
+        }
 
         await this.service.editResidentWithData(updateData, changedProperties);
+
+
 
         this.updateResident = {
             firstName: "", lastName: "", room: "", id: "", birthday: "", doctor: { name: "", phoneNumber: "" }
@@ -187,12 +237,24 @@ export class ResidentsComponent implements OnInit {
     * @param form of type NgForm
     */   
    async addResident(form: NgForm){
-
         // Workaround for dateformat
         let birthday = $("#abirthdate").val();
         let a;
+
         if (birthday != "") {
             a = new Date(birthday);
+        }
+
+        for (const file in this.selectedFile) {
+            const index = parseInt(file);
+            if (!isNaN(index)) {
+                //this.loading = "uploading...";
+                this.fd = new FormData();
+                this.fd.append("File", this.selectedFile[index], this.selectedFile[index].name);
+                if (this.selectedFile[index].type.indexOf("image") != -1) {
+                 this.selectedFileImage = this.selectedFile[index]//   this.check = await this.restService.addCorrectMediaToDatabase(this.id, fd, this.addPicture);
+                }
+            }
         }
 
         // Get data from form-inputs
@@ -201,25 +263,26 @@ export class ResidentsComponent implements OnInit {
              lastName: form.value.aLastName, 
              room: form.value.aRoom, 
              birthday: a, 
-             doctor: { name: form.value.aDoctor, phoneNumber: form.value.aTelefoon }
-         };
+             doctor: { name: form.value.aDoctor, phoneNumber: form.value.aTelefoon },
+        };
+        console.log(this.fd)
 
         // Send gathered data over the resrService
-
-        if (await this.service.addResident(data)){    
+        const id = await this.service.addResident(data);
+        if (id != undefined) {
+            await this.service.addProfilePic(id, this.fd);
             Materialize.toast(`bewoner: ${data.firstName} ${data.lastName} succesvol toegevoegd`, 5000);
         }else{
             Materialize.toast(`niet gelukt lan`, 5000);
             this.router.navigate(["/error"]);
-        }
-
+         }
 
         // Reset Residents form
-
         form.reset();
-
+        this.reset();
         //close modal/form and 'reload' page 
-        $("#add-resident-modal").modal("close");
+        setTimeout(() => { $("#add-resident-modal").modal("close");}, 200);
+        
         this.showAllResidents();
 
     }
@@ -229,7 +292,8 @@ export class ResidentsComponent implements OnInit {
      */
     resetForm(form: NgForm){form.reset();}
 
-    openResidentAddModal(){
+    openResidentAddModal() {
+
         $("#add-resident-modal").modal();
         $("#add-resident-modal").modal("open");
         $('.datepicker').pickadate({
@@ -237,7 +301,7 @@ export class ResidentsComponent implements OnInit {
             selectYears: 110, // Creates a dropdown of 15 years to control year,
             max: new Date(),
             monthsFull: ['Januari', 'Februari', 'Maart', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'December'],
-            monthsShort: ['Jan','Feb','Maa','Apr','Mei','Jun','Jul','Aug','Sep','Okt','Nov','Dec'],
+            monthsShort: ['Jan', 'Feb', 'Maa', 'Apr', 'Mei', 'Jun', 'Jul', 'Aug', 'Sep', 'Okt', 'Nov', 'Dec'],
             weekdaysShort: ['ma', 'di', 'wo', 'do', 'vr', 'zat', 'zon'],
             today: 'Vandaag',
             clear: 'Wissen',
@@ -248,7 +312,14 @@ export class ResidentsComponent implements OnInit {
             hiddenName: true,
             closeOnSelect: true // Close upon selecting a date,
         });
+    }
 
+    reset() {
+        console.log(this.myInputVariable.nativeElement.files);
+        this.myInputVariable.nativeElement.value = "";
+        //this.myInputImage.nativeElement.value = "Geen bestand geselecteerd";
+        this.profilePic = "";
+        console.log(this.myInputVariable.nativeElement.files);
     }
 
     /**
@@ -256,7 +327,7 @@ export class ResidentsComponent implements OnInit {
      * @param resident of type Resident
      */
     navigateTo(resident: Resident) {
-        console.log(resident.id);
+        //console.log(resident.id);
         this.router.navigate(['/resident/' + resident.id]);
     }
         

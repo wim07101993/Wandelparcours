@@ -25,6 +25,8 @@ namespace WebService.Services.Data
 
         Task<TValue> GetPropertyAsync<TValue>(int tag, Expression<Func<Resident, TValue>> propertyToSelect);
 
+        Task<int> GetHighestTagNumberAsync();
+
         /// <summary>
         /// AddMediaAsync is supposed to add the <see cref="data"/> as media of the type <see cref="mediaType"/> to the <see cref="Resident"/>
         /// with as <see cref="Resident.Id"/> the passed <see cref="residentId"/>.

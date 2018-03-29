@@ -1,12 +1,11 @@
-import {StationmanagementComponent} from "./stationmanagement.component"
-import {getBaseUrl} from "../../app.module.browser";
+import {ARenderComponent} from "./ARenderComponent"
 import {bufferelement, RenderBuffer} from "./RenderBuffer";
-import {Position} from "../../models/station"
+import {Position} from "../models/station"
 declare var $: any;
 declare var Hammer:any;
 /** Class to track mouse events */
 export class MouseEvents{
-    station:StationmanagementComponent;
+    aRenderComponent:ARenderComponent;
     canvas : HTMLCanvasElement;
     clicked:boolean=false;
     
@@ -25,14 +24,15 @@ export class MouseEvents{
     zoomfactor=1;
     //position of the mouse relative to the map
     mousepos:any;
+
     /**
      * Creating MouseEvent object.
-     * @param {StationmanagementComponent} station - This is the parent variable holding all the needed variables
+     * @param aRenderComponent
      */
-    constructor(station:StationmanagementComponent){
+    constructor(aRenderComponent:ARenderComponent){
         //load in variables from the stationmanagement component
-        this.station=station;
-        this.canvas=this.station.canvasRef.nativeElement;
+        this.aRenderComponent=aRenderComponent;
+        this.canvas=this.aRenderComponent.canvasRef.nativeElement;
         //ad listeners
         this.canvas.addEventListener("mousemove",(ev => this.MouseMove(ev)));
         this.canvas.addEventListener("contextmenu",ev =>  MouseEvents.RightClick(ev));
@@ -75,7 +75,7 @@ export class MouseEvents{
         
         parent.panLastPos.x=e.deltaX;
         parent.panLastPos.y=e.deltaY;
-        await parent.station.Tick();
+        await parent.aRenderComponent.Tick();
         
     }
 
@@ -86,8 +86,8 @@ export class MouseEvents{
     async MouseMove(e:MouseEvent){
         
         this.mousepos={x:e.x,y:e.y};
-        if (this.station.adMarker){
-            await this.station.Tick();
+        if (this.aRenderComponent.adMarker){
+            await this.aRenderComponent.Tick();
         }
         
         
@@ -111,8 +111,8 @@ export class MouseEvents{
     */
      CalculateStationPosOnImage(position:Point){
          return {
-            x: (position.x * this.station.renderBuffer.map.width) + this.mapPos.x,
-            y: (position.y * this.station.renderBuffer.map.height) + this.mapPos.y
+            x: (position.x * this.aRenderComponent.renderBuffer.map.width) + this.mapPos.x,
+            y: (position.y * this.aRenderComponent.renderBuffer.map.height) + this.mapPos.y
         };
         
     }
@@ -122,9 +122,9 @@ export class MouseEvents{
      * @param  {MouseEvent} e - event that the mouse has done  
      */
     async MouseDown(e:MouseEvent){
-        if (this.station.adMarker){
+        if (this.aRenderComponent.adMarker){
             let mouseposition = await this.CalculateMousePosOnImage({x:e.x,y:e.y});
-            this.station.SaveStationToDatabaseModal(mouseposition)
+            this.aRenderComponent.SaveStationToDatabaseModal(mouseposition)
             
         }else{
             this.mousepos={x:e.x,y:e.y};
