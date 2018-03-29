@@ -46,3 +46,6 @@ WebService/WebService.userprefs
 *.userprefs
 kiosk/.idea/
 kiosk/node_modules/
+ModuleSettingsEditor/.vs/
+ModuleSettingsEditor/ModuleSettingsEditor/bin/
+ModuleSettingsEditor/ModuleSettingsEditor/obj/
