@@ -26,7 +26,7 @@ namespace ModuleSettingsEditor.ViewModels
             Settings = new Settings();
 
             SaveCommand = new DelegateCommand(async () => await SaveSettingsToFileAsync(FileName, Settings));
-            OpenCommand = new DelegateCommand(async () => await OpenSettingsFromFile(FileName));
+            OpenCommand = new DelegateCommand<string>(async x => await OpenSettingsFromFile(x));
         }
 
 
