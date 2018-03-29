@@ -1,13 +1,10 @@
-import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
-import {Http} from '@angular/http';
-import {getBaseUrl} from "../../app.module.browser";
-import {MouseEvents, Point} from "../../helpers/MouseEvents"
-import {Renderer} from "../../helpers/Renderer"
-import {RenderBuffer,} from "../../helpers/RenderBuffer"
+import {Component, OnInit} from '@angular/core';
+import {Point} from "../../helpers/MouseEvents"
 import {Station} from "../../models/station"
 import {Sprites} from "../../helpers/Sprites"
 import {RestServiceService} from "../../service/rest-service.service"
 import {ARenderComponent} from "../../helpers/ARenderComponent"
+
 declare var $: any;
 declare var Materialize: any;
 
@@ -29,22 +26,22 @@ export class StationmanagementComponent extends ARenderComponent implements OnIn
     stations = new Map<string, Point>();
     stationMacAdresses: string[] = [];
     markerscale = 25;
-    
+
     markersize: number;
 
     /**
      * Creating stationmanagement page.
      * @param {RestServiceService} service  - A constructer injected service holding the service for rest connection
      */
-    constructor(private service : RestServiceService) {
+    constructor(private service: RestServiceService) {
         super();
     }
 
-    
+
     async ngOnInit() {
-       
+
         super.ngOnInit();
-       
+
     }
 
     async Tick() {
@@ -80,12 +77,11 @@ export class StationmanagementComponent extends ARenderComponent implements OnIn
 
     }
 
- 
 
     /*
     *  tick does the needed calculatations for the render, and draws the rendering on the canvas
     */
-    
+
 
     /*
      *  This function causes to draw a station on the cursor when add station button is clicked 
@@ -126,7 +122,7 @@ export class StationmanagementComponent extends ARenderComponent implements OnIn
     *  load marker;
     */
     public async LoadComponent() {
-        try{
+        try {
         await this.renderer.LoadImages(this.markerUrl, "marker");
         this.renderBuffer.cursorStation = this.renderer.CreateSprite(Sprites.marker);
         this.renderBuffer.cursorStation.width = 0;
@@ -134,12 +130,11 @@ export class StationmanagementComponent extends ARenderComponent implements OnIn
         this.renderBuffer.cursorStation.x = -99999;
         this.renderBuffer.cursorStation.y = -99999;
         console.log(this.renderBuffer.cursorStation);
-        return true;
-        }catch (e){
+            return true;
+        } catch (e) {
             return false;
         }
     }
-    
 
 
     /*

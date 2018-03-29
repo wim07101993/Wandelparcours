@@ -1,4 +1,4 @@
-import { inject, TestBed} from '@angular/core/testing';
+import {inject, TestBed} from '@angular/core/testing';
 
 import {StationmanagementComponent} from './stationmanagement.component';
 import {RestServiceService} from "../../service/rest-service.service";

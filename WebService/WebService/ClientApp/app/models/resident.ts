@@ -1,15 +1,15 @@
 export class Resident {
-    id: string
-    firstName: string
-    lastName: string
-    picture: any
+    id: string;
+    firstName: string;
+    lastName: string;
+    picture: any;
     pictureUrl: any;
-    room: string
-    birthday: Date
-    doctor: Doctor
-    images: Images
-    videos: Videos
-    tags: number[]
+    room: string;
+    birthday: Date;
+    doctor: Doctor;
+    images: Images;
+    videos: Videos;
+    tags: number[];
     constructor() {
         this.images = new Images();
         this.id = "";
@@ -25,8 +25,8 @@ export class Resident {
 }
 
 export class Doctor {
-    name: string
-    phoneNumber: string
+    name: string;
+    phoneNumber: string;
     constructor() {
         this.name = "";
         this.phoneNumber = "";
@@ -34,9 +34,9 @@ export class Doctor {
 }
 
 export class Images {
-    id: string
-    url: string
-    name: string
+    id: string;
+    url: string;
+    name: string;
 
     constructor() {
         this.id = "";
@@ -46,10 +46,10 @@ export class Images {
 }
 
 export class Videos {
-    id: string
-    url: string
-    type: string
-    name: string
+    id: string;
+    url: string;
+    type: string;
+    name: string;
 
     constructor() {
         this.id = "";
@@ -60,10 +60,10 @@ export class Videos {
 }
 
 export class ProfilePicture {
-    id: string
-    url: string
-    type: string
-    name: string
+    id: string;
+    url: string;
+    type: string;
+    name: string;
 
     constructor() {
         this.id = "";

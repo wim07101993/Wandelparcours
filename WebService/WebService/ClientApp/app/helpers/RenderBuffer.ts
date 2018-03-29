@@ -1,13 +1,11 @@
-
-import  {ARenderComponent} from "./ARenderComponent"
+import {ARenderComponent} from "./ARenderComponent"
 
 import * as PIXI from 'pixi.js'
 import Sprite = PIXI.Sprite;
-import {Sprites} from "./Sprites";
 
 /** Class to buffer the elements wich need to get rendered */
 export class RenderBuffer{
-    aRenderComponent:ARenderComponent;
+    aRenderComponent: ARenderComponent;
     map:Sprite;
     cursorStation:Sprite;
     buffer=new Map<string, Sprite>();
@@ -16,8 +14,8 @@ export class RenderBuffer{
      * Creating RenderBuffer object.
      * @param aRenderComponent
      */
-    constructor(aRenderComponent:ARenderComponent){
-        this.aRenderComponent=aRenderComponent;
+    constructor(aRenderComponent: ARenderComponent) {
+        this.aRenderComponent = aRenderComponent;
      
     }
 
@@ -29,7 +27,7 @@ export class RenderBuffer{
      * @return {Sprite} sprite- the sprite for this id alse gets returned back
      */
     AddSpriteToBufferById(id:string,key:string){
-        let sprite=this.aRenderComponent.renderer.CreateSprite(key);
+        let sprite = this.aRenderComponent.renderer.CreateSprite(key);
         this.buffer.set(id,sprite);
         return sprite;
     }

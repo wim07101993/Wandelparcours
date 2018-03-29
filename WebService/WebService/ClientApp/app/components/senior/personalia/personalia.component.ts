@@ -1,7 +1,7 @@
-import { Component, OnInit } from '@angular/core';
-import { Resident } from '../../../models/resident';
-import { Router, ActivatedRoute } from '@angular/router';
-import { RestServiceService } from '../../../service/rest-service.service';
+import {Component, OnInit} from '@angular/core';
+import {Resident} from '../../../models/resident';
+import {ActivatedRoute, Router} from '@angular/router';
+import {RestServiceService} from '../../../service/rest-service.service';
 
 @Component({
   selector: 'app-personalia',

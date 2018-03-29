@@ -1,13 +1,8 @@
-import { Component, OnInit, ViewChild } from '@angular/core'
-import { Resident } from '../../models/resident'
-import { RestServiceService } from '../../service/rest-service.service' 
-import { Response } from '@angular/http'
-import { Ng2SearchPipeModule } from 'ng2-search-filter'
-import { async } from '@angular/core/testing';
-import { NgForm } from "@angular/forms";
-import { Router } from '@angular/router';
-import { CustomErrorHandler } from '../../service/customErrorHandler';
-import { UploadComponent } from '../senior/upload/upload.component';
+import {Component, OnInit, ViewChild} from '@angular/core'
+import {Resident} from '../../models/resident'
+import {RestServiceService} from '../../service/rest-service.service'
+import {NgForm} from "@angular/forms";
+import {Router} from '@angular/router';
 
 
 declare var $:any;
@@ -32,9 +27,9 @@ export class ResidentsComponent implements OnInit {
     profilePic: any;
     selectedFile: any = [];
     reader: any;
-    selectedFileImage: any=[];
-    fd: any 
-    
+    selectedFileImage: any = [];
+    fd: any;
+
     @ViewChild('myInput') myInputVariable: any;
     /**
      * Injects the service and router
@@ -48,7 +43,13 @@ export class ResidentsComponent implements OnInit {
         
         /*Creates empty modals to avoid collision with previous existing modals should they not be deleted*/
         this.modalResident = <Resident>{
-            firstName: "", lastName: "", room: "", id: "", birthday: new Date(), doctor: { name: "", phoneNumber: "" } , pictureUrl: ""
+            firstName: "",
+            lastName: "",
+            room: "",
+            id: "",
+            birthday: new Date(),
+            doctor: {name: "", phoneNumber: ""},
+            pictureUrl: ""
         };
         this.updateResident = {
             firstName: "", lastName: "", room: "", id: "", birthday: "", doctor: { name: "", phoneNumber: "" }
@@ -56,7 +57,7 @@ export class ResidentsComponent implements OnInit {
 
     }
 
-    
+
     /**
     * Focus to input for the searchbar --> input will be active if event 'button' has been pressed
     */
@@ -76,7 +77,7 @@ export class ResidentsComponent implements OnInit {
         //this.loading = "Upload"
         this.selectedFile = <any>event.target.files;
         this.reader = new FileReader();
-        this.reader.readAsDataURL(event.target.files[0])
+        this.reader.readAsDataURL(event.target.files[0]);
         this.reader.onload = (nt: any) => {
             this.profilePic = nt.target.result;
         }
@@ -195,7 +196,7 @@ export class ResidentsComponent implements OnInit {
 
         let updateData = this.updateResident;
         console.log("test");
-       
+
 
         for (const file in this.selectedFile) {
             try {
@@ -221,7 +222,6 @@ export class ResidentsComponent implements OnInit {
         await this.service.editResidentWithData(updateData, changedProperties);
 
 
-
         this.updateResident = {
             firstName: "", lastName: "", room: "", id: "", birthday: "", doctor: { name: "", phoneNumber: "" }
         };
@@ -245,43 +245,45 @@ export class ResidentsComponent implements OnInit {
             a = new Date(birthday);
         }
 
-        for (const file in this.selectedFile) {
-            const index = parseInt(file);
-            if (!isNaN(index)) {
-                //this.loading = "uploading...";
-                this.fd = new FormData();
-                this.fd.append("File", this.selectedFile[index], this.selectedFile[index].name);
-                if (this.selectedFile[index].type.indexOf("image") != -1) {
-                 this.selectedFileImage = this.selectedFile[index]//   this.check = await this.restService.addCorrectMediaToDatabase(this.id, fd, this.addPicture);
-                }
-            }
-        }
+       for (const file in this.selectedFile) {
+           const index = parseInt(file);
+           if (!isNaN(index)) {
+               //this.loading = "uploading...";
+               this.fd = new FormData();
+               this.fd.append("File", this.selectedFile[index], this.selectedFile[index].name);
+               if (this.selectedFile[index].type.indexOf("image") != -1) {
+                   this.selectedFileImage = this.selectedFile[index]//   this.check = await this.restService.addCorrectMediaToDatabase(this.id, fd, this.addPicture);
+               }
+           }
+       }
 
         // Get data from form-inputs
          let data = {
              firstName: form.value.aFirstName, 
              lastName: form.value.aLastName, 
-             room: form.value.aRoom, 
-             birthday: a, 
-             doctor: { name: form.value.aDoctor, phoneNumber: form.value.aTelefoon },
-        };
-        console.log(this.fd)
+             room: form.value.aRoom,
+             birthday: a,
+             doctor: {name: form.value.aDoctor, phoneNumber: form.value.aTelefoon},
+         };
+       console.log(this.fd);
 
         // Send gathered data over the resrService
-        const id = await this.service.addResident(data);
-        if (id != undefined) {
-            await this.service.addProfilePic(id, this.fd);
+       const id = await this.service.addResident(data);
+       if (id != undefined) {
+           await this.service.addProfilePic(id, this.fd);
             Materialize.toast(`bewoner: ${data.firstName} ${data.lastName} succesvol toegevoegd`, 5000);
         }else{
             Materialize.toast(`niet gelukt lan`, 5000);
             this.router.navigate(["/error"]);
-         }
+       }
 
         // Reset Residents form
         form.reset();
-        this.reset();
+       this.reset();
         //close modal/form and 'reload' page 
-        setTimeout(() => { $("#add-resident-modal").modal("close");}, 200);
+       setTimeout(() => {
+           $("#add-resident-modal").modal("close");
+       }, 200);
         
         this.showAllResidents();
 

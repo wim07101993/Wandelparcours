@@ -1,6 +1,6 @@
 
-.modal.modal-fixed-footer{
-    height:15%;
+.modal.modal-fixed-footer {
+    height: 15%;
 }
 label {
     padding: 20px;
@@ -18,6 +18,6 @@ label {
     cursor: pointer; /* "hand" cursor */
 }
 
-.modal{
+.modal {
     width: 30%;
 }

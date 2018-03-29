@@ -1,8 +1,8 @@
-import {TestBed, inject} from '@angular/core/testing';
+import {inject, TestBed} from '@angular/core/testing';
 
 import {RestServiceService} from './rest-service.service';
 import {StationmanagementComponent} from "../components/stationmanagement/stationmanagement.component";
-import {Http, HttpModule, Response} from '@angular/http';
+import {HttpModule} from '@angular/http';
 
 
 import {RenderBuffer,} from "../helpers/RenderBuffer"

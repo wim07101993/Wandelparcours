@@ -1,10 +1,11 @@
-
-<!-- Popup Modal to choose & upload pictures --> 
+<!-- Popup Modal to choose & upload pictures -->
 <div id="addMedia" class="modal modal-fixed-footer">
     <div class="modal-content">
         <div class="row">
             <div class="col s12 m10 offset-m1 l8 offset-l2">
-                <input type="file" name="file" id="file" class="inputfile" data-multiple-caption="{count} files selected" (change)="onFileSelected($event)" multiple [accept]="type" />
+                <input type="file" name="file" id="file" class="inputfile"
+                       data-multiple-caption="{count} files selected" (change)="onFileSelected($event)" multiple
+                       [accept]="type"/>
             </div>
         </div>
     </div>

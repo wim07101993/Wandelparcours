@@ -1,8 +1,7 @@
-import {Injectable, resolveForwardRef} from '@angular/core';
-import {Http, HttpModule, Response} from '@angular/http';
+import {Injectable} from '@angular/core';
+import {Http} from '@angular/http';
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/catch';
-import {getBaseUrl} from '../app.module.browser';
 import {Resident} from '../models/resident';
 import {Station} from "../models/station";
 import {CustomErrorHandler} from './customErrorHandler';
@@ -10,16 +9,19 @@ import {CustomErrorHandler} from './customErrorHandler';
 @Injectable()
 export class RestServiceService {
     [x: string]: any;
-    url:string="";
-    get restUrl() :string{
-        if (this.url=="")
+    url: string = "";
+
+    get restUrl(): string {
+        if (this.url == "")
             return document.getElementsByTagName('base')[0].href;
         else
             return this.url;
     }
-    set restUrl(val:string){
+
+    set restUrl(val: string) {
         this.url = val;
     }
+
     constructor(private http: Http, private customErrorHandler: CustomErrorHandler) {
     }
 
@@ -115,14 +117,14 @@ export class RestServiceService {
     addResident(data: any) {
         console.log(data);
         return new Promise(resolve => {
-           this.http.post(this.restUrl + 'api/v1/residents', data).subscribe(response => {
+            this.http.post(this.restUrl + 'api/v1/residents', data).subscribe(response => {
                 console.log("Saved resident to database");
                 resolve(response.text());
             }, error => {
                 console.log("Could not save resident to database!");
                 this.customErrorHandler.updateMessage(error);
                 resolve(undefined);
-                });
+            });
         });
     }
 

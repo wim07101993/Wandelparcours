@@ -13,9 +13,10 @@ export abstract class ARenderComponent {
     mouseEvents: MouseEvents;
     framerate = 5;
     zoomFactor: number = 1;
-    public async  abstract LoadComponent():Promise<boolean>;
 
-    get BluePrintUrl(){
+    public async abstract LoadComponent(): Promise<boolean>;
+
+    get BluePrintUrl() {
         return getBaseUrl() + "images/blueprint.jpg";
     }
 
@@ -40,6 +41,7 @@ export abstract class ARenderComponent {
             this.Tick()
         }, 1000 / this.framerate);
     }
+
     async LoadMap() {
 
         //download the map
@@ -63,7 +65,7 @@ export abstract class ARenderComponent {
             console.log(ex);
         }
     }
-    
+
     /*
     *    Getter calculates relative the width of the image
     */
@@ -80,7 +82,7 @@ export abstract class ARenderComponent {
 
 
     SaveStationToDatabaseModal(mouseposition: { x: number; y: number }) {
-        
+
     }
 
 
@@ -117,7 +119,7 @@ export abstract class ARenderComponent {
             //render
             let map = this.renderBuffer.map;
             map.width = width;
-            map.height = height ;
+            map.height = height;
             map.x = this.mouseEvents.position.x;
             map.y = this.mouseEvents.position.y;
             this.mouseEvents.mapPos = {

@@ -1,8 +1,8 @@
-import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
-import { RestServiceService } from '../../../../service/rest-service.service';
-import { Resident } from '../../../../models/resident';
-import { MediaService } from '../../../../service/media.service';
+import {Component, OnInit} from '@angular/core';
+import {ActivatedRoute, Router} from '@angular/router';
+import {Resident} from '../../../../models/resident';
+import {MediaService} from '../../../../service/media.service';
+
 declare var $: any;
 
 @Component({
@@ -12,7 +12,7 @@ declare var $: any;
 })
 export class VideoComponent implements OnInit {
     typeOfMedia: string;
-    video: string = "/videos"
+    video: string = "/videos";
     id: string = this.route.snapshot.params['id'];
     check: any;
 

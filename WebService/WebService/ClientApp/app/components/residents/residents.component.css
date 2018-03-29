@@ -16,7 +16,7 @@
     font-size: 48px;
 }
 
-.test{
+.test {
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
@@ -44,8 +44,6 @@ thead{
 input[type=text]:not(.browser-default){
     margin-bottom: 0;
 }
-
-
 
 td.cardviewtd, th.cardviewth{
     padding-top:5px;
@@ -91,6 +89,6 @@ h6{
     background: linear-gradient(to right,#fdfdfd , #edeae7);
 }
 
-label::after { 
-    content:"*"; 
+label::after {
+    content: "*";
 }

@@ -1,10 +1,8 @@
-import { Component, OnInit, ViewChild, Injectable, Input } from '@angular/core';
-import { RestServiceService } from '../../../../service/rest-service.service';
-import { ActivatedRoute, Router } from '@angular/router';
-import { RequestOptions, Headers } from '@angular/http';
-import { UploadComponent } from '../../upload/upload.component';
-import { Resident } from '../../../../models/resident';
-import { MediaService } from '../../../../service/media.service';
+import {Component, OnInit} from '@angular/core';
+import {ActivatedRoute, Router} from '@angular/router';
+import {Resident} from '../../../../models/resident';
+import {MediaService} from '../../../../service/media.service';
+
 declare var $: any;
 
 

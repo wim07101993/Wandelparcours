@@ -1,16 +1,15 @@
 import * as PIXI from 'pixi.js'
-import Sprite = PIXI.Sprite;
-import {getBaseUrl} from "../app.module.browser";
 import {Sprites} from "./Sprites";
+import Sprite = PIXI.Sprite;
+
 declare var window:any;
 
 
 export class Renderer{
     app: PIXI.Application;
-    parentComponent:any;
+    parentComponent: any;
     images=new Map<string, string>();
-    
-  
+
 
     get width() {
         let width = 1;
@@ -40,17 +39,18 @@ export class Renderer{
         }
         return height;
     }
-    constructor(parentComponent:any){
-            this.parentComponent=parentComponent;
+
+    constructor(parentComponent: any) {
+        this.parentComponent = parentComponent;
             this.app=new PIXI.Application();
-            (<HTMLDivElement>this.parentComponent.canvasRef.nativeElement).appendChild(this.app.view);
+        (<HTMLDivElement>this.parentComponent.canvasRef.nativeElement).appendChild(this.app.view);
             this.Clear();
     }
     CleanAndUpdateRenderBuffer(){
         this.Clear();
         this.app.stage.addChild(this.parentComponent.renderBuffer.map);
         this.app.stage.addChild(this.parentComponent.renderBuffer.cursorStation);
-        this.parentComponent.renderBuffer.buffer.forEach((sprite:Sprite,key:any,map:any)=>{
+        this.parentComponent.renderBuffer.buffer.forEach((sprite: Sprite, key: any, map: any) => {
             this.app.stage.addChild(sprite);
             sprite.tint = 111111;
             sprite.interactive = true;
@@ -91,7 +91,7 @@ export class Renderer{
     
     
     async FixCanvas(){
-        let canvas=this.parentComponent.canvasRef.nativeElement;
+        let canvas = this.parentComponent.canvasRef.nativeElement;
         this.app.renderer.resize(canvas.offsetWidth,canvas.offsetHeight);
         this.app.renderer.autoResize=true;
         this.app.renderer.backgroundColor=0xffffff;

@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
+
 declare var $:any;
 
 @Component({
@@ -11,8 +12,10 @@ export class HeaderComponent implements OnInit {
     gebruiker = 'Beheerder';
     pageTitle = 'Pagina Titel';
 
-    constructor() {}
+    constructor() {
+    }
 
-    ngOnInit() {}
+    ngOnInit() {
+    }
 
 }

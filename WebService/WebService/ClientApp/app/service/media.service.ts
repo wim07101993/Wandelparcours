@@ -1,15 +1,15 @@
-﻿import { Injectable } from "@angular/core";
-import { RestServiceService } from "./rest-service.service";
-import { Resident } from "../models/resident";
+﻿import {Injectable} from "@angular/core";
+import {RestServiceService} from "./rest-service.service";
+import {Resident} from "../models/resident";
 
 @Injectable()
 export class MediaService {
     fullLinks: any = [];
     check: any;
-    
-    get url() :string{
 
-        return document.getElementsByTagName('base')[0].href+"api/v1/media/";
+    get url(): string {
+
+        return document.getElementsByTagName('base')[0].href + "api/v1/media/";
     }
     constructor(private service: RestServiceService) { }
 

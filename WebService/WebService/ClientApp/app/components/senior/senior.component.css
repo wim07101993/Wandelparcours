@@ -2,6 +2,6 @@ li > a.active {
     border-bottom: 2px solid hotpink;
 }
 
-.tabs{
+.tabs {
     box-shadow: 0 1px 1px 0 #bbb;
 }

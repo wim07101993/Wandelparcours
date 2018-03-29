@@ -1,7 +1,6 @@
-import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
-import { RestServiceService } from '../../../service/rest-service.service';
-import { ActivatedRoute, Router } from '@angular/router';
-import { RequestOptions } from '@angular/http';
+import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {RestServiceService} from '../../../service/rest-service.service';
+import {ActivatedRoute, Router} from '@angular/router';
 
 declare var $: any;
 
@@ -24,48 +23,46 @@ export class UploadComponent implements OnInit {
 
     constructor(private restService: RestServiceService, private route: ActivatedRoute, private router: Router) {}
 
-    ngOnInit() {}
+    ngOnInit() {
+    }
 
     /**
      * Observer event if anything changes
      * @param event
      */
       onFileSelected(event: any) {
-          
-          //this.loading = "Upload";
-          
-          this.selectedFile = <any>event.target.files; 
-          
-          console.log(this.selectedFile.length);
 
-          for(let i = 0; i<this.selectedFile.length; i++){
-              if (event.target.files && event.target.files[i]) {
-                  let reader = new FileReader();
-                  reader.onload = (event: any) => {
-                      this.localUrl = event.target.result;
-                  };
-                  reader.readAsDataURL(event.target.files[i]);
-                  $('.preview').append('test');
-                 
-              }
-          }
+        //this.loading = "Upload";
 
-        
-          
-          
-            
-          //$('.preview').html('<img [src]="localUrl" *ngIf="localUrl" class="imgPlaceholder">');
+        this.selectedFile = <any>event.target.files;
+
+        console.log(this.selectedFile.length);
+
+        for (let i = 0; i < this.selectedFile.length; i++) {
+            if (event.target.files && event.target.files[i]) {
+                let reader = new FileReader();
+                reader.onload = (event: any) => {
+                    this.localUrl = event.target.result;
+                };
+                reader.readAsDataURL(event.target.files[i]);
+                $('.preview').append('test');
+
+            }
+        }
+
+
+        //$('.preview').html('<img [src]="localUrl" *ngIf="localUrl" class="imgPlaceholder">');
           
       }
 
     /**
-     * 
+     *
      * Upload selected file as formdata either to image or video depending on this.selectefFile[index].type --> image or video
      * Loop through all selectedfiles
      * 
      */
-    
-          async onUpload() {
+
+    async onUpload() {
           for (const file in this.selectedFile) {
               const index = parseInt(file);
               if (!isNaN(index)) {
@@ -83,13 +80,13 @@ export class UploadComponent implements OnInit {
                   }
               
               }
-              
+
               $("#addMedia").modal("close");
-          
+
           }
           
           //clear selected files
-          this.selectedFile = null;
+        this.selectedFile = null;
           if (this.check) {
               this.selectedFile = null;
               this.reload.emit();
@@ -106,7 +103,7 @@ export class UploadComponent implements OnInit {
          * Open modal in edit mode and fill modal with resident
          *
          */
-        addModal(){
+        addModal() {
             $("#addMedia").modal();
             $("#addMedia").modal("open");
         }
