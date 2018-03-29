@@ -25,8 +25,8 @@ namespace WebService.Controllers
     {
         #region FIELDS
 
-        public const string GetOneByMacTemplate = "{mac}";
-        public const string DeleteByMacTemplate = "{mac}";
+        public const string GetOneByMacTemplate = "bymac/{mac}";
+        public const string DeleteByMacTemplate = "bymac/{mac}";
 
         #endregion FIELDS
 

@@ -1,3 +1,4 @@
+import { Position } from "./station";
 export class Resident {
     id: string
     firstName: string
@@ -9,7 +10,8 @@ export class Resident {
     doctor: Doctor
     images: Images
     videos: Videos
-    tags: number[]
+    tags: number[]=new Array();
+    lastRecordedPosition: Position = new Position();
     constructor() {
         this.images = new Images();
         this.id = "";

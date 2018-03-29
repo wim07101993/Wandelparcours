@@ -6,6 +6,7 @@ import {getBaseUrl} from '../app.module.browser';
 import {Resident} from '../models/resident';
 import {Station} from "../models/station";
 import {CustomErrorHandler} from './customErrorHandler';
+import {StationmanagementComponent} from "../components/stationmanagement/stationmanagement.component";
 
 @Injectable()
 export class RestServiceService {
@@ -254,7 +255,7 @@ export class RestServiceService {
     async DeleteStation(mac: string) {
         return new Promise(resolve => {
 
-            this.http.delete(this.restUrl + "api/v1/receivermodules/" + mac).subscribe(response => {
+            this.http.delete(this.restUrl + "api/v1/receivermodules/bymac/" + mac).subscribe(response => {
                     try {
                         resolve(true);
                     } catch (e) {
@@ -282,27 +283,25 @@ export class RestServiceService {
         });
     }
 
-    LoadStations(parent: any) {
+    LoadStations(parent: StationmanagementComponent) {
         if (parent.stations != undefined)
             parent.stations.clear();
         if (parent.renderBuffer.buffer != undefined)
             parent.renderBuffer.buffer.clear();
         if (parent.stationMacAdresses != undefined)
             parent.stationMacAdresses = [];
-        return new Promise(resolve => {
-
+        return new Promise<boolean>(resolve => {
             this.http.get(this.restUrl + "api/v1/receivermodules").subscribe(response => {
 
-                        let tryParse=<Array<any>>(response.json());
+                    let tryParse=<Array<any>>(response.json());
 
-                        let station:any;
-                        if (tryParse!=undefined){
-                            for (station of tryParse){
-                                if (station==undefined)continue;
-                                parent.stationMacAdresses.push(station.mac);
-                                parent.stations.set(station.mac,station.position);
-                                parent.stationsIds.set(station.mac,station.id);
-                            }
+                    let station:any;
+                    if (tryParse!=undefined){
+                        for (station of tryParse){
+                            if (station==undefined)continue;
+                            parent.stationMacAdresses.push(station.mac);
+                            parent.stations.set(station.mac,station.position);
+                            parent.stationsIds.set(station.mac,station.id);
                         }
                     }
                     resolve(true);
@@ -311,8 +310,8 @@ export class RestServiceService {
                     console.log("can't load stations");
                     console.log(error);
                     resolve(false);
-                }
-            )
+                });
         });
     }
+    
 }

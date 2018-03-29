@@ -22,16 +22,13 @@ declare var Materialize: any;
 export class StationmanagementComponent extends ARenderComponent implements OnInit {
     position: Point;
     imageUrl = "";
-    markerUrl = "";
     collidingElement: any;
     saveStation: Station = new Station();
     menu: boolean = false;
     stations = new Map<string, Point>();
     stationsIds = new Map<string, string>();
     stationMacAdresses: string[] = [];
-    markerscale = 25;
-    
-    markersize: number;
+ 
     rawstations:any;
     editing=false;
     editmac:string;
@@ -43,11 +40,14 @@ export class StationmanagementComponent extends ARenderComponent implements OnIn
         super();
     }
 
-    
+    get markerUrl(){
+        return getBaseUrl() + "images/station.png";
+    }
     async ngOnInit() {
-       
+
         super.ngOnInit();
-       
+        await this.service.LoadStations(this);
+        
     }
 
     async Tick() {
@@ -76,7 +76,7 @@ export class StationmanagementComponent extends ARenderComponent implements OnIn
         }catch (e){
             
         }
-    }
+    } 
     /*
     *   Closes the modal to add a station 
     */

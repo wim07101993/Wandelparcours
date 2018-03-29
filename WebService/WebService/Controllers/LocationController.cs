@@ -59,7 +59,15 @@ namespace WebService.Controllers
             var selectors = new Expression<Func<Resident, object>>[] { x=> x.LastRecordedPosition, x=> x.Id,x=> x.LastName,x=> x.FirstName};
             
             var lastposition = await this._residentService.GetAsync(selectors);
-            return lastposition;
+            var residentsToReturn=new List<Resident>();
+            foreach (var resident in lastposition)
+            {
+                if(resident.LastRecordedPosition!=null){
+                    residentsToReturn.Add(resident);
+                }
+                
+            }
+            return residentsToReturn;
         }
 
 
