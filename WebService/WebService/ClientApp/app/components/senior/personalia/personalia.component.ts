@@ -3,6 +3,7 @@ import { Resident } from '../../../models/resident';
 import { Router, ActivatedRoute } from '@angular/router';
 import { RestServiceService } from '../../../service/rest-service.service';
 import { MediaService } from '../../../service/media.service';
+declare var $: any;
 
 @Component({
   selector: 'app-personalia',
@@ -12,6 +13,7 @@ import { MediaService } from '../../../service/media.service';
 export class PersonaliaComponent implements OnInit {
     ngOnInit() { }
     updateResident: any;
+    tag: any;
     id: string = this.route.snapshot.params['id'];
     resident: Resident;
     countI: number = 0;
@@ -39,6 +41,7 @@ export class PersonaliaComponent implements OnInit {
         console.log(tag);
         await this.service.deleteTagFromResident(this.id, tag);
         this.showOneResident();
+        $("#deleteTagModal").modal("close");
     }
 
     async getImageCount() {
@@ -56,4 +59,30 @@ export class PersonaliaComponent implements OnInit {
     async addTag() {
         this.resident.tags = await this.service.addTagToResident(this.resident.id);
     }
+
+
+    /*
+    *   Closes the modal to delete a tag/beacon
+    */
+    CloseModal() {
+        $("#deleteTagModal").modal("close");
+    }
+
+    /*
+    *   Opens modal to delete a tag 
+    */
+    deleteTagModal(tag: any) {
+
+        this.tag = tag;
+        //console.log(resident.images.id);
+        
+        
+        // noinspection JSJQueryEfficiency
+        console.log(tag);
+        $("#deleteTagModal").modal();
+        // noinspection JSJQueryEfficiency
+        $("#deleteTagModal").modal("open");
+
+    }
+
 }

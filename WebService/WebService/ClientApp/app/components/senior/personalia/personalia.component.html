@@ -2,12 +2,12 @@
 
 <!-- Personal information table -->
 <div class="row ">
-    <div class="col s12 m3">
+    <div class="col s12 m4 l3">
         <img src="http://localhost:5000/api/v1/residents/{{resident.id}}/picture" onError="this.onerror=null;this.src='/images/resident.jpg';" class="circle responsive-img z-depth-2"/>
     </div>
-    <div class="col s12 m9">
+    <div class="col s12 m8 l9">
         <h5>Persoonlijke informatie</h5>
-        <table class="striped responsive-table z-depth-2">
+        <table class="striped z-depth-2">
 
             <tbody>
             <tr>
@@ -78,7 +78,7 @@
 <div class="row">
     <div class="col s12">
         <h5>Gekoppelde tags</h5>
-        <table class="striped responsive-table centered z-depth-2">
+        <table class="striped centered z-depth-2">
             <tbody>
             <tr>
                 <th>Tags</th>
@@ -86,7 +86,7 @@
             </tr>
             <tr>
                 <th>Verwijderen</th>
-                <td *ngFor="let tag of resident.tags"><i class="material-icons red-text pointer" (click)="deleteTag(tag)">delete</i></td>
+                <td *ngFor="let tag of resident.tags"><i class="material-icons red-text pointer" (click)="deleteTagModal(tag)">delete</i></td>
             </tr>
             </tbody>
         </table>
@@ -98,5 +98,24 @@
         </div>
     </div>
 </div>
-        
 
+<!-- Modal popup asking/warning to delete beacon/tag -->
+<div id="deleteTagModal" class="modal">
+    <div class="modal-content">
+            <div class="row valign-wrapper">
+                <div class="col s2 m2">
+                    <i class="large material-icons red-text">warning</i>
+                </div>
+                <div class="col s10 m8">
+                    <h5>U staat op het punt  <span style="color: crimson">tag {{tag}}</span> te verwijderen!<br>
+                        Bent u zeker?</h5>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col s12 right-align">
+                    <a (click)="CloseModal()" class="modal-close waves-effect waves-green btn-flat">Annuleren</a>
+                    <a (click)="deleteTag(tag)" class=" waves-effect waves-red btn-flat red-text">Verwijderen</a>
+                </div>
+            </div>
+        </div>
+</div>
