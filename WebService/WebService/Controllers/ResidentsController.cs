@@ -41,6 +41,7 @@ namespace WebService.Controllers
         public const string AddImageUrlTemplate = "{residentId}/Images/url";
 
         public const string GetPictureTemplate = "{residentId}/picture";
+        public const string AddTagTemplate = "{residentId}/tags";
         public const string GetByTagTemplate = "byTag/{tag}";
         public const string GetRandomElementFromPropertyTemplate = "byTag/{tag}/{propertyName}/random";
         public const string GetPropertyByTagTemplate = "byTag/{tag}/{propertyName}";
@@ -51,6 +52,8 @@ namespace WebService.Controllers
         public const string RemoveVideoTemplate = "{residentId}/Videos/{videoId}";
         public const string RemoveImageTemplate = "{residentId}/Images/{imageId}";
         public const string RemoveColorTemplate = "{residentId}/Colors";
+
+        public const string RemoveTagTemplate = "{residentId}/{tag}";
 
         #endregion FIELDS
 
@@ -202,6 +205,19 @@ namespace WebService.Controllers
 
             await DataService.AddItemToListProperty(residentObjectId, x => x.Colors, colorData);
             return StatusCode((int) HttpStatusCode.Created);
+        }
+
+        [HttpPost(AddTagTemplate)]
+        public async Task<IEnumerable<int>> AddTag(string residentId)
+        {
+            if (!ObjectId.TryParse(residentId, out var objectId))
+                throw new NotFoundException<Resident>(nameof(AModelWithID.Id), residentId);
+
+            var maxTag = await ((IResidentsService) DataService).GetHighestTagNumberAsync();
+            maxTag++;
+
+            await DataService.AddItemToListProperty(objectId, x => x.Tags, maxTag);
+            return await DataService.GetPropertyAsync(objectId, x => x.Tags) as IEnumerable<int>;
         }
 
         #endregion post (create)
@@ -401,6 +417,16 @@ namespace WebService.Controllers
 
             await ((IResidentsService) DataService)
                 .RemoveSubItemAsync(residentObjectId, x => x.Colors, color);
+        }
+
+        [Authorize(EUserType.SysAdmin, EUserType.Nurse)]
+        [HttpDelete(RemoveTagTemplate)]
+        public async Task RemoveTag(string residentId, int tag)
+        {
+            if (!ObjectId.TryParse(residentId, out var objectId))
+                throw new NotFoundException<Resident>(nameof(AModelWithID.Id), residentId);
+
+            await DataService.RemoveItemFromList(objectId, x => x.Tags, tag);
         }
 
         #endregion delete

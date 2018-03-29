@@ -1,54 +1,60 @@
 import {Injectable, resolveForwardRef} from '@angular/core';
-import { Http, HttpModule, Response } from '@angular/http';
+import {Http, HttpModule, Response} from '@angular/http';
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/catch';
-import { getBaseUrl } from '../app.module.browser';
-import { Resident } from '../models/resident';
+import {getBaseUrl} from '../app.module.browser';
+import {Resident} from '../models/resident';
 import {Station} from "../models/station";
-import { CustomErrorHandler } from './customErrorHandler';
+import {CustomErrorHandler} from './customErrorHandler';
 
 @Injectable()
 export class RestServiceService {
     [x: string]: any;
 
-    
-
-    static get restUrl() :string{
-        
-        return document.getElementsByTagName('base')[0].href;
+    url:string="";
+    get restUrl() :string{
+        if (this.url=="")
+            return document.getElementsByTagName('base')[0].href;
+        else
+            return this.url;
     }
-    constructor(private http: Http, private customErrorHandler: CustomErrorHandler) {}
+    set restUrl(val:string){
+        this.url = val;
+    }
+    constructor(private http: Http, private customErrorHandler: CustomErrorHandler) {
+    }
+
 
     /**
-    * Get all residents from database
-    * @returns {Resident} residents of type Resident or undefined
-    */
+     * Get all residents from database
+     * @returns {Resident} residents of type Resident or undefined
+     */
     getAllResidents() {
-            return new Promise<Resident[]>(resolve => {
-                this.http.get(this.restUrl + 'api/v1/residents').subscribe(response => {
+        return new Promise<Resident[]>(resolve => {
+            this.http.get(this.restUrl + 'api/v1/residents').subscribe(response => {
                     resolve(<Resident[]>response.json());
                 },
-                    error => {
-                        
-                        this.customErrorHandler.updateMessage(error);
-                        resolve(undefined);
-                        
-                    }
-                );
-            });
-        
+                error => {
+
+                    this.customErrorHandler.updateMessage(error);
+                    resolve(undefined);
+
+                }
+            );
+        });
+
     }
 
     /**
-    * get one resident and only the needed properties
-    * @param uniqueIdentifier unique id of resident
-    * @returns {Resident} one resident of type Resident with only the requested properties or undefined   
-    */
+     * get one resident and only the needed properties
+     * @param uniqueIdentifier unique id of resident
+     * @returns {Resident} one resident of type Resident with only the requested properties or undefined
+     */
     getResidentBasedOnId(uniqueIdentifier: string) {
         return new Promise<Resident>(resolve => {
             this.http.get(this.restUrl + 'api/v1/residents/' + uniqueIdentifier + '?properties=firstName&properties=lastName&properties=room&properties=birthday&properties=doctor').subscribe(response => {
-                resolve(<Resident>response.json());
-            },
+                    resolve(<Resident>response.json());
+                },
                 error => {
                     this.customErrorHandler.updateMessage(error);
                     resolve(undefined);
@@ -58,12 +64,11 @@ export class RestServiceService {
     }
 
 
-
     /**
-    * delete resident from database based on id
-    * @param uniqueIdentifier unique id of resident
-    * @returns message "Deleted" on succes or "Something went wrong" on error
-    */
+     * delete resident from database based on id
+     * @param uniqueIdentifier unique id of resident
+     * @returns message "Deleted" on succes or "Something went wrong" on error
+     */
 
     deleteResidentByUniqueId(uniqueIdentifier: string) {
         return new Promise(resolve => {
@@ -79,21 +84,21 @@ export class RestServiceService {
     }
 
     /**
-    * Edit resident in database based on Resident object with properties and only the properties that have been changed
-    * @param dataToUpdate Object Resident with all properties
-    * @param changedProperties properties != dataToUpdate
-    * @returns message "updated" on succes or "Could not update data!" on error.
-    */
+     * Edit resident in database based on Resident object with properties and only the properties that have been changed
+     * @param dataToUpdate Object Resident with all properties
+     * @param changedProperties properties != dataToUpdate
+     * @returns message "updated" on succes or "Could not update data!" on error.
+     */
     editResidentWithData(dataToUpdate: any, changedProperties: any) {
         console.log(dataToUpdate);
         let s: string = "";
         let url: string = "?properties=" + changedProperties[0];
-        for (var _i = 1; _i < changedProperties.length; _i++ ){
+        for (let _i = 1; _i < changedProperties.length; _i++) {
             url += "&properties=" + changedProperties[_i];
         }
 
         return new Promise(resolve => {
-            this.http.put(this.restUrl + 'api/v1/residents'+url, dataToUpdate).subscribe(response => {
+            this.http.put(this.restUrl + 'api/v1/residents' + url, dataToUpdate).subscribe(response => {
                 console.log("updated");
                 resolve();
             }, error => {
@@ -105,20 +110,61 @@ export class RestServiceService {
     }
 
     /**
-    * Add resident to database
-    * @param data Object resident with all saved properties
-    * @returns True or false based on succes and Console log Message "Saved resident to database" on succes or "Could not save resident to database" on error.
-    */
-    addResident(data: any){
+     * Add resident to database
+     * @param data Object resident with all saved properties
+     * @returns True or false based on succes and Console log Message "Saved resident to database" on succes or "Could not save resident to database" on error.
+     */
+    addResident(data: any) {
         console.log(data);
         return new Promise(resolve => {
-            this.http.post(this.restUrl + 'api/v1/residents', data).subscribe(response => {
+           this.http.post(this.restUrl + 'api/v1/residents', data).subscribe(response => {
                 console.log("Saved resident to database");
+                resolve(response.text());
+            }, error => {
+                console.log("Could not save resident to database!");
+                this.customErrorHandler.updateMessage(error);
+                resolve(undefined);
+                });
+        });
+    }
+
+    addProfilePic(uniqueIdentifier: any, picture: any) {
+        return new Promise(resolve => {
+            this.http.put(this.restUrl + 'api/v1/residents/' + uniqueIdentifier + "/picture", picture).subscribe(response => {
+                console.log("Saved residentimage to database");
                 resolve(true);
             }, error => {
                 console.log("Could not save resident to database!");
                 this.customErrorHandler.updateMessage(error);
                 resolve(false);
+            });
+        });
+    }
+
+    ////////
+    //TAGS//
+    ////////
+
+    addTagToResident(uniqueIdentifier: string) {
+        return new Promise<number[]>(resolve => {
+            this.http.post(this.restUrl + 'api/v1/residents/' + uniqueIdentifier + '/tags', null).subscribe(response => {
+                console.log("add tag");
+                resolve(<number[]>response.json());
+            }, error => {
+                this.customErrorHandler.updateMessage(error);
+                resolve(undefined);
+            });
+        })
+    }
+
+    deleteTagFromResident(uniqueIdentifier: string, uniqueTagId: string) {
+        return new Promise(resolve => {
+            this.http.delete(this.restUrl + 'api/v1/residents/' + uniqueIdentifier + "/" + uniqueTagId).subscribe(response => {
+                console.log(response);
+                resolve();
+            }, error => {
+                this.customErrorHandler.updateMessage(error);
+                resolve();
             });
         });
     }
@@ -136,7 +182,7 @@ export class RestServiceService {
      */
     addCorrectMediaToDatabase(uniqueIdentifier: any, media: any, addMedia: string) {
         return new Promise(resolve => {
-            this.http.post(this.restUrl + 'api/v1/residents/' + uniqueIdentifier + addMedia , media).subscribe(response => {
+            this.http.post(this.restUrl + 'api/v1/residents/' + uniqueIdentifier + addMedia, media).subscribe(response => {
                 resolve(true);
             }, error => {
                 this.customErrorHandler.updateMessage(error);
@@ -154,8 +200,8 @@ export class RestServiceService {
     getCorrectMediaOfResidentBasedOnId(uniqueIdentifier: string, type: string) {
         return new Promise<Resident[]>(resolve => {
             this.http.get(this.restUrl + 'api/v1/residents/' + uniqueIdentifier + type).subscribe(response => {
-                resolve(<Resident[]>response.json());
-            },
+                    resolve(<Resident[]>response.json());
+                },
                 error => {
                     this.customErrorHandler.updateMessage(error);
                     resolve(undefined);
@@ -163,7 +209,7 @@ export class RestServiceService {
             );
         });
     }
-    
+
     /**
      * delete resident based on uniqueid
      * @param uniqueIdentifier string: Resident id
@@ -186,18 +232,18 @@ export class RestServiceService {
     //LOCALISATION//
     ////////////////
 
-    async SaveStationToDatabase(station:Station){
+    async SaveStationToDatabase(station: Station) {
         return new Promise(resolve => {
 
-            this.http.post(this.restUrl+"api/v1/receivermodules",station).subscribe(response => {
-                    try{
+            this.http.post(this.restUrl + "api/v1/receivermodules", station).subscribe(response => {
+                    try {
                         resolve(true);
-                    }catch (e){
+                    } catch (e) {
                         resolve(false);
                     }
 
                 },
-                error =>{
+                error => {
                     console.log(error);
                     resolve(false);
                 }
@@ -205,18 +251,18 @@ export class RestServiceService {
         });
     }
 
-    async DeleteStation(mac:string){
+    async DeleteStation(mac: string) {
         return new Promise(resolve => {
 
-            this.http.delete(this.restUrl+"api/v1/receivermodules/"+mac).subscribe(response => {
-                    try{
+            this.http.delete(this.restUrl + "api/v1/receivermodules/" + mac).subscribe(response => {
+                    try {
                         resolve(true);
-                    }catch (e){
+                    } catch (e) {
                         resolve(false);
                     }
 
                 },
-                error =>{
+                error => {
                     console.log(error);
                     resolve(false);
                 }
@@ -236,16 +282,16 @@ export class RestServiceService {
         });
     }
 
-    LoadStations(parent:any){
-            if (parent.stations!=undefined)
-                parent.stations.clear();
-            if (parent.renderBuffer.buffer!=undefined)
-                parent.renderBuffer.buffer.clear();
-            if (parent.stationMacAdresses!=undefined)
-                parent.stationMacAdresses=[];
-            return new Promise(resolve => {
+    LoadStations(parent: any) {
+        if (parent.stations != undefined)
+            parent.stations.clear();
+        if (parent.renderBuffer.buffer != undefined)
+            parent.renderBuffer.buffer.clear();
+        if (parent.stationMacAdresses != undefined)
+            parent.stationMacAdresses = [];
+        return new Promise(resolve => {
 
-                this.http.get(this.restUrl+"api/v1/receivermodules").subscribe(response => {
+            this.http.get(this.restUrl + "api/v1/receivermodules").subscribe(response => {
 
                         let tryParse=<Array<any>>(response.json());
 
@@ -258,14 +304,15 @@ export class RestServiceService {
                                 parent.stationsIds.set(station.mac,station.id);
                             }
                         }
-                        resolve(true);
-                    },
-                    error =>{
-                        console.log("can't load stations");
-                        console.log(error);
-                        resolve(false);
                     }
-                )
-            });
+                    resolve(true);
+                },
+                error => {
+                    console.log("can't load stations");
+                    console.log(error);
+                    resolve(false);
+                }
+            )
+        });
     }
 }

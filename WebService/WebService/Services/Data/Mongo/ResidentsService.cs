@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Rewrite.Internal.UrlMatches;
 using Microsoft.Extensions.Configuration;
 using MongoDB.Bson;
 using MongoDB.Driver;
@@ -168,6 +169,26 @@ namespace WebService.Services.Data.Mongo
 
             // return only the asked property
             return propertyToSelect.Compile()(item);
+        }
+
+        public async Task<int> GetHighestTagNumberAsync()
+        {
+            var result = await MongoCollection
+                .AggregateAsync(PipelineDefinition<Resident, BsonDocument>.Create(
+                    // unwind creates for each tag a separate document
+                    new BsonDocument("$unwind", "$tags"),
+                    // group groups the maximums of the tags
+                    new BsonDocument("$group", new BsonDocument
+                    {
+                        {"_id" , "$_id"},
+                        {"max", new BsonDocument("$max", "$tags")}
+                    }),
+                    // sort sorts the maximums 
+                    new BsonDocument("$sort", new BsonDocument("max", -1)),
+                    // limit gets the first one (highest maximum)
+                    new BsonDocument("$limit", 1)));
+
+            return result.Single()["max"].AsInt32;
         }
 
         #endregion READ

@@ -1,5 +1,6 @@
 .side-nav li > a, .side-nav li > a > i.material-icons {
-    color: #fff;
+    color:#333;
+    font-weight: bold;
 }
 
 li:first-child {
@@ -13,12 +14,12 @@ li:first-child {
 }
 
 ul#slide-out.sidenav{
-    width: 240px !important;
+    width: 200px !important;
     z-index: -1;
 }
 
 ul.side-nav{
     background: #bbd2c5; /* fallback for old browsers */
-    background: -webkit-linear-gradient(to right, #bbd2c5, #536976); /* Chrome 10-25, Safari 5.1-6 */
-    background: linear-gradient(to right, #bbd2c5, #536976);
+    background: -webkit-linear-gradient(to right, #fefefe, #abbaab); /* Chrome 10-25, Safari 5.1-6 */
+    background: linear-gradient(to right, #fefefe, #abbaab);
 }

@@ -3721,7 +3721,7 @@ if (Vel) {
   var methods = {
     init: function (options) {
       var defaults = {
-        menuWidth: 240,
+        menuWidth: 200,
         edge: 'left',
         closeOnClick: false,
         draggable: true,
@@ -3736,7 +3736,7 @@ if (Vel) {
         var menu = $("#" + menuId);
 
         // Set to width
-        if (options.menuWidth != 300) {
+        if (options.menuWidth !== 200) {
           menu.css('width', options.menuWidth);
         }
 

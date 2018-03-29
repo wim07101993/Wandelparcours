@@ -11,6 +11,7 @@ declare var $: any;
   styleUrls: ['./upload.component.css']
 })
 export class UploadComponent implements OnInit {
+    localUrl: any[];
     id: string = this.route.snapshot.params['id'];
     @Input() type: string;
     fd: FormData;
@@ -23,24 +24,48 @@ export class UploadComponent implements OnInit {
 
     constructor(private restService: RestServiceService, private route: ActivatedRoute, private router: Router) {}
 
-    ngOnInit() {
-    }
+    ngOnInit() {}
 
     /**
      * Observer event if anything changes
      * @param event
      */
       onFileSelected(event: any) {
-          this.loading = "Upload"
-          this.selectedFile = <any>event.target.files;   
+          
+          //this.loading = "Upload";
+          
+          this.selectedFile = <any>event.target.files; 
+          
+          console.log(this.selectedFile.length);
+
+          for(let i = 0; i<this.selectedFile.length; i++){
+              if (event.target.files && event.target.files[i]) {
+                  let reader = new FileReader();
+                  reader.onload = (event: any) => {
+                      this.localUrl = event.target.result;
+                  };
+                  reader.readAsDataURL(event.target.files[i]);
+                  $('.preview').append('test');
+                 
+              }
+          }
+
+        
+          
+          
+            
+          //$('.preview').html('<img [src]="localUrl" *ngIf="localUrl" class="imgPlaceholder">');
+          
       }
 
     /**
-     * Upload selected file as formdata either to image or video depeping on this.selectefFile[index].type --> image or video
-     * Loop trough all selectedfiles
+     * 
+     * Upload selected file as formdata either to image or video depending on this.selectefFile[index].type --> image or video
+     * Loop through all selectedfiles
      * 
      */
-      async onUpload() {
+    
+          async onUpload() {
           for (const file in this.selectedFile) {
               const index = parseInt(file);
               if (!isNaN(index)) {
@@ -59,23 +84,19 @@ export class UploadComponent implements OnInit {
               
               }
               
-              
-
-              $("#add-picture").modal("close");
+              $("#addMedia").modal("close");
           
           }
+          
           //clear selected files
-          this.selectedFile = [];
+          this.selectedFile = null;
           if (this.check) {
-              $(".preview").empty();
+              this.selectedFile = null;
               this.reload.emit();
-              this.loading = "Uploaded!"
+              //this.loading = "Uploaded!"
           } else{
               this.router.navigate(["/error"]);
           }
-
-        $(".preview").html("<p>Momenteel geen bestanden geselecteerd</p>");
-
           
       }
       
@@ -85,9 +106,9 @@ export class UploadComponent implements OnInit {
          * Open modal in edit mode and fill modal with resident
          *
          */
-        addPhotoModal(){
-            $("#add-picture").modal();
-            $("#add-picture").modal("open");
+        addModal(){
+            $("#addMedia").modal();
+            $("#addMedia").modal("open");
         }
         
 }

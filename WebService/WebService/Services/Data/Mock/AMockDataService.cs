@@ -219,6 +219,12 @@ namespace WebService.Services.Data.Mock
 
         #region UPDATE
 
+        public Task RemoveItemFromList<TValue>(ObjectId id, Expression<Func<T, IEnumerable<TValue>>> popertyToRemoveItemFrom, TValue itemToRemove)
+        {
+            // TODO
+            throw new NotImplementedException();
+        }
+
         /// <inheritdoc cref="IDataService{T}.UpdateAsync" />
         /// <summary>
         /// Update updates the <see cref="T" /> with the id of the given <see cref="T" />.
