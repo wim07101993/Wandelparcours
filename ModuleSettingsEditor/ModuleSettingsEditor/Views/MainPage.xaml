@@ -36,8 +36,11 @@
             Grid.Row="1"
             HorizontalAlignment="Right"
             Orientation="Horizontal">
-            <Button Command="{Binding OpenCommand}" Content="Open" />
-            <Button Margin="10" Content="Save" />
+            <Button Content="Open" />
+            <Button
+                Margin="10"
+                Command="{Binding SaveCommand}"
+                Content="Save" />
         </StackPanel>
     </Grid>
 </Page>

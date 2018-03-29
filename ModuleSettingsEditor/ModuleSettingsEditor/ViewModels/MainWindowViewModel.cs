@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -53,20 +52,12 @@ namespace ModuleSettingsEditor.ViewModels
 
 
         private static IDictionary<string, object> CreatePropertiesDictionary(Settings settings)
-        {
-            var allProperties = typeof(Settings).GetProperties();
-
-            IEnumerable<PropertyInfo> browsableProperties = allProperties
-                .Where(x => x.HasAttribute<BrowsableAttribute>())
-                .ToList();
-
-            if (!browsableProperties.Any())
-                browsableProperties = allProperties;
-
-            return browsableProperties.ToDictionary(
-                keySelector: property => property.GetDisplayName(),
-                elementSelector: property => property.GetValue(settings));
-        }
+            => typeof(Settings)
+                .GetProperties()
+                .Where(x => x.IsBrowsable())
+                .ToDictionary(
+                    keySelector: property => property.GetDisplayName(),
+                    elementSelector: property => property.GetValue(settings));
 
         private static async Task<Settings> OpenSettingsFromFile(string fileName)
         {
@@ -83,9 +74,9 @@ namespace ModuleSettingsEditor.ViewModels
             }
         }
 
-        private static async Task SaveSettingsToFileAsync(string fileName, Settings settings)
+        private static async Task SaveSettingsToFileAsync( string fileName, Settings settings)
         {
-            var file = await ApplicationData.Current.LocalFolder.CreateFileAsync(fileName);
+            var file = await Windows.ApplicationModel.Package.Current.InstalledLocation.CreateFileAsync(fileName);
             var json = settings.Serialize();
 
             await FileIO.WriteTextAsync(file, json);
