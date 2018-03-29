@@ -17,8 +17,6 @@ namespace ModuleSettingsEditor.ViewModels
 {
     public class MainWindowViewModel : BindableBase
     {
-        private const string FileName = "settings.json";
-        private Settings _settings;
         private IDictionary<string, object> _properties;
 
 
@@ -26,21 +24,15 @@ namespace ModuleSettingsEditor.ViewModels
         {
             Settings = new Settings();
 
-            SaveCommand = new DelegateCommand(async () => await SaveSettingsToFileAsync(FileName, Settings));
+            SaveCommand = new DelegateCommand<IStorageFile>(async x => { await SaveSettingsToFileAsync(x, Settings); });
             OpenCommand = new DelegateCommand<IStorageFile>(async x => await OpenSettingsFromFile(x));
         }
 
 
         public Settings Settings
         {
-            get => _settings;
-            set
-            {
-                if (!SetProperty(ref _settings, value))
-                    return;
-
-                Properties = CreatePropertiesDictionary(Settings);
-            }
+            get => CreateSettingsFromDictionary(Properties);
+            set => Properties = CreateDictionaryFromSettings(value);
         }
 
         public IDictionary<string, object> Properties
@@ -53,13 +45,26 @@ namespace ModuleSettingsEditor.ViewModels
         public ICommand OpenCommand { get; }
 
 
-        private static IDictionary<string, object> CreatePropertiesDictionary(Settings settings)
+        private static IDictionary<string, object> CreateDictionaryFromSettings(Settings settings)
             => typeof(Settings)
                 .GetProperties()
                 .Where(x => x.IsBrowsable())
                 .ToDictionary(
                     keySelector: property => property.GetDisplayName(),
                     elementSelector: property => property.GetValue(settings));
+
+        private static Settings CreateSettingsFromDictionary(IDictionary<string, object> properties)
+        {
+            var settings = new Settings();
+
+            var settingsProperties = typeof(Settings).GetProperties();
+            foreach (var property in properties)
+                settingsProperties
+                    .FirstOrDefault(x => x.GetDisplayName() == property.Key)
+                    ?.SetValue(settings, property.Value);
+
+            return settings;
+        }
 
         private static async Task<Settings> OpenSettingsFromFile(IStorageFile file)
         {
@@ -87,9 +92,8 @@ namespace ModuleSettingsEditor.ViewModels
             return new Settings();
         }
 
-        private static async Task SaveSettingsToFileAsync(string fileName, Settings settings)
+        private static async Task SaveSettingsToFileAsync(IStorageFile file, Settings settings)
         {
-            var file = await Windows.ApplicationModel.Package.Current.InstalledLocation.CreateFileAsync(fileName);
             var json = settings.Serialize();
 
             await FileIO.WriteTextAsync(file, json);

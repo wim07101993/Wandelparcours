@@ -1,6 +1,7 @@
 ﻿// The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Windows.Input;
@@ -38,6 +39,31 @@ namespace ModuleSettingsEditor.Views
                 .GetProperties()
                 .Where(x => typeof(ICommand).IsAssignableFrom(x.PropertyType) &&
                             x.Name == nameof(IMainWindowViewModel.OpenCommand))
+                .Select(x => x.GetValue(DataContext))
+                .Cast<ICommand>()
+                .FirstOrDefault()
+                ?.Execute(file);
+        }
+
+        private async void OnSaveButtonClick(object sender, RoutedEventArgs e)
+        {
+            var picker = new FileSavePicker
+            {
+                SuggestedStartLocation = PickerLocationId.DocumentsLibrary,
+                FileTypeChoices = {{"Json bestand", new List<string> {".json"}}},
+                SuggestedFileName = "Settings"
+            };
+
+            var file = await picker.PickSaveFileAsync();
+
+            if (file == null)
+                return;
+
+            DataContext
+                .GetType()
+                .GetProperties()
+                .Where(x => typeof(ICommand).IsAssignableFrom(x.PropertyType) &&
+                            x.Name == nameof(IMainWindowViewModel.SaveCommand))
                 .Select(x => x.GetValue(DataContext))
                 .Cast<ICommand>()
                 .FirstOrDefault()
