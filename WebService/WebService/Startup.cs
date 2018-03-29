@@ -6,11 +6,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Serialization;
 using WebService.Helpers.Extensions;
 using WebService.Middleware;
-using WebService.Services.Authorization;
-using WebService.Services.Data;
-using WebService.Services.Data.Mongo;
-using WebService.Services.Logging;
-using WebService.Services.Randomizer;
 
 namespace WebService
 {
