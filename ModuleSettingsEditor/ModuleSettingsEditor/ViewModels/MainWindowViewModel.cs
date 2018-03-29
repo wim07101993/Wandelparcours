@@ -6,10 +6,12 @@ using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Windows.Storage;
+using Windows.UI.Popups;
 using ModuleSettingsEditor.Helpers.Extensions;
 using ModuleSettingsEditor.Helpers.Mvvm;
 using ModuleSettingsEditor.Helpers.Mvvm.Commands;
 using ModuleSettingsEditor.Models;
+using Newtonsoft.Json;
 
 namespace ModuleSettingsEditor.ViewModels
 {
@@ -25,7 +27,7 @@ namespace ModuleSettingsEditor.ViewModels
             Settings = new Settings();
 
             SaveCommand = new DelegateCommand(async () => await SaveSettingsToFileAsync(FileName, Settings));
-            OpenCommand = new DelegateCommand<string>(async x => await OpenSettingsFromFile(x));
+            OpenCommand = new DelegateCommand<IStorageFile>(async x => await OpenSettingsFromFile(x));
         }
 
 
@@ -59,22 +61,33 @@ namespace ModuleSettingsEditor.ViewModels
                     keySelector: property => property.GetDisplayName(),
                     elementSelector: property => property.GetValue(settings));
 
-        private static async Task<Settings> OpenSettingsFromFile(string fileName)
+        private static async Task<Settings> OpenSettingsFromFile(IStorageFile file)
         {
             try
             {
-                var file = await ApplicationData.Current.LocalFolder.GetFileAsync(fileName);
                 var json = await FileIO.ReadTextAsync(file);
 
                 return json.Deserialize<Settings>();
             }
             catch (FileNotFoundException)
             {
-                return new Settings();
+                var dialog = new MessageDialog(
+                    "Het geselecteerde bestand kon niet gevonden worden.",
+                    "Bestand niet gevonden");
+                await dialog.ShowAsync();
             }
+            catch (JsonException)
+            {
+                var dialog = new MessageDialog(
+                    "De inhoud van het bestand is van een verkeerd formaat.",
+                    "Fout formaat");
+                await dialog.ShowAsync();
+            }
+
+            return new Settings();
         }
 
-        private static async Task SaveSettingsToFileAsync( string fileName, Settings settings)
+        private static async Task SaveSettingsToFileAsync(string fileName, Settings settings)
         {
             var file = await Windows.ApplicationModel.Package.Current.InstalledLocation.CreateFileAsync(fileName);
             var json = settings.Serialize();
