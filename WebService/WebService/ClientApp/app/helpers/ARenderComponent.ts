@@ -11,7 +11,7 @@ export abstract class ARenderComponent {
     renderBuffer: RenderBuffer;
     adMarker: any;
     mouseEvents: MouseEvents;
-    framerate = 5;
+    framerate = 60;
     zoomFactor: number = 1;
     markerscale=25;
     markersize=1;

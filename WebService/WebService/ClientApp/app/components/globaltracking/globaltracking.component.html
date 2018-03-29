@@ -1,2 +1,32 @@
-<div #myCanvas id="map">
+<div style="position:relative">
+    <div id="mapButtonHolder">
+        <a id="zoomInMap" class="btn-floating waves-effect waves-light green" (click)="ZoomIn()">
+            <i class="material-icons"> zoom_in</i>
+        </a>
+        <br>
+        <a id="zoomOutMap" class="btn-floating waves-effect waves-light orange" (click)="ZoomOut()">
+            <i class="material-icons"> zoom_out</i>
+        </a>
+    </div>
+    <div #myCanvas id="map">
+    </div>
 </div>
+
+<div>
+    <ul *ngFor="let resident of aResidents">
+        <li>
+            {{resident.firstName}} {{resident.lastName}}
+        </li>
+    </ul>
+
+</div>
+
+<div id="residentModal" class="modal">
+    <div class="modal-content">
+      <h4>{{currentResident.firstName}} {{currentResident.lastName}}</h4>
+      <img class="residentImage" src="/api/v1/residents/{{currentResident.id}}/picture" alt="Geen foto gevonden" honError="this.onerror=null;this.src='/images/resident.jpg';"/>
+    </div>
+    <div class="modal-footer">
+    </div>
+  </div>
+          

@@ -7,6 +7,7 @@ import {ARenderComponent} from "../../helpers/ARenderComponent"
 import { Http } from '@angular/http';
 import { Resident } from "../../models/resident";
 import {getBaseUrl} from "../../app.module.browser";
+declare var $:any;
 @Component({
     selector: 'app-globaltracking',
     templateUrl: './globaltracking.component.html',
@@ -15,8 +16,10 @@ import {getBaseUrl} from "../../app.module.browser";
 export class GlobaltrackingComponent extends  ARenderComponent  implements OnInit {
     residents=new Map<string,Resident>();
     currentResident:Resident=new Resident();
+    aResidents:Resident[]=new Array();
     async LoadComponent(): Promise<boolean> {
         try{
+            
             await this.renderer.LoadImages(this.markerUrl, "marker");
             this.renderBuffer.cursorStation = this.renderer.CreateSprite(Sprites.marker);
             this.renderBuffer.cursorStation.width = 0;
@@ -43,18 +46,23 @@ export class GlobaltrackingComponent extends  ARenderComponent  implements OnIni
         super.ngOnInit();
         this.loadResidents();
         this.markerscale=50;
+        setInterval(() => {
+             this.loadResidents();
+        }, 5000);
   }
   
   async Tick(){
         super.Tick();
         await this.RecalculateResidents();
-        await this.loadResidents();
+        
   }
 
   async spriteClicked(key:string){
     let resident= this.residents.get(key);
     if(resident!=undefined){
         this.currentResident=resident;
+        $('.modal').modal();
+        $('#residentModal').modal("open");
     }
       //alert("clicked");
   }
@@ -73,8 +81,10 @@ export class GlobaltrackingComponent extends  ARenderComponent  implements OnIni
                //TODO show material notify
             
            }else{
+               this.aResidents=[];
             loaded.forEach((resident:Resident)=>{
                 this.residents.set(resident.id,resident);
+                this.aResidents.push(resident);
             });
 
            }
@@ -88,7 +98,7 @@ export class GlobaltrackingComponent extends  ARenderComponent  implements OnIni
    async RecalculateResidents() {
     let refreshNeeded = false;
     this.residents.forEach((resident: Resident, key: string, map: any) => {
-        let width = this.width / this.markerscale;
+        let width = this.width / this.markerscale * this.zoomFactor;
         this.markersize = width;
         let position = this.mouseEvents.CalculateStationPosOnImage(resident.lastRecordedPosition);
         let x = position.x - (width / 2);
