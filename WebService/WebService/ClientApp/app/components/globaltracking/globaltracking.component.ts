@@ -14,7 +14,7 @@ import { Resident } from "../../models/resident";
 })
 export class GlobaltrackingComponent extends  ARenderComponent  implements OnInit {
     residents=new Map<string,Resident>();
-
+    currentResident:Resident=new Resident();
     async LoadComponent(): Promise<boolean> {
         try{
             await this.renderer.LoadImages(this.markerUrl, "marker");
@@ -51,7 +51,11 @@ export class GlobaltrackingComponent extends  ARenderComponent  implements OnIni
         await this.loadResidents();
   }
 
-  async spriteClicked(){
+  async spriteClicked(key:string){
+    let resident= this.residents.get(key);
+    if(resident!=undefined){
+        this.currentResident=resident;
+    }
       //alert("clicked");
   }
 
