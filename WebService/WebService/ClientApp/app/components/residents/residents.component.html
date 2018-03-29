@@ -23,9 +23,6 @@
         
         <div id="content" class="card">
                 <img onError="this.onerror=null;this.src='/images/resident.jpg';" style="cursor:pointer" src="http://localhost:5000/api/v1/residents/{{resident.id}}/picture" class="z-depth-2" (click)="navigateTo(resident)"/>
-       
-            <div class="card-content">
-                
                 <table>
                     <tr>
                         <td colspan="2" class="cardviewtd center">{{resident.firstName}}, {{resident.lastName}}</td>
