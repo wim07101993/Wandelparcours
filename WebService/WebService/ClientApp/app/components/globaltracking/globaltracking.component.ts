@@ -4,9 +4,9 @@ import {RenderBuffer,} from "../../helpers/RenderBuffer"
 import {Station} from "../../models/station"
 import {Sprites} from "../../helpers/Sprites"
 import {ARenderComponent} from "../../helpers/ARenderComponent"
-import {getBaseUrl} from "../../app.module.browser";
 import { Http } from '@angular/http';
 import { Resident } from "../../models/resident";
+import {getBaseUrl} from "../../app.module.browser";
 @Component({
     selector: 'app-globaltracking',
     templateUrl: './globaltracking.component.html',

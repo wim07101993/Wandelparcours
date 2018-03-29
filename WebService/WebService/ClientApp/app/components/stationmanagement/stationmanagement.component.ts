@@ -4,7 +4,7 @@ import {Station} from "../../models/station"
 import {Sprites} from "../../helpers/Sprites"
 import {RestServiceService} from "../../service/rest-service.service"
 import {ARenderComponent} from "../../helpers/ARenderComponent"
-
+import {getBaseUrl} from "../../app.module.browser";
 declare var $: any;
 declare var Materialize: any;
 
@@ -25,17 +25,10 @@ export class StationmanagementComponent extends ARenderComponent implements OnIn
     stations = new Map<string, Point>();
     stationsIds = new Map<string, string>();
     stationMacAdresses: string[] = [];
-<<<<<<< HEAD
-    markerscale = 25;
-
-    markersize: number;
-
-=======
  
     rawstations:any;
     editing=false;
     editmac:string;
->>>>>>> location_tracking
     /**
      * Creating stationmanagement page.
      * @param {RestServiceService} service  - A constructer injected service holding the service for rest connection
@@ -44,13 +37,6 @@ export class StationmanagementComponent extends ARenderComponent implements OnIn
         super();
     }
 
-<<<<<<< HEAD
-
-    async ngOnInit() {
-
-        super.ngOnInit();
-
-=======
     get markerUrl(){
         return getBaseUrl() + "images/station.png";
     }
@@ -59,7 +45,6 @@ export class StationmanagementComponent extends ARenderComponent implements OnIn
         super.ngOnInit();
         await this.service.LoadStations(this);
         
->>>>>>> location_tracking
     }
 
     async Tick() {

@@ -13,7 +13,8 @@ export abstract class ARenderComponent {
     mouseEvents: MouseEvents;
     framerate = 5;
     zoomFactor: number = 1;
-
+    markerscale=25;
+    markersize=1;
     public async abstract LoadComponent(): Promise<boolean>;
 
     get BluePrintUrl() {
