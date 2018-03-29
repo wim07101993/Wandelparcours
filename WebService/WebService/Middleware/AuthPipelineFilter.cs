@@ -39,14 +39,11 @@ namespace WebService.Middleware
                 return;
             }
 
-            var authorizeAttribute = (AuthorizeAttribute) method
+            var allowedUserTypes = method
                 .GetCustomAttributes()
-                .FirstOrDefault(x => x is AuthorizeAttribute);
-
-            if (authorizeAttribute == null)
-                throw new NotFoundException();
-
-            var allowedUserTypes = authorizeAttribute.AllowedUsers;
+                .Where(x => x is AuthorizeAttribute)
+                .Select(x => ((AuthorizeAttribute) x).AllowedUsers)
+                .FirstOrDefault();
 
             if (EnumerableExtensions.IsNullOrEmpty(allowedUserTypes))
             {

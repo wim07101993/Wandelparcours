@@ -105,6 +105,8 @@ namespace WebService.Controllers
 
         #region METHODS
 
+        #region auth
+
         private async Task<ObjectId> CanWriteDataToResidentAsync(string residentId)
         {
             if (!ObjectId.TryParse(residentId, out var residentObjectId))
@@ -169,6 +171,7 @@ namespace WebService.Controllers
                 : throw new NotFoundException<Resident>(nameof(IModelWithID.Id), residentId);
         }
 
+
         private async Task<bool> CanWriteDataToResidentAsync(int tag)
         {
             var properties = new Expression<Func<User, object>>[] {x => x.Residents, x => x.UserType, x => x.Group};
@@ -204,6 +207,9 @@ namespace WebService.Controllers
                     return false;
             }
         }
+
+        #endregion auth
+
 
         #region post (create)
 
@@ -293,10 +299,11 @@ namespace WebService.Controllers
             maxTag++;
 
             await DataService.AddItemToListProperty(objectId, x => x.Tags, maxTag);
-            return await DataService.GetPropertyAsync(objectId, x => x.Tags) as IEnumerable<int>;
+            return await DataService.GetPropertyAsync(objectId, x => x.Tags);
         }
 
         #endregion post (create)
+
 
         #region get (read)
 
@@ -418,6 +425,7 @@ namespace WebService.Controllers
 
         #endregion get (read)
 
+
         #region put (update)
 
         [Authorize(EUserType.SysAdmin, EUserType.Nurse, EUserType.User)]
@@ -454,6 +462,7 @@ namespace WebService.Controllers
 
         #endregion put (update)
 
+        
         #region delete
 
         [Authorize(EUserType.SysAdmin, EUserType.Nurse)]
@@ -477,18 +486,17 @@ namespace WebService.Controllers
 
         public async Task RemoveMediaAsync(string residentId, string mediaId, EMediaType mediaType)
         {
-            // parse the resident id
-            if (!ObjectId.TryParse(residentId, out var residentObjectId))
-                throw new NotFoundException<Resident>(nameof(IModelWithID.Id), residentId);
-
             // parse the media id
             if (!ObjectId.TryParse(mediaId, out var mediaObjectId))
                 throw new ElementNotFoundException<Resident>(mediaType.ToString(), "media");
 
+            var residentObjectId = await CanWriteDataToResidentAsync(residentId);
+            
             // remove the media from the database
             await ((IResidentsService) DataService).RemoveMediaAsync(residentObjectId, mediaObjectId, mediaType);
         }
 
+        
         [Authorize(EUserType.SysAdmin, EUserType.Nurse, EUserType.Module, EUserType.User)]
         [HttpDelete(RemoveColorTemplate)]
         public async Task RemoveColorAsync(string residentId, [FromBody] Color color)
@@ -503,9 +511,8 @@ namespace WebService.Controllers
         [HttpDelete(RemoveTagTemplate)]
         public async Task RemoveTag(string residentId, int tag)
         {
-            if (!ObjectId.TryParse(residentId, out var objectId))
-                throw new NotFoundException<Resident>(nameof(AModelWithID.Id), residentId);
-
+            var objectId = await CanWriteDataToResidentAsync(residentId);
+            
             await DataService.RemoveItemFromList(objectId, x => x.Tags, tag);
         }
 
