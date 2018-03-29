@@ -331,14 +331,18 @@ namespace WebService.Controllers
 
         [Authorize(EUserType.SysAdmin, EUserType.Nurse, EUserType.Module, EUserType.User)]
         [HttpGet(GetPictureTemplate)]
-        public async Task<FileContentResult> GetPictureAsync(string residentId)
+        public async Task<FileResult> GetPictureAsync(string residentId)
         {
             var objectId = await CanGetDataFromResidentAsync(residentId);
 
             var picture = await DataService.GetPropertyAsync(objectId, x => x.Picture);
 
             return picture == null
+<<<<<<< HEAD
                 ? throw new NotFoundException<Resident>($"Resident with id {residentId} has no picture")
+=======
+                ?(FileResult) File("/images/resident.jpg", "image/jpg")
+>>>>>>> KB-Sprint3-
                 : File(picture, "image/jpg");
         }
 

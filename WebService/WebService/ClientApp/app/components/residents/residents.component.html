@@ -21,7 +21,9 @@
 <div class="row" *ngIf="view=='card-view'">
     <div class="col s12 m6 l4" *ngFor="let resident of residents | filter:term">
         
+        <!-- resident's perosnal content on cradview -->
         <div id="content" class="card">
+<<<<<<< HEAD
             <img onError="this.onerror=null;this.src='/images/resident.jpg';" style="cursor:pointer"
                  src="http://localhost:5000/api/v1/residents/{{resident.id}}/picture" class="ribbon"
                  (click)="navigateTo(resident)"/>
@@ -29,6 +31,11 @@
             <div class="card-content">
                 
                 <table>
+=======
+            <img onError="this.onerror=null;this.src='/images/resident.jpg';" style="cursor:pointer" src="http://localhost:5000/api/v1/residents/{{resident.id}}/picture" class="z-depth-2" (click)="navigateTo(resident)"/>
+            <table>
+           
+>>>>>>> KB-Sprint3-
                     <tr>
                         <td colspan="2" class="cardviewtd center">{{resident.firstName}}, {{resident.lastName}}</td>
                     </tr>
@@ -48,27 +55,30 @@
                         <th class="cardviewth right">tel:</th>
                         <td class="cardviewtd">{{resident.doctor.phoneNumber}}</td>
                     </tr>
-                </table>
-            </div>
-            <div class="crd">
-                <div class="row">
-                    <div class="col s4 center">
-                        <i class="material-icons blue-text pointer" (click)="openEditModal(resident)">edit</i>
-                    </div>
-                    <div class="col s4 center">
-                        <i class="material-icons orange-text pointer" (click)="navigateTo(resident)">portrait</i>
-                    </div>
-                    <div class="col s4 center">
-                        <i class="material-icons red-text pointer" (click)="openModal(resident)">delete</i>
-                    </div>
+             
+            </table>
+
+            <!-- action buttons per resident-card -->
+            <div class="row">
+                <div class="col s4 center">
+                    <i class="material-icons blue-text pointer" (click)="openEditModal(resident)">edit</i>
+                </div>
+                <div class="col s4 center">
+                    <i class="material-icons orange-text pointer" (click)="navigateTo(resident)">portrait</i>
+                </div>
+                <div class="col s4 center">
+                    <i class="material-icons red-text pointer" (click)="openModal(resident)">delete</i>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+    
+
 <!--Switch to listView-->
 <div class="row" *ngIf="view=='list-view'">
-    <table class="striped">
+    <table class="striped responsive-table">
         <thead class="color-grad">
         <tr>
             <th class="myth">Voornaam</th>
