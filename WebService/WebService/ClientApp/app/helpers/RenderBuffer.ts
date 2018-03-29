@@ -1,6 +1,5 @@
 
-import {StationmanagementComponent} from "./stationmanagement.component"
-
+import  {ARenderComponent} from "./ARenderComponent"
 
 import * as PIXI from 'pixi.js'
 import Sprite = PIXI.Sprite;
@@ -8,17 +7,17 @@ import {Sprites} from "./Sprites";
 
 /** Class to buffer the elements wich need to get rendered */
 export class RenderBuffer{
-    station:StationmanagementComponent;
+    aRenderComponent:ARenderComponent;
     map:Sprite;
     cursorStation:Sprite;
     buffer=new Map<string, Sprite>();
 
     /**
      * Creating RenderBuffer object.
-     * @param {StationmanagementComponent} station - This is the parent variable holding all the needed variables
+     * @param aRenderComponent
      */
-    constructor(station:StationmanagementComponent){
-        this.station=station;
+    constructor(aRenderComponent:ARenderComponent){
+        this.aRenderComponent=aRenderComponent;
      
     }
 
@@ -30,7 +29,7 @@ export class RenderBuffer{
      * @return {Sprite} sprite- the sprite for this id alse gets returned back
      */
     AddSpriteToBufferById(id:string,key:string){
-        let sprite=this.station.renderer.CreateSprite(key);
+        let sprite=this.aRenderComponent.renderer.CreateSprite(key);
         this.buffer.set(id,sprite);
         return sprite;
     }

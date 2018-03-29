@@ -1,4 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
+import {Renderer} from "../../helpers/Renderer"
+import {RenderBuffer,} from "../../helpers/RenderBuffer"
+import {Station} from "../../models/station"
+import {Sprites} from "../../helpers/Sprites"
 
 @Component({
   selector: 'app-globaltracking',
@@ -6,10 +10,16 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./globaltracking.component.css']
 })
 export class GlobaltrackingComponent implements OnInit {
-
+    
   constructor() { }
 
-  ngOnInit() {
+  async ngOnInit() {
+      
   }
 
+
+    /*
+    *   this function loads the image of the building
+    */
+  
 }

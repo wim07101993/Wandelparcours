@@ -3,10 +3,9 @@ import {TestBed, inject} from '@angular/core/testing';
 import {RestServiceService} from './rest-service.service';
 import {StationmanagementComponent} from "../components/stationmanagement/stationmanagement.component";
 import {Http, HttpModule, Response} from '@angular/http';
-import {RenderBuffer} from "../components/stationmanagement/RenderBuffer";
-import {getBaseUrl} from "../app.module.browser";
-import {MouseEvents} from "../components/stationmanagement/MouseEvents";
-import {Renderer} from "../components/stationmanagement/Renderer";
+
+
+import {RenderBuffer,} from "../helpers/RenderBuffer"
 import {Station} from "../models/station";
 
 describe('RestServiceService', () => {

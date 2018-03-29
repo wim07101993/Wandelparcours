@@ -1,12 +1,12 @@
-import {async, ComponentFixture, inject, TestBed} from '@angular/core/testing';
-import {FormsModule} from '@angular/forms';
+import { inject, TestBed} from '@angular/core/testing';
+
 import {StationmanagementComponent} from './stationmanagement.component';
 import {RestServiceService} from "../../service/rest-service.service";
 import {HttpModule} from "@angular/http";
-import {RenderBuffer} from "./RenderBuffer";
+
+import {RenderBuffer,} from "../../helpers/RenderBuffer"
 import {Station} from "../../models/station";
-import {Point} from "./MouseEvents";
-import {StaticableNode} from "ts-simple-ast";
+
 
 describe('StationmanagementComponent', () => {
     let stationManagemet: StationmanagementComponent;
