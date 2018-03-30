@@ -1,3 +1,4 @@
+var fs = require('fs');
 var app = require('express')();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
@@ -13,6 +14,18 @@ http.listen(3000, function(){
 io.on('connection', function(socket){
     console.log("connected");
     socket.on('time', function(msg){
-        console.log('message: ' + msg);
+        //Object.keys(msg).forEach(function (value) { console.log('message: ' +  ( value, msg[value]));
+        //});
+        var log = "";
+        for(var key in msg){
+            if(msg.hasOwnProperty(key)){
+                log += (key + " -> " + msg[key])+"; ";
+            }
+        }
+        console.log(log);
     });
+    fs.readFile("../Client/Client.js", "utf8", function(err, data) {
+        socket.emit('test2', data);
+    });
+    socket.emit('test2', "Hier komt script");
 });
