@@ -7,8 +7,10 @@ using Microsoft.Win32;
 using ModuleSettingsEditor.WPF.Models;
 using ModuleSettingsEditor.WPF.Services;
 using ModuleSettingsEditor.WPF.ViewModelInterfaces;
+using ModuleSettingsEditor.WPF.Views;
 using Prism.Commands;
 using Prism.Mvvm;
+using Prism.Unity;
 
 namespace ModuleSettingsEditor.WPF.ViewModels
 {
@@ -30,7 +32,7 @@ namespace ModuleSettingsEditor.WPF.ViewModels
             _fileService = fileService;
             Settings = new Settings();
 
-            OpenCommand = new DelegateCommand(async () =>await OpenSettings());
+            OpenCommand = new DelegateCommand(async () => await OpenSettings());
             SaveCommand = new DelegateCommand(async () => await SaveSettings());
 
             ImportCommand = new DelegateCommand(async () => await ImportSettings());
@@ -80,15 +82,10 @@ namespace ModuleSettingsEditor.WPF.ViewModels
                 Multiselect = false
             };
 
-            if (dialog.ShowDialog() != true)
+            if (dialog.ShowDialog() != true || string.IsNullOrWhiteSpace(dialog.FileName))
                 return;
 
-            var path = dialog.FileName;
-
-            if (string.IsNullOrWhiteSpace(path))
-                return;
-
-            var openedSettings = await _fileService.OpenAsync(path);
+            var openedSettings = await _fileService.OpenAsync(dialog.FileName);
             if (openedSettings != null)
                 Settings = openedSettings;
         }
@@ -103,23 +100,34 @@ namespace ModuleSettingsEditor.WPF.ViewModels
                 InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
             };
 
-            if (dialog.ShowDialog() != true)
+            if (dialog.ShowDialog() != true || string.IsNullOrWhiteSpace(dialog.FileName))
                 return;
 
-            var path = dialog.FileName;
-            if (string.IsNullOrWhiteSpace(path))
-                return;
-
-            await _fileService.SaveAsync(Settings, path);
+            await _fileService.SaveAsync(Settings, dialog.FileName);
         }
 
         public async Task ImportSettings()
         {
+            var viewmodel = App.Bootstrapper.Container.TryResolve<ISelectDriveWindowViewModel>();
+            var window = new SelectDriveWindow(viewmodel);
 
+            window.ShowDialog();
+            if (!viewmodel.Ok || string.IsNullOrWhiteSpace(viewmodel.SelectedDrive))
+                return;
+
+            await _fileService.ImportAsync(viewmodel.SelectedDrive);
         }
 
         public async Task ExportSettings()
         {
+            var viewmodel = App.Bootstrapper.Container.TryResolve<ISelectDriveWindowViewModel>();
+            var window = new SelectDriveWindow(viewmodel);
+
+            window.ShowDialog();
+            if (!viewmodel.Ok || string.IsNullOrWhiteSpace(viewmodel.SelectedDrive))
+                return;
+
+            await _fileService.ExportAsync(Settings, viewmodel.SelectedDrive);
         }
 
         #endregion METHODS

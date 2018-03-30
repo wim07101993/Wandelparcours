@@ -11,7 +11,7 @@ namespace ModuleSettingsEditor.WPF.Services
 {
     public class FileService<T> : IFileService<T>
     {
-        private const string PiFilePath = "://boot/";
+        private const string PiFilePath = "boot/";
         private const string Extension = ".json";
 
 
@@ -140,7 +140,7 @@ namespace ModuleSettingsEditor.WPF.Services
         {
             try
             {
-                await SaveAsync(value, $"{drive}{PiFilePath}{typeof(T).Name}{Extension}");
+                await WriteFileAsync(value, $"{drive}{PiFilePath}{typeof(T).Name}{Extension}");
             }
             catch (FileNotFoundException)
             {
@@ -148,7 +148,7 @@ namespace ModuleSettingsEditor.WPF.Services
             catch (DirectoryNotFoundException)
             {
                 MessageBox.Show(
-                    "Het opgegeven station bevat niet de nodige mappen van eem Pi",
+                    "Het opgegeven station bevat niet de nodige mappen van een Pi",
                     "Map niet gevonden",
                     MessageBoxButton.OK,
                     MessageBoxImage.Information);
