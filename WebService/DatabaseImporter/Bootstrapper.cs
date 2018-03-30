@@ -1,11 +1,13 @@
 ﻿using System.Windows;
+using DatabaseImporter.ViewModelInterfaces;
+using DatabaseImporter.ViewModels;
 using Microsoft.Practices.ServiceLocation;
 using Microsoft.Practices.Unity;
 using Prism.Unity;
 
 namespace DatabaseImporter
 {
-    class Bootstrapper : UnityBootstrapper
+    public class Bootstrapper : UnityBootstrapper
     {
         protected override DependencyObject CreateShell()
         {
@@ -21,10 +23,10 @@ namespace DatabaseImporter
         {
             ServiceLocator.SetLocatorProvider(() => new UnityServiceLocator(Container));
 
-            //Container
+            Container
             //    .RegisterType<IFileService<Settings>, FileService<Settings>>(new ContainerControlledLifetimeManager())
             //    .RegisterType<ISelectDriveWindowViewModel, SelectDriveWindowViewModel>()
-            //    .RegisterType<IMainWindowViewModel, MainWindowViewModel>();
+                .RegisterType<IMainWindowViewModel, MainWindowViewModel>();
 
 
             base.ConfigureContainer();
