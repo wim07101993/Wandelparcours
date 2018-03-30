@@ -112,6 +112,8 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Helpers\Extensions\ObjectExtensions.cs" />
+    <Compile Include="Helpers\Extensions\StringExtensions.cs" />
     <Compile Include="Helpers\JsonConverters\ObjectIdConverter.cs" />
     <Compile Include="Models\MongoModels\Bases\AModelWithObjectID.cs" />
     <Compile Include="Models\MongoModels\Bases\IModelWithObjectID.cs" />
@@ -126,6 +128,8 @@
     <Compile Include="Models\MongoModels\ReceiverModule.cs" />
     <Compile Include="Models\MongoModels\Resident.cs" />
     <Compile Include="Models\MongoModels\User.cs" />
+    <Compile Include="Services\FileService\FileService.cs" />
+    <Compile Include="Services\FileService\IFileService.cs" />
     <Compile Include="ViewModelInterfaces\IInputViewModel.cs" />
     <Compile Include="ViewModelInterfaces\IOutputViewModel.cs" />
     <Compile Include="ViewModels\InputViewModel.cs" />
@@ -196,7 +200,6 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Services\" />
     <Folder Include="Views\Styles\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
