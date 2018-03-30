@@ -1,4 +1,4 @@
-import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
+import {Component, ElementRef, OnInit, ViewChild, Input} from '@angular/core';
 import {Renderer} from "../../helpers/Renderer"
 import {RenderBuffer,} from "../../helpers/RenderBuffer"
 import {Station} from "../../models/station"
@@ -17,6 +17,7 @@ export class GlobaltrackingComponent extends  ARenderComponent  implements OnIni
     residents=new Map<string,Resident>();
     currentResident:Resident=new Resident();
     aResidents:Resident[]=new Array();
+    @Input() id: string;
     async LoadComponent(): Promise<boolean> {
         try{
             
@@ -38,8 +39,10 @@ export class GlobaltrackingComponent extends  ARenderComponent  implements OnIni
         return getBaseUrl() + "images/resident.png";
     }
     
-  constructor(private http:Http) {
+  constructor(private http:Http,protected elRef:ElementRef) {
       super();
+      this.hostElement=elRef;
+      
   }
 
   async ngOnInit() {
@@ -49,21 +52,30 @@ export class GlobaltrackingComponent extends  ARenderComponent  implements OnIni
         setInterval(() => {
              this.loadResidents();
         }, 5000);
+        console.log(this.id);
   }
   
   async Tick(){
         super.Tick();
         await this.RecalculateResidents();
         
+        
   }
 
-  async spriteClicked(key:string){
-    let resident= this.residents.get(key);
-    if(resident!=undefined){
-        this.currentResident=resident;
-        $('.modal').modal();
-        $('#residentModal').modal("open");
-    }
+  async spriteClicked(id?: string) {
+      if(id==undefined)
+        return false
+      try {
+          let resident= this.residents.get(id);
+          if(resident!=undefined){
+              this.currentResident=resident;
+              $('.modal').modal();
+              $('#residentModal').modal("open");
+          }
+          return true;
+      } catch (error) {
+          return false;
+      }
       //alert("clicked");
   }
 

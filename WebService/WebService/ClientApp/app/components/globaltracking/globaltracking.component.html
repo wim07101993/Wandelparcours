@@ -12,16 +12,16 @@
     </div>
 </div>
 
-<div>
-    <ul *ngFor="let resident of aResidents">
-        <li>
+<div id="sidebar" *ngIf="id==undefined">
+    <ul >
+        <li *ngFor="let resident of aResidents">
             {{resident.firstName}} {{resident.lastName}}
         </li>
     </ul>
 
 </div>
 
-<div id="residentModal" class="modal">
+<div id="residentModal" class="modal" *ngIf="id==undefined">
     <div class="modal-content">
       <h4>{{currentResident.firstName}} {{currentResident.lastName}}</h4>
       <img class="residentImage" src="/api/v1/residents/{{currentResident.id}}/picture" alt="Geen foto gevonden" honError="this.onerror=null;this.src='/images/resident.jpg';"/>

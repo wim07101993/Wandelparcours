@@ -11,14 +11,22 @@ export abstract class ARenderComponent {
     renderBuffer: RenderBuffer;
     adMarker: any;
     mouseEvents: MouseEvents;
-    framerate = 60;
+    framerate = 5;
     zoomFactor: number = 1;
     markerscale=25;
     markersize=1;
+    hostElement:ElementRef
     public async abstract LoadComponent(): Promise<boolean>;
+    public async abstract spriteClicked(id?: string): Promise<boolean>;
+
+    constructor(){
+
+        //console.log(elRef);
+    }
 
     get BluePrintUrl() {
         return getBaseUrl() + "images/blueprint.jpg";
+
     }
 
     /**
@@ -43,6 +51,7 @@ export abstract class ARenderComponent {
             this.Tick()
         }, 1000 / this.framerate);
     }
+
 
     async LoadMap() {
 
