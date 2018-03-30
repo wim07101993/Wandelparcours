@@ -49,3 +49,5 @@ kiosk/node_modules/
 ModuleSettingsEditor/.vs/
 ModuleSettingsEditor/ModuleSettingsEditor/bin/
 ModuleSettingsEditor/ModuleSettingsEditor/obj/
+ModuleSettingsEditor/ModuleSettingsEditor.WPF/bin/
+ModuleSettingsEditor/ModuleSettingsEditor.WPF/obj/

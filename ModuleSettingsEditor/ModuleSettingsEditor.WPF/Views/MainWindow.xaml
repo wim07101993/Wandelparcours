@@ -5,23 +5,35 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:numericTextBox="clr-namespace:ModuleSettingsEditor.WPF.Views.NumericTextBox"
     xmlns:viewModelInterfaces="clr-namespace:ModuleSettingsEditor.WPF.ViewModelInterfaces"
     Title="Module settings"
+    Width="300"
+    Height="400"
+    MinWidth="300"
+    MinHeight="400"
+    MaxWidth="400"
     d:DataContext="{d:DesignInstance viewModelInterfaces:IMainWindowViewModel}"
     mc:Ignorable="d">
     <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
-        <StackPanel Orientation="Vertical">
+        <StackPanel Margin="5" Orientation="Vertical">
             <StackPanel.Resources>
-                <Style TargetType="TextBlock">
+                <Style BasedOn="{StaticResource MaterialDesignFloatingHintTextBox}" TargetType="{x:Type TextBox}">
+                    <Setter Property="Margin" Value="2,2,2,4" />
+                </Style>
+
+                <Style x:Key="TitleTextBlock" TargetType="{x:Type TextBlock}">
+                    <Setter Property="FontSize" Value="24" />
                     <Setter Property="Margin" Value="2,4,2,2" />
                 </Style>
-                <Style TargetType="TextBox">
-                    <Setter Property="Margin" Value="2,2,2,4" />
+
+                <Style BasedOn="{StaticResource MaterialDesignRaisedButton}" TargetType="{x:Type Button}">
+                    <Setter Property="Margin" Value="2" />
                 </Style>
             </StackPanel.Resources>
 
 
-            <TextBlock Text="IP-Adressen" />
+            <TextBlock Style="{StaticResource TitleTextBlock}" Text="IP-Adressen" />
 
             <Grid>
                 <Grid.ColumnDefinitions>
@@ -32,13 +44,12 @@
                 <TextBox
                     Grid.Column="0"
                     materialDesign:HintAssist.Hint="Rest server IP"
-                    Style="{StaticResource MaterialDesignFloatingHintTextBox}"
                     Text="{Binding Settings.RestServerIP, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-                <TextBox
+                <numericTextBox:NumericTextBox
                     Grid.Column="1"
                     materialDesign:HintAssist.Hint="Portnumber"
-                    Style="{StaticResource MaterialDesignFloatingHintTextBox}"
-                    Text="{Binding Settings.RestServerPort, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                    HasDecimals="False"
+                    Value="{Binding Settings.RestServerPort, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
             </Grid>
 
             <Grid>
@@ -50,34 +61,29 @@
                 <TextBox
                     Grid.Column="0"
                     materialDesign:HintAssist.Hint="Socket IP"
-                    Style="{StaticResource MaterialDesignFloatingHintTextBox}"
                     Text="{Binding Settings.SocketIP, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
 
-                <TextBox
+                <numericTextBox:NumericTextBox
                     Grid.Column="1"
                     materialDesign:HintAssist.Hint="Portnumber"
-                    Style="{StaticResource MaterialDesignFloatingHintTextBox}"
-                    Text="{Binding Settings.SocketPort, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                    HasDecimals="False"
+                    Value="{Binding Settings.SocketPort, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
             </Grid>
 
 
-            <TextBlock Text="Wifi instellingen" />
+            <Grid Margin="10" />
 
-            <TextBox
-                materialDesign:HintAssist.Hint="SSID"
-                Style="{StaticResource MaterialDesignFloatingHintTextBox}"
-                Text="{Binding Settings.WifiSSID, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-            <TextBox
-                materialDesign:HintAssist.Hint="WPA/PSK"
-                Style="{StaticResource MaterialDesignFloatingHintTextBox}"
-                Text="{Binding Settings.WifiWPA, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+            <TextBlock Style="{StaticResource TitleTextBlock}" Text="Wifi instellingen" />
+
+            <TextBox materialDesign:HintAssist.Hint="SSID" Text="{Binding Settings.WifiSSID, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+            <TextBox materialDesign:HintAssist.Hint="WPA/PSK" Text="{Binding Settings.WifiWPA, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+
+            <Grid Margin="10" />
 
             <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
                 <Button Command="{Binding OpenCommand}" Content="Open" />
-                <Button
-                    Margin="10"
-                    Command="{Binding SaveCommand}"
-                    Content="Save" />
+                <Button Command="{Binding SaveCommand}" Content="Save" />
+                <Button Command="{Binding ExportCommand}" Content="Exporteren" />
             </StackPanel>
 
         </StackPanel>
