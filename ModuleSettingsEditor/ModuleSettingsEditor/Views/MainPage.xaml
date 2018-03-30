@@ -27,15 +27,13 @@
                     <ColumnDefinition Width="120" />
                 </Grid.ColumnDefinitions>
 
-                <StackPanel Grid.Column="0" Orientation="Vertical">
-                    <TextBlock Text="Rest server IP" />
-                    <TextBox Text="{Binding Settings.RestServerIP, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-                </StackPanel>
+                <TextBox Grid.Column="0" materialDesign:HintAssist.Hint="Rest server IP"
+                         Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+                         Text="{Binding Settings.RestServerIP, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
 
-                <StackPanel Grid.Column="1" Orientation="Vertical">
-                    <TextBlock Text="Portnumber" />
-                    <TextBox Text="{Binding Settings.RestServerPort, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-                </StackPanel>
+                <TextBox Grid.Column="1" materialDesign:HintAssist.Hint="Portnumber"
+                         Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+                         Text="{Binding Settings.RestServerPort, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
             </Grid>
 
             <Grid>
