@@ -28,7 +28,7 @@ namespace ModuleSettingsEditor.WPF
 
             Container
                 .RegisterType<IFileService<Settings>, FileService<Settings>>(new ContainerControlledLifetimeManager())
-                .RegisterType<ISelectDriveWindowViewModel, SelectDriveWindowViewModel>()
+                .RegisterType<ISelectDriveWindowViewModel, SelectDriveWindowViewModel<Settings>>()
                 .RegisterType<IMainWindowViewModel, MainWindowViewModel>();
 
 
