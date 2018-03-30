@@ -6,32 +6,14 @@ using System.Threading.Tasks;
 using System.Windows;
 using Microsoft.Win32;
 using ModuleSettingsEditor.WPF.Helpers.Extensions;
-using ModuleSettingsEditor.WPF.Models;
 using Newtonsoft.Json;
 
 namespace ModuleSettingsEditor.WPF.Services
 {
     public class FileService<T> : IFileService<T>
     {
-        public async Task<T> OpenAsync()
+        public async Task<T> OpenAsync(string path)
         {
-            var dialog = new OpenFileDialog
-            {
-                Title = "Open settings",
-                FileName = "settings.json",
-                Filter = "Json bestanden (*.json)|*.json|Javascript bestanden (*.js)|*.js|Alle bestanden (*.*)|*.*",
-                InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
-                Multiselect = false
-            };
-
-            if (dialog.ShowDialog() != true)
-                return default(T);
-
-            var path = dialog.FileName;
-
-            if (string.IsNullOrWhiteSpace(path))
-                return default(T);
-
             string json;
             try
             {
@@ -50,7 +32,6 @@ namespace ModuleSettingsEditor.WPF.Services
 
                 return default(T);
             }
-
 
             if (string.IsNullOrWhiteSpace(json))
                 return default(T);
@@ -71,24 +52,8 @@ namespace ModuleSettingsEditor.WPF.Services
             }
         }
 
-        public async Task SaveAsync(T value)
+        public async Task SaveAsync(T value, string path)
         {
-            var dialog = new SaveFileDialog
-            {
-                Title = "Open settings",
-                FileName = "settings.json",
-                Filter = "Json bestanden (*.json)|*.json|Javascript bestanden (*.js)|*.js|Alle bestanden (*.*)|*.*",
-                InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
-            };
-
-            if (dialog.ShowDialog() != true)
-                return;
-
-            var path = dialog.FileName;
-
-            if (string.IsNullOrWhiteSpace(path))
-                return;
-
             var json = "";
 
             try
@@ -127,12 +92,12 @@ namespace ModuleSettingsEditor.WPF.Services
             }
         }
 
-        public Task<T> ImportAsync()
+        public Task<T> ImportAsync(string drive)
         {
             throw new NotImplementedException();
         }
 
-        public Task ExportAsync(T settings)
+        public Task ExportAsync(T settings, string drive)
         {
             throw new NotImplementedException();
         }

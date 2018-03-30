@@ -1,6 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows.Input;
+using Microsoft.Win32;
 using ModuleSettingsEditor.WPF.Models;
 using ModuleSettingsEditor.WPF.Services;
 using ModuleSettingsEditor.WPF.ViewModelInterfaces;
@@ -13,6 +16,8 @@ namespace ModuleSettingsEditor.WPF.ViewModels
     {
         #region FIELDS
 
+        private readonly IFileService<Settings> _fileService;
+
         private Settings _settings;
 
         #endregion FIELDS
@@ -20,25 +25,16 @@ namespace ModuleSettingsEditor.WPF.ViewModels
 
         #region CONSTRUCTOR
 
-        public MainWindowViewModel(IFileService<Settings> dataService)
+        public MainWindowViewModel(IFileService<Settings> fileService)
         {
+            _fileService = fileService;
             Settings = new Settings();
 
-            OpenCommand = new DelegateCommand(async () =>
-            {
-                var openedSettings = await dataService.OpenAsync();
-                if (openedSettings != null)
-                    Settings = openedSettings;
-            });
-            SaveCommand = new DelegateCommand(async () => await dataService.SaveAsync(Settings));
+            OpenCommand = new DelegateCommand(() => OpenSettings().Start());
+            SaveCommand = new DelegateCommand(() => SaveSettings().Start());
 
-            ImportCommand = new DelegateCommand(async () =>
-            {
-                var openedSettings = await dataService.ImportAsync();
-                if (openedSettings != null)
-                    Settings = openedSettings;
-            });
-            ExportCommand = new DelegateCommand(async () => await dataService.ExportAsync(Settings));
+            ImportCommand = new DelegateCommand(() => ImportSettings().Start());
+            ExportCommand = new DelegateCommand(() => ExportSettings().Start());
         }
 
         #endregion CONSTRUCTOR
@@ -69,5 +65,62 @@ namespace ModuleSettingsEditor.WPF.ViewModels
         public ICommand ImportCommand { get; }
 
         #endregion PROPERTIES
+
+
+        #region METHODS
+
+        public async Task OpenSettings()
+        {
+            var dialog = new OpenFileDialog
+            {
+                Title = "Open settings",
+                FileName = "settings.json",
+                Filter = "Json bestanden (*.json)|*.json|Javascript bestanden (*.js)|*.js|Alle bestanden (*.*)|*.*",
+                InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
+                Multiselect = false
+            };
+
+            if (dialog.ShowDialog() != true)
+                return;
+
+            var path = dialog.FileName;
+
+            if (string.IsNullOrWhiteSpace(path))
+                return;
+
+            var openedSettings = await _fileService.OpenAsync(path);
+            if (openedSettings != null)
+                Settings = openedSettings;
+        }
+
+        public async Task SaveSettings()
+        {
+            var dialog = new SaveFileDialog
+            {
+                Title = "Open settings",
+                FileName = "settings.json",
+                Filter = "Json bestanden (*.json)|*.json|Javascript bestanden (*.js)|*.js|Alle bestanden (*.*)|*.*",
+                InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
+            };
+
+            if (dialog.ShowDialog() != true)
+                return;
+
+            var path = dialog.FileName;
+            if (string.IsNullOrWhiteSpace(path))
+                return;
+
+            await _fileService.SaveAsync(Settings, path);
+        }
+
+        public async Task ImportSettings()
+        {
+        }
+
+        public async Task ExportSettings()
+        {
+        }
+
+        #endregion METHODS
     }
 }

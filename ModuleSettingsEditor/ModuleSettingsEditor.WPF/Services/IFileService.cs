@@ -4,10 +4,10 @@ namespace ModuleSettingsEditor.WPF.Services
 {
     public interface IFileService<T>
     {
-        Task<T> OpenAsync();
-        Task SaveAsync(T value);
+        Task<T> OpenAsync(string path);
+        Task SaveAsync(T value, string path);
 
-        Task<T> ImportAsync();
-        Task ExportAsync(T settings);
+        Task<T> ImportAsync(string drive);
+        Task ExportAsync(T settings, string drive);
     }
 }
