@@ -2,5 +2,7 @@
 {
     public interface IMainWindowViewModel
     {
+        IInputViewModel InputViewModel { get; }
+        IOutputViewModel OutputViewModel { get; }
     }
 }

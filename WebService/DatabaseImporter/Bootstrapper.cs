@@ -26,6 +26,8 @@ namespace DatabaseImporter
             Container
             //    .RegisterType<IFileService<Settings>, FileService<Settings>>(new ContainerControlledLifetimeManager())
             //    .RegisterType<ISelectDriveWindowViewModel, SelectDriveWindowViewModel>()
+                .RegisterType<IInputViewModel, InputViewModel>()
+                .RegisterType<IOutputViewModel, OutputViewModel>()
                 .RegisterType<IMainWindowViewModel, MainWindowViewModel>();
 
 

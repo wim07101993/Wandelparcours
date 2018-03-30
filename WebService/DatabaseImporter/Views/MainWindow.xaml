@@ -3,10 +3,20 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mahApps="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:viewModelInterfaces="clr-namespace:DatabaseImporter.ViewModelInterfaces"
+    xmlns:views="clr-namespace:DatabaseImporter.Views"
     Title="MainWindow"
-    Width="800"
-    Height="450"
+    d:DataContext="{d:DesignInstance viewModelInterfaces:IMainWindowViewModel}"
+    WindowState="Maximized"
     mc:Ignorable="d">
-    <Grid />
+    <mahApps:MetroAnimatedSingleRowTabControl>
+        <TabItem Foreground="{DynamicResource MaterialDesignLightForeground}" Header="Input">
+            <views:Input DataContext="{Binding InputViewModel}" />
+        </TabItem>
+        <TabItem Foreground="{DynamicResource MaterialDesignLightForeground}" Header="Output">
+            <views:Output DataContext="{Binding OutputViewModel}" />
+        </TabItem>
+    </mahApps:MetroAnimatedSingleRowTabControl>
 </Window>
