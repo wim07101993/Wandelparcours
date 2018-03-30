@@ -8,10 +8,10 @@
     xmlns:numericTextBox="clr-namespace:ModuleSettingsEditor.WPF.Views.NumericTextBox"
     xmlns:viewModelInterfaces="clr-namespace:ModuleSettingsEditor.WPF.ViewModelInterfaces"
     Title="Module settings"
-    Width="300"
-    Height="400"
+    Width="350"
+    Height="450"
     MinWidth="300"
-    MinHeight="400"
+    MinHeight="450"
     MaxWidth="400"
     d:DataContext="{d:DesignInstance viewModelInterfaces:IMainWindowViewModel}"
     mc:Ignorable="d">
@@ -80,11 +80,11 @@
 
             <Grid Margin="10" />
 
-            <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
-                <Button Command="{Binding OpenCommand}" Content="Open" />
-                <Button Command="{Binding SaveCommand}" Content="Save" />
+            <WrapPanel HorizontalAlignment="Stretch" Orientation="Horizontal">
+                <Button Command="{Binding OpenCommand}" Content="Openen" />
+                <Button Command="{Binding SaveCommand}" Content="Opslaan" />
                 <Button Command="{Binding ExportCommand}" Content="Exporteren" />
-            </StackPanel>
+            </WrapPanel>
 
         </StackPanel>
     </ScrollViewer>
