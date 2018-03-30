@@ -55,5 +55,12 @@ namespace ModuleSettingsEditor.WPF.Models
             get => _wifiWPA;
             set => SetProperty(ref _wifiWPA, value);
         }
+
+
+        public string KioskType
+        {
+            get => _kioskType;
+            set => SetProperty(ref _kioskType, value);
+        }
     }
 }

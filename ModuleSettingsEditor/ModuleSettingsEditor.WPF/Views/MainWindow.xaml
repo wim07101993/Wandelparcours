@@ -23,6 +23,10 @@
                     <Setter Property="Margin" Value="2,2,2,18" />
                 </Style>
 
+                <Style BasedOn="{StaticResource MaterialDesignFloatingHintComboBox}" TargetType="{x:Type ComboBox}">
+                    <Setter Property="Margin" Value="2,2,2,18" />
+                </Style>
+
                 <Style x:Key="TitleTextBlock" TargetType="{x:Type TextBlock}">
                     <Setter Property="FontSize" Value="24" />
                     <Setter Property="Margin" Value="2,4,2,2" />
@@ -37,6 +41,10 @@
                     <Setter Property="HasDecimals" Value="False" />
                     <Setter Property="Maximum" Value="65535" />
                     <Setter Property="Minimum" Value="0" />
+                </Style>
+
+                <Style x:Key="Separator" TargetType="Grid">
+                    <Setter Property="Margin" Value="10" />
                 </Style>
             </StackPanel.Resources>
 
@@ -107,14 +115,35 @@
             </Grid>
 
 
-            <Grid Margin="10" />
+            <Grid Style="{StaticResource Separator}" />
+
 
             <TextBlock Style="{StaticResource TitleTextBlock}" Text="Wifi instellingen" />
 
-            <TextBox materialDesign:HintAssist.Hint="SSID" Text="{Binding Settings.WifiSSID, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-            <TextBox materialDesign:HintAssist.Hint="WPA/PSK" Text="{Binding Settings.WifiWPA, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+            <TextBox
+                materialDesign:HintAssist.Hint="SSID"
+                Text="{Binding Settings.WifiSSID, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                ToolTip="Het SSID waarmee de kiosk moet verbinden om aan de rest/socket server te kunnen" />
+            <TextBox
+                materialDesign:HintAssist.Hint="WPA/PSK"
+                Text="{Binding Settings.WifiWPA, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                ToolTip="De WPA/PSK key om verbinding te kunnen maken met het netwerk" />
 
-            <Grid Margin="10" />
+
+            <Grid Style="{StaticResource Separator}" />
+
+
+            <TextBlock Style="{StaticResource TitleTextBlock}" Text="Kiosk type" />
+            <ComboBox
+                materialDesign:HintAssist.Hint="Kiosk type"
+                IsEditable="False"
+                ItemsSource="{Binding PossibleKioskTypes}"
+                SelectedItem="{Binding Settings.KioskType, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                ToolTip="Het type van de kiosk" />
+
+
+            <Grid Style="{StaticResource Separator}" />
+
 
             <WrapPanel HorizontalAlignment="Stretch" Orientation="Horizontal">
                 <Button Command="{Binding OpenCommand}" Content="Openen" />

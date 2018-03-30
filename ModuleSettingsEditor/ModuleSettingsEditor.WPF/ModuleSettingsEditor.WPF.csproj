@@ -96,6 +96,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Helpers\IPValidationRule.cs" />
     <Compile Include="Views\NumericTextBox\NumericTextBox.cs" />
     <Compile Include="Views\NumericTextBox\NumericTextBoxChangedRoutedEventArgs.cs" />
     <Compile Include="Views\NumericTextBox\NumericTextBoxChangedRoutedEventHandler.cs" />

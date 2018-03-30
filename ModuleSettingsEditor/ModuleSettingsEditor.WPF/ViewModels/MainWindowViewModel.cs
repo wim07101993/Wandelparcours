@@ -1,4 +1,6 @@
-﻿using System.Windows.Input;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Windows.Input;
 using ModuleSettingsEditor.WPF.Models;
 using ModuleSettingsEditor.WPF.Services;
 using ModuleSettingsEditor.WPF.ViewModelInterfaces;
@@ -23,18 +25,33 @@ namespace ModuleSettingsEditor.WPF.ViewModels
             Settings = new Settings();
 
             SaveCommand = new DelegateCommand(async () => await dataService.SaveAsync(Settings));
-            OpenCommand = new DelegateCommand(async () => Settings = await dataService.OpenAsync());
+            OpenCommand = new DelegateCommand(async () =>
+            {
+                var openedSettings = await dataService.OpenAsync();
+                if (openedSettings != null)
+                    Settings = openedSettings;
+            });
         }
 
         #endregion CONSTRUCTOR
 
 
         #region PROPERTIES
-        
+
+        public IEnumerable<string> PossibleKioskTypes { get; } =
+            new[] {"Tag detector", "Video", "Afbeelding", "Muziek", "Spel"};
+
         public Settings Settings
         {
             get => _settings;
-            set => SetProperty(ref _settings, value);
+            set
+            {
+                if (!SetProperty(ref _settings, value))
+                    return;
+
+                if (PossibleKioskTypes.All(x => x != Settings.KioskType))
+                    Settings.KioskType = PossibleKioskTypes.First();
+            }
         }
 
         public ICommand SaveCommand { get; }
