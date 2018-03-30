@@ -40,7 +40,7 @@ namespace ModuleSettingsEditor.WPF.Services
             {
                 return json.Deserialize<T>();
             }
-            catch (JsonException e)
+            catch (JsonException)
             {
                 MessageBox.Show(
                     "De inhoud van het opgegeven bestand is in een verkeerd formaat, het kon niet worden ingelezen",
