@@ -101,8 +101,11 @@
     <Compile Include="Helpers\Extensions\StringExtensions.cs" />
     <Compile Include="Helpers\Mvvm\Commands\ADelegateCommandBase.cs" />
     <Compile Include="Helpers\Mvvm\Commands\DelegateCommand{T}.cs" />
+    <Compile Include="Models\ISettings.cs" />
     <Compile Include="Models\Settings.cs" />
     <Compile Include="Properties\Annotations.cs" />
+    <Compile Include="Services\DataService.cs" />
+    <Compile Include="Services\IDataService.cs" />
     <Compile Include="ViewModelInterfaces\IMainWindowViewModel.cs" />
     <Compile Include="ViewModels\MainWindowViewModel.cs" />
     <Compile Include="Views\MainPage.xaml.cs">

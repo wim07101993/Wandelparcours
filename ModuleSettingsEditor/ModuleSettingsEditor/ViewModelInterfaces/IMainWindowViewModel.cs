@@ -1,14 +1,11 @@
-﻿using System.Collections.Generic;
-using System.Windows.Input;
-using ModuleSettingsEditor.Helpers;
+﻿using System.Windows.Input;
 using ModuleSettingsEditor.Models;
 
 namespace ModuleSettingsEditor.ViewModelInterfaces
 {
     public interface IMainWindowViewModel
     {
-        Settings Settings { get; set; }
-        IEnumerable<Property> Properties { get; }
+        ISettings Settings { get; set; }
 
         ICommand SaveCommand { get; }
         ICommand OpenCommand { get; }

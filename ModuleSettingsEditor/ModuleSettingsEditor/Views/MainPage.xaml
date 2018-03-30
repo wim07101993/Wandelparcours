@@ -7,40 +7,76 @@
     xmlns:viewModelInterfaces="using:ModuleSettingsEditor.ViewModelInterfaces"
     d:DataContext="{d:DesignInstance viewModelInterfaces:IMainWindowViewModel}"
     mc:Ignorable="d">
-    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-        <Grid.RowDefinitions>
-            <RowDefinition />
-            <RowDefinition Height="Auto" />
-        </Grid.RowDefinitions>
+    <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+        <StackPanel Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" Orientation="Vertical">
+            <StackPanel.Resources>
+                <Style TargetType="TextBlock">
+                    <Setter Property="Margin" Value="2,4,2,2" />
+                </Style>
+                <Style TargetType="TextBox">
+                    <Setter Property="Margin" Value="2,2,2,4" />
+                </Style>
+            </StackPanel.Resources>
 
-        <Grid Grid.Row="0">
-            <ItemsControl Grid.Column="0" ItemsSource="{Binding Properties}">
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate>
-                        <StackPanel>
-                            <TextBlock
-                                Margin="10,10,0,0"
-                                VerticalAlignment="Center"
-                                Text="{Binding DisplayName}" />
-                            <TextBox
-                                Margin="10"
-                                VerticalAlignment="Center"
-                                Text="{Binding Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-                        </StackPanel>
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-            </ItemsControl>
-        </Grid>
 
-        <StackPanel
-            Grid.Row="1"
-            HorizontalAlignment="Right"
-            Orientation="Horizontal">
-            <Button Click="OnOpenButtonClick" Content="Open" />
-            <Button
-                Margin="10"
-                Click="OnSaveButtonClick"
-                Content="Save" />
+            <TextBlock Text="IP-Adressen" />
+
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition Width="120" />
+                </Grid.ColumnDefinitions>
+
+                <StackPanel Grid.Column="0" Orientation="Vertical">
+                    <TextBlock Text="Rest server IP" />
+                    <TextBox Text="{Binding Settings.RestServerIP}" />
+                </StackPanel>
+
+                <StackPanel Grid.Column="1" Orientation="Vertical">
+                    <TextBlock Text="Portnumber" />
+                    <TextBox Text="{Binding Settings.RestServerPort}" />
+                </StackPanel>
+            </Grid>
+
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition Width="120" />
+                </Grid.ColumnDefinitions>
+
+                <StackPanel Grid.Column="0" Orientation="Vertical">
+                    <TextBlock Text="Socket IP" />
+                    <TextBox Text="{Binding Settings.SocketIP}" />
+                </StackPanel>
+
+                <StackPanel Grid.Column="1" Orientation="Vertical">
+                    <TextBlock Text="Portnumber" />
+                    <TextBox Text="{Binding Settings.SocketPort}" />
+                </StackPanel>
+            </Grid>
+
+
+            <TextBlock Text="Wifi instellingen" />
+
+            <StackPanel>
+                <TextBlock Text="SSID" />
+                <TextBox Text="{Binding Settings.WifiSSID}" />
+            </StackPanel>
+
+            <StackPanel>
+                <TextBlock Text="WPA/PSK" />
+                <TextBox Text="{Binding Settings.WifiWPA}" />
+            </StackPanel>
+
+
+            <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
+                <Button Command="{Binding OpenCommand}" Content="Open" />
+                <Button
+                    Margin="10"
+                    Command="{Binding SaveCommand}"
+                    Content="Save" />
+            </StackPanel>
+
         </StackPanel>
-    </Grid>
+    </ScrollViewer>
 </Page>

@@ -1,27 +1,51 @@
-﻿using System.ComponentModel;
-using ModuleSettingsEditor.Helpers.Mvvm;
+﻿using ModuleSettingsEditor.Helpers.Mvvm;
 
 namespace ModuleSettingsEditor.Models
 {
-    public class Settings : BindableBase
+    public class Settings : BindableBase, ISettings
     {
-        private string _serverIPAddress;
-        private string _socketIPAddress;
+        private string _restServerIP;
+        private int _restServerPort;
+        private string _socketIP;
+        private int _socketPort;
+        private string _wifiSSID;
+        private string _wifiWPA;
 
-        [Browsable(true)]
-        [DisplayName("Server IP-adres")]
-        public string ServerIPAddress
+
+        public string RestServerIP
         {
-            get => _serverIPAddress;
-            set => SetProperty(ref _serverIPAddress, value);
+            get => _restServerIP;
+            set => SetProperty(ref _restServerIP, value);
         }
 
-        [Browsable(true)]
-        [DisplayName("Socket IP-adres")]
-        public string SocketIPAddress
+        public int RestServerPort
         {
-            get => _socketIPAddress;
-            set => SetProperty(ref _socketIPAddress, value);
+            get => _restServerPort;
+            set => SetProperty(ref _restServerPort, value);
+        }
+
+        public string SocketIP
+        {
+            get => _socketIP;
+            set => SetProperty(ref _socketIP, value);
+        }
+
+        public int SocketPort
+        {
+            get => _socketPort;
+            set => SetProperty(ref _socketPort, value);
+        }
+
+        public string WifiSSID
+        {
+            get => _wifiSSID;
+            set => SetProperty(ref _wifiSSID, value);
+        }
+
+        public string WifiWPA
+        {
+            get => _wifiWPA;
+            set => SetProperty(ref _wifiWPA, value);
         }
     }
 }
