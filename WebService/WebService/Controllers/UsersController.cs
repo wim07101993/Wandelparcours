@@ -19,9 +19,12 @@ namespace WebService.Controllers
     [Route("api/v1/[controller]")]
     public class UsersController : ARestControllerBase<User>
     {
+        private readonly IUsersService _usersService;
+
         public UsersController(IUsersService dataService, ILogger logger, IUsersService usersService)
             : base(dataService, logger, usersService)
         {
+            _usersService = usersService;
         }
 
 
@@ -50,13 +53,17 @@ namespace WebService.Controllers
 
         [Authorize(EUserType.SysAdmin, EUserType.Nurse)]
         [HttpPost(CreateTemplate)]
-        public override Task<string> CreateAsync([FromBody] User item)
-            => base.CreateAsync(item);
+        public override async Task<string> CreateAsync([FromBody] User item)
+        {
+            if (item.UserType > await _usersService.GetPropertyAsync(UserId, x => x.UserType))
+                throw new UnauthorizedException(item.UserType);
+            return await base.CreateAsync(item);
+        }
 
 
         [Authorize(EUserType.SysAdmin, EUserType.Nurse)]
         [HttpGet(GetAllTemplate)]
-        public override Task<IEnumerable<User>> GetAllAsync(string[] propertiesToInclude)
+        public override Task<IEnumerable<User>> GetAllAsync(string[] propertiesToInclude) 
             => base.GetAllAsync(propertiesToInclude);
 
         [Authorize(EUserType.SysAdmin, EUserType.Nurse, EUserType.User)]
@@ -74,6 +81,8 @@ namespace WebService.Controllers
         [HttpPut(UpdateTemplate)]
         public override async Task UpdateAsync([FromBody] User item, [FromQuery] string[] properties)
         {
+            var currentUserType = await _usersService.GetPropertyAsync(UserId, x => x.UserType);
+            // todo
             if (properties.All(x => !x.EqualsWithCamelCasing(nameof(Models.User.Password))))
             {
                 await base.UpdateAsync(item, properties);
