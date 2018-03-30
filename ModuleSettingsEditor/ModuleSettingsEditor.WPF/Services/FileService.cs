@@ -4,7 +4,6 @@ using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
-using Microsoft.Win32;
 using ModuleSettingsEditor.WPF.Helpers.Extensions;
 using Newtonsoft.Json;
 
@@ -12,33 +11,15 @@ namespace ModuleSettingsEditor.WPF.Services
 {
     public class FileService<T> : IFileService<T>
     {
+        private const string PiFilePath = "://boot/";
+        private const string Extension = ".json";
+
+
         public async Task<T> OpenAsync(string path)
         {
-            string json;
             try
             {
-                using (var stream = File.OpenText(path))
-                {
-                    json = await stream.ReadToEndAsync();
-                }
-            }
-            catch (FileNotFoundException)
-            {
-                MessageBox.Show(
-                    "Het opgevegen pad bestaat niet.",
-                    "Bestand niet gevonden",
-                    MessageBoxButton.OK,
-                    MessageBoxImage.Warning);
-
-                return default(T);
-            }
-
-            if (string.IsNullOrWhiteSpace(json))
-                return default(T);
-
-            try
-            {
-                return json.Deserialize<T>();
+                return await OpenFileAsync(path);
             }
             catch (JsonException)
             {
@@ -50,15 +31,45 @@ namespace ModuleSettingsEditor.WPF.Services
 
                 return default(T);
             }
+            catch (FileNotFoundException)
+            {
+                MessageBox.Show(
+                    "Het opgevegen bestand bestaat niet.",
+                    "Bestand niet gevonden",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Warning);
+
+                return default(T);
+            }
+            catch (DirectoryNotFoundException)
+            {
+                MessageBox.Show(
+                    "De opgevegen map bestaat niet.",
+                    "Map niet gevonden",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Warning);
+
+                return default(T);
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(
+                    "Er is iets mis gelopen.",
+                    "Fout",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error);
+
+                Debug.WriteLine($"ERROR: {e.Message}");
+
+                return default(T);
+            }
         }
 
         public async Task SaveAsync(T value, string path)
         {
-            var json = "";
-
             try
             {
-                json = value.Serialize();
+                await WriteFileAsync(value, path);
             }
             catch (JsonException e)
             {
@@ -70,15 +81,13 @@ namespace ModuleSettingsEditor.WPF.Services
 
                 Debug.WriteLine($"ERROR: {e.Message}");
             }
-
-            var bytes = Encoding.UTF8.GetBytes(json);
-
-            try
+            catch (DirectoryNotFoundException)
             {
-                using (var stream = File.OpenWrite(path))
-                {
-                    await stream.WriteAsync(bytes, 0, bytes.Length);
-                }
+                MessageBox.Show(
+                    "De opgevegen map bestaat niet.",
+                    "Map niet gevonden",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Warning);
             }
             catch (Exception e)
             {
@@ -92,14 +101,93 @@ namespace ModuleSettingsEditor.WPF.Services
             }
         }
 
-        public Task<T> ImportAsync(string drive)
+
+        public async Task<T> ImportAsync(string drive)
         {
-            throw new NotImplementedException();
+            try
+            {
+                return await OpenFileAsync($"{drive}{PiFilePath}{typeof(T).Name}{Extension}");
+            }
+            catch (FileNotFoundException)
+            {
+                return default(T);
+            }
+            catch (DirectoryNotFoundException)
+            {
+                MessageBox.Show(
+                    "Het opgegeven station bevat niet de nodige mappen van eem Pi",
+                    "Map niet gevonden",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Information);
+
+                return default(T);
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(
+                    "Er is iets mis gelopen.",
+                    "Fout",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error);
+
+                Debug.WriteLine($"ERROR: {e.Message}");
+
+                return default(T);
+            }
         }
 
-        public Task ExportAsync(T settings, string drive)
+        public async Task ExportAsync(T value, string drive)
         {
-            throw new NotImplementedException();
+            try
+            {
+                await SaveAsync(value, $"{drive}{PiFilePath}{typeof(T).Name}{Extension}");
+            }
+            catch (FileNotFoundException)
+            {
+            }
+            catch (DirectoryNotFoundException)
+            {
+                MessageBox.Show(
+                    "Het opgegeven station bevat niet de nodige mappen van eem Pi",
+                    "Map niet gevonden",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Information);
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(
+                    "Er is iets mis gelopen.",
+                    "Fout",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error);
+
+                Debug.WriteLine($"ERROR: {e.Message}");
+            }
+        }
+
+
+        private static async Task<T> OpenFileAsync(string path)
+        {
+            string json;
+            using (var stream = File.OpenText(path))
+            {
+                json = await stream.ReadToEndAsync();
+            }
+
+            return string.IsNullOrWhiteSpace(json)
+                ? default(T)
+                : json.Deserialize<T>();
+        }
+
+        private static async Task WriteFileAsync(T value, string path)
+        {
+            var json = value.Serialize();
+            var bytes = Encoding.UTF8.GetBytes(json);
+
+            using (var stream = File.OpenWrite(path))
+            {
+                await stream.WriteAsync(bytes, 0, bytes.Length);
+            }
         }
     }
 }

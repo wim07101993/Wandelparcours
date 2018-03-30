@@ -30,11 +30,11 @@ namespace ModuleSettingsEditor.WPF.ViewModels
             _fileService = fileService;
             Settings = new Settings();
 
-            OpenCommand = new DelegateCommand(() => OpenSettings().Start());
-            SaveCommand = new DelegateCommand(() => SaveSettings().Start());
+            OpenCommand = new DelegateCommand(async () =>await OpenSettings());
+            SaveCommand = new DelegateCommand(async () => await SaveSettings());
 
-            ImportCommand = new DelegateCommand(() => ImportSettings().Start());
-            ExportCommand = new DelegateCommand(() => ExportSettings().Start());
+            ImportCommand = new DelegateCommand(async () => await ImportSettings());
+            ExportCommand = new DelegateCommand(async () => await ExportSettings());
         }
 
         #endregion CONSTRUCTOR
@@ -115,6 +115,7 @@ namespace ModuleSettingsEditor.WPF.ViewModels
 
         public async Task ImportSettings()
         {
+
         }
 
         public async Task ExportSettings()

@@ -8,6 +8,6 @@ namespace ModuleSettingsEditor.WPF.Services
         Task SaveAsync(T value, string path);
 
         Task<T> ImportAsync(string drive);
-        Task ExportAsync(T settings, string drive);
+        Task ExportAsync(T value, string drive);
     }
 }
