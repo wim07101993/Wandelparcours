@@ -1,0 +1,81 @@
+﻿<Page
+    x:Class="ModuleSettingsEditor.Views.MainPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:viewModelInterfaces="using:ModuleSettingsEditor.ViewModelInterfaces"
+    d:DataContext="{d:DesignInstance viewModelInterfaces:IMainWindowViewModel}"
+    mc:Ignorable="d">
+    <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+        <StackPanel Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" Orientation="Vertical">
+            <StackPanel.Resources>
+                <Style TargetType="TextBlock">
+                    <Setter Property="Margin" Value="2,4,2,2" />
+                </Style>
+                <Style TargetType="TextBox">
+                    <Setter Property="Margin" Value="2,2,2,4" />
+                </Style>
+            </StackPanel.Resources>
+
+
+            <TextBlock Text="IP-Adressen" />
+
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition Width="120" />
+                </Grid.ColumnDefinitions>
+                <StackPanel Grid.Column="0">
+                    <TextBlock Text="Rest server IP" />
+                    <TextBox Text="{Binding Settings.RestServerIP, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                </StackPanel>
+
+                <StackPanel Grid.Column="1">
+                    <TextBlock Text="Portnumber" />
+                    <TextBox Text="{Binding Settings.RestServerPort, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                </StackPanel>
+            </Grid>
+
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition Width="120" />
+                </Grid.ColumnDefinitions>
+
+                <StackPanel Grid.Column="0" Orientation="Vertical">
+                    <TextBlock Text="Socket IP" />
+                    <TextBox Text="{Binding Settings.SocketIP, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                </StackPanel>
+
+                <StackPanel Grid.Column="1" Orientation="Vertical">
+                    <TextBlock Text="Portnumber" />
+                    <TextBox Text="{Binding Settings.SocketPort, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                </StackPanel>
+            </Grid>
+
+
+            <TextBlock Text="Wifi instellingen" />
+
+            <StackPanel>
+                <TextBlock Text="SSID" />
+                <TextBox Text="{Binding Settings.WifiSSID, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+            </StackPanel>
+
+            <StackPanel>
+                <TextBlock Text="WPA/PSK" />
+                <TextBox Text="{Binding Settings.WifiWPA, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+            </StackPanel>
+
+
+            <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
+                <Button Command="{Binding OpenCommand}" Content="Open" />
+                <Button
+                    Margin="10"
+                    Command="{Binding SaveCommand}"
+                    Content="Save" />
+            </StackPanel>
+
+        </StackPanel>
+    </ScrollViewer>
+</Page>
