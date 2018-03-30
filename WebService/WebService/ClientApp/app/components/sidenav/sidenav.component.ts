@@ -1,5 +1,4 @@
 import {Component, OnInit} from '@angular/core';
-
 declare var $:any;
 
 @Component({
@@ -10,8 +9,14 @@ declare var $:any;
 export class SidenavComponent implements OnInit {
 
   constructor() { }
+  
+  
 
     ngOnInit() {
+        // // Initialize collapse button
+        // $(".button-collapse").sideNav();
+        // // Initialize collapsible (uncomment the line below if you use the dropdown variation)
+        // $('.collapsible').collapsible();
     }
 
   closeSideNav(){
@@ -23,6 +28,7 @@ export class SidenavComponent implements OnInit {
       );
   }
    
+  
 
   
 
