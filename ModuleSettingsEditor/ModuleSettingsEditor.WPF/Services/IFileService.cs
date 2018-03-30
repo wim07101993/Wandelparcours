@@ -4,8 +4,6 @@ namespace ModuleSettingsEditor.WPF.Services
 {
     public interface IFileService<T>
     {
-        string ExportDir { get; }
-
         Task<T> OpenAsync(string path);
         Task SaveAsync(T value, string path);
 

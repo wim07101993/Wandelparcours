@@ -9,20 +9,30 @@ using Prism.Mvvm;
 
 namespace ModuleSettingsEditor.WPF.ViewModels
 {
-    public class SelectDriveWindowViewModel<T> : BindableBase, ISelectDriveWindowViewModel
+    public class SelectDriveWindowViewModel : BindableBase, ISelectDriveWindowViewModel
     {
         private IEnumerable<string> _drives;
         private string _selectedDrive;
         private bool _ok;
 
 
-        public SelectDriveWindowViewModel(IFileService<T> fileService)
+        public SelectDriveWindowViewModel()
         {
-            var dir = fileService.ExportDir;
+            var piDriveVolumeName = "boot";
             Drives = DriveInfo
                 .GetDrives()
-                .Select(x => x.Name)
-                .Where(x => Directory.GetDirectories(x).Any(y => y == dir));
+                .Where(x =>
+                {
+                    try
+                    {
+                        return x.VolumeLabel == piDriveVolumeName;
+                    }
+                    catch
+                    {
+                        return false;
+                    }
+                })
+                .Select(x => x.Name);
 
             OkCommand = new DelegateCommand(() => Ok = true);
             CancelCommand = new DelegateCommand(() => { });

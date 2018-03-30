@@ -11,12 +11,9 @@ namespace ModuleSettingsEditor.WPF.Services
 {
     public class FileService<T> : IFileService<T>
     {
-        public const string PiBootDir = "boot";
         private const string Extension = ".json";
 
-
-        public string ExportDir => PiBootDir;
-
+        
         public async Task<T> OpenAsync(string path)
         {
             try
@@ -108,7 +105,7 @@ namespace ModuleSettingsEditor.WPF.Services
         {
             try
             {
-                return await OpenFileAsync($"{drive}{PiBootDir}{typeof(T).Name}{Extension}");
+                return await OpenFileAsync($"{drive}{typeof(T).Name}{Extension}");
             }
             catch (FileNotFoundException)
             {
@@ -142,7 +139,7 @@ namespace ModuleSettingsEditor.WPF.Services
         {
             try
             {
-                await WriteFileAsync(value, $"{drive}{PiBootDir}/{typeof(T).Name}{Extension}");
+                await WriteFileAsync(value, $"{drive}{typeof(T).Name}{Extension}");
             }
             catch (FileNotFoundException)
             {
