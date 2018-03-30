@@ -23,7 +23,7 @@ export class MouseEvents{
     zoomfactor=1;
     //position of the mouse relative to the map
     mousepos:any;
-
+    timeout:any;
     /**
      * Creating MouseEvent object.
      * @param aRenderComponent
@@ -45,7 +45,7 @@ export class MouseEvents{
         //add listener for panner
         hammer.on("panmove",function (e:any){MouseEvents.Panning(e,parent);});
         hammer.on("panend",function(){MouseEvents.PanStop(parent);});
-        
+        this.timeout=undefined;
         
         //hammer
     }
@@ -74,7 +74,12 @@ export class MouseEvents{
         
         parent.panLastPos.x=e.deltaX;
         parent.panLastPos.y=e.deltaY;
-        await parent.aRenderComponent.Tick();
+        if(parent.timeout==undefined){
+            parent.timeout=setTimeout(()=>{
+                 parent.aRenderComponent.Tick();
+                 parent.timeout=undefined;
+            },45);
+        }
         
     }
 
@@ -86,7 +91,12 @@ export class MouseEvents{
         
         this.mousepos={x:e.x,y:e.y};
         if (this.aRenderComponent.adMarker) {
-            await this.aRenderComponent.Tick();
+            if(this.timeout==undefined){
+                this.timeout=setTimeout(()=>{
+                    this.aRenderComponent.Tick();
+                     this.timeout=undefined;
+                },45);
+            }
         }
         
         
