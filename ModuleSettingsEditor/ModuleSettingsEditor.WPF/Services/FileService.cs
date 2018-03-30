@@ -126,5 +126,15 @@ namespace ModuleSettingsEditor.WPF.Services
                 Debug.WriteLine($"ERROR: {e.Message}");
             }
         }
+
+        public Task<T> ImportAsync()
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task ExportAsync(T settings)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
