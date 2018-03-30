@@ -157,12 +157,24 @@
 
             <WrapPanel Grid.Row="1" Orientation="Horizontal">
                 <WrapPanel HorizontalAlignment="Stretch" Orientation="Horizontal">
-                    <Button Command="{Binding OpenCommand}" Content="Openen" />
-                    <Button Command="{Binding SaveCommand}" Content="Opslaan" />
+                    <Button
+                        Command="{Binding OpenCommand}"
+                        Content="Openen"
+                        ToolTip="Een opgeslagen instelling laden" />
+                    <Button
+                        Command="{Binding SaveCommand}"
+                        Content="Opslaan"
+                        ToolTip="Een instelling opslaan" />
                 </WrapPanel>
                 <WrapPanel HorizontalAlignment="Stretch" Orientation="Horizontal">
-                    <Button Command="{Binding ImportCommand}" Content="Importeren" />
-                    <Button Command="{Binding ExportCommand}" Content="Exporteren" />
+                    <Button
+                        Command="{Binding ImportCommand}"
+                        Content="Importeren"
+                        ToolTip="Een instelling importeren van een Pi" />
+                    <Button
+                        Command="{Binding ExportCommand}"
+                        Content="Exporteren"
+                        ToolTip="Een instelling exporteren naar een Pi" />
                 </WrapPanel>
             </WrapPanel>
         </Grid>

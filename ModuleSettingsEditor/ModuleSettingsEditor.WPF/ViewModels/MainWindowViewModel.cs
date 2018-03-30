@@ -24,13 +24,21 @@ namespace ModuleSettingsEditor.WPF.ViewModels
         {
             Settings = new Settings();
 
-            SaveCommand = new DelegateCommand(async () => await dataService.SaveAsync(Settings));
             OpenCommand = new DelegateCommand(async () =>
             {
                 var openedSettings = await dataService.OpenAsync();
                 if (openedSettings != null)
                     Settings = openedSettings;
             });
+            SaveCommand = new DelegateCommand(async () => await dataService.SaveAsync(Settings));
+
+            ImportCommand = new DelegateCommand(async () =>
+            {
+                var openedSettings = await dataService.ImportAsync();
+                if (openedSettings != null)
+                    Settings = openedSettings;
+            });
+            ExportCommand = new DelegateCommand(async () => await dataService.ExportAsync(Settings));
         }
 
         #endregion CONSTRUCTOR
@@ -54,8 +62,11 @@ namespace ModuleSettingsEditor.WPF.ViewModels
             }
         }
 
-        public ICommand SaveCommand { get; }
         public ICommand OpenCommand { get; }
+        public ICommand SaveCommand { get; }
+
+        public ICommand ExportCommand { get; }
+        public ICommand ImportCommand { get; }
 
         #endregion PROPERTIES
     }

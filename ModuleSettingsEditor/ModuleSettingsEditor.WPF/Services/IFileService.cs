@@ -6,5 +6,8 @@ namespace ModuleSettingsEditor.WPF.Services
     {
         Task<T> OpenAsync();
         Task SaveAsync(T value);
+
+        Task<T> ImportAsync();
+        Task ExportAsync(T settings);
     }
 }

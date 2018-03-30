@@ -10,7 +10,10 @@ namespace ModuleSettingsEditor.WPF.ViewModelInterfaces
 
         Settings Settings { get; set; }
 
-        ICommand SaveCommand { get; }
         ICommand OpenCommand { get; }
+        ICommand SaveCommand { get; }
+
+        ICommand ExportCommand { get; }
+        ICommand ImportCommand { get; }
     }
 }
