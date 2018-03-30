@@ -4,12 +4,18 @@ namespace ModuleSettingsEditor.WPF.Models
 {
     public class Settings : BindableBase
     {
+        #region FIELDS
+
         private string _restServerIP;
         private int _restServerPort;
         private string _socketIP;
         private int _socketPort;
         private string _wifiSSID;
         private string _wifiWPA;
+        private string _kioskType;
+
+        #endregion FIELDS
+
 
 
         public string RestServerIP
@@ -24,6 +30,7 @@ namespace ModuleSettingsEditor.WPF.Models
             set => SetProperty(ref _restServerPort, value);
         }
 
+
         public string SocketIP
         {
             get => _socketIP;
@@ -35,6 +42,7 @@ namespace ModuleSettingsEditor.WPF.Models
             get => _socketPort;
             set => SetProperty(ref _socketPort, value);
         }
+
 
         public string WifiSSID
         {

@@ -11,7 +11,7 @@
 
     <converters:ThicknessToDoubleConverter x:Key="ThicknessToDoubleConverter" />
 
-    <Style TargetType="{x:Type numericTextBox:NumericTextBox}">
+    <Style x:Key="NumericTextBoxStyle" TargetType="{x:Type numericTextBox:NumericTextBox}">
         <Setter Property="Background" Value="{DynamicResource ControlBackgroundBrush}" />
         <Setter Property="BorderBrush" Value="{DynamicResource TextBoxBorderBrush}" />
         <Setter Property="BorderThickness" Value="1" />
