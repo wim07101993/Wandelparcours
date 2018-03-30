@@ -7,6 +7,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebService", "WebService\We
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebAPIUnitTests", "WebAPIUnitTests\WebAPIUnitTests.csproj", "{20311534-6A04-41C4-9AF6-F0B523816FF4}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DatabaseImporter", "DatabaseImporter\DatabaseImporter.csproj", "{148E2AC5-8545-4C57-851B-CA9EC334D941}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{20311534-6A04-41C4-9AF6-F0B523816FF4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{20311534-6A04-41C4-9AF6-F0B523816FF4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{20311534-6A04-41C4-9AF6-F0B523816FF4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{148E2AC5-8545-4C57-851B-CA9EC334D941}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{148E2AC5-8545-4C57-851B-CA9EC334D941}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{148E2AC5-8545-4C57-851B-CA9EC334D941}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{148E2AC5-8545-4C57-851B-CA9EC334D941}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

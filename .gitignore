@@ -51,3 +51,5 @@ ModuleSettingsEditor/ModuleSettingsEditor/bin/
 ModuleSettingsEditor/ModuleSettingsEditor/obj/
 ModuleSettingsEditor/ModuleSettingsEditor.WPF/bin/
 ModuleSettingsEditor/ModuleSettingsEditor.WPF/obj/
+WebService/DatabaseImporter/obj/
+WebService/DatabaseImporter/bin/
