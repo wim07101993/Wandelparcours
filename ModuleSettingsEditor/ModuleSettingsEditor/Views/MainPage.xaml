@@ -29,12 +29,12 @@
 
                 <StackPanel Grid.Column="0" Orientation="Vertical">
                     <TextBlock Text="Rest server IP" />
-                    <TextBox Text="{Binding Settings.RestServerIP}" />
+                    <TextBox Text="{Binding Settings.RestServerIP, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                 </StackPanel>
 
                 <StackPanel Grid.Column="1" Orientation="Vertical">
                     <TextBlock Text="Portnumber" />
-                    <TextBox Text="{Binding Settings.RestServerPort}" />
+                    <TextBox Text="{Binding Settings.RestServerPort, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                 </StackPanel>
             </Grid>
 
@@ -46,12 +46,12 @@
 
                 <StackPanel Grid.Column="0" Orientation="Vertical">
                     <TextBlock Text="Socket IP" />
-                    <TextBox Text="{Binding Settings.SocketIP}" />
+                    <TextBox Text="{Binding Settings.SocketIP, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                 </StackPanel>
 
                 <StackPanel Grid.Column="1" Orientation="Vertical">
                     <TextBlock Text="Portnumber" />
-                    <TextBox Text="{Binding Settings.SocketPort}" />
+                    <TextBox Text="{Binding Settings.SocketPort, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                 </StackPanel>
             </Grid>
 
@@ -60,12 +60,12 @@
 
             <StackPanel>
                 <TextBlock Text="SSID" />
-                <TextBox Text="{Binding Settings.WifiSSID}" />
+                <TextBox Text="{Binding Settings.WifiSSID, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
             </StackPanel>
 
             <StackPanel>
                 <TextBlock Text="WPA/PSK" />
-                <TextBox Text="{Binding Settings.WifiWPA}" />
+                <TextBox Text="{Binding Settings.WifiWPA, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
             </StackPanel>
 
 
