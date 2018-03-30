@@ -41,10 +41,13 @@ export class StationmanagementComponent extends ARenderComponent implements OnIn
     get markerUrl(){
         return getBaseUrl() + "images/station.png";
     }
-    async ngINTERNAL_BROWSER_PLATFORM_PROVIDERSOnInit() {
+    async ngOnInit() {
 
         super.ngOnInit();
-        await this.service.LoadStations(this);
+        await setTimeout(async () => {
+            await this.service.LoadStations(this);
+            
+        }, 100);
         
     }
 
