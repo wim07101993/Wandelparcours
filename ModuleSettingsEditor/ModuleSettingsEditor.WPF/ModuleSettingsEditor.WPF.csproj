@@ -97,6 +97,11 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Helpers\IPValidationRule.cs" />
+    <Compile Include="ViewModelInterfaces\IExportWindowViewModel.cs" />
+    <Compile Include="ViewModels\ExportWindowViewModel.cs" />
+    <Compile Include="Views\ExportWindow.xaml.cs">
+      <DependentUpon>ExportWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\NumericTextBox\NumericTextBox.cs" />
     <Compile Include="Views\NumericTextBox\NumericTextBoxChangedRoutedEventArgs.cs" />
     <Compile Include="Views\NumericTextBox\NumericTextBoxChangedRoutedEventHandler.cs" />
@@ -105,6 +110,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="CustomStyles.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\ExportWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -129,6 +138,10 @@
       <SubType>Code</SubType>
     </Compile>
     <Page Include="Views\Styles\NumericTextBox.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Styles\TextBlockStyles.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

@@ -28,6 +28,7 @@ namespace ModuleSettingsEditor.WPF
 
             Container
                 .RegisterType<IFileService<Settings>, FileService<Settings>>(new ContainerControlledLifetimeManager())
+                .RegisterType<IExportWindowViewModel, ExportWindowViewModel>()
                 .RegisterType<IMainWindowViewModel, MainWindowViewModel>();
 
 
