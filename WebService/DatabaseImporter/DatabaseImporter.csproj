@@ -128,12 +128,6 @@
     <Compile Include="Models\MongoModels\ReceiverModule.cs" />
     <Compile Include="Models\MongoModels\Resident.cs" />
     <Compile Include="Models\MongoModels\User.cs" />
-    <Compile Include="Services\FileService\FileService.cs" />
-    <Compile Include="Services\FileService\IFileService.cs" />
-    <Compile Include="ViewModelInterfaces\IInputViewModel.cs" />
-    <Compile Include="ViewModelInterfaces\IOutputViewModel.cs" />
-    <Compile Include="ViewModels\InputViewModel.cs" />
-    <Compile Include="ViewModels\OutputViewModel.cs" />
     <Compile Include="Views\Output.xaml.cs">
       <DependentUpon>Output.xaml</DependentUpon>
     </Compile>
