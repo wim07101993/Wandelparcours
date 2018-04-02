@@ -96,11 +96,12 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Helpers\Events\CloseDialogEvent.cs" />
     <Compile Include="Helpers\IPValidationRule.cs" />
-    <Compile Include="ViewModelInterfaces\ISelectDriveWindowViewModel.cs" />
-    <Compile Include="ViewModels\SelectDriveWindowViewModel.cs" />
-    <Compile Include="Views\SelectDriveWindow.xaml.cs">
-      <DependentUpon>SelectDriveWindow.xaml</DependentUpon>
+    <Compile Include="ViewModelInterfaces\ISelectDriveViewModel.cs" />
+    <Compile Include="ViewModels\SelectDriveViewModel.cs" />
+    <Compile Include="Views\SelectDrive.xaml.cs">
+      <DependentUpon>SelectDrive.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\NumericTextBox\NumericTextBox.cs" />
     <Compile Include="Views\NumericTextBox\NumericTextBoxChangedRoutedEventArgs.cs" />
@@ -113,7 +114,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\SelectDriveWindow.xaml">
+    <Page Include="Views\SelectDrive.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

@@ -6,6 +6,7 @@ using ModuleSettingsEditor.WPF.Services;
 using ModuleSettingsEditor.WPF.ViewModelInterfaces;
 using ModuleSettingsEditor.WPF.ViewModels;
 using ModuleSettingsEditor.WPF.Views;
+using Prism.Events;
 using Prism.Unity;
 
 namespace ModuleSettingsEditor.WPF
@@ -28,7 +29,8 @@ namespace ModuleSettingsEditor.WPF
 
             Container
                 .RegisterType<IFileService<Settings>, FileService<Settings>>(new ContainerControlledLifetimeManager())
-                .RegisterType<ISelectDriveWindowViewModel, SelectDriveWindowViewModel>()
+                .RegisterType<IEventAggregator, EventAggregator>(new ContainerControlledLifetimeManager())
+                .RegisterType<ISelectDriveViewModel, SelectDriveViewModel>()
                 .RegisterType<IMainWindowViewModel, MainWindowViewModel>();
 
 

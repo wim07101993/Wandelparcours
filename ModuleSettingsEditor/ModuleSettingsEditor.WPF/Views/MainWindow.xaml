@@ -7,7 +7,9 @@
     xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:numericTextBox="clr-namespace:ModuleSettingsEditor.WPF.Views.NumericTextBox"
+    xmlns:system="clr-namespace:System;assembly=mscorlib"
     xmlns:viewModelInterfaces="clr-namespace:ModuleSettingsEditor.WPF.ViewModelInterfaces"
+    xmlns:views="clr-namespace:ModuleSettingsEditor.WPF.Views"
     Title="Module instellingen"
     Width="410"
     Height="470"
@@ -37,143 +39,148 @@
         </Style>
     </Window.Resources>
 
+    <materialDesign:DialogHost CloseOnClickAway="True" IsOpen="{Binding IsDriveDialogVisible}">
+        <materialDesign:DialogHost.DialogContent>
+            <views:SelectDrive DataContext="{Binding DialogViewModel}" />
+        </materialDesign:DialogHost.DialogContent>
 
-    <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
-        <Grid Margin="5">
-            <Grid.RowDefinitions>
-                <RowDefinition />
-                <RowDefinition Height="Auto" />
-            </Grid.RowDefinitions>
+        <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+            <Grid Margin="5">
+                <Grid.RowDefinitions>
+                    <RowDefinition />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
 
-            <WrapPanel Grid.Row="0" Orientation="Horizontal">
-                <materialDesign:Card
-                    Width="350"
-                    Margin="10"
-                    Padding="10">
-                    <StackPanel>
-                        <TextBlock Style="{StaticResource TitleTextBlock}" Text="IP-Adressen" />
+                <WrapPanel Grid.Row="0" Orientation="Horizontal">
+                    <materialDesign:Card
+                        Width="350"
+                        Margin="10"
+                        Padding="10">
+                        <StackPanel>
+                            <TextBlock Style="{StaticResource TitleTextBlock}" Text="IP-Adressen" />
 
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition />
-                                <ColumnDefinition Width="Auto" />
-                            </Grid.ColumnDefinitions>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+
+                                <TextBox
+                                    Grid.Column="0"
+                                    materialDesign:HintAssist.Hint="Rest server IP"
+                                    ToolTip="Het ip-adres waarop de rest server bereikt kan worden">
+                                    <TextBox.Text>
+                                        <Binding
+                                            Mode="TwoWay"
+                                            NotifyOnValidationError="True"
+                                            Path="Settings.RestServerIP"
+                                            UpdateSourceTrigger="PropertyChanged"
+                                            ValidatesOnDataErrors="True"
+                                            ValidatesOnExceptions="True">
+                                            <Binding.ValidationRules>
+                                                <helpers:IPValidationRule ValidatesOnTargetUpdated="True" />
+                                            </Binding.ValidationRules>
+                                        </Binding>
+                                    </TextBox.Text>
+                                </TextBox>
+                                <numericTextBox:NumericTextBox
+                                    Grid.Column="1"
+                                    materialDesign:HintAssist.Hint="Portnumber"
+                                    ToolTip="Het poortnummer waarop de rest server bereikt kan worden"
+                                    Value="{Binding Settings.RestServerPort, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                            </Grid>
+
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+
+                                <TextBox
+                                    Grid.Column="0"
+                                    materialDesign:HintAssist.Hint="Socket IP"
+                                    ToolTip="Het ip adres van de centrale tracker module">
+                                    <TextBox.Text>
+                                        <Binding
+                                            Mode="TwoWay"
+                                            NotifyOnValidationError="True"
+                                            Path="Settings.SocketIP"
+                                            UpdateSourceTrigger="PropertyChanged"
+                                            ValidatesOnDataErrors="True"
+                                            ValidatesOnExceptions="True">
+                                            <Binding.ValidationRules>
+                                                <helpers:IPValidationRule ValidatesOnTargetUpdated="True" />
+                                            </Binding.ValidationRules>
+                                        </Binding>
+                                    </TextBox.Text>
+                                </TextBox>
+
+                                <numericTextBox:NumericTextBox
+                                    Grid.Column="1"
+                                    materialDesign:HintAssist.Hint="Portnumber"
+                                    ToolTip="Het poortnummer waarop de service voor de centrale tracker te bereiken is"
+                                    Value="{Binding Settings.SocketPort, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                            </Grid>
+                        </StackPanel>
+                    </materialDesign:Card>
+
+                    <materialDesign:Card
+                        Width="250"
+                        Margin="10"
+                        Padding="10">
+                        <StackPanel>
+                            <TextBlock Style="{StaticResource TitleTextBlock}" Text="Wifi instellingen" />
 
                             <TextBox
-                                Grid.Column="0"
-                                materialDesign:HintAssist.Hint="Rest server IP"
-                                ToolTip="Het ip-adres waarop de rest server bereikt kan worden">
-                                <TextBox.Text>
-                                    <Binding
-                                        Mode="TwoWay"
-                                        NotifyOnValidationError="True"
-                                        Path="Settings.RestServerIP"
-                                        UpdateSourceTrigger="PropertyChanged"
-                                        ValidatesOnDataErrors="True"
-                                        ValidatesOnExceptions="True">
-                                        <Binding.ValidationRules>
-                                            <helpers:IPValidationRule ValidatesOnTargetUpdated="True" />
-                                        </Binding.ValidationRules>
-                                    </Binding>
-                                </TextBox.Text>
-                            </TextBox>
-                            <numericTextBox:NumericTextBox
-                                Grid.Column="1"
-                                materialDesign:HintAssist.Hint="Portnumber"
-                                ToolTip="Het poortnummer waarop de rest server bereikt kan worden"
-                                Value="{Binding Settings.RestServerPort, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-                        </Grid>
-
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition />
-                                <ColumnDefinition Width="Auto" />
-                            </Grid.ColumnDefinitions>
-
+                                materialDesign:HintAssist.Hint="SSID"
+                                Text="{Binding Settings.WifiSSID, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                ToolTip="Het SSID waarmee de kiosk moet verbinden om aan de rest/socket server te kunnen" />
                             <TextBox
-                                Grid.Column="0"
-                                materialDesign:HintAssist.Hint="Socket IP"
-                                ToolTip="Het ip adres van de centrale tracker module">
-                                <TextBox.Text>
-                                    <Binding
-                                        Mode="TwoWay"
-                                        NotifyOnValidationError="True"
-                                        Path="Settings.SocketIP"
-                                        UpdateSourceTrigger="PropertyChanged"
-                                        ValidatesOnDataErrors="True"
-                                        ValidatesOnExceptions="True">
-                                        <Binding.ValidationRules>
-                                            <helpers:IPValidationRule ValidatesOnTargetUpdated="True" />
-                                        </Binding.ValidationRules>
-                                    </Binding>
-                                </TextBox.Text>
-                            </TextBox>
+                                materialDesign:HintAssist.Hint="WPA/PSK"
+                                Text="{Binding Settings.WifiWPA, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                ToolTip="De WPA/PSK key om verbinding te kunnen maken met het netwerk" />
+                        </StackPanel>
+                    </materialDesign:Card>
 
-                            <numericTextBox:NumericTextBox
-                                Grid.Column="1"
-                                materialDesign:HintAssist.Hint="Portnumber"
-                                ToolTip="Het poortnummer waarop de service voor de centrale tracker te bereiken is"
-                                Value="{Binding Settings.SocketPort, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-                        </Grid>
-                    </StackPanel>
-                </materialDesign:Card>
-
-                <materialDesign:Card
-                    Width="250"
-                    Margin="10"
-                    Padding="10">
-                    <StackPanel>
-                        <TextBlock Style="{StaticResource TitleTextBlock}" Text="Wifi instellingen" />
-
-                        <TextBox
-                            materialDesign:HintAssist.Hint="SSID"
-                            Text="{Binding Settings.WifiSSID, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                            ToolTip="Het SSID waarmee de kiosk moet verbinden om aan de rest/socket server te kunnen" />
-                        <TextBox
-                            materialDesign:HintAssist.Hint="WPA/PSK"
-                            Text="{Binding Settings.WifiWPA, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                            ToolTip="De WPA/PSK key om verbinding te kunnen maken met het netwerk" />
-                    </StackPanel>
-                </materialDesign:Card>
-
-                <materialDesign:Card
-                    Width="250"
-                    Margin="10"
-                    Padding="10">
-                    <StackPanel>
-                        <TextBlock Style="{StaticResource TitleTextBlock}" Text="Kiosk type" />
-                        <ComboBox
-                            materialDesign:HintAssist.Hint="Kiosk type"
-                            IsEditable="False"
-                            ItemsSource="{Binding PossibleKioskTypes}"
-                            SelectedItem="{Binding Settings.KioskType, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                            ToolTip="Het type van de kiosk" />
-                    </StackPanel>
-                </materialDesign:Card>
-            </WrapPanel>
-
-            <WrapPanel Grid.Row="1" Orientation="Horizontal">
-                <WrapPanel HorizontalAlignment="Stretch" Orientation="Horizontal">
-                    <Button
-                        Command="{Binding OpenCommand}"
-                        Content="Openen"
-                        ToolTip="Een opgeslagen instelling laden" />
-                    <Button
-                        Command="{Binding SaveCommand}"
-                        Content="Opslaan"
-                        ToolTip="Een instelling opslaan" />
+                    <materialDesign:Card
+                        Width="250"
+                        Margin="10"
+                        Padding="10">
+                        <StackPanel>
+                            <TextBlock Style="{StaticResource TitleTextBlock}" Text="Kiosk type" />
+                            <ComboBox
+                                materialDesign:HintAssist.Hint="Kiosk type"
+                                IsEditable="False"
+                                ItemsSource="{Binding PossibleKioskTypes}"
+                                SelectedItem="{Binding Settings.KioskType, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                ToolTip="Het type van de kiosk" />
+                        </StackPanel>
+                    </materialDesign:Card>
                 </WrapPanel>
-                <WrapPanel HorizontalAlignment="Stretch" Orientation="Horizontal">
-                    <Button
-                        Command="{Binding ImportCommand}"
-                        Content="Importeren"
-                        ToolTip="Een instelling importeren van een Pi" />
-                    <Button
-                        Command="{Binding ExportCommand}"
-                        Content="Exporteren"
-                        ToolTip="Een instelling exporteren naar een Pi" />
+
+                <WrapPanel Grid.Row="1" Orientation="Horizontal">
+                    <WrapPanel HorizontalAlignment="Stretch" Orientation="Horizontal">
+                        <Button
+                            Command="{Binding OpenCommand}"
+                            Content="Openen"
+                            ToolTip="Een opgeslagen instelling laden" />
+                        <Button
+                            Command="{Binding SaveCommand}"
+                            Content="Opslaan"
+                            ToolTip="Een instelling opslaan" />
+                    </WrapPanel>
+                    <WrapPanel HorizontalAlignment="Stretch" Orientation="Horizontal">
+                        <Button
+                            Command="{Binding ImportCommand}"
+                            Content="Importeren"
+                            ToolTip="Een instelling importeren van een Pi" />
+                        <Button
+                            Command="{Binding ExportCommand}"
+                            Content="Exporteren"
+                            ToolTip="Een instelling exporteren naar een Pi" />
+                    </WrapPanel>
                 </WrapPanel>
-            </WrapPanel>
-        </Grid>
-    </ScrollViewer>
+            </Grid>
+        </ScrollViewer>
+    </materialDesign:DialogHost>
 </Window>
