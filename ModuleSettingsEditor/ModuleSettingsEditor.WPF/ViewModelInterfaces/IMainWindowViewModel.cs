@@ -8,12 +8,17 @@ namespace ModuleSettingsEditor.WPF.ViewModelInterfaces
     {
         IEnumerable<string> PossibleKioskTypes { get; }
 
+        ISelectDriveViewModel DialogViewModel { get; }
+
         Settings Settings { get; set; }
+
+        bool IsDriveDialogVisible { get; set; }
 
         ICommand OpenCommand { get; }
         ICommand SaveCommand { get; }
 
         ICommand ExportCommand { get; }
         ICommand ImportCommand { get; }
+
     }
 }
