@@ -112,6 +112,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Helpers\Events\ValueChangedEventArgs.cs" />
     <Compile Include="Helpers\Extensions\ObjectExtensions.cs" />
     <Compile Include="Helpers\Extensions\StringExtensions.cs" />
     <Compile Include="Helpers\JsonConverters\ObjectIdConverter.cs" />
@@ -128,6 +129,8 @@
     <Compile Include="Models\MongoModels\ReceiverModule.cs" />
     <Compile Include="Models\MongoModels\Resident.cs" />
     <Compile Include="Models\MongoModels\User.cs" />
+    <Compile Include="Services\IAuthenticationService.cs" />
+    <Compile Include="Services\Mocks\AuthenticationService.cs" />
     <Compile Include="Views\Output.xaml.cs">
       <DependentUpon>Output.xaml</DependentUpon>
     </Compile>
