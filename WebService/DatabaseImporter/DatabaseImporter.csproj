@@ -131,9 +131,10 @@
     <Compile Include="Models\MongoModels\User.cs" />
     <Compile Include="Services\IAuthenticationService.cs" />
     <Compile Include="Services\Mocks\AuthenticationService.cs" />
-    <Compile Include="Views\Output.xaml.cs">
-      <DependentUpon>Output.xaml</DependentUpon>
-    </Compile>
+    <Page Include="Converters.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="CustomStyles.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -142,7 +143,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\Input.xaml">
+    <Page Include="Views\Controls\Login.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -157,17 +158,14 @@
     <Compile Include="Bootstrapper.cs" />
     <Compile Include="ViewModelInterfaces\IMainWindowViewModel.cs" />
     <Compile Include="ViewModels\MainWindowViewModel.cs" />
-    <Compile Include="Views\Input.xaml.cs">
-      <DependentUpon>Input.xaml</DependentUpon>
+    <Compile Include="Views\Controls\Login.xaml.cs">
+      <DependentUpon>Login.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\Converters\ToVisibilityConverters\InvertedBooleanToVisibilityConverter.cs" />
     <Compile Include="Views\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Page Include="Views\Output.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs">

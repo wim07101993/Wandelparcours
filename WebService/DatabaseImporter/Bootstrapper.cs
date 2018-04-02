@@ -1,8 +1,11 @@
 ﻿using System.Windows;
+using DatabaseImporter.Services;
+using DatabaseImporter.Services.Mocks;
 using DatabaseImporter.ViewModelInterfaces;
 using DatabaseImporter.ViewModels;
 using Microsoft.Practices.ServiceLocation;
 using Microsoft.Practices.Unity;
+using Prism.Events;
 using Prism.Unity;
 
 namespace DatabaseImporter
@@ -24,10 +27,9 @@ namespace DatabaseImporter
             ServiceLocator.SetLocatorProvider(() => new UnityServiceLocator(Container));
 
             Container
-            //    .RegisterType<IFileService<Settings>, FileService<Settings>>(new ContainerControlledLifetimeManager())
-            //    .RegisterType<ISelectDriveWindowViewModel, SelectDriveWindowViewModel>()
+                .RegisterType<IEventAggregator, EventAggregator>(new ContainerControlledLifetimeManager())
+                .RegisterType<IAuthenticationService, AuthenticationService>(new ContainerControlledLifetimeManager())
                 .RegisterType<IMainWindowViewModel, MainWindowViewModel>();
-
 
             base.ConfigureContainer();
         }
