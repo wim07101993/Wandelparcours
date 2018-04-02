@@ -4,13 +4,50 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:controls="clr-namespace:DatabaseImporter.Views.Controls"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:viewModelInterfaces="clr-namespace:DatabaseImporter.ViewModelInterfaces"
-    Title="MainWindow"
+    xmlns:views="clr-namespace:DatabaseImporter.Views"
+    Title="Database importer"
     d:DataContext="{d:DesignInstance viewModelInterfaces:IMainWindowViewModel}"
     WindowState="Maximized"
     mc:Ignorable="d">
-    <Grid>
-        <controls:Login x:Name="Login" Visibility="{Binding ElementName=Login, Path=IsLoggedIn, Converter={StaticResource InvertedBooleanToVisiblityConverter}}" />
-    </Grid>
+    <materialDesign:DialogHost DialogContent="{Binding DialogContent}" IsOpen="{Binding IsDialogOpen}">
+        <Grid>
+            <controls:Login x:Name="Login" Visibility="{Binding ElementName=Login, Path=IsLoggedIn, Converter={StaticResource InvertedBooleanToVisiblityConverter}}" />
+
+            <Grid Visibility="{Binding ElementName=Login, Path=IsLoggedIn, Converter={StaticResource BooleanToVisibilityConverter}}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+
+                <views:Source
+                    Grid.Row="0"
+                    Grid.Column="0"
+                    DataContext="{Binding SourceViewModel}" />
+
+                <Border
+                    Grid.Row="0"
+                    Grid.Column="1"
+                    Margin="16"
+                    BorderBrush="{DynamicResource MaterialDesignDivider}"
+                    BorderThickness="1,0,0,0" />
+
+                <views:Destination Grid.Row="0" Grid.Column="2" />
+
+                <Button
+                    Grid.Row="1"
+                    Grid.Column="0"
+                    Grid.ColumnSpan="3"
+                    Margin="16"
+                    Content="TRANSFER" />
+            </Grid>
+        </Grid>
+    </materialDesign:DialogHost>
 </Window>

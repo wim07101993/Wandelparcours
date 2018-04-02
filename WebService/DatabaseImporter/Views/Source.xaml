@@ -1,0 +1,49 @@
+﻿<UserControl
+    x:Class="DatabaseImporter.Views.Source"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:viewModelInterfaces="clr-namespace:DatabaseImporter.ViewModelInterfaces"
+    d:DataContext="{d:DesignInstance viewModelInterfaces:ISourceViewModel}"
+    mc:Ignorable="d">
+    <Grid Margin="16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition />
+        </Grid.RowDefinitions>
+
+        <ComboBox
+            Grid.Row="0"
+            Width="200"
+            HorizontalAlignment="Left"
+            materialDesign:HintAssist.Hint="Source"
+            ItemsSource="{Binding Sources}"
+            SelectedItem="{Binding SelectedSource}"
+            Style="{StaticResource MaterialDesignFloatingHintComboBox}" />
+
+        <Grid Grid.Row="1" Margin="0,16,0,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="150" />
+                <ColumnDefinition />
+            </Grid.ColumnDefinitions>
+
+            <Button
+                Grid.Column="0"
+                HorizontalAlignment="Left"
+                Command="{Binding ChooseFileCommand}"
+                Content="BESTAND KIEZEN"
+                Visibility="{Binding UserNeedsToChooseFile, Converter={StaticResource BooleanToVisibilityConverter}}" />
+            <TextBlock
+                Grid.Column="1"
+                VerticalAlignment="Center"
+                Text="{Binding FilePath}" />
+        </Grid>
+
+        <Grid Grid.Row="2">
+            <TextBlock Text="{Binding Value}" />
+        </Grid>
+    </Grid>
+</UserControl>

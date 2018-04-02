@@ -1,7 +1,9 @@
-﻿namespace DatabaseImporter.ViewModelInterfaces
+﻿using System.ComponentModel;
+
+namespace DatabaseImporter.ViewModelInterfaces
 {
-    public interface IMainWindowViewModel
+    public interface IMainWindowViewModel : INotifyPropertyChanged
     {
-      
+        ISourceViewModel SourceViewModel { get; }
     }
 }

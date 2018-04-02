@@ -29,6 +29,7 @@ namespace DatabaseImporter
             Container
                 .RegisterType<IEventAggregator, EventAggregator>(new ContainerControlledLifetimeManager())
                 .RegisterType<IAuthenticationService, AuthenticationService>(new ContainerControlledLifetimeManager())
+                .RegisterType<ISourceViewModel, SourceViewModel>()
                 .RegisterType<IMainWindowViewModel, MainWindowViewModel>();
 
             base.ConfigureContainer();
