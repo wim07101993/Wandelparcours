@@ -55,8 +55,26 @@
                 Text="{Binding FilePath}" />
         </Grid>
 
+        <Grid
+            Grid.Row="2"
+            Margin="0,8,0,0"
+            Visibility="{Binding IsDatabaseSource, Converter={StaticResource BooleanToVisibilityConverter}}">
+            <TextBox
+                Width="200"
+                HorizontalAlignment="Left"
+                materialDesign:HintAssist.Hint="Connectie string"
+                Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+                Text="{Binding ConnectionString}" />
+        </Grid>
+
         <Grid Grid.Row="3" Margin="0,16,0,0">
-            <TextBlock Text="{Binding Value}" />
+            <ItemsControl ItemsSource="{Binding Value}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <TreeViewItem Header="{Binding .}" ItemsSource="{Binding ., Converter={StaticResource ValueToPropertyListConverter}}" />
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
         </Grid>
     </Grid>
 </UserControl>

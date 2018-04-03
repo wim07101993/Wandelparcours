@@ -57,6 +57,7 @@ namespace DatabaseImporter.ViewModels
 
                 RaisePropertyChanged(nameof(SelectedESource));
                 RaisePropertyChanged(nameof(IsFileSource));
+                RaisePropertyChanged(nameof(IsDatabaseSource));
             }
         }
 
@@ -74,6 +75,20 @@ namespace DatabaseImporter.ViewModels
                     case "Json":
                     case "Csv":
                     case "Xml":
+                        return true;
+                    default:
+                        return false;
+                }
+            }
+        }
+
+        public bool IsDatabaseSource
+        {
+            get
+            {
+                switch (SelectedSource)
+                {
+                    case "MongoDB":
                         return true;
                     default:
                         return false;

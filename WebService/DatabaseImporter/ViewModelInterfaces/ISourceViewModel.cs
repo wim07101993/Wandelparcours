@@ -12,6 +12,7 @@ namespace DatabaseImporter.ViewModelInterfaces
         IEnumerable<string> Sources { get; }
         string SelectedDataType { get; set; }
         bool IsFileSource { get; }
+        bool IsDatabaseSource { get; }
 
         bool UserNeedsToInputConnectionString { get; }
 

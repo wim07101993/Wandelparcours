@@ -33,6 +33,9 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>database.ico</ApplicationIcon>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="DnsClient, Version=1.0.7.0, Culture=neutral, PublicKeyToken=4574bb5573c51424, processorArchitecture=MSIL">
       <HintPath>..\packages\DnsClient.1.0.7\lib\net45\DnsClient.dll</HintPath>
@@ -149,6 +152,7 @@
     <Compile Include="Helpers\ESource.cs" />
     <Compile Include="ViewModelInterfaces\ISourceViewModel.cs" />
     <Compile Include="ViewModels\SourceViewModel.cs" />
+    <Compile Include="Views\Converters\ObjectToPropertyListConverter.cs" />
     <Compile Include="Views\Destination.xaml.cs">
       <DependentUpon>Destination.xaml</DependentUpon>
     </Compile>
@@ -228,6 +232,9 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Views\Styles\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="database.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
