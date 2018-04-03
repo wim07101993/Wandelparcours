@@ -1,5 +1,6 @@
 ﻿using System.Windows;
 using DatabaseImporter.Services;
+using DatabaseImporter.Services.FileIO;
 using DatabaseImporter.Services.Mocks;
 using DatabaseImporter.ViewModelInterfaces;
 using DatabaseImporter.ViewModels;
@@ -29,6 +30,12 @@ namespace DatabaseImporter
             Container
                 .RegisterType<IEventAggregator, EventAggregator>(new ContainerControlledLifetimeManager())
                 .RegisterType<IAuthenticationService, AuthenticationService>(new ContainerControlledLifetimeManager())
+                .RegisterType<IFileService, FileService>(new ContainerControlledLifetimeManager())
+                // serialization services
+                .RegisterType<ICsvService, CsvService>(new ContainerControlledLifetimeManager())
+                .RegisterType<IJsonService, JsonService>(new ContainerControlledLifetimeManager())
+                .RegisterType<IXmlService, XmlService>(new ContainerControlledLifetimeManager())
+                // viewmodels
                 .RegisterType<ISourceViewModel, SourceViewModel>()
                 .RegisterType<IMainWindowViewModel, MainWindowViewModel>();
 
