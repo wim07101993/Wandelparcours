@@ -5,7 +5,7 @@ namespace DatabaseImporter.Services.FileIO
 {
     public class CsvService : ASerializationService, ICsvService
     {
-        private const string ConstFilter = "Json Bestanden (*.json;*.js)|*.json;*.js|Alle bestanden (*.*)|*.*";
+        private const string ConstFilter = "Csv Bestanden (*.csv)|*.csv|Alle bestanden (*.*)|*.*";
 
 
         public CsvService(IFileService fileService) : base(fileService)

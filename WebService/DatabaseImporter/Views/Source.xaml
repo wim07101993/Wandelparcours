@@ -35,7 +35,10 @@
             SelectedItem="{Binding SelectedSource}"
             Style="{StaticResource MaterialDesignFloatingHintComboBox}" />
 
-        <Grid Grid.Row="2" Margin="0,8,0,0">
+        <Grid
+            Grid.Row="2"
+            Margin="0,8,0,0"
+            Visibility="{Binding IsFileSource, Converter={StaticResource BooleanToVisibilityConverter}}">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="150" />
                 <ColumnDefinition />
@@ -45,8 +48,7 @@
                 Grid.Column="0"
                 HorizontalAlignment="Left"
                 Command="{Binding ChooseFileCommand}"
-                Content="BESTAND KIEZEN"
-                Visibility="{Binding UserNeedsToChooseFile, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                Content="BESTAND KIEZEN" />
             <TextBlock
                 Grid.Column="1"
                 VerticalAlignment="Center"

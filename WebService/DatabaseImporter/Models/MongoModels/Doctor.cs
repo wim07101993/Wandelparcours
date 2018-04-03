@@ -1,4 +1,5 @@
 ﻿using MongoDB.Bson.Serialization.Attributes;
+using Newtonsoft.Json;
 
 namespace DatabaseImporter.Models.MongoModels
 {
@@ -13,6 +14,7 @@ namespace DatabaseImporter.Models.MongoModels
         /// In the database the value is stored under the field "name"
         /// </summary>
         [BsonElement("name")]
+        [JsonProperty("name")]
         public string Name { get; set; }
 
         /// <summary>
@@ -21,7 +23,7 @@ namespace DatabaseImporter.Models.MongoModels
         /// In the database the value is stored under the field "phoneNumber"
         /// </summary>
         [BsonElement("phoneNumber")]
+        [JsonProperty("phoneNumber")]
         public string PhoneNumber { get; set; }
-
     }
 }

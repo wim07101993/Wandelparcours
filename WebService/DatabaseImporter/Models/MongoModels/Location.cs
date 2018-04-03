@@ -15,25 +15,24 @@ namespace DatabaseImporter.Models.MongoModels
         /// <para />
         /// In the database the value is stored under the field "x"
         /// </summary>
-   
-
         /// <summary>
         /// X is the x coordinate of the Location
         /// <para/>
         /// In the database the value is stored under the field "x"
         /// </summary>
         [BsonElement("residentId")]
+        [JsonProperty("residentId")]
         [JsonConverter(typeof(ObjectIdConverter))]
-         public ObjectId ResidentId { get; set; }
-        
-        
-        
+        public ObjectId ResidentId { get; set; }
+
+
         /// <summary>
         /// X is the x coordinate of the Location
         /// <para/>
         /// In the database the value is stored under the field "x"
         /// </summary>
         [BsonElement("x")]
+        [JsonProperty("x")]
         public double X { get; set; }
 
         /// <summary>
@@ -42,6 +41,7 @@ namespace DatabaseImporter.Models.MongoModels
         /// In the database the value is stored under the field "y"
         /// </summary>
         [BsonElement("y")]
+        [JsonProperty("y")]
         public double Y { get; set; }
 
         /// <summary>
@@ -50,6 +50,7 @@ namespace DatabaseImporter.Models.MongoModels
         /// In the database the value is stored under the field "timeStamp"
         /// </summary>
         [BsonElement("timeStamp")]
+        [JsonProperty("timeStamp")]
         public DateTime TimeStamp { get; set; }
     }
 }

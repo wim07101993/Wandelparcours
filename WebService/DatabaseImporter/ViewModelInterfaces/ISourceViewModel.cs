@@ -11,8 +11,8 @@ namespace DatabaseImporter.ViewModelInterfaces
 
         IEnumerable<string> Sources { get; }
         string SelectedDataType { get; set; }
+        bool IsFileSource { get; }
 
-        bool UserNeedsToChooseFile { get; }
         bool UserNeedsToInputConnectionString { get; }
 
         string FilePath { get; }
@@ -21,6 +21,5 @@ namespace DatabaseImporter.ViewModelInterfaces
         ICommand ChooseFileCommand { get; }
 
         object Value { get; set; }
-        
     }
 }

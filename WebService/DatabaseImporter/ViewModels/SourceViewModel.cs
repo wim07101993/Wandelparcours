@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using DatabaseImporter.Helpers;
+using DatabaseImporter.Models.MongoModels;
+using DatabaseImporter.Services.FileIO;
 using DatabaseImporter.ViewModelInterfaces;
-using Microsoft.Win32;
-using Newtonsoft.Json;
 using Prism.Commands;
 using Prism.Mvvm;
 
@@ -15,6 +14,10 @@ namespace DatabaseImporter.ViewModels
     public class SourceViewModel : BindableBase, ISourceViewModel
     {
         #region FIELDS
+
+        private readonly ICsvService _csvService;
+        private readonly IJsonService _jsonService;
+        private readonly IXmlService _xmlService;
 
         private string _selectedSource = ESource.Json.ToString();
         private string _selectedDataType = EDataType.Resident.ToString();
@@ -28,8 +31,12 @@ namespace DatabaseImporter.ViewModels
 
         #region CONSTRUCTOR
 
-        public SourceViewModel()
+        public SourceViewModel(ICsvService csvService, IJsonService jsonService, IXmlService xmlService)
         {
+            _csvService = csvService;
+            _jsonService = jsonService;
+            _xmlService = xmlService;
+
             ChooseFileCommand = new DelegateCommand(ChooseFile);
         }
 
@@ -45,11 +52,11 @@ namespace DatabaseImporter.ViewModels
             get => _selectedSource;
             set
             {
-                if (SetProperty(ref _selectedSource, value))
+                if (!SetProperty(ref _selectedSource, value))
                     return;
 
                 RaisePropertyChanged(nameof(SelectedESource));
-                RaisePropertyChanged(nameof(UserNeedsToChooseFile));
+                RaisePropertyChanged(nameof(IsFileSource));
             }
         }
 
@@ -57,6 +64,22 @@ namespace DatabaseImporter.ViewModels
             => Enum.TryParse(SelectedSource, out ESource ret)
                 ? ret
                 : ESource.Json;
+
+        public bool IsFileSource
+        {
+            get
+            {
+                switch (SelectedSource)
+                {
+                    case "Json":
+                    case "Csv":
+                    case "Xml":
+                        return true;
+                    default:
+                        return false;
+                }
+            }
+        }
 
 
         public IEnumerable<string> DataTypes { get; } = Enum.GetNames(typeof(EDataType));
@@ -72,23 +95,6 @@ namespace DatabaseImporter.ViewModels
                 ? ret
                 : EDataType.Resident;
 
-
-        public bool UserNeedsToChooseFile
-        {
-            get
-            {
-                switch (SelectedESource)
-                {
-                    case ESource.Json:
-                    case ESource.Csv:
-                        return true;
-                    case ESource.MongoDB:
-                        return false;
-                    default:
-                        throw new ArgumentOutOfRangeException();
-                }
-            }
-        }
 
         public bool UserNeedsToInputConnectionString
         {
@@ -134,48 +140,45 @@ namespace DatabaseImporter.ViewModels
 
         private void ChooseFile()
         {
-            var dialog = new OpenFileDialog
+            var service = GetService(SelectedESource);
+#pragma warning disable 4014 // no await
+            switch (SelectedEDataType)
             {
-                InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
-                Multiselect = false
-            };
-
-            switch (SelectedESource)
-            {
-                case ESource.Csv:
-                    dialog.Filter = "Csv Bestanden (*.csv)|*.csv|Alle bestanden (*.*)|*.*";
+                case EDataType.User:
+                    OpenFile<User>(service);
                     break;
-                case ESource.Json:
-                    dialog.Filter = "Json Bestanden (*.json;*.js)|*.json;*.js|Alle bestanden (*.*)|*.*";
+                case EDataType.Resident:
+                    OpenFile<Resident>(service);
+                    break;
+                case EDataType.ReceiverModule:
+                    OpenFile<ReceiverModule>(service);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
             }
-
-            if (dialog.ShowDialog() != true)
-                return;
-
-            FilePath = dialog.FileName;
-#pragma warning disable 4014 // no await
-            ReadFileAsync();
 #pragma warning restore 4014
         }
 
-        private async Task ReadFileAsync()
+        private ISerializationService GetService(ESource source)
         {
-            string json;
-            using (var stream = File.OpenText(FilePath))
+            switch (source)
             {
-                json = await stream.ReadToEndAsync();
+                case ESource.Json:
+                    return _jsonService;
+                case ESource.Csv:
+                    return _csvService;
+                case ESource.Xml:
+                    return _xmlService;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(source), source, null);
             }
+        }
 
-            if (string.IsNullOrWhiteSpace(json))
-            {
-                Value = null;
-                return;
-            }
-
-            Value = JsonConvert.DeserializeObject(json);
+        private async Task OpenFile<T>(IObjectReader service)
+        {
+            var file = await service.ReadObjectFromFileAsync<T>();
+            FilePath = file.Path;
+            Value = file.Content;
         }
 
         #endregion METHODS

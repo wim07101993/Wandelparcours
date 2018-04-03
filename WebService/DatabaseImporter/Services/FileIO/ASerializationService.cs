@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using DatabaseImporter.Models;
 
@@ -21,7 +22,7 @@ namespace DatabaseImporter.Services.FileIO
         public async Task<File<IEnumerable<T>>> ReadObjectFromFileAsync<T>()
         {
             var file = await _fileService.ReadFileAsync(ExtensionFilter);
-            return new File<IEnumerable<T>> { Content = Deserialize<T>(file.Content), Path = file.Path };
+            return new File<IEnumerable<T>> {Content = Deserialize<T>(file.Content), Path = file.Path};
         }
 
         public async Task WriteObjectToFileAsync<T>(IEnumerable<T> values)

@@ -2,6 +2,7 @@
 using DatabaseImporter.Models.MongoModels.Bases;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
+using Newtonsoft.Json;
 
 namespace DatabaseImporter.Models.MongoModels
 {
@@ -16,6 +17,7 @@ namespace DatabaseImporter.Models.MongoModels
         /// In the database the value is stored under the field "userName"
         /// </summary>
         [BsonElement("userName")]
+        [JsonProperty("userName")]
         public string UserName { get; set; }
 
         /// <summary>
@@ -24,6 +26,7 @@ namespace DatabaseImporter.Models.MongoModels
         /// In the database the value is stored under the field "email"
         /// </summary>
         [BsonElement("email")]
+        [JsonProperty("email")]
         public string Email { get; set; }
 
         /// <summary>
@@ -32,6 +35,7 @@ namespace DatabaseImporter.Models.MongoModels
         /// In the database the value is stored under the field "password"
         /// </summary>
         [BsonElement("password")]
+        [JsonProperty("password")]
         public string Password { get; set; }
 
         /// <summary>
@@ -40,12 +44,15 @@ namespace DatabaseImporter.Models.MongoModels
         /// In the database the value is stored under the field "authLevel"
         /// </summary>
         [BsonElement("userType")]
+        [JsonProperty("userType")]
         public EUserType UserType { get; set; } = EUserType.Guest;
 
         [BsonElement("residents")]
+        [JsonProperty("residents")]
         public IEnumerable<ObjectId> Residents { get; set; }
 
         [BsonElement("group")]
+        [JsonProperty("group")]
         public string Group { get; set; }
     }
 }

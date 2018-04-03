@@ -15,6 +15,7 @@ namespace DatabaseImporter.Models.MongoModels.Bases
         /// In the database the value is stored under the field "id"
         /// </summary>
         [BsonId]
+        [JsonProperty("id")]
         [JsonConverter(typeof(ObjectIdConverter))]
         public virtual ObjectId Id { get; set; }
     }
