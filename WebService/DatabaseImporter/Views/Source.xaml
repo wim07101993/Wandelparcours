@@ -12,6 +12,7 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
             <RowDefinition />
         </Grid.RowDefinitions>
 
@@ -19,12 +20,22 @@
             Grid.Row="0"
             Width="200"
             HorizontalAlignment="Left"
+            materialDesign:HintAssist.Hint="DataType"
+            ItemsSource="{Binding DataTypes}"
+            SelectedItem="{Binding SelectedDataType}"
+            Style="{StaticResource MaterialDesignFloatingHintComboBox}" />
+
+        <ComboBox
+            Grid.Row="1"
+            Width="200"
+            Margin="0,16,0,0"
+            HorizontalAlignment="Left"
             materialDesign:HintAssist.Hint="Source"
             ItemsSource="{Binding Sources}"
             SelectedItem="{Binding SelectedSource}"
             Style="{StaticResource MaterialDesignFloatingHintComboBox}" />
 
-        <Grid Grid.Row="1" Margin="0,16,0,0">
+        <Grid Grid.Row="2" Margin="0,8,0,0">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="150" />
                 <ColumnDefinition />
@@ -42,7 +53,7 @@
                 Text="{Binding FilePath}" />
         </Grid>
 
-        <Grid Grid.Row="2">
+        <Grid Grid.Row="3" Margin="0,16,0,0">
             <TextBlock Text="{Binding Value}" />
         </Grid>
     </Grid>

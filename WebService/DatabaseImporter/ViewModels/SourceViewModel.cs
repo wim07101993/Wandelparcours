@@ -17,6 +17,8 @@ namespace DatabaseImporter.ViewModels
         #region FIELDS
 
         private string _selectedSource = ESource.Json.ToString();
+        private string _selectedDataType = EDataType.Resident.ToString();
+
         private string _filePath;
         private object _value;
         private string _connectionString;
@@ -55,6 +57,21 @@ namespace DatabaseImporter.ViewModels
             => Enum.TryParse(SelectedSource, out ESource ret)
                 ? ret
                 : ESource.Json;
+
+
+        public IEnumerable<string> DataTypes { get; } = Enum.GetNames(typeof(EDataType));
+
+        public string SelectedDataType
+        {
+            get => _selectedDataType;
+            set => SetProperty(ref _selectedDataType, value);
+        }
+
+        private EDataType SelectedEDataType
+            => Enum.TryParse(SelectedSource, out EDataType ret)
+                ? ret
+                : EDataType.Resident;
+
 
         public bool UserNeedsToChooseFile
         {

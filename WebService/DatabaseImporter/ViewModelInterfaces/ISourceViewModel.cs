@@ -6,9 +6,11 @@ namespace DatabaseImporter.ViewModelInterfaces
 {
     public interface ISourceViewModel : INotifyPropertyChanged
     {
-        IEnumerable<string> Sources { get; }
-
+        IEnumerable<string> DataTypes { get; }
         string SelectedSource { get; set; }
+
+        IEnumerable<string> Sources { get; }
+        string SelectedDataType { get; set; }
 
         bool UserNeedsToChooseFile { get; }
         bool UserNeedsToInputConnectionString { get; }
@@ -19,5 +21,6 @@ namespace DatabaseImporter.ViewModelInterfaces
         ICommand ChooseFileCommand { get; }
 
         object Value { get; set; }
+        
     }
 }
