@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Xml.Serialization;
 using Newtonsoft.Json;
 
 namespace DatabaseImporter.Helpers.Extensions
@@ -57,7 +59,7 @@ namespace DatabaseImporter.Helpers.Extensions
                                 .DeserializeObject(csvRows[0][fieldIndex], prop.PropertyType);
                             property = prop;
 
-                            property.SetValue(values[0],value);
+                            property.SetValue(values[0], value);
                         }
                         catch
                         {
@@ -71,12 +73,22 @@ namespace DatabaseImporter.Helpers.Extensions
                     for (var rowIndex = 1; rowIndex < values.Count; rowIndex++)
                     {
                         var value = JsonConvert.DeserializeObject(csvRows[rowIndex][fieldIndex], property.PropertyType);
-                        property.SetValue(values[rowIndex],value);
+                        property.SetValue(values[rowIndex], value);
                     }
                 }
             }
 
             return values;
+        }
+
+        public static T DeserializeXml<T>(this string This)
+        {
+            var serializer = new XmlSerializer(typeof(T));
+
+            using (var reader = new StringReader(This))
+            {
+                return (T) serializer.Deserialize(reader);
+            }
         }
     }
 }
