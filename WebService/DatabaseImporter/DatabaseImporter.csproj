@@ -117,6 +117,7 @@
     </ApplicationDefinition>
     <Compile Include="Helpers\BindableBase.cs" />
     <Compile Include="Helpers\EDataType.cs" />
+    <Compile Include="Helpers\EDestination.cs" />
     <Compile Include="Helpers\EStateManagerKey.cs" />
     <Compile Include="Helpers\Events\GotContentEvent.cs" />
     <Compile Include="Helpers\Events\StateChangedEventArgs.cs" />
@@ -157,7 +158,9 @@
     <Compile Include="Services\Mocks\AuthenticationService.cs" />
     <Compile Include="Helpers\ESource.cs" />
     <Compile Include="Services\StateManager.cs" />
+    <Compile Include="ViewModelInterfaces\IDestinationViewModel.cs" />
     <Compile Include="ViewModelInterfaces\ISourceViewModel.cs" />
+    <Compile Include="ViewModels\DestinationViewModel.cs" />
     <Compile Include="ViewModels\SourceViewModel.cs" />
     <Compile Include="Views\Controls\ObjectBrowser.cs" />
     <Compile Include="Views\Converters\ObjectToPropertyListConverter.cs" />

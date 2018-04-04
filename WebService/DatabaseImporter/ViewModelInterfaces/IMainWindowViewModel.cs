@@ -9,6 +9,7 @@ namespace DatabaseImporter.ViewModelInterfaces
         string SelectedDataType { get; set; }
 
         ISourceViewModel SourceViewModel { get; }
+        IDestinationViewModel DestinationViewModel { get; }
 
         object FileContent { get; }
     }

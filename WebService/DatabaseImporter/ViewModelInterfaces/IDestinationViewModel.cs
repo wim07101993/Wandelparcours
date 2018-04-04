@@ -1,15 +1,14 @@
 ﻿using System.Collections.Generic;
-using System.ComponentModel;
 using System.Windows.Input;
 
 namespace DatabaseImporter.ViewModelInterfaces
 {
-    public interface ISourceViewModel : INotifyPropertyChanged
+    public interface IDestinationViewModel
     {
-        IEnumerable<string> Sources { get; }
-        string SelectedSource { get; set; }
-        bool IsFileSource { get; }
-        bool IsDatabaseSource { get; }
+        IEnumerable<string> Destinations { get; }
+        string SelectedDestination { get; set; }
+        bool IsFileDestination { get; }
+        bool IsDatabaseDestination { get; }
 
         bool UserNeedsToInputConnectionString { get; }
 

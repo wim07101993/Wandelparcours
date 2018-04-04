@@ -10,11 +10,14 @@ namespace DatabaseImporter.ViewModels
 {
     public class MainWindowViewModel : BindableBase, IMainWindowViewModel
     {
-        public MainWindowViewModel(ISourceViewModel sourceViewModel, IEventAggregator eventAggregator,
-            IStateManager stateManager)
+        public MainWindowViewModel(ISourceViewModel sourceViewModel, IDestinationViewModel destinationViewModel,
+            IEventAggregator eventAggregator, IStateManager stateManager)
             : base(eventAggregator, stateManager)
         {
             SourceViewModel = sourceViewModel;
+            DestinationViewModel = destinationViewModel;
+
+            SelectedDataType = EDataType.Resident.ToString();
             StateManager.StateChanged += OnStateChanged;
         }
 
@@ -22,6 +25,7 @@ namespace DatabaseImporter.ViewModels
         public IEnumerable<string> DataTypes { get; } = Enum.GetNames(typeof(EDataType));
 
         public ISourceViewModel SourceViewModel { get; }
+        public IDestinationViewModel DestinationViewModel { get; }
 
         public string SelectedDataType
         {

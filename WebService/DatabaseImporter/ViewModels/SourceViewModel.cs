@@ -130,17 +130,7 @@ namespace DatabaseImporter.ViewModels
         }
 
         public ICommand ChooseFileCommand { get; }
-
-        public object Value
-        {
-            get => StateManager.GetState<object>(EStateManagerKey.FileContent.ToString());
-            set
-            {
-                StateManager.SetState(EStateManagerKey.FileContent.ToString(), value);
-                RaisePropertyChanged(nameof(Value));
-            }
-        }
-
+        
         #endregion PROPERTIES
 
 
@@ -186,7 +176,7 @@ namespace DatabaseImporter.ViewModels
         {
             var file = await service.ReadObjectFromFileWithDialogAsync<T>();
             FilePath = file.Path;
-            Value = file.Content;
+            StateManager.SetState(EStateManagerKey.FileContent.ToString(), file.Content);
         }
 
         private async Task ReloadFile()
@@ -196,22 +186,22 @@ namespace DatabaseImporter.ViewModels
             {
                 case EDataType.User:
                     var users = await service.ReadObjectFromFileAsync<User>(FilePath);
-                    Value = users.Content;
+                    StateManager.SetState(EStateManagerKey.FileContent.ToString(), users.Content);
                     break;
                 case EDataType.Resident:
                     var residents = await service.ReadObjectFromFileAsync<Resident>(FilePath);
-                    Value = residents.Content;
+                    StateManager.SetState(EStateManagerKey.FileContent.ToString(), residents.Content);
                     break;
                 case EDataType.ReceiverModule:
                     var receiverModules = await service.ReadObjectFromFileAsync<ReceiverModule>(FilePath);
-                    Value = receiverModules.Content;
+                    StateManager.SetState(EStateManagerKey.FileContent.ToString(), receiverModules.Content);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
             }
         }
 
-        protected async void OnStateChanged(object sender, Helpers.Events.StateChangedEventArgs e)
+        private async void OnStateChanged(object sender, Helpers.Events.StateChangedEventArgs e)
         {
             StateManager.StateChanged -= OnStateChanged;
 

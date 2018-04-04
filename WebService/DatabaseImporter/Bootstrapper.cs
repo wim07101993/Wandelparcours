@@ -38,6 +38,7 @@ namespace DatabaseImporter
                 .RegisterType<IXmlService, XmlService>(new ContainerControlledLifetimeManager())
                 // viewmodels
                 .RegisterType<ISourceViewModel, SourceViewModel>()
+                .RegisterType<IDestinationViewModel, DestinationViewModel>()
                 .RegisterType<IMainWindowViewModel, MainWindowViewModel>();
 
             base.ConfigureContainer();
