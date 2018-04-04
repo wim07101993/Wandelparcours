@@ -1,4 +1,4 @@
-﻿namespace DatabaseImporter.Services.FileIO
+﻿namespace DatabaseImporter.Services.Serialization
 {
     public interface IJsonService : ISerializationService
     {

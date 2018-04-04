@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace DatabaseImporter.Services.FileIO
+namespace DatabaseImporter.Services.Serialization
 {
     public interface IObjectWriter
     {

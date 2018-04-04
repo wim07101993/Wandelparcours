@@ -1,7 +1,8 @@
 ﻿using System.Collections.Generic;
 using DatabaseImporter.Helpers.Extensions;
+using DatabaseImporter.Services.DataIO;
 
-namespace DatabaseImporter.Services.FileIO
+namespace DatabaseImporter.Services.Serialization
 {
     public class XmlService : ASerializationService, IXmlService
     {

@@ -1,8 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using DatabaseImporter.Models;
+using DatabaseImporter.Services.DataIO;
 
-namespace DatabaseImporter.Services.FileIO
+namespace DatabaseImporter.Services.Serialization
 {
     public abstract class ASerializationService : ISerializationService
     {

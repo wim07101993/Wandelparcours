@@ -5,7 +5,7 @@ using System.Windows.Input;
 using DatabaseImporter.Helpers;
 using DatabaseImporter.Models.MongoModels;
 using DatabaseImporter.Services;
-using DatabaseImporter.Services.FileIO;
+using DatabaseImporter.Services.Serialization;
 using DatabaseImporter.ViewModelInterfaces;
 using Prism.Commands;
 using Prism.Events;

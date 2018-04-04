@@ -1,7 +1,8 @@
 ﻿using System.Windows;
 using DatabaseImporter.Services;
-using DatabaseImporter.Services.FileIO;
+using DatabaseImporter.Services.DataIO;
 using DatabaseImporter.Services.Mocks;
+using DatabaseImporter.Services.Serialization;
 using DatabaseImporter.ViewModelInterfaces;
 using DatabaseImporter.ViewModels;
 using Microsoft.Practices.ServiceLocation;

@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using DatabaseImporter.Models;
 using Microsoft.Win32;
 
-namespace DatabaseImporter.Services.FileIO
+namespace DatabaseImporter.Services.DataIO
 {
     public class FileService : IFileService
     {

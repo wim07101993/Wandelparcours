@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using DatabaseImporter.Models;
 
-namespace DatabaseImporter.Services.FileIO
+namespace DatabaseImporter.Services.Serialization
 {
     public interface IObjectReader
     {

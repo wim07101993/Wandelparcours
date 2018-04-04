@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
 using DatabaseImporter.Models;
 
-namespace DatabaseImporter.Services.FileIO
+namespace DatabaseImporter.Services.DataIO
 {
     public interface IFileService
     {
