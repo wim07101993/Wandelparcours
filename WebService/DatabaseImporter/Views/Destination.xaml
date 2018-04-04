@@ -34,33 +34,37 @@
             SelectedItem="{Binding SelectedDestination}"
             Style="{StaticResource MaterialDesignFloatingHintComboBox}" />
 
-        <WrapPanel
-            Grid.Row="2"
-            Width="200"
-            Visibility="{Binding IsFileDestination, Converter={StaticResource BooleanToVisibilityConverter}}">
+        <Grid Grid.Row="2" Visibility="{Binding IsFileDestination, Converter={StaticResource BooleanToVisibilityConverter}}">
             <Button
                 Margin="0,16,0,0"
                 HorizontalAlignment="Left"
                 Command="{Binding ChooseFileCommand}"
-                Content="BESTAND KIEZEN" />
-            <TextBlock
-                MaxWidth="200"
-                Margin="0,8,0,0"
-                VerticalAlignment="Center"
-                Text="{Binding FilePath}"
-                TextTrimming="CharacterEllipsis" />
-        </WrapPanel>
+                Content="BESTAND OPSLAAN"
+                Style="{StaticResource MaterialDesignRaisedAccentButton}" />
+        </Grid>
 
         <Grid
             Grid.Row="2"
             Margin="0,8,0,0"
             Visibility="{Binding IsDatabaseDestination, Converter={StaticResource BooleanToVisibilityConverter}}">
+
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+
             <TextBox
-                Width="200"
-                HorizontalAlignment="Left"
+                Grid.Row="0"
                 materialDesign:HintAssist.Hint="Connectie string"
                 Style="{StaticResource MaterialDesignFloatingHintTextBox}"
                 Text="{Binding ConnectionString}" />
+            <Button
+                Grid.Row="1"
+                Margin="0,16,0,0"
+                HorizontalAlignment="Left"
+                Command="{Binding ChooseFileCommand}"
+                Content="IMPORTEREN"
+                Style="{StaticResource MaterialDesignRaisedAccentButton}" />
         </Grid>
 
     </Grid>

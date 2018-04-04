@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using System.Windows.Input;
 using DatabaseImporter.Helpers;
+using DatabaseImporter.Models.MongoModels;
 using DatabaseImporter.Services;
 using DatabaseImporter.Services.FileIO;
 using DatabaseImporter.ViewModelInterfaces;
@@ -36,8 +38,6 @@ namespace DatabaseImporter.ViewModels
             _xmlService = xmlService;
 
             ChooseFileCommand = new DelegateCommand(ChooseFile);
-
-            StateManager.StateChanged += OnStateChanged;
         }
 
         #endregion CONSTRUCTOR
@@ -97,9 +97,6 @@ namespace DatabaseImporter.ViewModels
         }
 
 
-        public bool UserNeedsToInputConnectionString { get; }
-
-
         public string FilePath
         {
             get => _filePath;
@@ -121,13 +118,44 @@ namespace DatabaseImporter.ViewModels
 
         private void ChooseFile()
         {
+            var service = GetService(SelectedEDestination);
+#pragma warning disable 4014 // no await
+            switch (StateManager.GetState<EDataType>(EStateManagerKey.DataType.ToString()))
+            {
+                case EDataType.User:
+                    SaveFile<User>(service);
+                    break;
+                case EDataType.Resident:
+                    SaveFile<Resident>(service);
+                    break;
+                case EDataType.ReceiverModule:
+                    SaveFile<ReceiverModule>(service);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+#pragma warning restore 4014
         }
 
-        private async void OnStateChanged(object sender, Helpers.Events.StateChangedEventArgs e)
+        private ISerializationService GetService(EDestination source)
         {
-            StateManager.StateChanged -= OnStateChanged;
+            switch (source)
+            {
+                case EDestination.Json:
+                    return _jsonService;
+                case EDestination.Csv:
+                    return _csvService;
+                case EDestination.Xml:
+                    return _xmlService;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(source), source, null);
+            }
+        }
 
-            StateManager.StateChanged += OnStateChanged;
+        private async Task SaveFile<T>(IObjectWriter service)
+        {
+            await service.WriteObjectToFileWithDialogAsync(
+                StateManager.GetState<IEnumerable<T>>(EStateManagerKey.FileContent.ToString()));
         }
 
         #endregion METHODS

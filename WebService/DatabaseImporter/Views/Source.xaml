@@ -34,19 +34,15 @@
             SelectedItem="{Binding SelectedSource}"
             Style="{StaticResource MaterialDesignFloatingHintComboBox}" />
 
-        <WrapPanel
-            Grid.Row="2"
-            Width="200"
-            Visibility="{Binding IsFileSource, Converter={StaticResource BooleanToVisibilityConverter}}">
+        <WrapPanel Grid.Row="2" Visibility="{Binding IsFileSource, Converter={StaticResource BooleanToVisibilityConverter}}">
             <Button
                 Margin="0,16,0,0"
                 HorizontalAlignment="Left"
                 Command="{Binding ChooseFileCommand}"
                 Content="BESTAND KIEZEN" />
             <TextBlock
-                MaxWidth="200"
-                Margin="0,8,0,0"
-                VerticalAlignment="Center"
+                Margin="8"
+                VerticalAlignment="Bottom"
                 Text="{Binding FilePath}"
                 TextTrimming="CharacterEllipsis" />
         </WrapPanel>
@@ -56,8 +52,6 @@
             Margin="0,8,0,0"
             Visibility="{Binding IsDatabaseSource, Converter={StaticResource BooleanToVisibilityConverter}}">
             <TextBox
-                Width="200"
-                HorizontalAlignment="Left"
                 materialDesign:HintAssist.Hint="Connectie string"
                 Style="{StaticResource MaterialDesignFloatingHintTextBox}"
                 Text="{Binding ConnectionString}" />

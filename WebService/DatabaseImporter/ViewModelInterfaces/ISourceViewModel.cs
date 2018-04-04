@@ -11,8 +11,6 @@ namespace DatabaseImporter.ViewModelInterfaces
         bool IsFileSource { get; }
         bool IsDatabaseSource { get; }
 
-        bool UserNeedsToInputConnectionString { get; }
-
         string FilePath { get; }
         string ConnectionString { get; set; }
 

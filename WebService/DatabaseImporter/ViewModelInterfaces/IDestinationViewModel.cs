@@ -9,9 +9,7 @@ namespace DatabaseImporter.ViewModelInterfaces
         string SelectedDestination { get; set; }
         bool IsFileDestination { get; }
         bool IsDatabaseDestination { get; }
-
-        bool UserNeedsToInputConnectionString { get; }
-
+        
         string FilePath { get; }
         string ConnectionString { get; set; }
 

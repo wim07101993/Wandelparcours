@@ -100,23 +100,6 @@ namespace DatabaseImporter.ViewModels
         }
 
 
-        public bool UserNeedsToInputConnectionString
-        {
-            get
-            {
-                switch (SelectedESource)
-                {
-                    case ESource.Json:
-                    case ESource.Csv:
-                        return false;
-                    case ESource.MongoDB:
-                        return true;
-                    default:
-                        throw new ArgumentOutOfRangeException();
-                }
-            }
-        }
-
         public string FilePath
         {
             get => _filePath;
@@ -143,13 +126,13 @@ namespace DatabaseImporter.ViewModels
             switch (StateManager.GetState<EDataType>(EStateManagerKey.DataType.ToString()))
             {
                 case EDataType.User:
-                    OpenFile<User>(service);
+                    OpenFileAsync<User>(service);
                     break;
                 case EDataType.Resident:
-                    OpenFile<Resident>(service);
+                    OpenFileAsync<Resident>(service);
                     break;
                 case EDataType.ReceiverModule:
-                    OpenFile<ReceiverModule>(service);
+                    OpenFileAsync<ReceiverModule>(service);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
@@ -172,14 +155,14 @@ namespace DatabaseImporter.ViewModels
             }
         }
 
-        private async Task OpenFile<T>(IObjectReader service)
+        private async Task OpenFileAsync<T>(IObjectReader service)
         {
             var file = await service.ReadObjectFromFileWithDialogAsync<T>();
             FilePath = file.Path;
             StateManager.SetState(EStateManagerKey.FileContent.ToString(), file.Content);
         }
 
-        private async Task ReloadFile()
+        private async Task ReloadFileAsync()
         {
             var service = GetService(SelectedESource);
             switch (StateManager.GetState<EDataType>(EStateManagerKey.DataType.ToString()))
@@ -206,7 +189,7 @@ namespace DatabaseImporter.ViewModels
             StateManager.StateChanged -= OnStateChanged;
 
             if (!string.IsNullOrEmpty(FilePath))
-                await ReloadFile();
+                await ReloadFileAsync();
 
             StateManager.StateChanged += OnStateChanged;
         }

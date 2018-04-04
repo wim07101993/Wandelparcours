@@ -19,7 +19,7 @@
             <Grid Visibility="{Binding ElementName=Login, Path=IsLoggedIn, Converter={StaticResource BooleanToVisibilityConverter}}">
 
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="400" />
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition />
                 </Grid.ColumnDefinitions>
@@ -30,25 +30,20 @@
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
-                        <RowDefinition />
                         <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
 
-                    <Grid Grid.Row="0">
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
-                        </Grid.RowDefinitions>
+                    <views:Source Grid.Row="0" DataContext="{Binding SourceViewModel}" />
 
-                        <TextBlock
-                            Grid.Row="0"
-                            Style="{StaticResource MaterialDesignHeadlineTextBlock}"
-                            Text="Algemeen" />
+                    <Border
+                        Grid.Row="1"
+                        Margin="0,24,0,24"
+                        BorderBrush="{DynamicResource MaterialDesignDivider}"
+                        BorderThickness="0,0,0,1" />
 
+                    <Grid Grid.Row="2">
                         <ComboBox
-                            Grid.Row="1"
                             Width="200"
-                            Margin="0,8,0,16"
                             HorizontalAlignment="Left"
                             materialDesign:HintAssist.Hint="DataType"
                             ItemsSource="{Binding DataTypes}"
@@ -57,19 +52,8 @@
                     </Grid>
 
                     <Border
-                        Grid.Row="1"
-                        Margin="0,16,0,16"
-                        BorderBrush="{DynamicResource MaterialDesignDivider}"
-                        BorderThickness="0,0,0,1" />
-
-                    <views:Source
-                        Grid.Row="2"
-                        Margin="0,0,0,8"
-                        DataContext="{Binding SourceViewModel}" />
-
-                    <Border
                         Grid.Row="3"
-                        Margin="0,16,0,16"
+                        Margin="0,24,0,24"
                         BorderBrush="{DynamicResource MaterialDesignDivider}"
                         BorderThickness="0,0,0,1" />
 
@@ -77,8 +61,6 @@
                         Grid.Row="4"
                         Grid.Column="0"
                         DataContext="{Binding DestinationViewModel}" />
-
-                    <Button Grid.Row="5" Content="TRANSFER" />
                 </Grid>
 
                 <Border
