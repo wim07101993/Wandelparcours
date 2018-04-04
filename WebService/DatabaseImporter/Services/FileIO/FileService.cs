@@ -8,7 +8,7 @@ namespace DatabaseImporter.Services.FileIO
 {
     public class FileService : IFileService
     {
-        public async Task<File<string>> ReadFileAsync(string extensionFilter)
+        public async Task<File<string>> ReadFileWithDialogAsync(string extensionFilter)
         {
             var dialog = new OpenFileDialog
             {
@@ -21,17 +21,22 @@ namespace DatabaseImporter.Services.FileIO
             if (dialog.ShowDialog() != true)
                 return null;
 
-            var path = dialog.FileName;
+            return await ReadFileAsync(dialog.FileName);
+        }
+
+        public async Task<File<string>> ReadFileAsync(string filePath)
+        {
             string content;
-            using (var stream = File.OpenText(path))
+            using (var stream = File.OpenText(filePath))
             {
                 content = await stream.ReadToEndAsync();
             }
 
-            return new File<string> {Content = content, Path = path};
+            return new File<string> {Content = content, Path = filePath};
         }
 
-        public async Task WriteFileAsync(string content, string extensionFilter)
+
+        public async Task WriteFileWithDialogsAsync(string content, string extensionFilter)
         {
             var dialog = new SaveFileDialog
             {
@@ -43,8 +48,12 @@ namespace DatabaseImporter.Services.FileIO
             if (dialog.ShowDialog() != true)
                 return;
 
-            var path = dialog.FileName;
-            using (var stream = File.CreateText(path))
+            await WriteFileAsync(dialog.FileName, content);
+        }
+
+        public async Task WriteFileAsync(string filePath, string content)
+        {
+            using (var stream = File.CreateText(filePath))
             {
                 await stream.WriteAsync(content);
             }

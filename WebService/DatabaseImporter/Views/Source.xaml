@@ -8,52 +8,49 @@
     xmlns:viewModelInterfaces="clr-namespace:DatabaseImporter.ViewModelInterfaces"
     d:DataContext="{d:DesignInstance viewModelInterfaces:ISourceViewModel}"
     mc:Ignorable="d">
-    <Grid Margin="16">
+
+    <Grid>
+
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition />
         </Grid.RowDefinitions>
 
-        <ComboBox
+        <TextBlock
             Grid.Row="0"
-            Width="200"
-            HorizontalAlignment="Left"
-            materialDesign:HintAssist.Hint="DataType"
-            ItemsSource="{Binding DataTypes}"
-            SelectedItem="{Binding SelectedDataType}"
-            Style="{StaticResource MaterialDesignFloatingHintComboBox}" />
+            Margin="0,0,0,8"
+            Style="{StaticResource MaterialDesignHeadlineTextBlock}"
+            Text="Input" />
 
         <ComboBox
             Grid.Row="1"
             Width="200"
-            Margin="0,16,0,0"
+            Margin="0,8,0,0"
             HorizontalAlignment="Left"
             materialDesign:HintAssist.Hint="Source"
             ItemsSource="{Binding Sources}"
             SelectedItem="{Binding SelectedSource}"
             Style="{StaticResource MaterialDesignFloatingHintComboBox}" />
 
-        <Grid
+        <WrapPanel
             Grid.Row="2"
-            Margin="0,8,0,0"
+            Width="200"
             Visibility="{Binding IsFileSource, Converter={StaticResource BooleanToVisibilityConverter}}">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="150" />
-                <ColumnDefinition />
-            </Grid.ColumnDefinitions>
-
             <Button
-                Grid.Column="0"
+                Margin="0,16,0,0"
                 HorizontalAlignment="Left"
                 Command="{Binding ChooseFileCommand}"
                 Content="BESTAND KIEZEN" />
             <TextBlock
-                Grid.Column="1"
+                MaxWidth="200"
+                Margin="0,8,0,0"
                 VerticalAlignment="Center"
-                Text="{Binding FilePath}" />
-        </Grid>
+                Text="{Binding FilePath}"
+                TextTrimming="CharacterEllipsis" />
+        </WrapPanel>
 
         <Grid
             Grid.Row="2"
@@ -67,14 +64,5 @@
                 Text="{Binding ConnectionString}" />
         </Grid>
 
-        <Grid Grid.Row="3" Margin="0,16,0,0">
-            <ItemsControl ItemsSource="{Binding Value}">
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate>
-                        <TreeViewItem Header="{Binding .}" ItemsSource="{Binding ., Converter={StaticResource ValueToPropertyListConverter}}" />
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-            </ItemsControl>
-        </Grid>
     </Grid>
 </UserControl>

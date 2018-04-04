@@ -115,8 +115,13 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Helpers\BindableBase.cs" />
     <Compile Include="Helpers\EDataType.cs" />
+    <Compile Include="Helpers\EStateManagerKey.cs" />
+    <Compile Include="Helpers\Events\GotContentEvent.cs" />
+    <Compile Include="Helpers\Events\StateChangedEventArgs.cs" />
     <Compile Include="Helpers\Events\ValueChangedEventArgs.cs" />
+    <Compile Include="Helpers\Events\ValueChangedEventArgs{T}.cs" />
     <Compile Include="Helpers\Extensions\EnumerableExtensions.cs" />
     <Compile Include="Helpers\Extensions\ObjectExtensions.cs" />
     <Compile Include="Helpers\Extensions\StringExtensions.cs" />
@@ -148,10 +153,13 @@
     <Compile Include="Services\FileIO\IObjectReader.cs" />
     <Compile Include="Services\FileIO\IObjectWriter.cs" />
     <Compile Include="Services\FileIO\JsonService.cs" />
+    <Compile Include="Services\IStateManager.cs" />
     <Compile Include="Services\Mocks\AuthenticationService.cs" />
     <Compile Include="Helpers\ESource.cs" />
+    <Compile Include="Services\StateManager.cs" />
     <Compile Include="ViewModelInterfaces\ISourceViewModel.cs" />
     <Compile Include="ViewModels\SourceViewModel.cs" />
+    <Compile Include="Views\Controls\ObjectBrowser.cs" />
     <Compile Include="Views\Converters\ObjectToPropertyListConverter.cs" />
     <Compile Include="Views\Destination.xaml.cs">
       <DependentUpon>Destination.xaml</DependentUpon>
@@ -202,6 +210,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Views\Styles\ObjectBrowser.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs">
@@ -230,9 +242,7 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Views\Styles\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <Resource Include="database.ico" />
   </ItemGroup>

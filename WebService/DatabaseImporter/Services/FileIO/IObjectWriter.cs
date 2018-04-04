@@ -5,6 +5,7 @@ namespace DatabaseImporter.Services.FileIO
 {
     public interface IObjectWriter
     {
-        Task WriteObjectToFileAsync<T>(IEnumerable<T> value);
+        Task WriteObjectToFileWithDialogAsync<T>(IEnumerable<T> values);
+        Task WriteObjectToFileAsync<T>(string filePath, IEnumerable<T> values);
     }
 }

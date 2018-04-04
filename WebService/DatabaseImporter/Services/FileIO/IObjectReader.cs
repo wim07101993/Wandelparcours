@@ -6,6 +6,7 @@ namespace DatabaseImporter.Services.FileIO
 {
     public interface IObjectReader
     {
-        Task<File<IEnumerable<T>>> ReadObjectFromFileAsync<T>();
+        Task<File<IEnumerable<T>>> ReadObjectFromFileWithDialogAsync<T>();
+        Task<File<IEnumerable<T>>> ReadObjectFromFileAsync<T>(string filePath);
     }
 }

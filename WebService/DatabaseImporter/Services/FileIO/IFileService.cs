@@ -5,8 +5,10 @@ namespace DatabaseImporter.Services.FileIO
 {
     public interface IFileService
     {
-        Task<File<string>> ReadFileAsync(string extensionFilter = null);
+        Task<File<string>> ReadFileWithDialogAsync(string extensionFilter = null);
+        Task<File<string>> ReadFileAsync(string filePath);
 
-        Task WriteFileAsync(string content, string extensionFilter = null);
+        Task WriteFileWithDialogsAsync(string content, string extensionFilter = null);
+        Task WriteFileAsync(string filePath, string content);
     }
 }

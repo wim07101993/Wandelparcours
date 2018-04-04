@@ -2,12 +2,12 @@
 
 namespace DatabaseImporter.Helpers.Events
 {
-    public class ValueChangedEventArgs<T> : EventArgs
+    public class ValueChangedEventArgs : EventArgs
     {
-        public T OldValue { get; }
-        public T NewValue { get; }
+        public object OldValue { get; }
+        public object NewValue { get; }
 
-        public ValueChangedEventArgs(T oldValue, T newValue)
+        public ValueChangedEventArgs(object oldValue, object newValue)
         {
             OldValue = oldValue;
             NewValue = newValue;

@@ -17,36 +17,56 @@
             <controls:Login x:Name="Login" Visibility="{Binding ElementName=Login, Path=IsLoggedIn, Converter={StaticResource InvertedBooleanToVisiblityConverter}}" />
 
             <Grid Visibility="{Binding ElementName=Login, Path=IsLoggedIn, Converter={StaticResource BooleanToVisibilityConverter}}">
+
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition />
+                    <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition />
                 </Grid.ColumnDefinitions>
-                <Grid.RowDefinitions>
-                    <RowDefinition />
-                    <RowDefinition Height="Auto" />
-                </Grid.RowDefinitions>
 
-                <views:Source
-                    Grid.Row="0"
-                    Grid.Column="0"
-                    DataContext="{Binding SourceViewModel}" />
+                <Grid Grid.Column="0" Margin="16">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+
+                    <ComboBox
+                        Grid.Row="0"
+                        Width="200"
+                        Margin="0,0,0,16"
+                        HorizontalAlignment="Left"
+                        materialDesign:HintAssist.Hint="DataType"
+                        ItemsSource="{Binding DataTypes}"
+                        SelectedItem="{Binding SelectedDataType}"
+                        Style="{StaticResource MaterialDesignFloatingHintComboBox}" />
+
+                    <views:Source Grid.Row="2" DataContext="{Binding SourceViewModel}" />
+
+                    <Border
+                        Grid.Row="3"
+                        Margin="0,16,0,16"
+                        BorderBrush="{DynamicResource MaterialDesignDivider}"
+                        BorderThickness="0,0,0,1" />
+
+                    <views:Destination Grid.Row="4" Grid.Column="0" />
+
+                    <Button Grid.Row="4" Content="TRANSFER" />
+                </Grid>
 
                 <Border
-                    Grid.Row="0"
                     Grid.Column="1"
-                    Margin="16"
+                    Margin="8"
                     BorderBrush="{DynamicResource MaterialDesignDivider}"
                     BorderThickness="1,0,0,0" />
 
-                <views:Destination Grid.Row="0" Grid.Column="2" />
+                <controls:ObjectBrowser
+                    Grid.Column="2"
+                    Margin="8,16"
+                    Value="{Binding FileContent}" />
 
-                <Button
-                    Grid.Row="1"
-                    Grid.Column="0"
-                    Grid.ColumnSpan="3"
-                    Margin="16"
-                    Content="TRANSFER" />
             </Grid>
         </Grid>
     </materialDesign:DialogHost>

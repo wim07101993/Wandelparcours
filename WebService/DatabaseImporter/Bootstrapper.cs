@@ -29,6 +29,7 @@ namespace DatabaseImporter
 
             Container
                 .RegisterType<IEventAggregator, EventAggregator>(new ContainerControlledLifetimeManager())
+                .RegisterType<IStateManager, StateManager>(new ContainerControlledLifetimeManager())
                 .RegisterType<IAuthenticationService, AuthenticationService>(new ContainerControlledLifetimeManager())
                 .RegisterType<IFileService, FileService>(new ContainerControlledLifetimeManager())
                 // serialization services
