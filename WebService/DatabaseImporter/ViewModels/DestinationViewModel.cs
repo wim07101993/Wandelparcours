@@ -7,6 +7,7 @@ using DatabaseImporter.Models.MongoModels;
 using DatabaseImporter.Services;
 using DatabaseImporter.Services.Serialization;
 using DatabaseImporter.ViewModelInterfaces;
+using Microsoft.Practices.Unity;
 using Prism.Commands;
 using Prism.Events;
 
@@ -15,11 +16,7 @@ namespace DatabaseImporter.ViewModels
     public class DestinationViewModel : BindableBase, IDestinationViewModel
     {
         #region FIELDS
-
-        private readonly ICsvService _csvService;
-        private readonly IJsonService _jsonService;
-        private readonly IXmlService _xmlService;
-
+        
         private string _selectedDestination = EDestination.Json.ToString();
         private string _filePath;
         private string _connectionString;
@@ -29,14 +26,9 @@ namespace DatabaseImporter.ViewModels
 
         #region CONSTRUCTOR
 
-        public DestinationViewModel(ICsvService csvService, IJsonService jsonService, IXmlService xmlService,
-            IEventAggregator eventAggregator, IStateManager stateManager)
+        public DestinationViewModel(IEventAggregator eventAggregator, IStateManager stateManager)
             : base(eventAggregator, stateManager)
         {
-            _csvService = csvService;
-            _jsonService = jsonService;
-            _xmlService = xmlService;
-
             ChooseFileCommand = new DelegateCommand(ChooseFile);
         }
 
@@ -44,6 +36,26 @@ namespace DatabaseImporter.ViewModels
 
 
         #region PROPERTIES
+
+        private ISerializationService SerializationService
+        {
+            get
+            {
+                switch (SelectedEDestination)
+                {
+                    case EDestination.Json:
+                        return App.Bootstrapper.Container.Resolve<IJsonService>();
+                    case EDestination.Csv:
+                        return App.Bootstrapper.Container.Resolve<ICsvService>();
+                    case EDestination.Xml:
+                        return App.Bootstrapper.Container.Resolve<IXmlService>();
+                    case EDestination.MongoDB:
+                        return null;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
+            }
+        }
 
         public IEnumerable<string> Destinations { get; } = Enum.GetNames(typeof(EDestination));
 
@@ -124,40 +136,24 @@ namespace DatabaseImporter.ViewModels
 
         private void ChooseFile()
         {
-            var service = GetService(SelectedEDestination);
 #pragma warning disable 4014 // no await
             switch (StateManager.GetState<EDataType>(EStateManagerKey.DataType.ToString()))
             {
                 case EDataType.User:
-                    SaveFile<User>(service);
+                    SaveFile<User>(SerializationService);
                     break;
                 case EDataType.Resident:
-                    SaveFile<Resident>(service);
+                    SaveFile<Resident>(SerializationService);
                     break;
                 case EDataType.ReceiverModule:
-                    SaveFile<ReceiverModule>(service);
+                    SaveFile<ReceiverModule>(SerializationService);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
             }
 #pragma warning restore 4014
         }
-
-        private ISerializationService GetService(EDestination source)
-        {
-            switch (source)
-            {
-                case EDestination.Json:
-                    return _jsonService;
-                case EDestination.Csv:
-                    return _csvService;
-                case EDestination.Xml:
-                    return _xmlService;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(source), source, null);
-            }
-        }
-
+        
         private async Task SaveFile<T>(IObjectWriter service)
         {
             await service.WriteObjectToFileWithDialogAsync(

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Windows.Input;
@@ -6,8 +7,10 @@ using DatabaseImporter.Helpers;
 using DatabaseImporter.Helpers.Events;
 using DatabaseImporter.Models.MongoModels;
 using DatabaseImporter.Services;
+using DatabaseImporter.Services.DataIO;
 using DatabaseImporter.Services.Serialization;
 using DatabaseImporter.ViewModelInterfaces;
+using Microsoft.Practices.Unity;
 using Prism.Commands;
 using Prism.Events;
 
@@ -16,11 +19,7 @@ namespace DatabaseImporter.ViewModels
     public class SourceViewModel : BindableBase, ISourceViewModel
     {
         #region FIELDS
-
-        private readonly ICsvService _csvService;
-        private readonly IJsonService _jsonService;
-        private readonly IXmlService _xmlService;
-
+        
         private string _selectedSource = ESource.Json.ToString();
 
         private string _filePath;
@@ -31,14 +30,9 @@ namespace DatabaseImporter.ViewModels
 
         #region CONSTRUCTOR
 
-        public SourceViewModel(ICsvService csvService, IJsonService jsonService, IXmlService xmlService,
-            IEventAggregator eventAggregator, IStateManager stateManager)
+        public SourceViewModel(IEventAggregator eventAggregator, IStateManager stateManager)
             : base(eventAggregator, stateManager)
         {
-            _csvService = csvService;
-            _jsonService = jsonService;
-            _xmlService = xmlService;
-
             ChooseFileCommand = new DelegateCommand(ChooseFile);
 
             StateManager.StateChanged += OnStateChanged;
@@ -48,6 +42,26 @@ namespace DatabaseImporter.ViewModels
 
 
         #region PROPERTIES
+
+        private ISerializationService SerializationService
+        {
+            get
+            {
+                switch (SelectedESource)
+                {
+                    case ESource.Json:
+                        return App.Bootstrapper.Container.Resolve<IJsonService>();
+                    case ESource.Csv:
+                        return App.Bootstrapper.Container.Resolve<ICsvService>();
+                    case ESource.Xml:
+                        return App.Bootstrapper.Container.Resolve<IXmlService>();
+                    case ESource.MongoDB:
+                        return null;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
+            }
+        }
 
         public IEnumerable<string> Sources { get; } = Enum.GetNames(typeof(ESource));
 
@@ -127,19 +141,18 @@ namespace DatabaseImporter.ViewModels
         #region METHODS
 
         private void ChooseFile()
-        {
-            var service = GetService(SelectedESource);
+        { 
 #pragma warning disable 4014 // no await
             switch (StateManager.GetState<EDataType>(EStateManagerKey.DataType.ToString()))
             {
                 case EDataType.User:
-                    OpenFileAsync<User>(service);
+                    OpenFileAsync<User>(SerializationService);
                     break;
                 case EDataType.Resident:
-                    OpenFileAsync<Resident>(service);
+                    OpenFileAsync<Resident>(SerializationService);
                     break;
                 case EDataType.ReceiverModule:
-                    OpenFileAsync<ReceiverModule>(service);
+                    OpenFileAsync<ReceiverModule>(SerializationService);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
@@ -147,44 +160,28 @@ namespace DatabaseImporter.ViewModels
 #pragma warning restore 4014
         }
 
-        private ISerializationService GetService(ESource source)
-        {
-            switch (source)
-            {
-                case ESource.Json:
-                    return _jsonService;
-                case ESource.Csv:
-                    return _csvService;
-                case ESource.Xml:
-                    return _xmlService;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(source), source, null);
-            }
-        }
-
         private async Task OpenFileAsync<T>(IObjectReader service)
         {
             var file = await service.ReadObjectFromFileWithDialogAsync<T>();
             FilePath = file.Path;
-            StateManager.SetState(EStateManagerKey.FileContent.ToString(), file.Content);
+            StateManager.SetState<IEnumerable>(EStateManagerKey.FileContent.ToString(), file.Content);
         }
 
         private async Task ReloadFileAsync()
         {
-            var service = GetService(SelectedESource);
-            switch (StateManager.GetState<EDataType>(EStateManagerKey.DataType.ToString()))
+           switch (StateManager.GetState<EDataType>(EStateManagerKey.DataType.ToString()))
             {
                 case EDataType.User:
-                    var users = await service.ReadObjectFromFileAsync<User>(FilePath);
-                    StateManager.SetState(EStateManagerKey.FileContent.ToString(), users.Content);
+                    var users = await SerializationService.ReadObjectFromFileAsync<User>(FilePath);
+                    StateManager.SetState<IEnumerable>(EStateManagerKey.FileContent.ToString(), users.Content);
                     break;
                 case EDataType.Resident:
-                    var residents = await service.ReadObjectFromFileAsync<Resident>(FilePath);
-                    StateManager.SetState(EStateManagerKey.FileContent.ToString(), residents.Content);
+                    var residents = await SerializationService.ReadObjectFromFileAsync<Resident>(FilePath);
+                    StateManager.SetState<IEnumerable>(EStateManagerKey.FileContent.ToString(), residents.Content);
                     break;
                 case EDataType.ReceiverModule:
-                    var receiverModules = await service.ReadObjectFromFileAsync<ReceiverModule>(FilePath);
-                    StateManager.SetState(EStateManagerKey.FileContent.ToString(), receiverModules.Content);
+                    var receiverModules = await SerializationService.ReadObjectFromFileAsync<ReceiverModule>(FilePath);
+                    StateManager.SetState<IEnumerable>(EStateManagerKey.FileContent.ToString(), receiverModules.Content);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
