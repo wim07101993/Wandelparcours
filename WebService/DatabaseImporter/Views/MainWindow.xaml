@@ -19,7 +19,7 @@
             <Grid Visibility="{Binding ElementName=Login, Path=IsLoggedIn, Converter={StaticResource BooleanToVisibilityConverter}}">
 
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="400" MinWidth="200" />
+                    <ColumnDefinition Width="400" MinWidth="250" />
                     <ColumnDefinition Width="2" />
                     <ColumnDefinition />
                 </Grid.ColumnDefinitions>

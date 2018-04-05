@@ -134,13 +134,14 @@
     <Compile Include="Models\MongoModels\Doctor.cs" />
     <Compile Include="Models\MongoModels\EMediaType.cs" />
     <Compile Include="Models\MongoModels\EUserType.cs" />
-    <Compile Include="Models\MongoModels\Location.cs" />
     <Compile Include="Models\MongoModels\MediaData.cs" />
     <Compile Include="Models\MongoModels\MediaUrl.cs" />
     <Compile Include="Models\MongoModels\Point.cs" />
     <Compile Include="Models\MongoModels\ReceiverModule.cs" />
     <Compile Include="Models\MongoModels\Resident.cs" />
     <Compile Include="Models\MongoModels\User.cs" />
+    <Compile Include="Services\DataIO\MongoService.cs" />
+    <Compile Include="Services\DataIO\IDatabaseService.cs" />
     <Compile Include="Services\Serialization\ASerializationService.cs" />
     <Compile Include="Services\Serialization\CsvService.cs" />
     <Compile Include="Services\DataIO\FileService.cs" />
