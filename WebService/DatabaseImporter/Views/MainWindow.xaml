@@ -19,8 +19,8 @@
             <Grid Visibility="{Binding ElementName=Login, Path=IsLoggedIn, Converter={StaticResource BooleanToVisibilityConverter}}">
 
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="400" />
-                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="400" MinWidth="200" />
+                    <ColumnDefinition Width="2" />
                     <ColumnDefinition />
                 </Grid.ColumnDefinitions>
 
@@ -63,11 +63,10 @@
                         DataContext="{Binding DestinationViewModel}" />
                 </Grid>
 
-                <Border
+                <GridSplitter
+                    x:Name="ResizeLeft"
                     Grid.Column="1"
-                    Margin="8"
-                    BorderBrush="{DynamicResource MaterialDesignDivider}"
-                    BorderThickness="1,0,0,0" />
+                    HorizontalAlignment="Stretch" />
 
                 <controls:ObjectBrowser
                     Grid.Column="2"
