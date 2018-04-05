@@ -56,20 +56,20 @@ namespace DatabaseImporter.ViewModels
             set
             {
                 if (Enum.TryParse(value, out EDataType dataType))
-                    StateManager.SetState(EStateManagerKey.DataType.ToString(), dataType);
+                    StateManager.SetState(EState.DataType.ToString(), dataType);
                 else
                     throw new ArgumentOutOfRangeException();
             }
         }
         
         private EDataType SelectedEDataType
-            => StateManager.GetState<EDataType>(EStateManagerKey.DataType.ToString());
+            => StateManager.GetState<EDataType>(EState.DataType.ToString());
 
         protected void OnStateChanged(object sender, StateChangedEventArgs e)
         {
             StateManager.StateChanged -= OnStateChanged;
 
-            if (e.State == EStateManagerKey.DataType.ToString())
+            if (e.State == EState.DataType.ToString())
                 RaisePropertyChanged(nameof(SelectedEDataType));
 
             StateManager.StateChanged += OnStateChanged;

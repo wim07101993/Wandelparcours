@@ -6,11 +6,10 @@ using System.Windows.Input;
 using DatabaseImporter.Helpers;
 using DatabaseImporter.Helpers.Events;
 using DatabaseImporter.Models.MongoModels;
+using DatabaseImporter.Models.MongoModels.Bases;
 using DatabaseImporter.Services;
-using DatabaseImporter.Services.DataIO;
-using DatabaseImporter.Services.Serialization;
+using DatabaseImporter.Services.Data;
 using DatabaseImporter.ViewModelInterfaces;
-using Microsoft.Practices.Unity;
 using Prism.Commands;
 using Prism.Events;
 
@@ -19,20 +18,29 @@ namespace DatabaseImporter.ViewModels
     public class SourceViewModel : BindableBase, ISourceViewModel
     {
         #region FIELDS
-        
+
+        private readonly IDataServiceSelector _dataServiceSelector;
+        private readonly IDialogService _dialogService;
+
         private string _selectedSource = ESource.Json.ToString();
 
         private string _filePath;
         private string _connectionString;
+        private string _databaseName;
+        private string _tableName;
 
         #endregion FIELDS
 
 
         #region CONSTRUCTOR
 
-        public SourceViewModel(IEventAggregator eventAggregator, IStateManager stateManager)
+        public SourceViewModel(IEventAggregator eventAggregator, IStateManager stateManager,
+            IDataServiceSelector dataServiceSelector, IDialogService dialogService)
             : base(eventAggregator, stateManager)
         {
+            _dataServiceSelector = dataServiceSelector;
+            _dialogService = dialogService;
+
             ChooseFileCommand = new DelegateCommand(ChooseFile);
 
             StateManager.StateChanged += OnStateChanged;
@@ -42,26 +50,6 @@ namespace DatabaseImporter.ViewModels
 
 
         #region PROPERTIES
-
-        private ISerializationService SerializationService
-        {
-            get
-            {
-                switch (SelectedESource)
-                {
-                    case ESource.Json:
-                        return App.Bootstrapper.Container.Resolve<IJsonService>();
-                    case ESource.Csv:
-                        return App.Bootstrapper.Container.Resolve<ICsvService>();
-                    case ESource.Xml:
-                        return App.Bootstrapper.Container.Resolve<IXmlService>();
-                    case ESource.MongoDB:
-                        return null;
-                    default:
-                        throw new ArgumentOutOfRangeException();
-                }
-            }
-        }
 
         public IEnumerable<string> Sources { get; } = Enum.GetNames(typeof(ESource));
 
@@ -90,7 +78,7 @@ namespace DatabaseImporter.ViewModels
             {
                 switch (SelectedESource)
                 {
-                   case ESource.Json:
+                    case ESource.Json:
                     case ESource.Csv:
                     case ESource.Xml:
                         return true;
@@ -133,26 +121,38 @@ namespace DatabaseImporter.ViewModels
             set => SetProperty(ref _connectionString, value);
         }
 
+        public string DatabaseName
+        {
+            get => _databaseName;
+            set => SetProperty(ref _databaseName, value);
+        }
+
+        public string TableName
+        {
+            get => _tableName;
+            set => SetProperty(ref _tableName, value);
+        }
+
         public ICommand ChooseFileCommand { get; }
-        
+
         #endregion PROPERTIES
 
 
         #region METHODS
 
         private void ChooseFile()
-        { 
+        {
 #pragma warning disable 4014 // no await
-            switch (StateManager.GetState<EDataType>(EStateManagerKey.DataType.ToString()))
+            switch (StateManager.GetState<EDataType>(EState.DataType.ToString()))
             {
                 case EDataType.User:
-                    OpenFileAsync<User>(SerializationService);
+                    OpenAsync<User>();
                     break;
                 case EDataType.Resident:
-                    OpenFileAsync<Resident>(SerializationService);
+                    OpenAsync<Resident>();
                     break;
                 case EDataType.ReceiverModule:
-                    OpenFileAsync<ReceiverModule>(SerializationService);
+                    OpenAsync<ReceiverModule>();
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
@@ -160,40 +160,57 @@ namespace DatabaseImporter.ViewModels
 #pragma warning restore 4014
         }
 
-        private async Task OpenFileAsync<T>(IObjectReader service)
+        private async Task OpenAsync<T>() where T : IModelWithObjectID
         {
-            var file = await service.ReadObjectFromFileWithDialogAsync<T>();
-            FilePath = file.Path;
-            StateManager.SetState<IEnumerable>(EStateManagerKey.FileContent.ToString(), file.Content);
+            var service = _dataServiceSelector.GetService(SelectedESource);
+            IEnumerable items;
+
+            if (IsDatabaseSource)
+                items = await service.GetAsync<T>(null, ConnectionString, DatabaseName, TableName);
+            else
+            {
+                var extensions = ((IFileDataService) service).ExtensionFilter;
+                FilePath = _dialogService.OpenFileDialog(extensions);
+                items = await service.GetAsync<T>(null, FilePath);
+            }
+
+            StateManager.SetState(EState.FileContent.ToString(), items);
         }
 
-        private async Task ReloadFileAsync()
+        private async Task ReloadFileAsync<T>() where T : IModelWithObjectID
         {
-           switch (StateManager.GetState<EDataType>(EStateManagerKey.DataType.ToString()))
-            {
-                case EDataType.User:
-                    var users = await SerializationService.ReadObjectFromFileAsync<User>(FilePath);
-                    StateManager.SetState<IEnumerable>(EStateManagerKey.FileContent.ToString(), users.Content);
-                    break;
-                case EDataType.Resident:
-                    var residents = await SerializationService.ReadObjectFromFileAsync<Resident>(FilePath);
-                    StateManager.SetState<IEnumerable>(EStateManagerKey.FileContent.ToString(), residents.Content);
-                    break;
-                case EDataType.ReceiverModule:
-                    var receiverModules = await SerializationService.ReadObjectFromFileAsync<ReceiverModule>(FilePath);
-                    StateManager.SetState<IEnumerable>(EStateManagerKey.FileContent.ToString(), receiverModules.Content);
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
+            var service = _dataServiceSelector.GetService(SelectedESource);
+            IEnumerable items;
+
+            if (IsDatabaseSource)
+                items = await service.GetAsync<T>(null, ConnectionString, DatabaseName, TableName);
+            else
+                items = await service.GetAsync<T>(null, FilePath);
+
+            StateManager.SetState(EState.FileContent.ToString(), items);
         }
 
         private async void OnStateChanged(object sender, StateChangedEventArgs e)
         {
             StateManager.StateChanged -= OnStateChanged;
 
-            if (!string.IsNullOrEmpty(FilePath))
-                await ReloadFileAsync();
+            if (e.State == EState.DataType.ToString() && !string.IsNullOrEmpty(FilePath))
+            {
+                switch (StateManager.GetState<EDataType>(EState.DataType.ToString()))
+                {
+                    case EDataType.User:
+                        await ReloadFileAsync<User>();
+                        break;
+                    case EDataType.Resident:
+                        await ReloadFileAsync<Resident>();
+                        break;
+                    case EDataType.ReceiverModule:
+                        await ReloadFileAsync<ReceiverModule>();
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
+            }
 
             StateManager.StateChanged += OnStateChanged;
         }

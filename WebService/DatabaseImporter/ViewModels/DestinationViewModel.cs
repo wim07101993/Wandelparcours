@@ -3,11 +3,12 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using DatabaseImporter.Helpers;
+using DatabaseImporter.Helpers.Extensions;
 using DatabaseImporter.Models.MongoModels;
+using DatabaseImporter.Models.MongoModels.Bases;
 using DatabaseImporter.Services;
-using DatabaseImporter.Services.Serialization;
+using DatabaseImporter.Services.Data;
 using DatabaseImporter.ViewModelInterfaces;
-using Microsoft.Practices.Unity;
 using Prism.Commands;
 using Prism.Events;
 
@@ -16,19 +17,28 @@ namespace DatabaseImporter.ViewModels
     public class DestinationViewModel : BindableBase, IDestinationViewModel
     {
         #region FIELDS
-        
+
+        private readonly IDataServiceSelector _dataServiceSelector;
+        private readonly IDialogService _dialogService;
+
         private string _selectedDestination = EDestination.Json.ToString();
         private string _filePath;
         private string _connectionString;
+        private string _databaseName;
+        private string _tableName;
 
         #endregion FIELDS
 
 
         #region CONSTRUCTOR
 
-        public DestinationViewModel(IEventAggregator eventAggregator, IStateManager stateManager)
+        public DestinationViewModel(IEventAggregator eventAggregator, IStateManager stateManager,
+            IDataServiceSelector dataServiceSelector, IDialogService dialogService)
             : base(eventAggregator, stateManager)
         {
+            _dataServiceSelector = dataServiceSelector;
+            _dialogService = dialogService;
+
             ChooseFileCommand = new DelegateCommand(ChooseFile);
         }
 
@@ -36,26 +46,6 @@ namespace DatabaseImporter.ViewModels
 
 
         #region PROPERTIES
-
-        private ISerializationService SerializationService
-        {
-            get
-            {
-                switch (SelectedEDestination)
-                {
-                    case EDestination.Json:
-                        return App.Bootstrapper.Container.Resolve<IJsonService>();
-                    case EDestination.Csv:
-                        return App.Bootstrapper.Container.Resolve<ICsvService>();
-                    case EDestination.Xml:
-                        return App.Bootstrapper.Container.Resolve<IXmlService>();
-                    case EDestination.MongoDB:
-                        return null;
-                    default:
-                        throw new ArgumentOutOfRangeException();
-                }
-            }
-        }
 
         public IEnumerable<string> Destinations { get; } = Enum.GetNames(typeof(EDestination));
 
@@ -79,40 +69,10 @@ namespace DatabaseImporter.ViewModels
                 : EDestination.Json;
 
         public bool IsFileDestination
-        {
-            get
-            {
-                switch (SelectedEDestination)
-                {
-                    case EDestination.Json:
-                    case EDestination.Csv:
-                    case EDestination.Xml:
-                        return true;
-                    case EDestination.MongoDB:
-                        return false;
-                    default:
-                        throw new ArgumentOutOfRangeException();
-                }
-            }
-        }
+            => SelectedEDestination.IsFileDestination();
 
         public bool IsDatabaseDestination
-        {
-            get
-            {
-                switch (SelectedEDestination)
-                {
-                    case EDestination.Json:
-                    case EDestination.Csv:
-                    case EDestination.Xml:
-                        return false;
-                    case EDestination.MongoDB:
-                        return true;
-                    default:
-                        throw new ArgumentOutOfRangeException();
-                }
-            }
-        }
+            => SelectedEDestination.IsDatabaseDestination();
 
 
         public string FilePath
@@ -127,6 +87,18 @@ namespace DatabaseImporter.ViewModels
             set => SetProperty(ref _connectionString, value);
         }
 
+        public string DatabaseName
+        {
+            get => _databaseName;
+            set => SetProperty(ref _databaseName, value);
+        }
+
+        public string TableName
+        {
+            get => _tableName;
+            set => SetProperty(ref _tableName, value);
+        }
+
         public ICommand ChooseFileCommand { get; }
 
         #endregion PROPERTIES
@@ -137,27 +109,36 @@ namespace DatabaseImporter.ViewModels
         private void ChooseFile()
         {
 #pragma warning disable 4014 // no await
-            switch (StateManager.GetState<EDataType>(EStateManagerKey.DataType.ToString()))
+            switch (StateManager.GetState<EDataType>(EState.DataType.ToString()))
             {
                 case EDataType.User:
-                    SaveFile<User>(SerializationService);
+                    SaveData<User>();
                     break;
                 case EDataType.Resident:
-                    SaveFile<Resident>(SerializationService);
+                    SaveData<Resident>();
                     break;
                 case EDataType.ReceiverModule:
-                    SaveFile<ReceiverModule>(SerializationService);
+                    SaveData<ReceiverModule>();
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
             }
 #pragma warning restore 4014
         }
-        
-        private async Task SaveFile<T>(IObjectWriter service)
+
+        private async Task SaveData<T>() where T : IModelWithObjectID
         {
-            await service.WriteObjectToFileWithDialogAsync(
-                StateManager.GetState<IEnumerable<T>>(EStateManagerKey.FileContent.ToString()));
+            var service = _dataServiceSelector.GetService(SelectedEDestination);
+            var items = StateManager.GetState<IEnumerable<T>>(EState.FileContent.ToString());
+
+            if (IsDatabaseDestination)
+                await service.AddAsync(items, ConnectionString, DatabaseName, TableName);
+            else
+            {
+                var extensions = ((IFileDataService) service).ExtensionFilter;
+                FilePath = _dialogService.WriteFileDialog(extensions);
+                await service.AddAsync(items, FilePath);
+            }
         }
 
         #endregion METHODS

@@ -12,7 +12,10 @@ namespace DatabaseImporter.ViewModelInterfaces
         bool IsDatabaseSource { get; }
 
         string FilePath { get; }
+
         string ConnectionString { get; set; }
+        string DatabaseName { get; set; }
+        string TableName { get; set; }
 
         ICommand ChooseFileCommand { get; }
     }

@@ -1,6 +1,6 @@
 ﻿namespace DatabaseImporter.Helpers
 {
-    public enum EStateManagerKey
+    public enum EState
     {
         DataType,
         FileContent,

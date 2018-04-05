@@ -4,7 +4,6 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:controls="clr-namespace:DatabaseImporter.Views.Controls"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:viewModelInterfaces="clr-namespace:DatabaseImporter.ViewModelInterfaces"
     xmlns:views="clr-namespace:DatabaseImporter.Views"
@@ -12,51 +11,43 @@
     d:DataContext="{d:DesignInstance viewModelInterfaces:IMainWindowViewModel}"
     WindowState="Maximized"
     mc:Ignorable="d">
-    <materialDesign:DialogHost DialogContent="{Binding DialogContent}" IsOpen="{Binding IsDialogOpen}">
-        <Grid>
-            <controls:Login x:Name="Login" Visibility="{Binding ElementName=Login, Path=IsLoggedIn, Converter={StaticResource InvertedBooleanToVisiblityConverter}}" />
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="400" MinWidth="250" />
+            <ColumnDefinition Width="2" />
+            <ColumnDefinition />
+        </Grid.ColumnDefinitions>
 
-            <Grid Visibility="{Binding ElementName=Login, Path=IsLoggedIn, Converter={StaticResource BooleanToVisibilityConverter}}">
+        <ScrollViewer Grid.Column="0" VerticalScrollBarVisibility="Auto">
+            <Grid Margin="16">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
 
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="400" MinWidth="250" />
-                    <ColumnDefinition Width="2" />
-                    <ColumnDefinition />
-                </Grid.ColumnDefinitions>
+                <views:DataSelection Grid.Row="0" DataContext="{Binding DataSelectionViewModels}" />
 
-                <ScrollViewer Grid.Column="0" VerticalScrollBarVisibility="Auto">
-                    <Grid Margin="16">
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
-                        </Grid.RowDefinitions>
+                <Separator Grid.Row="1" Margin="0,24,0,24" />
 
-                        <views:DataSelection Grid.Row="0" DataContext="{Binding DataSelectionViewModels}" />
+                <views:Source Grid.Row="2" DataContext="{Binding SourceViewModel}" />
 
-                        <Separator Grid.Row="1" Margin="0,24,0,24" />
+                <Separator Grid.Row="3" Margin="0,24,0,24" />
 
-                        <views:Source Grid.Row="2" DataContext="{Binding SourceViewModel}" />
-
-                        <Separator Grid.Row="3" Margin="0,24,0,24" />
-
-                        <views:Destination Grid.Row="4" DataContext="{Binding DestinationViewModel}" />
-                    </Grid>
-                </ScrollViewer>
-
-                <GridSplitter
-                    x:Name="ResizeLeft"
-                    Grid.Column="1"
-                    HorizontalAlignment="Stretch" />
-
-                <controls:ObjectBrowser
-                    Grid.Column="2"
-                    Margin="8,16"
-                    Value="{Binding FileContent}" />
-
+                <views:Destination Grid.Row="4" DataContext="{Binding DestinationViewModel}" />
             </Grid>
-        </Grid>
-    </materialDesign:DialogHost>
+        </ScrollViewer>
+
+        <GridSplitter
+            x:Name="ResizeLeft"
+            Grid.Column="1"
+            HorizontalAlignment="Stretch" />
+
+        <controls:ObjectBrowser
+            Grid.Column="2"
+            Margin="8,16"
+            Value="{Binding FileContent}" />
+    </Grid>
 </Window>

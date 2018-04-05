@@ -29,14 +29,14 @@ namespace DatabaseImporter.ViewModels
         public IDataSelectionViewModel DataSelectionViewModels { get; }
 
         public object FileContent
-            => StateManager.GetState<object>(EStateManagerKey.FileContent.ToString());
+            => StateManager.GetState<object>(EState.FileContent.ToString());
 
 
         protected void OnStateChanged(object sender, StateChangedEventArgs e)
         {
             StateManager.StateChanged -= OnStateChanged;
 
-            if (e.State == EStateManagerKey.FileContent.ToString())
+            if (e.State == EState.FileContent.ToString())
                 RaisePropertyChanged(nameof(FileContent));
 
             StateManager.StateChanged += OnStateChanged;
