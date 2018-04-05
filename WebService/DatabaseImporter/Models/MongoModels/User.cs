@@ -54,5 +54,9 @@ namespace DatabaseImporter.Models.MongoModels
         [BsonElement("group")]
         [JsonProperty("group")]
         public string Group { get; set; }
+
+
+        public override string ToString()
+            => $"{UserName} {Email} {Password} ({UserType})";
     }
 }

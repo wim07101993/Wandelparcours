@@ -129,6 +129,7 @@ namespace DatabaseImporter.Models.MongoModels
         public List<Point> Locations { get; set; }
 
 
-        public override string ToString() => $"{FirstName} {LastName} - {Id}";
+        public override string ToString()
+            => $"{FirstName} {LastName} - {Id}";
     }
 }

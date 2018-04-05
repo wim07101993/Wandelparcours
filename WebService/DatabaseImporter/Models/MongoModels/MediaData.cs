@@ -20,5 +20,9 @@ namespace DatabaseImporter.Models.MongoModels
         [JsonProperty("ownerId")]
         [JsonConverter(typeof(ObjectIdConverter))]
         public ObjectId OwnerId { get; set; }
+
+
+        public override string ToString()
+            => $"{Extension} of {OwnerId}";
     }
 }

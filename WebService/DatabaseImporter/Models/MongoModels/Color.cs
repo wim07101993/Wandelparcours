@@ -16,5 +16,9 @@ namespace DatabaseImporter.Models.MongoModels
         [BsonElement("b")]
         [JsonProperty("b")]
         public byte B { get; set; }
+
+
+        public override string ToString()
+            => $"R:{R}, G:{G}, B:{B}";
     }
 }

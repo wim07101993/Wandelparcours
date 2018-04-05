@@ -41,5 +41,11 @@ namespace DatabaseImporter.Models.MongoModels
         [BsonElement("isActive")]
         [JsonProperty("isActive")]
         public bool IsActive { get; set; }
+
+
+        public override string ToString()
+            => IsActive
+                ? $"active {Mac} {Position}"
+                : $"inactive {Mac} {Position}";
     }
 }

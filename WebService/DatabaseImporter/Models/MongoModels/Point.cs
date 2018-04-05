@@ -35,5 +35,9 @@ namespace DatabaseImporter.Models.MongoModels
         [BsonElement("timeStamp")]
         [JsonProperty("timeStamp")]
         public DateTime? TimeStamp { get; set; }
+
+
+        public override string ToString()
+            => $"{X}-{Y} ({TimeStamp})";
     }
 }

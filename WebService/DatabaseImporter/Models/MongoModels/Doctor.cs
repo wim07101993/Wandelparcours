@@ -25,5 +25,9 @@ namespace DatabaseImporter.Models.MongoModels
         [BsonElement("phoneNumber")]
         [JsonProperty("phoneNumber")]
         public string PhoneNumber { get; set; }
+
+
+        public override string ToString()
+            => $"{Name} - {PhoneNumber}";
     }
 }

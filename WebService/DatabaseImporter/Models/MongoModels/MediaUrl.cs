@@ -17,5 +17,9 @@ namespace DatabaseImporter.Models.MongoModels
         [BsonElement("extension")]
         [JsonProperty("extension")]
         public string Extension { get; set; }
+
+
+        public override string ToString()
+            => $"{Title}{Extension} {Url ?? ""}";
     }
 }
