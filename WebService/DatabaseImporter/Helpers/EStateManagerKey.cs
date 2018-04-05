@@ -4,5 +4,6 @@
     {
         DataType,
         FileContent,
+        Source
     }
 }

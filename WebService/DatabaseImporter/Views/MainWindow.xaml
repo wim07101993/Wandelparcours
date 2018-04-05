@@ -24,44 +24,27 @@
                     <ColumnDefinition />
                 </Grid.ColumnDefinitions>
 
-                <Grid Grid.Column="0" Margin="16">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                    </Grid.RowDefinitions>
+                <ScrollViewer Grid.Column="0" VerticalScrollBarVisibility="Auto">
+                    <Grid Margin="16">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
 
-                    <views:Source Grid.Row="0" DataContext="{Binding SourceViewModel}" />
+                        <views:DataSelection Grid.Row="0" DataContext="{Binding DataSelectionViewModels}" />
 
-                    <Border
-                        Grid.Row="1"
-                        Margin="0,24,0,24"
-                        BorderBrush="{DynamicResource MaterialDesignDivider}"
-                        BorderThickness="0,0,0,1" />
+                        <Separator Grid.Row="1" Margin="0,24,0,24" />
 
-                    <Grid Grid.Row="2">
-                        <ComboBox
-                            Width="200"
-                            HorizontalAlignment="Left"
-                            materialDesign:HintAssist.Hint="DataType"
-                            ItemsSource="{Binding DataTypes}"
-                            SelectedItem="{Binding SelectedDataType}"
-                            Style="{StaticResource MaterialDesignFloatingHintComboBox}" />
+                        <views:Source Grid.Row="2" DataContext="{Binding SourceViewModel}" />
+
+                        <Separator Grid.Row="3" Margin="0,24,0,24" />
+
+                        <views:Destination Grid.Row="4" DataContext="{Binding DestinationViewModel}" />
                     </Grid>
-
-                    <Border
-                        Grid.Row="3"
-                        Margin="0,24,0,24"
-                        BorderBrush="{DynamicResource MaterialDesignDivider}"
-                        BorderThickness="0,0,0,1" />
-
-                    <views:Destination
-                        Grid.Row="4"
-                        Grid.Column="0"
-                        DataContext="{Binding DestinationViewModel}" />
-                </Grid>
+                </ScrollViewer>
 
                 <GridSplitter
                     x:Name="ResizeLeft"

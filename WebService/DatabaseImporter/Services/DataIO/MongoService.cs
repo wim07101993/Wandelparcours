@@ -4,12 +4,11 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using DatabaseImporter.Models.MongoModels;
-using MongoDB.Bson;
 using MongoDB.Driver;
 
 namespace DatabaseImporter.Services.DataIO
 {
-    public class MongoService : IDatabaseService
+    public class MongoService : IMongoService
     {
         #region FIELDS
 

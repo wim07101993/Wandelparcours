@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using DatabaseImporter.Helpers;
+using DatabaseImporter.Helpers.Events;
 using DatabaseImporter.Models.MongoModels;
 using DatabaseImporter.Services;
 using DatabaseImporter.Services.Serialization;
@@ -73,14 +74,16 @@ namespace DatabaseImporter.ViewModels
         {
             get
             {
-                switch (SelectedSource)
+                switch (SelectedESource)
                 {
-                    case "Json":
-                    case "Csv":
-                    case "Xml":
+                   case ESource.Json:
+                    case ESource.Csv:
+                    case ESource.Xml:
                         return true;
-                    default:
+                    case ESource.MongoDB:
                         return false;
+                    default:
+                        throw new ArgumentOutOfRangeException();
                 }
             }
         }
@@ -89,12 +92,16 @@ namespace DatabaseImporter.ViewModels
         {
             get
             {
-                switch (SelectedSource)
+                switch (SelectedESource)
                 {
-                    case "MongoDB":
+                    case ESource.Json:
+                    case ESource.Csv:
+                    case ESource.Xml:
+                        return false;
+                    case ESource.MongoDB:
                         return true;
                     default:
-                        return false;
+                        throw new ArgumentOutOfRangeException();
                 }
             }
         }
@@ -184,7 +191,7 @@ namespace DatabaseImporter.ViewModels
             }
         }
 
-        private async void OnStateChanged(object sender, Helpers.Events.StateChangedEventArgs e)
+        private async void OnStateChanged(object sender, StateChangedEventArgs e)
         {
             StateManager.StateChanged -= OnStateChanged;
 

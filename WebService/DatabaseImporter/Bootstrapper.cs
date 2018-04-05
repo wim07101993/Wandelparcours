@@ -32,7 +32,9 @@ namespace DatabaseImporter
                 .RegisterType<IEventAggregator, EventAggregator>(new ContainerControlledLifetimeManager())
                 .RegisterType<IStateManager, StateManager>(new ContainerControlledLifetimeManager())
                 .RegisterType<IAuthenticationService, AuthenticationService>(new ContainerControlledLifetimeManager())
+                // data services
                 .RegisterType<IFileService, FileService>(new ContainerControlledLifetimeManager())
+                .RegisterType<IMongoService, MongoService>(new ContainerControlledLifetimeManager())
                 // serialization services
                 .RegisterType<ICsvService, CsvService>(new ContainerControlledLifetimeManager())
                 .RegisterType<IJsonService, JsonService>(new ContainerControlledLifetimeManager())
@@ -40,6 +42,7 @@ namespace DatabaseImporter
                 // viewmodels
                 .RegisterType<ISourceViewModel, SourceViewModel>()
                 .RegisterType<IDestinationViewModel, DestinationViewModel>()
+                .RegisterType<IDataSelectionViewModel, DataSelectionViewModel>()
                 .RegisterType<IMainWindowViewModel, MainWindowViewModel>();
 
             base.ConfigureContainer();

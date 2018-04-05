@@ -70,14 +70,16 @@ namespace DatabaseImporter.ViewModels
         {
             get
             {
-                switch (SelectedDestination)
+                switch (SelectedEDestination)
                 {
-                    case "Json":
-                    case "Csv":
-                    case "Xml":
+                    case EDestination.Json:
+                    case EDestination.Csv:
+                    case EDestination.Xml:
                         return true;
-                    default:
+                    case EDestination.MongoDB:
                         return false;
+                    default:
+                        throw new ArgumentOutOfRangeException();
                 }
             }
         }
@@ -86,12 +88,16 @@ namespace DatabaseImporter.ViewModels
         {
             get
             {
-                switch (SelectedDestination)
+                switch (SelectedEDestination)
                 {
-                    case "MongoDB":
+                    case EDestination.Json:
+                    case EDestination.Csv:
+                    case EDestination.Xml:
+                        return false;
+                    case EDestination.MongoDB:
                         return true;
                     default:
-                        return false;
+                        throw new ArgumentOutOfRangeException();
                 }
             }
         }

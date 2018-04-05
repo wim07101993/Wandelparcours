@@ -124,6 +124,7 @@
     <Compile Include="Helpers\Events\ValueChangedEventArgs.cs" />
     <Compile Include="Helpers\Events\ValueChangedEventArgs{T}.cs" />
     <Compile Include="Helpers\Extensions\EnumerableExtensions.cs" />
+    <Compile Include="Helpers\Extensions\MemberInfoExtensions.cs" />
     <Compile Include="Helpers\Extensions\ObjectExtensions.cs" />
     <Compile Include="Helpers\Extensions\StringExtensions.cs" />
     <Compile Include="Helpers\JsonConverters\ObjectIdConverter.cs" />
@@ -140,6 +141,7 @@
     <Compile Include="Models\MongoModels\ReceiverModule.cs" />
     <Compile Include="Models\MongoModels\Resident.cs" />
     <Compile Include="Models\MongoModels\User.cs" />
+    <Compile Include="Services\DataIO\IMongoService.cs" />
     <Compile Include="Services\DataIO\MongoService.cs" />
     <Compile Include="Services\DataIO\IDatabaseService.cs" />
     <Compile Include="Services\Serialization\ASerializationService.cs" />
@@ -159,12 +161,20 @@
     <Compile Include="Services\Mocks\AuthenticationService.cs" />
     <Compile Include="Helpers\ESource.cs" />
     <Compile Include="Services\StateManager.cs" />
+    <Compile Include="ViewModelInterfaces\IDataSelectionViewModel.cs" />
     <Compile Include="ViewModelInterfaces\IDestinationViewModel.cs" />
+    <Compile Include="ViewModelInterfaces\ISelectableViewModel.cs" />
+    <Compile Include="ViewModelInterfaces\ISelectPropertyViewModel.cs" />
     <Compile Include="ViewModelInterfaces\ISourceViewModel.cs" />
+    <Compile Include="ViewModels\DataSelectionViewModel.cs" />
     <Compile Include="ViewModels\DestinationViewModel.cs" />
+    <Compile Include="ViewModels\SelectPropertyViewModel.cs" />
     <Compile Include="ViewModels\SourceViewModel.cs" />
     <Compile Include="Views\Controls\ObjectBrowser.cs" />
     <Compile Include="Views\Converters\ObjectToPropertyListConverter.cs" />
+    <Compile Include="Views\DataSelection.xaml.cs">
+      <DependentUpon>DataSelection.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\Destination.xaml.cs">
       <DependentUpon>Destination.xaml</DependentUpon>
     </Compile>
@@ -184,6 +194,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\Controls\Login.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\DataSelection.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -211,6 +225,10 @@
       <SubType>Code</SubType>
     </Compile>
     <Page Include="Views\Source.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Styles\Devider.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
