@@ -19,20 +19,4 @@ namespace DatabaseImporter.Services.Data
             params string[] locationParameters)
             where T : IModelWithObjectID;
     }
-
-    public interface IJsonFileService : IDataService
-    {
-    }
-
-    public interface IXmlFileService : IDataService
-    {
-    }
-
-    public interface ICsvFileService : IDataService
-    {
-    }
-
-    public interface IMongoService : IDataService
-    {
-    }
 }

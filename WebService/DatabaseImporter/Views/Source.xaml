@@ -64,19 +64,25 @@
                 Style="{StaticResource MaterialDesignFloatingHintTextBox}"
                 Text="{Binding IpAddress}" />
 
-            <TextBox
+            <ComboBox
                 Grid.Row="1"
+                Width="200"
                 Margin="0,8,0,0"
+                HorizontalAlignment="Left"
                 materialDesign:HintAssist.Hint="Database naam"
-                Style="{StaticResource MaterialDesignFloatingHintTextBox}"
-                Text="{Binding DatabaseName}" />
+                ItemsSource="{Binding Databases}"
+                SelectedItem="{Binding DatabaseName}"
+                Style="{StaticResource MaterialDesignFloatingHintComboBox}" />
 
-            <TextBox
+            <ComboBox
                 Grid.Row="2"
+                Width="200"
                 Margin="0,8,0,0"
+                HorizontalAlignment="Left"
                 materialDesign:HintAssist.Hint="Tabel naam"
-                Style="{StaticResource MaterialDesignFloatingHintTextBox}"
-                Text="{Binding TableName}" />
+                ItemsSource="{Binding Tables}"
+                SelectedItem="{Binding TableName}"
+                Style="{StaticResource MaterialDesignFloatingHintComboBox}" />
 
             <Button
                 Grid.Row="3"

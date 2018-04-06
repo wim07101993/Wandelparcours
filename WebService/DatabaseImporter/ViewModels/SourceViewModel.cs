@@ -29,6 +29,8 @@ namespace DatabaseImporter.ViewModels
         private string _ipAddress;
         private string _databaseName;
         private string _tableName;
+        private IEnumerable<string> _databases;
+        private IEnumerable<string> _tables;
 
         #endregion FIELDS
 
@@ -117,13 +119,37 @@ namespace DatabaseImporter.ViewModels
         public string IpAddress
         {
             get => _ipAddress;
-            set => SetProperty(ref _ipAddress, value);
+            set
+            {
+                if (!SetProperty(ref _ipAddress, value))
+                    return;
+
+                UpdateDatabasesList();
+            }
+        }
+
+        public IEnumerable<string> Databases
+        {
+            get => _databases;
+            private set => SetProperty(ref _databases, value);
         }
 
         public string DatabaseName
         {
             get => _databaseName;
-            set => SetProperty(ref _databaseName, value);
+            set
+            {
+                if (!SetProperty(ref _databaseName, value))
+                    return;
+
+                UpdateTables();
+            }
+        }
+
+        public IEnumerable<string> Tables
+        {
+            get => _tables;
+            private set => SetProperty(ref _tables, value);
         }
 
         public string TableName
@@ -228,6 +254,18 @@ namespace DatabaseImporter.ViewModels
                 default:
                     throw new ArgumentOutOfRangeException(nameof(state), state, null);
             }
+        }
+
+        private async void UpdateDatabasesList()
+        {
+            var service = _dataServiceSelector.GetService(SelectedESource);
+            Databases = await CatchExceptionAsync(((IDatabaseService)service).GetDatabasesAsync(IpAddress));
+        }
+
+        private async void UpdateTables()
+        {
+            var service = _dataServiceSelector.GetService(SelectedESource);
+            Tables = await CatchExceptionAsync(((IDatabaseService)service).GetTables(IpAddress, DatabaseName));
         }
 
         #endregion METHODS

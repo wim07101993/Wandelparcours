@@ -14,7 +14,11 @@ namespace DatabaseImporter.ViewModelInterfaces
         string FilePath { get; }
 
         string IpAddress { get; set; }
+
+        IEnumerable<string> Databases { get; }
         string DatabaseName { get; set; }
+
+        IEnumerable<string> Tables { get; }
         string TableName { get; set; }
 
         ICommand ImportCommand { get; }

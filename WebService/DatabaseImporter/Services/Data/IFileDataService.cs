@@ -9,4 +9,17 @@ namespace DatabaseImporter.Services.Data
         string Serialize<T>(IEnumerable<T> values);
         IEnumerable<T> Deserialize<T>(string str);
     }
+
+
+    public interface IJsonFileService : IFileDataService
+    {
+    }
+
+    public interface IXmlFileService : IFileDataService
+    {
+    }
+
+    public interface ICsvFileService : IFileDataService
+    {
+    }
 }

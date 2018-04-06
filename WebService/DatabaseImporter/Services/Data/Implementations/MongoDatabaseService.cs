@@ -10,11 +10,40 @@ namespace DatabaseImporter.Services.Data.Implementations
 {
     public class MongoDatabaseService : ADatabaseService, IMongoService
     {
+        private static string IpToConnectionString(string ipAddress)
+            => $"mongodb://{ipAddress}";
+
+        public override async Task<IEnumerable<string>> GetDatabasesAsync(string ipAddress)
+        {
+            var databases = new List<string>();
+
+            var client = new MongoClient(IpToConnectionString(ipAddress));
+            using (var cursor = await client.ListDatabasesAsync())
+            {
+                await cursor.ForEachAsync(x => databases.Add(x["name"].AsString));
+            }
+
+            return databases;
+        }
+
+        public override async Task<IEnumerable<string>> GetTables(string ipAddress, string database)
+        {
+            var collections = new List<string>();
+
+            var db = new MongoClient(IpToConnectionString(ipAddress)).GetDatabase(database);
+            using (var cursor = await db.ListCollectionsAsync())
+            {
+                await cursor.ForEachAsync(x => collections.Add(x["name"].AsString));
+            }
+
+            return collections;
+        }
+
         public override async Task<IEnumerable> GetAsync<T>(
             IEnumerable<Expression<Func<T, object>>> selectors,
-            string ipAddres, string database, string collection)
+            string ipAddress, string database, string collection)
         {
-            var foundItems = GetCollection<T>($"mongodb://{ipAddres}", database, collection)
+            var foundItems = GetCollection<T>(IpToConnectionString(ipAddress), database, collection)
                 .Find(FilterDefinition<T>.Empty);
 
             if (selectors == null)
@@ -28,13 +57,13 @@ namespace DatabaseImporter.Services.Data.Implementations
                 .ToList();
         }
 
-        public override async Task AddAsync<T>(IEnumerable<T> items, string ipAddres, string database,
+        public override async Task AddAsync<T>(IEnumerable<T> items, string ipAddress, string database,
             string collection)
         {
             if (items == null)
                 throw new ArgumentNullException(nameof(items));
 
-            await GetCollection<T>($"mongodb://{ipAddres}", database, collection)
+            await GetCollection<T>($"mongodb://{ipAddress}", database, collection)
                 .InsertManyAsync(items);
         }
 

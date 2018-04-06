@@ -28,6 +28,11 @@ namespace DatabaseImporter.Services.Data
         }
 
 
+        public abstract Task<IEnumerable<string>> GetDatabasesAsync(string ipAddress);
+
+        public abstract Task<IEnumerable<string>> GetTables(string ipAddress, string database);
+
+
         public abstract Task<IEnumerable> GetAsync<T>(
             IEnumerable<Expression<Func<T, object>>> selectors,
             string ipAddres, string database, string collection)
