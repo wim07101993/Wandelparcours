@@ -38,7 +38,7 @@
             <Button
                 Margin="0,16,0,0"
                 HorizontalAlignment="Left"
-                Command="{Binding ChooseFileCommand}"
+                Command="{Binding ImportCommand}"
                 Content="BESTAND KIEZEN" />
             <TextBlock
                 Margin="8"
@@ -54,43 +54,36 @@
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
-                <RowDefinition />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
 
             <TextBox
-                Grid.Row="1"
-                materialDesign:HintAssist.Hint="Connectie string"
+                Grid.Row="0"
+                materialDesign:HintAssist.Hint="ip adress en poort"
                 Style="{StaticResource MaterialDesignFloatingHintTextBox}"
-                Text="{Binding ConnectionString}" />
+                Text="{Binding IpAddress}" />
 
-            <ItemsControl
+            <TextBox
                 Grid.Row="1"
-                Margin="12,0,12,0"
-                Grid.IsSharedSizeScope="True"
-                ItemsSource="{Binding SelectableProperties}">
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate DataType="{x:Type viewModelInterfaces:ISelectableViewModel}">
-                        <Border x:Name="Border" Padding="8">
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition SharedSizeGroup="Checkerz" />
-                                    <ColumnDefinition />
-                                </Grid.ColumnDefinitions>
-                                <CheckBox VerticalAlignment="Center" IsChecked="{Binding IsSelected}" />
-                                <StackPanel Grid.Column="1" Margin="8,0,0,0">
-                                    <TextBlock FontWeight="Bold" Text="{Binding Name}" />
-                                    <TextBlock Text="{Binding Description}" />
-                                </StackPanel>
-                            </Grid>
-                        </Border>
-                        <DataTemplate.Triggers>
-                            <DataTrigger Binding="{Binding IsSelected}" Value="True">
-                                <Setter TargetName="Border" Property="Background" Value="{DynamicResource MaterialDesignSelection}" />
-                            </DataTrigger>
-                        </DataTemplate.Triggers>
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-            </ItemsControl>
+                Margin="0,8,0,0"
+                materialDesign:HintAssist.Hint="Database naam"
+                Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+                Text="{Binding DatabaseName}" />
+
+            <TextBox
+                Grid.Row="2"
+                Margin="0,8,0,0"
+                materialDesign:HintAssist.Hint="Tabel naam"
+                Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+                Text="{Binding TableName}" />
+
+            <Button
+                Grid.Row="3"
+                Margin="0,16,0,0"
+                HorizontalAlignment="Left"
+                Command="{Binding ImportCommand}"
+                Content="HAAL DATA OP" />
         </Grid>
 
     </Grid>

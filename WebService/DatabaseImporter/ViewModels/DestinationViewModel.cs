@@ -23,7 +23,7 @@ namespace DatabaseImporter.ViewModels
 
         private string _selectedDestination = EDestination.Json.ToString();
         private string _filePath;
-        private string _connectionString;
+        private string _ipAddress;
         private string _databaseName;
         private string _tableName;
 
@@ -39,7 +39,7 @@ namespace DatabaseImporter.ViewModels
             _dataServiceSelector = dataServiceSelector;
             _dialogService = dialogService;
 
-            ChooseFileCommand = new DelegateCommand(ChooseFile);
+            TransferCommand = new DelegateCommand(ChooseFile);
         }
 
         #endregion CONSTRUCTOR
@@ -81,10 +81,10 @@ namespace DatabaseImporter.ViewModels
             set => SetProperty(ref _filePath, value);
         }
 
-        public string ConnectionString
+        public string IpAddress
         {
-            get => _connectionString;
-            set => SetProperty(ref _connectionString, value);
+            get => _ipAddress;
+            set => SetProperty(ref _ipAddress, value);
         }
 
         public string DatabaseName
@@ -99,7 +99,7 @@ namespace DatabaseImporter.ViewModels
             set => SetProperty(ref _tableName, value);
         }
 
-        public ICommand ChooseFileCommand { get; }
+        public ICommand TransferCommand { get; }
 
         #endregion PROPERTIES
 
@@ -132,7 +132,7 @@ namespace DatabaseImporter.ViewModels
             var items = StateManager.GetState<IEnumerable<T>>(EState.FileContent.ToString());
 
             if (IsDatabaseDestination)
-                await service.AddAsync(items, ConnectionString, DatabaseName, TableName);
+                await service.AddAsync(items, IpAddress, DatabaseName, TableName);
             else
             {
                 var extensions = ((IFileDataService) service).ExtensionFilter;

@@ -9,7 +9,7 @@ namespace DatabaseImporter.Helpers.Extensions
     public static class ObjectExtensions
     {
         public static string SerializeToJson(this object This)
-            => JsonConvert.SerializeObject(This);
+            => JsonConvert.SerializeObject(This, Formatting.Indented);
 
         public static string SerializeToCsv<T>(this IEnumerable<T> This, char delimiter = ',',
             bool withFieldsRow = true)

@@ -38,7 +38,7 @@
             <Button
                 Margin="0,16,0,0"
                 HorizontalAlignment="Left"
-                Command="{Binding ChooseFileCommand}"
+                Command="{Binding TransferCommand}"
                 Content="BESTAND OPSLAAN"
                 Style="{StaticResource MaterialDesignRaisedAccentButton}" />
         </Grid>
@@ -51,19 +51,36 @@
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
 
             <TextBox
                 Grid.Row="0"
-                materialDesign:HintAssist.Hint="Connectie string"
+                materialDesign:HintAssist.Hint="ip adress en poort"
                 Style="{StaticResource MaterialDesignFloatingHintTextBox}"
-                Text="{Binding ConnectionString}" />
-            <Button
+                Text="{Binding IpAddress}" />
+
+            <TextBox
                 Grid.Row="1"
+                Margin="0,8,0,0"
+                materialDesign:HintAssist.Hint="Database naam"
+                Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+                Text="{Binding DatabaseName}" />
+
+            <TextBox
+                Grid.Row="2"
+                Margin="0,8,0,0"
+                materialDesign:HintAssist.Hint="Tabel naam"
+                Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+                Text="{Binding TableName}" />
+
+            <Button
+                Grid.Row="3"
                 Margin="0,16,0,0"
                 HorizontalAlignment="Left"
-                Command="{Binding ChooseFileCommand}"
-                Content="IMPORTEREN"
+                Command="{Binding TransferCommand}"
+                Content="SLA DATA OP"
                 Style="{StaticResource MaterialDesignRaisedAccentButton}" />
         </Grid>
 

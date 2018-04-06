@@ -14,7 +14,7 @@ namespace DatabaseImporter.Services.Data
             params string[] locationParameters)
             where T : IModelWithObjectID
             => locationParameters != null && locationParameters.Length >= 3
-                ? await GetAsync(selectors, locationParameters[0], locationParameters[2], locationParameters[3])
+                ? await GetAsync(selectors, locationParameters[0], locationParameters[1], locationParameters[2])
                 : null;
 
         public async Task AddAsync<T>(
@@ -24,13 +24,13 @@ namespace DatabaseImporter.Services.Data
         {
             if (locationParameters == null || locationParameters.Length < 3)
                 return;
-            await AddAsync(items, locationParameters[0], locationParameters[2], locationParameters[3]);
+            await AddAsync(items, locationParameters[0], locationParameters[1], locationParameters[2]);
         }
 
 
         public abstract Task<IEnumerable> GetAsync<T>(
             IEnumerable<Expression<Func<T, object>>> selectors,
-            string connectionString, string database, string collection)
+            string ipAddres, string database, string collection)
             where T : IModelWithObjectID;
 
         public abstract Task AddAsync<T>(

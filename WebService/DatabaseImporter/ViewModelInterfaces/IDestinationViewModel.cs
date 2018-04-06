@@ -13,10 +13,10 @@ namespace DatabaseImporter.ViewModelInterfaces
 
         string FilePath { get; }
 
-        string ConnectionString { get; set; }
+        string IpAddress { get; set; }
         string DatabaseName { get; set; }
         string TableName { get; set; }
 
-        ICommand ChooseFileCommand { get; }
+        ICommand TransferCommand { get; }
     }
 }

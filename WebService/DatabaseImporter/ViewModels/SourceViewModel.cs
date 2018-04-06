@@ -25,7 +25,7 @@ namespace DatabaseImporter.ViewModels
         private string _selectedSource = ESource.Json.ToString();
 
         private string _filePath;
-        private string _connectionString;
+        private string _ipAddress;
         private string _databaseName;
         private string _tableName;
 
@@ -41,7 +41,7 @@ namespace DatabaseImporter.ViewModels
             _dataServiceSelector = dataServiceSelector;
             _dialogService = dialogService;
 
-            ChooseFileCommand = new DelegateCommand(ChooseFile);
+            ImportCommand = new DelegateCommand(ImportSource);
 
             StateManager.StateChanged += OnStateChanged;
         }
@@ -115,10 +115,10 @@ namespace DatabaseImporter.ViewModels
             set => SetProperty(ref _filePath, value);
         }
 
-        public string ConnectionString
+        public string IpAddress
         {
-            get => _connectionString;
-            set => SetProperty(ref _connectionString, value);
+            get => _ipAddress;
+            set => SetProperty(ref _ipAddress, value);
         }
 
         public string DatabaseName
@@ -133,26 +133,26 @@ namespace DatabaseImporter.ViewModels
             set => SetProperty(ref _tableName, value);
         }
 
-        public ICommand ChooseFileCommand { get; }
+        public ICommand ImportCommand { get; }
 
         #endregion PROPERTIES
 
 
         #region METHODS
 
-        private void ChooseFile()
+        private void ImportSource()
         {
 #pragma warning disable 4014 // no await
             switch (StateManager.GetState<EDataType>(EState.DataType.ToString()))
             {
                 case EDataType.User:
-                    OpenAsync<User>();
+                    ImportAsync<User>();
                     break;
                 case EDataType.Resident:
-                    OpenAsync<Resident>();
+                    ImportAsync<Resident>();
                     break;
                 case EDataType.ReceiverModule:
-                    OpenAsync<ReceiverModule>();
+                    ImportAsync<ReceiverModule>();
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
@@ -160,13 +160,13 @@ namespace DatabaseImporter.ViewModels
 #pragma warning restore 4014
         }
 
-        private async Task OpenAsync<T>() where T : IModelWithObjectID
+        private async Task ImportAsync<T>() where T : IModelWithObjectID
         {
             var service = _dataServiceSelector.GetService(SelectedESource);
             IEnumerable items;
 
             if (IsDatabaseSource)
-                items = await service.GetAsync<T>(null, ConnectionString, DatabaseName, TableName);
+                items = await service.GetAsync<T>(null, IpAddress, DatabaseName, TableName);
             else
             {
                 var extensions = ((IFileDataService) service).ExtensionFilter;
@@ -183,7 +183,7 @@ namespace DatabaseImporter.ViewModels
             IEnumerable items;
 
             if (IsDatabaseSource)
-                items = await service.GetAsync<T>(null, ConnectionString, DatabaseName, TableName);
+                items = await service.GetAsync<T>(null, IpAddress, DatabaseName, TableName);
             else
                 items = await service.GetAsync<T>(null, FilePath);
 

@@ -11,7 +11,7 @@ namespace DatabaseImporter.Services.Data
     {
         Task<IEnumerable> GetAsync<T>(
             IEnumerable<Expression<Func<T, object>>> selectors,
-            string connectionString, string database, string collection)
+            string ipAddres, string database, string collection)
             where T : IModelWithObjectID;
 
         Task AddAsync<T>(
