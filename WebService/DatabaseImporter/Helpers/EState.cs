@@ -4,6 +4,7 @@
     {
         DataType,
         FileContent,
-        Exception
+        Exception,
+        UnKnown
     }
 }

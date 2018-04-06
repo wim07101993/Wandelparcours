@@ -1,4 +1,6 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System;
+using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
 using DatabaseImporter.Helpers;
 using DatabaseImporter.Helpers.Events;
 using DatabaseImporter.Helpers.Extensions;
@@ -18,25 +20,64 @@ namespace DatabaseImporter.ViewModels
             EventAggregator = eventAggregator;
             StateManager = stateManager;
 
-            StateManager.StateChanged += OnStateChanged;
+            StateManager.StateChanged += OnStateChangedBase;
         }
 
 
-        protected abstract void OnStateChanged(object sender, StateChangedEventArgs e);
-
-        protected bool SetState<T>(EState state, T value, [CallerMemberName] string propertyName = null)
+        private void OnStateChangedBase(object sender, StateChangedEventArgs e)
         {
-            StateManager.StateChanged -= OnStateChanged;
+            if (!Enum.TryParse(e.State, out EState state))
+                state = EState.UnKnown;
 
-            var isValueSet = StateManager.SetState(state, value);
+            OnStateChanged(sender, e, state);
+        }
 
-            StateManager.StateChanged += OnStateChanged;
+        protected abstract void OnStateChanged(object sender, StateChangedEventArgs e, EState state);
 
-            if (!isValueSet)
+        protected bool SetPropertyState<T>(EState state, T value, [CallerMemberName] string propertyName = null)
+        {
+            if (!SetState(state, value))
                 return false;
 
             RaisePropertyChanged(propertyName);
             return true;
+        }
+
+        protected bool SetState<T>(EState state, T value)
+        {
+            StateManager.StateChanged -= OnStateChangedBase;
+
+            var isValueSet = StateManager.SetState(state, value);
+
+            StateManager.StateChanged += OnStateChangedBase;
+
+            return isValueSet;
+        }
+
+        protected async Task CatchExceptionAsync(Task method)
+        {
+            try
+            {
+                await method;
+            }
+            catch (Exception e)
+            {
+                SetState(EState.Exception, e);
+            }
+        }
+
+        protected async Task<T> CatchExceptionAsync<T>(Task<T> method)
+        {
+            try
+            {
+                return await method;
+            }
+            catch (Exception e)
+            {
+                SetState(EState.Exception, e);
+            }
+
+            return default(T);
         }
     }
 }

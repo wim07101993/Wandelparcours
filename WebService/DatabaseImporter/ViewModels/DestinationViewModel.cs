@@ -40,7 +40,7 @@ namespace DatabaseImporter.ViewModels
             _dataServiceSelector = dataServiceSelector;
             _dialogService = dialogService;
 
-            TransferCommand = new DelegateCommand(ChooseFile);
+            TransferCommand = new DelegateCommand(Transfer);
         }
 
         #endregion CONSTRUCTOR
@@ -107,27 +107,31 @@ namespace DatabaseImporter.ViewModels
 
         #region METHODS
 
-        private void ChooseFile()
+        private void Transfer()
         {
-#pragma warning disable 4014 // no await
+            Task method;
+
             switch (StateManager.GetState<EDataType>(EState.DataType))
             {
                 case EDataType.User:
-                    SaveData<User>();
+                    method = SaveDataAsync<User>();
                     break;
                 case EDataType.Resident:
-                    SaveData<Resident>();
+                    method = SaveDataAsync<Resident>();
                     break;
                 case EDataType.ReceiverModule:
-                    SaveData<ReceiverModule>();
+                    method = SaveDataAsync<ReceiverModule>();
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
             }
+
+#pragma warning disable 4014 // no await
+            CatchExceptionAsync(method);
 #pragma warning restore 4014
         }
 
-        private async Task SaveData<T>() where T : IModelWithObjectID
+        private async Task SaveDataAsync<T>() where T : IModelWithObjectID
         {
             var service = _dataServiceSelector.GetService(SelectedEDestination);
             var items = StateManager.GetState<IEnumerable<T>>(EState.FileContent);
@@ -142,7 +146,7 @@ namespace DatabaseImporter.ViewModels
             }
         }
 
-        protected override void OnStateChanged(object sender, StateChangedEventArgs e)
+        protected override void OnStateChanged(object sender, StateChangedEventArgs e, EState state)
         {
         }
 

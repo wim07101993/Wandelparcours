@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.ComponentModel;
 
 namespace DatabaseImporter.ViewModelInterfaces
 {
@@ -9,5 +10,7 @@ namespace DatabaseImporter.ViewModelInterfaces
         IDataSelectionViewModel DataSelectionViewModels { get; }
 
         object FileContent { get; }
+
+        Exception Exception { get; }
     }
 }

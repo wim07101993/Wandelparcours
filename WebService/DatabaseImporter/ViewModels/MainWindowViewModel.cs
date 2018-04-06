@@ -1,4 +1,5 @@
-﻿using DatabaseImporter.Helpers;
+﻿using System;
+using DatabaseImporter.Helpers;
 using DatabaseImporter.Helpers.Events;
 using DatabaseImporter.Helpers.Extensions;
 using DatabaseImporter.Services;
@@ -30,11 +31,27 @@ namespace DatabaseImporter.ViewModels
         public object FileContent
             => StateManager.GetState<object>(EState.FileContent);
 
+        public Exception Exception
+            => StateManager.GetState<Exception>(EState.Exception);
 
-        protected override void OnStateChanged(object sender, StateChangedEventArgs e)
+
+        protected override void OnStateChanged(object sender, StateChangedEventArgs e, EState state)
         {
-            if (e.State == EState.FileContent.ToString())
-                RaisePropertyChanged(nameof(FileContent));
+            switch (state)
+            {
+                case EState.DataType:
+                    break;
+                case EState.FileContent:
+                    RaisePropertyChanged(nameof(FileContent));
+                    break;
+                case EState.Exception:
+                    RaisePropertyChanged(nameof(Exception));
+                    break;
+                case EState.UnKnown:
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(state), state, null);
+            }
         }
     }
 }

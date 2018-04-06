@@ -26,6 +26,8 @@
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
 
                 <views:DataSelection Grid.Row="0" DataContext="{Binding DataSelectionViewModels}" />
@@ -37,6 +39,13 @@
                 <Separator Grid.Row="3" Margin="0,24,0,24" />
 
                 <views:Destination Grid.Row="4" DataContext="{Binding DestinationViewModel}" />
+
+                <Separator Grid.Row="5" Margin="0,24,0,24" />
+
+                <TextBlock
+                    Grid.Row="6"
+                    Text="{Binding Exception.Message}"
+                    TextWrapping="Wrap" />
             </Grid>
         </ScrollViewer>
 

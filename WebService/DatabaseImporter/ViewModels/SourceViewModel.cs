@@ -141,21 +141,25 @@ namespace DatabaseImporter.ViewModels
 
         private void ImportSource()
         {
-#pragma warning disable 4014 // no await
+            Task method;
+
             switch (StateManager.GetState<EDataType>(EState.DataType))
             {
                 case EDataType.User:
-                    ImportAsync<User>();
+                    method = ImportAsync<User>();
                     break;
                 case EDataType.Resident:
-                    ImportAsync<Resident>();
+                    method = ImportAsync<Resident>();
                     break;
                 case EDataType.ReceiverModule:
-                    ImportAsync<ReceiverModule>();
+                    method = ImportAsync<ReceiverModule>();
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
             }
+
+#pragma warning disable 4014 // no await
+            CatchExceptionAsync(method);
 #pragma warning restore 4014
         }
 
@@ -189,24 +193,40 @@ namespace DatabaseImporter.ViewModels
             StateManager.SetState(EState.FileContent, items);
         }
 
-        protected override async void OnStateChanged(object sender, StateChangedEventArgs e)
+        protected override void OnStateChanged(object sender, StateChangedEventArgs e, EState state)
         {
-            if (e.State == EState.DataType.ToString() && !string.IsNullOrEmpty(FilePath))
+            switch (state)
             {
-                switch (StateManager.GetState<EDataType>(EState.DataType))
-                {
-                    case EDataType.User:
-                        await ReloadFileAsync<User>();
-                        break;
-                    case EDataType.Resident:
-                        await ReloadFileAsync<Resident>();
-                        break;
-                    case EDataType.ReceiverModule:
-                        await ReloadFileAsync<ReceiverModule>();
-                        break;
-                    default:
-                        throw new ArgumentOutOfRangeException();
-                }
+                case EState.DataType:
+                    if (string.IsNullOrEmpty(FilePath))
+                        return;
+                    Task method;
+
+                    switch (StateManager.GetState<EDataType>(EState.DataType))
+                    {
+                        case EDataType.User:
+                            method = ReloadFileAsync<User>();
+                            break;
+                        case EDataType.Resident:
+                            method = ReloadFileAsync<Resident>();
+                            break;
+                        case EDataType.ReceiverModule:
+                            method = ReloadFileAsync<ReceiverModule>();
+                            break;
+                        default:
+                            throw new ArgumentOutOfRangeException();
+                    }
+
+#pragma warning disable 4014 // no await
+                    CatchExceptionAsync(method);
+#pragma warning restore 4014
+                    break;
+                case EState.FileContent:
+                case EState.Exception:
+                case EState.UnKnown:
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(state), state, null);
             }
         }
 

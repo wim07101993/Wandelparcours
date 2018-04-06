@@ -52,22 +52,26 @@ namespace DatabaseImporter.ViewModels
         public string SelectedDataType
         {
             get => SelectedEDataType.ToString();
-            set
-            {
-                if (Enum.TryParse(value, out EDataType dataType))
-                    StateManager.SetState(EState.DataType, dataType);
-                else
-                    throw new ArgumentOutOfRangeException();
-            }
+            set => StateManager.SetState(EState.DataType, Enum.Parse(typeof(EDataType), value));
         }
-        
+
         private EDataType SelectedEDataType
             => StateManager.GetState<EDataType>(EState.DataType);
 
-        protected override void OnStateChanged(object sender, StateChangedEventArgs e)
+        protected override void OnStateChanged(object sender, StateChangedEventArgs e, EState state)
         {
-            if (e.State == EState.DataType.ToString())
-                RaisePropertyChanged(nameof(SelectedEDataType));
+            switch (state)
+            {
+                case EState.DataType:
+                    RaisePropertyChanged(nameof(SelectedEDataType));
+                    break;
+                case EState.FileContent:
+                case EState.Exception:
+                case EState.UnKnown:
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(state), state, null);
+            }  
         }
     }
 }
