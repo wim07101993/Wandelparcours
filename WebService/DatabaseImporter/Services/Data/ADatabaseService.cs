@@ -17,9 +17,7 @@ namespace DatabaseImporter.Services.Data
                 ? await GetAsync(selectors, locationParameters[0], locationParameters[1], locationParameters[2])
                 : null;
 
-        public async Task AddAsync<T>(
-            IEnumerable<T> items,
-            params string[] locationParameters)
+        public async Task AddAsync<T>(IEnumerable<T> items, params string[] locationParameters)
             where T : IModelWithObjectID
         {
             if (locationParameters == null || locationParameters.Length < 3)

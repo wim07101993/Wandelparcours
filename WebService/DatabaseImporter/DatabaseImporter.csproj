@@ -171,6 +171,7 @@
     <Compile Include="ViewModels\DestinationViewModel.cs" />
     <Compile Include="ViewModels\SelectPropertyViewModel.cs" />
     <Compile Include="ViewModels\SourceViewModel.cs" />
+    <Compile Include="Views\Behaviours\ListBoxBehaviours.cs" />
     <Compile Include="Views\Controls\DatabaseSelector.cs" />
     <Compile Include="Views\Controls\ObjectBrowser.cs" />
     <Compile Include="Views\Converters\ObjectToPropertyListConverter.cs" />

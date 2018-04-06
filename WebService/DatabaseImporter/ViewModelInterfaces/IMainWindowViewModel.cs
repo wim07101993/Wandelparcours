@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 
 namespace DatabaseImporter.ViewModelInterfaces
@@ -11,6 +13,8 @@ namespace DatabaseImporter.ViewModelInterfaces
 
         object FileContent { get; }
 
-        Exception Exception { get; }
+        ObservableCollection<Exception> Exceptions { get; }
+
+        string CurrentTime { get; }
     }
 }

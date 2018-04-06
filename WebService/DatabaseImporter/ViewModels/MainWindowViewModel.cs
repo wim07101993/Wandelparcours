@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.ObjectModel;
 using DatabaseImporter.Helpers;
 using DatabaseImporter.Helpers.Events;
 using DatabaseImporter.Helpers.Extensions;
@@ -31,8 +32,9 @@ namespace DatabaseImporter.ViewModels
         public object FileContent
             => StateManager.GetState<object>(EState.FileContent);
 
-        public Exception Exception
-            => StateManager.GetState<Exception>(EState.Exception);
+        public ObservableCollection<Exception> Exceptions { get; } = new ObservableCollection<Exception>();
+
+        public string CurrentTime => DateTime.Now.ToShortTimeString();
 
 
         protected override void OnStateChanged(object sender, StateChangedEventArgs e, EState state)
@@ -45,7 +47,7 @@ namespace DatabaseImporter.ViewModels
                     RaisePropertyChanged(nameof(FileContent));
                     break;
                 case EState.Exception:
-                    RaisePropertyChanged(nameof(Exception));
+                    Exceptions.Add(StateManager.GetState<Exception>(EState.Exception));
                     break;
                 case EState.UnKnown:
                     break;

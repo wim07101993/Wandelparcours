@@ -135,7 +135,8 @@ namespace DatabaseImporter.ViewModels
 
         public ICommand ImportCommand { get; }
 
-        public IDatabaseService DatabaseService => _dataServiceSelector.GetService(SelectedESource) as IDatabaseService;
+        public IDatabaseService DatabaseService
+            => _dataServiceSelector.GetService(SelectedESource) as IDatabaseService;
 
         #endregion PROPERTIES
 

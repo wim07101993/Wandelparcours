@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel;
 using System.Windows.Input;
+using DatabaseImporter.Services.Data;
 
 namespace DatabaseImporter.ViewModelInterfaces
 {
@@ -18,5 +19,6 @@ namespace DatabaseImporter.ViewModelInterfaces
         string TableName { get; set; }
 
         ICommand TransferCommand { get; }
+        IDatabaseService DatabaseService { get; }
     }
 }

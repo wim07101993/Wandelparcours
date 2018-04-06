@@ -40,7 +40,7 @@ namespace DatabaseImporter.ViewModels
             _dataServiceSelector = dataServiceSelector;
             _dialogService = dialogService;
 
-            TransferCommand = new DelegateCommand(Transfer);
+            TransferCommand = new DelegateCommand(SaveData);
         }
 
         #endregion CONSTRUCTOR
@@ -61,6 +61,7 @@ namespace DatabaseImporter.ViewModels
                 RaisePropertyChanged(nameof(SelectedEDestination));
                 RaisePropertyChanged(nameof(IsFileDestination));
                 RaisePropertyChanged(nameof(IsDatabaseDestination));
+                RaisePropertyChanged(nameof(DatabaseService));
             }
         }
 
@@ -102,12 +103,15 @@ namespace DatabaseImporter.ViewModels
 
         public ICommand TransferCommand { get; }
 
+        public IDatabaseService DatabaseService 
+            => _dataServiceSelector.GetService(SelectedEDestination) as IDatabaseService;
+
         #endregion PROPERTIES
 
 
         #region METHODS
 
-        private void Transfer()
+        private void SaveData()
         {
             Task method;
 
