@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using DatabaseImporter.Helpers;
 using DatabaseImporter.Helpers.Events;
+using DatabaseImporter.Helpers.Extensions;
 using DatabaseImporter.Models.MongoModels;
 using DatabaseImporter.Models.MongoModels.Bases;
 using DatabaseImporter.Services;
@@ -143,7 +144,7 @@ namespace DatabaseImporter.ViewModels
         private void ImportSource()
         {
 #pragma warning disable 4014 // no await
-            switch (StateManager.GetState<EDataType>(EState.DataType.ToString()))
+            switch (StateManager.GetState<EDataType>(EState.DataType))
             {
                 case EDataType.User:
                     ImportAsync<User>();
@@ -174,7 +175,7 @@ namespace DatabaseImporter.ViewModels
                 items = await service.GetAsync<T>(null, FilePath);
             }
 
-            StateManager.SetState(EState.FileContent.ToString(), items);
+            StateManager.SetState(EState.FileContent, items);
         }
 
         private async Task ReloadFileAsync<T>() where T : IModelWithObjectID
@@ -187,7 +188,7 @@ namespace DatabaseImporter.ViewModels
             else
                 items = await service.GetAsync<T>(null, FilePath);
 
-            StateManager.SetState(EState.FileContent.ToString(), items);
+            StateManager.SetState(EState.FileContent, items);
         }
 
         private async void OnStateChanged(object sender, StateChangedEventArgs e)
@@ -196,7 +197,7 @@ namespace DatabaseImporter.ViewModels
 
             if (e.State == EState.DataType.ToString() && !string.IsNullOrEmpty(FilePath))
             {
-                switch (StateManager.GetState<EDataType>(EState.DataType.ToString()))
+                switch (StateManager.GetState<EDataType>(EState.DataType))
                 {
                     case EDataType.User:
                         await ReloadFileAsync<User>();

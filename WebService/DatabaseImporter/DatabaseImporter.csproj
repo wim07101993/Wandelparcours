@@ -128,6 +128,7 @@
     <Compile Include="Helpers\Extensions\ESourceExtensions.cs" />
     <Compile Include="Helpers\Extensions\MemberInfoExtensions.cs" />
     <Compile Include="Helpers\Extensions\ObjectExtensions.cs" />
+    <Compile Include="Helpers\Extensions\StateManagerExtensions.cs" />
     <Compile Include="Helpers\Extensions\StringExtensions.cs" />
     <Compile Include="Helpers\JsonConverters\ObjectIdConverter.cs" />
     <Compile Include="Models\File.cs" />

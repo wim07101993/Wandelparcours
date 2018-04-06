@@ -1,5 +1,6 @@
 ﻿using DatabaseImporter.Helpers;
 using DatabaseImporter.Helpers.Events;
+using DatabaseImporter.Helpers.Extensions;
 using DatabaseImporter.Services;
 using DatabaseImporter.ViewModelInterfaces;
 using Prism.Events;
@@ -29,7 +30,7 @@ namespace DatabaseImporter.ViewModels
         public IDataSelectionViewModel DataSelectionViewModels { get; }
 
         public object FileContent
-            => StateManager.GetState<object>(EState.FileContent.ToString());
+            => StateManager.GetState<object>(EState.FileContent);
 
 
         protected void OnStateChanged(object sender, StateChangedEventArgs e)

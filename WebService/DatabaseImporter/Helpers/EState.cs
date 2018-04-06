@@ -4,6 +4,6 @@
     {
         DataType,
         FileContent,
-        Source
+        Exception
     }
 }

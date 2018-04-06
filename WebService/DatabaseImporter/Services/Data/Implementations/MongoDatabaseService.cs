@@ -22,17 +22,10 @@ namespace DatabaseImporter.Services.Data.Implementations
 
             var selector = Builders<T>.Projection.Include(x => x.Id);
             selector = selectors.Aggregate(selector, (current, property) => current.Include(property));
-            try
-            {
-                return foundItems
-                    .Project<T>(selector)
-                    .ToList();
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-                throw;
-            }
+
+            return foundItems
+                .Project<T>(selector)
+                .ToList();
         }
 
         public override async Task AddAsync<T>(IEnumerable<T> items, string ipAddres, string database,
@@ -41,15 +34,8 @@ namespace DatabaseImporter.Services.Data.Implementations
             if (items == null)
                 throw new ArgumentNullException(nameof(items));
 
-            try
-            {
-                await GetCollection<T>($"mongodb://{ipAddres}", database, collection)
-                    .InsertManyAsync(items);
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-            }
+            await GetCollection<T>($"mongodb://{ipAddres}", database, collection)
+                .InsertManyAsync(items);
         }
 
         private static IMongoCollection<T> GetCollection<T>(string connectionString, string database, string collection)

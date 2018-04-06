@@ -109,7 +109,7 @@ namespace DatabaseImporter.ViewModels
         private void ChooseFile()
         {
 #pragma warning disable 4014 // no await
-            switch (StateManager.GetState<EDataType>(EState.DataType.ToString()))
+            switch (StateManager.GetState<EDataType>(EState.DataType))
             {
                 case EDataType.User:
                     SaveData<User>();
@@ -129,7 +129,7 @@ namespace DatabaseImporter.ViewModels
         private async Task SaveData<T>() where T : IModelWithObjectID
         {
             var service = _dataServiceSelector.GetService(SelectedEDestination);
-            var items = StateManager.GetState<IEnumerable<T>>(EState.FileContent.ToString());
+            var items = StateManager.GetState<IEnumerable<T>>(EState.FileContent);
 
             if (IsDatabaseDestination)
                 await service.AddAsync(items, IpAddress, DatabaseName, TableName);

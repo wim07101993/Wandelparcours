@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using DatabaseImporter.Helpers;
 using DatabaseImporter.Helpers.Events;
+using DatabaseImporter.Helpers.Extensions;
 using DatabaseImporter.Models.MongoModels;
 using DatabaseImporter.Services;
 using DatabaseImporter.ViewModelInterfaces;
@@ -56,14 +57,14 @@ namespace DatabaseImporter.ViewModels
             set
             {
                 if (Enum.TryParse(value, out EDataType dataType))
-                    StateManager.SetState(EState.DataType.ToString(), dataType);
+                    StateManager.SetState(EState.DataType, dataType);
                 else
                     throw new ArgumentOutOfRangeException();
             }
         }
         
         private EDataType SelectedEDataType
-            => StateManager.GetState<EDataType>(EState.DataType.ToString());
+            => StateManager.GetState<EDataType>(EState.DataType);
 
         protected void OnStateChanged(object sender, StateChangedEventArgs e)
         {
