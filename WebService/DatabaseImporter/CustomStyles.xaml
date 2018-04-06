@@ -2,5 +2,6 @@
     <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary Source="Views/Styles/Devider.xaml" />
         <ResourceDictionary Source="Views/Styles/ObjectBrowser.xaml" />
+        <ResourceDictionary Source="Views/Styles/DatabaseSelector.xaml" />
     </ResourceDictionary.MergedDictionaries>
 </ResourceDictionary>

@@ -171,6 +171,7 @@
     <Compile Include="ViewModels\DestinationViewModel.cs" />
     <Compile Include="ViewModels\SelectPropertyViewModel.cs" />
     <Compile Include="ViewModels\SourceViewModel.cs" />
+    <Compile Include="Views\Controls\DatabaseSelector.cs" />
     <Compile Include="Views\Controls\ObjectBrowser.cs" />
     <Compile Include="Views\Converters\ObjectToPropertyListConverter.cs" />
     <Compile Include="Views\DataSelection.xaml.cs">
@@ -226,6 +227,10 @@
       <SubType>Code</SubType>
     </Compile>
     <Page Include="Views\Source.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Styles\DatabaseSelector.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

@@ -29,8 +29,6 @@ namespace DatabaseImporter.ViewModels
         private string _ipAddress;
         private string _databaseName;
         private string _tableName;
-        private IEnumerable<string> _databases;
-        private IEnumerable<string> _tables;
 
         #endregion FIELDS
 
@@ -44,7 +42,7 @@ namespace DatabaseImporter.ViewModels
             _dataServiceSelector = dataServiceSelector;
             _dialogService = dialogService;
 
-            ImportCommand = new DelegateCommand(ImportSource);
+            ImportCommand = new DelegateCommand(Import);
         }
 
         #endregion CONSTRUCTOR
@@ -65,6 +63,7 @@ namespace DatabaseImporter.ViewModels
                 RaisePropertyChanged(nameof(SelectedESource));
                 RaisePropertyChanged(nameof(IsFileSource));
                 RaisePropertyChanged(nameof(IsDatabaseSource));
+                RaisePropertyChanged(nameof(DatabaseService));
             }
         }
 
@@ -119,37 +118,13 @@ namespace DatabaseImporter.ViewModels
         public string IpAddress
         {
             get => _ipAddress;
-            set
-            {
-                if (!SetProperty(ref _ipAddress, value))
-                    return;
-
-                UpdateDatabasesList();
-            }
-        }
-
-        public IEnumerable<string> Databases
-        {
-            get => _databases;
-            private set => SetProperty(ref _databases, value);
+            set => SetProperty(ref _ipAddress, value);
         }
 
         public string DatabaseName
         {
             get => _databaseName;
-            set
-            {
-                if (!SetProperty(ref _databaseName, value))
-                    return;
-
-                UpdateTables();
-            }
-        }
-
-        public IEnumerable<string> Tables
-        {
-            get => _tables;
-            private set => SetProperty(ref _tables, value);
+            set => SetProperty(ref _databaseName, value);
         }
 
         public string TableName
@@ -160,12 +135,14 @@ namespace DatabaseImporter.ViewModels
 
         public ICommand ImportCommand { get; }
 
+        public IDatabaseService DatabaseService => _dataServiceSelector.GetService(SelectedESource) as IDatabaseService;
+
         #endregion PROPERTIES
 
 
         #region METHODS
 
-        private void ImportSource()
+        private void Import()
         {
             Task method;
 
@@ -206,7 +183,7 @@ namespace DatabaseImporter.ViewModels
             StateManager.SetState(EState.FileContent, items);
         }
 
-        private async Task ReloadFileAsync<T>() where T : IModelWithObjectID
+        private async Task ReloadDataAsync<T>() where T : IModelWithObjectID
         {
             var service = _dataServiceSelector.GetService(SelectedESource);
             IEnumerable items;
@@ -231,13 +208,13 @@ namespace DatabaseImporter.ViewModels
                     switch (StateManager.GetState<EDataType>(EState.DataType))
                     {
                         case EDataType.User:
-                            method = ReloadFileAsync<User>();
+                            method = ReloadDataAsync<User>();
                             break;
                         case EDataType.Resident:
-                            method = ReloadFileAsync<Resident>();
+                            method = ReloadDataAsync<Resident>();
                             break;
                         case EDataType.ReceiverModule:
-                            method = ReloadFileAsync<ReceiverModule>();
+                            method = ReloadDataAsync<ReceiverModule>();
                             break;
                         default:
                             throw new ArgumentOutOfRangeException();
@@ -254,18 +231,6 @@ namespace DatabaseImporter.ViewModels
                 default:
                     throw new ArgumentOutOfRangeException(nameof(state), state, null);
             }
-        }
-
-        private async void UpdateDatabasesList()
-        {
-            var service = _dataServiceSelector.GetService(SelectedESource);
-            Databases = await CatchExceptionAsync(((IDatabaseService)service).GetDatabasesAsync(IpAddress));
-        }
-
-        private async void UpdateTables()
-        {
-            var service = _dataServiceSelector.GetService(SelectedESource);
-            Tables = await CatchExceptionAsync(((IDatabaseService)service).GetTables(IpAddress, DatabaseName));
         }
 
         #endregion METHODS
