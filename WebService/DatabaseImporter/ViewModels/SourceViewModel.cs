@@ -16,7 +16,7 @@ using Prism.Events;
 
 namespace DatabaseImporter.ViewModels
 {
-    public class SourceViewModel : BindableBase, ISourceViewModel
+    public class SourceViewModel : AViewModelBase, ISourceViewModel
     {
         #region FIELDS
 
@@ -43,8 +43,6 @@ namespace DatabaseImporter.ViewModels
             _dialogService = dialogService;
 
             ImportCommand = new DelegateCommand(ImportSource);
-
-            StateManager.StateChanged += OnStateChanged;
         }
 
         #endregion CONSTRUCTOR
@@ -191,10 +189,8 @@ namespace DatabaseImporter.ViewModels
             StateManager.SetState(EState.FileContent, items);
         }
 
-        private async void OnStateChanged(object sender, StateChangedEventArgs e)
+        protected override async void OnStateChanged(object sender, StateChangedEventArgs e)
         {
-            StateManager.StateChanged -= OnStateChanged;
-
             if (e.State == EState.DataType.ToString() && !string.IsNullOrEmpty(FilePath))
             {
                 switch (StateManager.GetState<EDataType>(EState.DataType))
@@ -212,8 +208,6 @@ namespace DatabaseImporter.ViewModels
                         throw new ArgumentOutOfRangeException();
                 }
             }
-
-            StateManager.StateChanged += OnStateChanged;
         }
 
         #endregion METHODS

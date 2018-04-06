@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using DatabaseImporter.Helpers;
+using DatabaseImporter.Helpers.Events;
 using DatabaseImporter.Helpers.Extensions;
 using DatabaseImporter.Models.MongoModels;
 using DatabaseImporter.Models.MongoModels.Bases;
@@ -14,7 +15,7 @@ using Prism.Events;
 
 namespace DatabaseImporter.ViewModels
 {
-    public class DestinationViewModel : BindableBase, IDestinationViewModel
+    public class DestinationViewModel : AViewModelBase, IDestinationViewModel
     {
         #region FIELDS
 
@@ -139,6 +140,10 @@ namespace DatabaseImporter.ViewModels
                 FilePath = _dialogService.WriteFileDialog(extensions);
                 await service.AddAsync(items, FilePath);
             }
+        }
+
+        protected override void OnStateChanged(object sender, StateChangedEventArgs e)
+        {
         }
 
         #endregion METHODS

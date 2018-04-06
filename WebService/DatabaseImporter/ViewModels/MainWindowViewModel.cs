@@ -7,7 +7,7 @@ using Prism.Events;
 
 namespace DatabaseImporter.ViewModels
 {
-    public class MainWindowViewModel : BindableBase, IMainWindowViewModel
+    public class MainWindowViewModel : AViewModelBase, IMainWindowViewModel
     {
         public MainWindowViewModel(
             ISourceViewModel sourceViewModel,
@@ -20,8 +20,6 @@ namespace DatabaseImporter.ViewModels
             SourceViewModel = sourceViewModel;
             DestinationViewModel = destinationViewModel;
             DataSelectionViewModels = dataSelectionViewModels;
-
-            StateManager.StateChanged += OnStateChanged;
         }
 
 
@@ -33,14 +31,10 @@ namespace DatabaseImporter.ViewModels
             => StateManager.GetState<object>(EState.FileContent);
 
 
-        protected void OnStateChanged(object sender, StateChangedEventArgs e)
+        protected override void OnStateChanged(object sender, StateChangedEventArgs e)
         {
-            StateManager.StateChanged -= OnStateChanged;
-
             if (e.State == EState.FileContent.ToString())
                 RaisePropertyChanged(nameof(FileContent));
-
-            StateManager.StateChanged += OnStateChanged;
         }
     }
 }

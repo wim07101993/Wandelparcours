@@ -115,7 +115,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Helpers\BindableBase.cs" />
+    <Compile Include="ViewModels\AViewModelBase.cs" />
     <Compile Include="Helpers\EDataType.cs" />
     <Compile Include="Helpers\EDestination.cs" />
     <Compile Include="Helpers\EState.cs" />

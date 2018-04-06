@@ -9,7 +9,7 @@ namespace DatabaseImporter.Services
         ICollection<string> Keys { get; }
 
         T GetState<T>(string key);
-        void SetState<T>(string key, T value);
+        bool SetState<T>(string key, T value);
 
         event EventHandler<StateChangedEventArgs> StateChanged;
     }

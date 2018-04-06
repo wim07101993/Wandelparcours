@@ -12,14 +12,12 @@ using Prism.Events;
 
 namespace DatabaseImporter.ViewModels
 {
-    public class DataSelectionViewModel : BindableBase, IDataSelectionViewModel
+    public class DataSelectionViewModel : AViewModelBase, IDataSelectionViewModel
     {
         public DataSelectionViewModel(IEventAggregator eventAggregator, IStateManager stateManager)
             : base(eventAggregator, stateManager)
         {
             SelectedDataType = EDataType.Resident.ToString();
-
-            StateManager.StateChanged += OnStateChanged;
         }
 
 
@@ -66,14 +64,10 @@ namespace DatabaseImporter.ViewModels
         private EDataType SelectedEDataType
             => StateManager.GetState<EDataType>(EState.DataType);
 
-        protected void OnStateChanged(object sender, StateChangedEventArgs e)
+        protected override void OnStateChanged(object sender, StateChangedEventArgs e)
         {
-            StateManager.StateChanged -= OnStateChanged;
-
             if (e.State == EState.DataType.ToString())
                 RaisePropertyChanged(nameof(SelectedEDataType));
-
-            StateManager.StateChanged += OnStateChanged;
         }
     }
 }

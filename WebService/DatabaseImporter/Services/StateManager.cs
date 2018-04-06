@@ -20,11 +20,16 @@ namespace DatabaseImporter.Services
             return (T) _states[key];
         }
 
-        public void SetState<T>(string key, T value)
+        public bool SetState<T>(string key, T value)
         {
             var oldValue = GetState<T>(key);
+
+            if (Equals(oldValue, value))
+                return false;
+
             _states[key] = value;
             StateChanged?.Invoke(this, new StateChangedEventArgs(key, oldValue, value));
+            return true;
         }
 
 
