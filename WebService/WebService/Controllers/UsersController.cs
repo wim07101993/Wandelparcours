@@ -126,7 +126,7 @@ namespace WebService.Controllers
             if (!ObjectId.TryParse(id, out var objectId))
                 throw new NotFoundException<User>(nameof(IModelWithID.Id), id);
 
-            var currentUserType = await _usersService.GetPropertyAsync(UserId, x => x.UserType);
+            var currentUserType = await GetPropertyOfCurrentUser(x => x.UserType);
             var userTypeToEdit = await _usersService.GetPropertyAsync(objectId, x => x.UserType);
 
             if (userTypeToEdit > currentUserType ||
@@ -157,7 +157,7 @@ namespace WebService.Controllers
             if (!ObjectId.TryParse(id, out var objectId))
                 throw new NotFoundException<User>(nameof(IModelWithID.Id), id);
 
-            var currentUserType = await _usersService.GetPropertyAsync(UserId, x => x.UserType);
+            var currentUserType = await GetPropertyOfCurrentUser(x => x.UserType);
             var userTypeToEdit = await _usersService.GetPropertyAsync(objectId, x => x.UserType);
 
             if (userTypeToEdit > currentUserType ||
