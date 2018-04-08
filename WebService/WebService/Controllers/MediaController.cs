@@ -26,8 +26,6 @@ namespace WebService.Controllers
         public const string GetOneFileWithExtensionTemplate = "{id}/file.{extension}";
         public const string GetFileTemplate = "{id}/file";
 
-        private readonly IUsersService _usersService;
-        private readonly ITokenService _tokenService;
         private readonly IResidentsService _residentsService;
 
         #endregion FIELDS
@@ -39,8 +37,6 @@ namespace WebService.Controllers
             ITokenService tokenService, IResidentsService residentsService)
             : base(dataService, logger, usersService)
         {
-            _usersService = usersService;
-            _tokenService = tokenService;
             _residentsService = residentsService;
         }
 
