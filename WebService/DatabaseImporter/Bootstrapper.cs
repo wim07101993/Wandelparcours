@@ -37,7 +37,6 @@ namespace DatabaseImporter
                 .RegisterType<IDataServiceSelector, DataServiceSelector>()
                 .RegisterType<ICsvFileService, CsvFileService>(new ContainerControlledLifetimeManager())
                 .RegisterType<IJsonFileService, JsonFileService>(new ContainerControlledLifetimeManager())
-                .RegisterType<IXmlFileService, XmlFileService>(new ContainerControlledLifetimeManager())
                 .RegisterType<IMongoService, MongoDatabaseService>(new ContainerControlledLifetimeManager())
                 // viewmodels
                 .RegisterType<ISourceViewModel, SourceViewModel>()

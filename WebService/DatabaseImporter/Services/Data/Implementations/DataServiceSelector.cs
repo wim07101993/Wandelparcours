@@ -14,8 +14,6 @@ namespace DatabaseImporter.Services.Data.Implementations
                     return App.Bootstrapper.Container.Resolve<JsonFileService>();
                 case ESource.Csv:
                     return App.Bootstrapper.Container.Resolve<CsvFileService>();
-                case ESource.Xml:
-                    return App.Bootstrapper.Container.Resolve<XmlFileService>();
                 case ESource.MongoDB:
                     return App.Bootstrapper.Container.Resolve<MongoDatabaseService>();
                 default:
@@ -31,8 +29,6 @@ namespace DatabaseImporter.Services.Data.Implementations
                     return App.Bootstrapper.Container.Resolve<JsonFileService>();
                 case EDestination.Csv:
                     return App.Bootstrapper.Container.Resolve<CsvFileService>();
-                case EDestination.Xml:
-                    return App.Bootstrapper.Container.Resolve<XmlFileService>();
                 case EDestination.MongoDB:
                     return App.Bootstrapper.Container.Resolve<MongoDatabaseService>();
                 default:

@@ -10,7 +10,6 @@ namespace DatabaseImporter.Helpers.Extensions
             {
                 case EDestination.Json:
                 case EDestination.Csv:
-                case EDestination.Xml:
                     return true;
                 case EDestination.MongoDB:
                     return false;
@@ -25,7 +24,6 @@ namespace DatabaseImporter.Helpers.Extensions
             {
                 case EDestination.Json:
                 case EDestination.Csv:
-                case EDestination.Xml:
                     return false;
                 case EDestination.MongoDB:
                     return true;

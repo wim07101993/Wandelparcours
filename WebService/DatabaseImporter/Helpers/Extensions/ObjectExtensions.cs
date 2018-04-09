@@ -1,7 +1,5 @@
 ﻿using System.Collections.Generic;
-using System.IO;
 using System.Text;
-using System.Xml.Serialization;
 using Newtonsoft.Json;
 
 namespace DatabaseImporter.Helpers.Extensions
@@ -43,18 +41,7 @@ namespace DatabaseImporter.Helpers.Extensions
 
             return builder.ToString();
         }
-
-        public static string SerializeToXml<T>(this T This)
-        {
-            var serializer = new XmlSerializer(typeof(T));
-
-            using (var writer = new StringWriter())
-            {
-                serializer.Serialize(writer, This);
-                return writer.ToString();
-            }
-        }
-
+        
         public static T CloneBySerialization<T>(this T This)
             => This.SerializeToJson().DeserializeJson<T>();
     }

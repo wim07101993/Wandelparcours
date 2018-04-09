@@ -4,7 +4,6 @@
     {
         Json,
         Csv,
-        Xml,
         MongoDB
     }
 }

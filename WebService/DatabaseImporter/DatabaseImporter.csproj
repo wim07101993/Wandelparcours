@@ -154,7 +154,6 @@
     <Compile Include="Services\Data\AFileService.cs" />
     <Compile Include="Services\Data\Implementations\CsvFileService.cs" />
     <Compile Include="Services\Data\Implementations\MongoDatabaseService.cs" />
-    <Compile Include="Services\Data\Implementations\XmlFileService.cs" />
     <Compile Include="Services\DialogService.cs" />
     <Compile Include="Services\Data\Implementations\JsonFileService.cs" />
     <Compile Include="Services\IAuthenticationService.cs" />

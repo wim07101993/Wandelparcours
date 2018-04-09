@@ -80,15 +80,5 @@ namespace DatabaseImporter.Helpers.Extensions
 
             return values;
         }
-
-        public static T DeserializeXml<T>(this string This)
-        {
-            var serializer = new XmlSerializer(typeof(T));
-
-            using (var reader = new StringReader(This))
-            {
-                return (T) serializer.Deserialize(reader);
-            }
-        }
     }
 }
