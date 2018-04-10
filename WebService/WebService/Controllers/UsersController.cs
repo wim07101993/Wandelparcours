@@ -57,9 +57,14 @@ namespace WebService.Controllers
         [HttpPost(CreateTemplate)]
         public override async Task<string> CreateAsync([FromBody] User item)
         {
-            if (item.UserType > await _usersService.GetPropertyAsync(UserId, x => x.UserType))
-                throw new UnauthorizedException(item.UserType);
             return await base.CreateAsync(item);
+        }
+
+        [Authorize(EUserType.SysAdmin, EUserType.Nurse)]
+        [HttpPost(AddItemToListTemplate)]
+        public override Task<StatusCodeResult> AddItemToListAsync(string id, string propertyName, string jsonValue)
+        {
+            return base.AddItemToListAsync(id, propertyName, jsonValue);
         }
 
         #endregion create
