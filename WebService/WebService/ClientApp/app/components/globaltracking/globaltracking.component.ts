@@ -176,4 +176,12 @@ export class GlobaltrackingComponent extends ARenderComponent implements OnInit 
     *   this function loads the image of the building
     */
 
+
+    openListModal(){
+        $('#modal1').modal();
+        $('#modal1').modal('open');
+        $("#modal1").css({"width":"20%","height":"1200px"});
+    }
+
+   
 }

@@ -65,7 +65,7 @@ export class MouseEvents{
     static async Panning(e:any, parent:MouseEvents){
         
         
-        
+        console.log("in panning");
         
         parent.position={
             x:parent.position.x+(e.deltaX-parent.panLastPos.x),

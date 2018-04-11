@@ -2,6 +2,7 @@ import { Component, ErrorHandler } from '@angular/core';
 import { RestServiceService } from '../../service/rest-service.service';
 import { CustomErrorHandler } from '../../service/customErrorHandler';
 import { MediaService } from '../../service/media.service';
+declare var $:any;
 
 
 @Component({
