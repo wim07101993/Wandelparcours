@@ -32,6 +32,7 @@ namespace WebService.Services.Authorization
             RunTokenGarbageCollectorAsync();
         }
 
+
         public IReadOnlyList<string> IssuedTokens => _issuedTokens.Keys.ToList();
 
         public bool IsTokenGarbageCollectorRunning { get; set; }
