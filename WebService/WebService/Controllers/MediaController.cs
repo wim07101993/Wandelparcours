@@ -23,8 +23,8 @@ namespace WebService.Controllers
     {
         #region FIELDS
 
-        public const string GetOneFileWithExtensionTemplate = "{id}/file.{extension}";
-        public const string GetFileTemplate = "{id}/file";
+        private const string GetOneFileWithExtensionTemplate = "{id}/file.{extension}";
+        private const string GetFileTemplate = "{id}/file";
 
         private readonly IResidentsService _residentsService;
 
@@ -45,7 +45,7 @@ namespace WebService.Controllers
 
         #region PROPERTIES
 
-        protected override IEnumerable<Expression<Func<MediaData, object>>> PropertiesToSendOnGetAll { get; } = null;
+        protected override IEnumerable<Expression<Func<MediaData, object>>> PropertiesToSendOnGetAll => null;
 
         protected override IDictionary<string, Expression<Func<MediaData, object>>> PropertySelectors { get; } =
             new Dictionary<string, Expression<Func<MediaData, object>>>
@@ -63,14 +63,13 @@ namespace WebService.Controllers
 
         private async Task<ObjectId> CanGetMediaAsync(string mediaId)
         {
-            if (!ObjectId.TryParse(mediaId, out var objectId))
-                throw new NotFoundException<MediaData>(nameof(IModelWithID.Id), mediaId);
-            
+            var objectId = mediaId.ToObjectId();
+
             var properties = new Expression<Func<User, object>>[] {x => x.Residents, x => x.UserType, x => x.Group};
             var user = await GetCurrentUser(properties);
-            
+
             var residentId = await ((IMediaService) DataService).GetPropertyAsync(objectId, x => x.OwnerId);
-            
+
             var isResponsible = false;
             switch (user.UserType)
             {
@@ -90,10 +89,10 @@ namespace WebService.Controllers
                 default:
                     throw new ArgumentOutOfRangeException();
             }
-            
+
             return isResponsible
                 ? objectId
-                    : throw  new NotFoundException<MediaData>(nameof(IModelWithID.Id), mediaId);
+                : throw new NotFoundException<MediaData>(nameof(IModelWithID.Id), mediaId);
         }
 
         #endregion auth
@@ -123,7 +122,7 @@ namespace WebService.Controllers
         public async Task<FileContentResult> GetFileAsync(string id)
         {
             var objectId = await CanGetMediaAsync(id);
-            
+
             var media = await ((IMediaService) DataService).GetOneAsync(objectId,
                 new Expression<Func<MediaData, object>>[] {x => x.Data});
 
