@@ -56,7 +56,7 @@
     <TypeScriptCompile Include="ClientApp\app\service\customErrorHandler.ts" />
     <TypeScriptCompile Include="ClientApp\app\service\media.service.ts" />
   </ItemGroup>
-    <ItemGroup>
-        <Folder Include="ClientApp\app\helper"/>
-    </ItemGroup>
+  <ItemGroup>
+    <Folder Include="ClientApp\app\helper" />
+  </ItemGroup>
 </Project>

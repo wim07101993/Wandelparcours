@@ -37,7 +37,7 @@ namespace WebService.Helpers.Extensions
         public static string GetControllerUrl<T>() where T : Controller
             => GetControllerUrlWithIp(typeof(T));
 
-        public static string GetUrl<T>(this Controller This) where T : Controller
+        public static string GetUrl<T>(this Controller _) where T : Controller
             => GetControllerUrl<T>();
 
         public static string GetUrl<TParent>(this MethodInfo This, IDictionary<string, string> parameters = null)
@@ -53,8 +53,7 @@ namespace WebService.Helpers.Extensions
             if (parameters != null)
                 urlSuffix = parameters.Aggregate(
                     urlSuffix,
-                    (current, parameter) => current
-                        .Replace("{" + parameter.Key + "}", parameter.Value));
+                    (current, parameter) => current.Replace("{" + parameter.Key + "}", parameter.Value));
 
             return $"{GetControllerUrl<TParent>()}/{urlSuffix}";
         }
