@@ -3,9 +3,6 @@ using System.Collections.Generic;
 using Microsoft.AspNetCore.Http;
 using WebService.Helpers.Exceptions;
 
-
-// TODO DOC
-
 namespace WebService.Models
 {
     public class MultiPartFile
