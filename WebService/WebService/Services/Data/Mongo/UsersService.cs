@@ -16,32 +16,23 @@ namespace WebService.Services.Data.Mongo
     public class UsersService : AMongoDataService<User>, IUsersService
     {
         public UsersService(IConfiguration config)
+            : base(config["Database:ConnectionString"],
+                config["Database:DatabaseName"],
+                config["Database:UsersCollectionName"])
         {
-            MongoCollection =
-                // create a new client
-                new MongoClient(config["Database:ConnectionString"])
-                    // get the database from the client
-                    .GetDatabase(config["Database:DatabaseName"])
-                    // get the residents mongo collection
-                    .GetCollection<User>(config["Database:UsersCollectionName"]);
         }
-
-        public override IMongoCollection<User> MongoCollection { get; }
 
 
         public override async Task CreateAsync(User item)
         {
-            // if the item is null, throw exception
             if (item == null)
                 throw new ArgumentNullException(nameof(item));
 
-            // create a new id for the new item
             item.Id = ObjectId.GenerateNewId();
             item.Password = item.Password.Hash(item.Id);
 
             try
             {
-                // save the new item to the database
                 await MongoCollection.InsertOneAsync(item);
             }
             catch (Exception e)
@@ -66,55 +57,41 @@ namespace WebService.Services.Data.Mongo
         public async Task<User> GetByNameAsync(string userName,
             IEnumerable<Expression<Func<User, object>>> propertiesToInclude = null)
         {
-            // get the item with the given id
             var find = MongoCollection.Find(x => x.UserName == userName);
 
-            // if there is no item with the given id, throw exception
             if (find.Count() <= 0)
                 throw new NotFoundException<User>(nameof(User.UserName), userName);
 
-            // if the properties are null or there are none, return all the properties
             if (propertiesToInclude == null)
                 return await find.FirstOrDefaultAsync();
 
-            // create a property filter
             var selector = Builders<User>.Projection.Include(x => x.Id);
 
-            // iterate over all the properties and add them to the filter
             selector = propertiesToInclude.Aggregate(selector, (current, property) => current.Include(property));
 
-            // return the item
             return await find
-                // filter the properties
                 .Project<User>(selector)
-                // execute the query
                 .FirstOrDefaultAsync();
         }
 
         public async Task<T> GetPropertyByNameAsync<T>(string userName,
             Expression<Func<User, T>> propertyToSelect = null)
         {
-            // if the property to select is null, throw exception
             if (propertyToSelect == null)
                 throw new ArgumentNullException(nameof(propertyToSelect));
 
-            // get the item with the given id
             var find = MongoCollection.Find(x => x.UserName == userName);
 
-            // if there is no item with the given id, throw exception
             if (find.Count() <= 0)
                 throw new NotFoundException<User>(nameof(User.UserName), userName);
 
             var fieldDef = new ExpressionFieldDefinition<User>(propertyToSelect);
-            // create a property filter
             var selector = Builders<User>.Projection.Include(fieldDef);
 
-            // execute the query
             var item = await find
                 .Project<User>(selector)
                 .FirstOrDefaultAsync();
 
-            // return only the asked property
             return propertyToSelect.Compile()(item);
         }
     }

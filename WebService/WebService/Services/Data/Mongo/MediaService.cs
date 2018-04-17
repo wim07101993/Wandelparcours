@@ -13,17 +13,12 @@ namespace WebService.Services.Data.Mongo
     public class MediaService : AMongoDataService<MediaData>, IMediaService
     {
         public MediaService(IConfiguration config)
+            : base(config["Database:ConnectionString"],
+                config["Database:DatabaseName"],
+                config["Database:MediaCollectionName"])
         {
-            MongoCollection =
-                // create a new client
-                new MongoClient(config["Database:ConnectionString"])
-                    // get the database from the client
-                    .GetDatabase(config["Database:DatabaseName"])
-                    // get the residents mongo collection
-                    .GetCollection<MediaData>(config["Database:MediaCollectionName"]);
         }
 
-        public override IMongoCollection<MediaData> MongoCollection { get; }
 
         public override async Task CreateAsync(MediaData item)
         {
@@ -32,7 +27,7 @@ namespace WebService.Services.Data.Mongo
 
             try
             {
-                 await MongoCollection.InsertOneAsync(item);
+                await MongoCollection.InsertOneAsync(item);
             }
             catch (Exception e)
             {
@@ -44,8 +39,8 @@ namespace WebService.Services.Data.Mongo
         {
             var find = MongoCollection.Find(x => x.Id == id && x.Extension == extension);
 
-           if (find.Count() <= 0)
-               throw new NotFoundException<MediaData>(nameof(IModelWithID.Id), id.ToString());
+            if (find.Count() <= 0)
+                throw new NotFoundException<MediaData>(nameof(IModelWithID.Id), id.ToString());
 
             var selector = Builders<MediaData>.Projection.Include(x => x.Data);
 
