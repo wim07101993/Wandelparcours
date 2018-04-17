@@ -14,17 +14,13 @@ using ArgumentNullException = WebService.Helpers.Exceptions.ArgumentNullExceptio
 
 namespace WebService.Controllers
 {
-    /// <inheritdoc cref="ARestControllerBase{T}"/>
-    /// <summary>
-    /// ReceiverModulesController handles the reading and writing of receiver module data to the database.
-    /// </summary>
     [Route("api/v1/[controller]")]
     public class ReceiverModulesController : ARestControllerBase<ReceiverModule>, IReceiverModulesController
     {
         #region FIELDS
 
-        public const string GetOneByMacTemplate = "{mac}";
-        public const string DeleteByMacTemplate = "{mac}";
+        private const string GetOneByMacTemplate = "{mac}";
+        private const string DeleteByMacTemplate = "{mac}";
 
         #endregion FIELDS
 
@@ -42,7 +38,7 @@ namespace WebService.Controllers
 
         #region PROPERTIES
 
-        protected override IEnumerable<Expression<Func<ReceiverModule, object>>> PropertiesToSendOnGetAll { get; } = null;
+        protected override IEnumerable<Expression<Func<ReceiverModule, object>>> PropertiesToSendOnGetAll => null;
 
         protected override IDictionary<string, Expression<Func<ReceiverModule, object>>> PropertySelectors { get; } =
             new Dictionary<string, Expression<Func<ReceiverModule, object>>>
