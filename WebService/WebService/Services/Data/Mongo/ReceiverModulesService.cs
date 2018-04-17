@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using MongoDB.Driver;
 using WebService.Helpers.Exceptions;
+using WebService.Helpers.Extensions;
 using WebService.Models;
 
 namespace WebService.Services.Data.Mongo
@@ -31,15 +32,8 @@ namespace WebService.Services.Data.Mongo
             if (find.Count() <= 0)
                 throw new NotFoundException<ReceiverModule>(nameof(ReceiverModule.Mac), mac);
 
-            if (propertiesToInclude == null)
-                return await find.FirstOrDefaultAsync();
-
-            var selector = Builders<ReceiverModule>.Projection.Include(x => x.Mac);
-
-            selector = propertiesToInclude.Aggregate(selector, (current, property) => current.Include(property));
-
             return await find
-                .Project<ReceiverModule>(selector)
+                .Select(propertiesToInclude)
                 .FirstOrDefaultAsync();
         }
 
@@ -52,7 +46,6 @@ namespace WebService.Services.Data.Mongo
 
             if (!deleteResult.IsAcknowledged)
                 throw new DatabaseException(EDatabaseMethod.Delete);
-
             if (deleteResult.DeletedCount <= 0)
                 throw new NotFoundException<ReceiverModule>(nameof(ReceiverModule.Mac), mac);
         }
