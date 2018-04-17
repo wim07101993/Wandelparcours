@@ -9,7 +9,6 @@ using MongoDB.Driver;
 using WebService.Helpers.Exceptions;
 using WebService.Helpers.Extensions;
 using WebService.Models;
-using WebService.Models.Bases;
 using ArgumentNullException = System.ArgumentNullException;
 
 namespace WebService.Services.Data.Mongo
@@ -92,8 +91,8 @@ namespace WebService.Services.Data.Mongo
                 .FirstOrDefaultAsync();
         }
 
-        public async Task<object> GetPropertyByNameAsync(string userName,
-            Expression<Func<User, object>> propertyToSelect = null)
+        public async Task<T> GetPropertyByNameAsync<T>(string userName,
+            Expression<Func<User, T>> propertyToSelect = null)
         {
             // if the property to select is null, throw exception
             if (propertyToSelect == null)
@@ -106,8 +105,9 @@ namespace WebService.Services.Data.Mongo
             if (find.Count() <= 0)
                 throw new NotFoundException<User>(nameof(User.UserName), userName);
 
+            var fieldDef = new ExpressionFieldDefinition<User>(propertyToSelect);
             // create a property filter
-            var selector = Builders<User>.Projection.Include(propertyToSelect);
+            var selector = Builders<User>.Projection.Include(fieldDef);
 
             // execute the query
             var item = await find

@@ -72,8 +72,8 @@ namespace WebService.Services.Data.Mock
             return itemToReturn;
         }
 
-        public async Task<object> GetPropertyByNameAsync(string userName,
-            Expression<Func<User, object>> propertyToSelect = null)
+        public async Task<T> GetPropertyByNameAsync<T>(string userName,
+            Expression<Func<User, T>> propertyToSelect = null)
         {
             // if the property to select is null, throw exception
             if (propertyToSelect == null)
