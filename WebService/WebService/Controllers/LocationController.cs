@@ -1,96 +1,107 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using System.Linq.Expressions;
-using System.Net;
-using System.Runtime.InteropServices.ComTypes;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore.Metadata.Conventions.Internal;
 using MongoDB.Bson;
 using WebService.Controllers.Bases;
+using WebService.Helpers.Exceptions;
 using WebService.Models;
+using WebService.Models.Bases;
 using WebService.Services.Data;
-
 using WebService.Services.Logging;
 
 namespace WebService.Controllers
 {
-    /// <inheritdoc cref="ARestControllerBase{T}"/>
-    /// <summary>
-    /// LocationController handles the reading and writing of locations for residents to the database.
-    /// </summary>
     [Route("api/v1/[controller]")]
     [SuppressMessage("ReSharper", "SpecifyACultureInStringConversionExplicitly")]
-    public class LocationController : ARestControllerBase<Location>, ILocationController
-
+    public class LocationController : ARestControllerBase<ResidentLocation>, ILocationController
     {
         private readonly IResidentsService _residentService;
+        private readonly ILocationService _locationService;
 
-        public LocationController(ILocationService dataService, ILogger logger, IResidentsService residentService, IUsersService us) : base(dataService, logger,us)
+
+        public LocationController(ILocationService dataService, ILogger logger, IResidentsService residentService,
+            IUsersService usersService, ILocationService locationService)
+            : base(dataService, logger, usersService)
         {
             _residentService = residentService;
+            _locationService = locationService;
         }
+
+
+        public override IEnumerable<Expression<Func<ResidentLocation, object>>> PropertiesToSendOnGetAll { get; } =
+            null;
+
+        public override IDictionary<string, Expression<Func<ResidentLocation, object>>> PropertySelectors { get; }
+            = new Dictionary<string, Expression<Func<ResidentLocation, object>>>
+            {
+                {nameof(ResidentLocation.Id), x => x.Id},
+                {nameof(ResidentLocation.Id), x => x.ResidentId},
+                {nameof(ResidentLocation.Id), x => x.TimeStamp},
+                {nameof(ResidentLocation.Id), x => x.X},
+                {nameof(ResidentLocation.Id), x => x.Y},
+            };
+
+
         [HttpPost]
-        public override async Task<string> CreateAsync([FromBody] Location item)
+        public override async Task<string> CreateAsync([FromBody] ResidentLocation item)
         {
-            item.TimeStamp=DateTime.Now;
+            item.TimeStamp = DateTime.Now;
             return await base.CreateAsync(item);
-            
         }
 
         [HttpGet("residents/{id}/lastlocation")]
         public async Task<Resident> GetLastLocationOneResident(string id)
         {
-            var selectors = new Expression<Func<Resident, object>>[] { x=> x.LastRecordedPosition, x=> x.Id,x=> x.LastName,x=> x.FirstName};
-            if (ObjectId.TryParse(id, out var objectid))
-            {
-                var lastposition = await this._residentService.GetOneAsync(objectid, selectors);
-                return lastposition;
-            }
+            var selectors = new Expression<Func<Resident, object>>[]
+                {x => x.LastRecordedPosition, x => x.Id, x => x.LastName, x => x.FirstName};
+            if (!ObjectId.TryParse(id, out var objectid))
+                throw new NotFoundException<Resident>(nameof(IModelWithID.Id), id);
 
-            
-            return null;
+            return await _residentService.GetOneAsync(objectid, selectors);
         }
-        
+
         [HttpGet("residents/lastlocation")]
         public async Task<IEnumerable<Resident>> GetLastLocation()
         {
-            var selectors = new Expression<Func<Resident, object>>[] { x=> x.LastRecordedPosition, x=> x.Id,x=> x.LastName,x=> x.FirstName};
-            
-            var lastposition = await this._residentService.GetAsync(selectors);
-            var residentsToReturn=new List<Resident>();
-            foreach (var resident in lastposition)
-            {
-                if(resident.LastRecordedPosition!=null){
-                    residentsToReturn.Add(resident);
-                }
-                
-            }
-            return residentsToReturn;
+            var selectors = new Expression<Func<Resident, object>>[]
+                {x => x.LastRecordedPosition, x => x.Id, x => x.LastName, x => x.FirstName};
+
+            var lastposition = await _residentService.GetAsync(selectors);
+
+            return lastposition.Where(resident => resident.LastRecordedPosition != null);
         }
 
-
-        
-        [HttpPost("{id}/lastlocation")]
-        public async Task<Resident> SetLastLocation(string id, [FromBody]Point currentLocation)
+        [HttpGet]
+        public async Task<IEnumerable<ResidentLocation>> GetSince([FromQuery] int since)
         {
-            currentLocation.TimeStamp=DateTime.Now;
-            if (ObjectId.TryParse(id, out var objectid))
-            {
-                
-                await this._residentService.UpdatePropertyAsync(objectid, x => x.LastRecordedPosition, currentLocation);
-                
-            }
-
-            
-            return null;
+            return since == 0
+                ? await GetAllAsync(null)
+                : await _locationService.GetSinceAsync(DateTime.Now - TimeSpan.FromMinutes(since));
         }
-        
-        
 
+        [HttpGet("{id}")]
+        public async Task<IEnumerable<ResidentLocation>> GetSince(string id, [FromQuery] int since)
+        {
+            if (!ObjectId.TryParse(id, out var objectid))
+                throw new NotFoundException<Resident>(nameof(IModelWithID.Id), id);
 
-        public override IEnumerable<Expression<Func<Location, object>>> PropertiesToSendOnGetAll { get; }
-        public override IDictionary<string, Expression<Func<Location, object>>> PropertySelectors { get; }
+            return since == 0
+                ? await _locationService.GetSinceAsync(default(DateTime), objectid)
+                : await _locationService.GetSinceAsync(DateTime.Now - TimeSpan.FromMinutes(since), objectid);
+        }
+
+        [HttpPost("{id}/lastlocation")]
+        public async Task SetLastLocation(string id, [FromBody] Point currentLocation)
+        {
+            currentLocation.TimeStamp = DateTime.Now;
+            if (!ObjectId.TryParse(id, out var objectid))
+                throw new NotFoundException<Resident>(nameof(IModelWithID.Id), id);
+
+            await _residentService.UpdatePropertyAsync(objectid, x => x.LastRecordedPosition, currentLocation);
+        }
     }
 }

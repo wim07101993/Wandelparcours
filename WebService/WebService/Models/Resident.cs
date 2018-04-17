@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 using WebService.Models.Bases;
 
@@ -105,7 +106,7 @@ namespace WebService.Models
         /// In the database the value is stored under the field "lastRecordedPosition"
         /// </summary>
         [BsonElement("lastRecordedPosition")]
-        public Point LastRecordedPosition { get; set; }
+        public ResidentLocation LastRecordedPosition { get; set; }
 
         /// <summary>
         /// Locations are the locations where the residents has been tracked.
@@ -113,6 +114,6 @@ namespace WebService.Models
         /// In the database the value is stored under the field "locations"
         /// </summary>
         [BsonElement("locations")]
-        public List<Point> Locations { get; set; }
+        public List<ObjectId> Locations { get; set; }
     }
 }
