@@ -39,10 +39,16 @@ namespace WebService.Services.Data.Mongo
 
         public virtual async Task CreateAsync(T item)
         {
+            await CreateAsync(item, true);
+        }
+
+        protected virtual async Task CreateAsync(T item, bool generateNewId)
+        {
             if (item == null)
                 throw new ArgumentNullException(nameof(item));
 
-            item.Id = ObjectId.GenerateNewId();
+            if (generateNewId)
+                item.Id = ObjectId.GenerateNewId();
 
             try
             {
@@ -196,13 +202,16 @@ namespace WebService.Services.Data.Mongo
         #region delete
 
         public virtual async Task RemoveAsync(ObjectId id)
+            => await RemoveByAsync(x => x.Id == id);
+
+        protected async Task RemoveByAsync(Expression<Func<T, bool>> condition)
         {
-            var deleteResult = await MongoCollection.DeleteOneAsync(x => x.Id == id);
+            var deleteResult = await MongoCollection.DeleteOneAsync(condition);
 
             if (!deleteResult.IsAcknowledged)
                 throw new DatabaseException(EDatabaseMethod.Delete);
             if (deleteResult.DeletedCount <= 0)
-                throw new NotFoundException<T>(nameof(IModelWithID.Id), id.ToString());
+                throw new NotFoundException<T>();
         }
 
         public virtual async Task RemoveItemFromList<TValue>(ObjectId id,
