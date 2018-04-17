@@ -45,9 +45,9 @@ namespace WebService.Controllers
 
         #region PROPERTIES
 
-        public override IEnumerable<Expression<Func<MediaData, object>>> PropertiesToSendOnGetAll { get; } = null;
+        protected override IEnumerable<Expression<Func<MediaData, object>>> PropertiesToSendOnGetAll { get; } = null;
 
-        public override IDictionary<string, Expression<Func<MediaData, object>>> PropertySelectors { get; } =
+        protected override IDictionary<string, Expression<Func<MediaData, object>>> PropertySelectors { get; } =
             new Dictionary<string, Expression<Func<MediaData, object>>>
             {
                 {nameof(MediaData.Id), x => x.Id},

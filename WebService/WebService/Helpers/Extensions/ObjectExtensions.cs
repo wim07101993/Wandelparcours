@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using WebService.Helpers.Exceptions;
 
 namespace WebService.Helpers.Extensions
 {

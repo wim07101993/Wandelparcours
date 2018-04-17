@@ -1,6 +1,7 @@
 using System.Linq;
 using System.Text;
 using MongoDB.Bson;
+using WebService.Helpers.Exceptions;
 using WebService.Services.Randomizer;
 using WebService.Models;
 
@@ -145,7 +146,6 @@ namespace WebService.Helpers.Extensions
         /// + false if not
         /// </returns>
         public static bool EqualsWithCamelCasing(this string This, string propertyName)
-            // check if the string's are equal after converting them to lower case
             => This.ToLowerCamelCase() == propertyName.ToLowerCamelCase();
 
         public static string Hash(this string stringToHash, ObjectId id, bool useSalt = true, bool usePepper = true)
@@ -170,15 +170,7 @@ namespace WebService.Helpers.Extensions
         public static bool EqualsToHash(this string stringToCompare, ObjectId id, string hash, bool useSalt = true,
             bool usePepper = true)
         {
-            //if (useSalt && usePepper)
-            //    return Randomizer.Instance.Chars.Any(c => $"{stringToCompare}{id}{c}" == hash);
-            //if (useSalt)
-            //    return $"{stringToCompare}{id}" == hash;
-            //if (usePepper)
-            //    return Randomizer.Instance.Chars.Any(c => $"{stringToCompare}{c}" == hash);
-            //return stringToCompare == hash;
-
-            if (useSalt && usePepper)
+             if (useSalt && usePepper)
                 return Randomizer.Instance.Chars.Any(c => BCrypt.Net.BCrypt.Verify($"{stringToCompare}{id}{c}", hash));
             if (useSalt)
                 return BCrypt.Net.BCrypt.Verify($"{stringToCompare}{id}", hash);
@@ -216,6 +208,13 @@ namespace WebService.Helpers.Extensions
                 default:
                     return EMediaType.Image;
             }
+        }
+
+        public static ObjectId ToObjectId(this string This)
+        {
+            if (!ObjectId.TryParse(This, out var objectId))
+                throw new ArgumentException($"Could not convert {This} to an ObjectId");
+            return objectId;
         }
     }
 }

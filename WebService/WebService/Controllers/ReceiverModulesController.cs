@@ -42,9 +42,9 @@ namespace WebService.Controllers
 
         #region PROPERTIES
 
-        public override IEnumerable<Expression<Func<ReceiverModule, object>>> PropertiesToSendOnGetAll { get; } = null;
+        protected override IEnumerable<Expression<Func<ReceiverModule, object>>> PropertiesToSendOnGetAll { get; } = null;
 
-        public override IDictionary<string, Expression<Func<ReceiverModule, object>>> PropertySelectors { get; } =
+        protected override IDictionary<string, Expression<Func<ReceiverModule, object>>> PropertySelectors { get; } =
             new Dictionary<string, Expression<Func<ReceiverModule, object>>>
             {
                 {nameof(ReceiverModule.Mac), x => x.Mac},

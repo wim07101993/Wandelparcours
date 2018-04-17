@@ -70,7 +70,7 @@ namespace WebService.Controllers
 
         #region PROPERTIES
 
-        public override IEnumerable<Expression<Func<Resident, object>>> PropertiesToSendOnGetAll { get; }
+        protected override IEnumerable<Expression<Func<Resident, object>>> PropertiesToSendOnGetAll { get; }
             = new Expression<Func<Resident, object>>[]
             {
                 // specify the fields that need to be returned
@@ -81,7 +81,7 @@ namespace WebService.Controllers
                 x => x.Doctor,
             };
 
-        public override IDictionary<string, Expression<Func<Resident, object>>> PropertySelectors { get; } =
+        protected override IDictionary<string, Expression<Func<Resident, object>>> PropertySelectors { get; } =
             new Dictionary<string, Expression<Func<Resident, object>>>
             {
                 {nameof(Resident.Birthday), x => x.Birthday},

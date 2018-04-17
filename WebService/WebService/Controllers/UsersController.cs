@@ -28,7 +28,7 @@ namespace WebService.Controllers
         }
 
 
-        public override IEnumerable<Expression<Func<User, object>>> PropertiesToSendOnGetAll { get; } =
+        protected override IEnumerable<Expression<Func<User, object>>> PropertiesToSendOnGetAll { get; } =
             new Expression<Func<User, object>>[]
             {
                 x => x.Id,
@@ -37,7 +37,7 @@ namespace WebService.Controllers
                 x => x.UserType
             };
 
-        public override IDictionary<string, Expression<Func<User, object>>> PropertySelectors { get; } =
+        protected override IDictionary<string, Expression<Func<User, object>>> PropertySelectors { get; } =
             new Dictionary<string, Expression<Func<User, object>>>
             {
                 {nameof(Models.User.Id), x => x.Id},
