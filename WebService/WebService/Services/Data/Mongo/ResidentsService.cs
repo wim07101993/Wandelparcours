@@ -7,7 +7,6 @@ using Microsoft.Extensions.Configuration;
 using MongoDB.Bson;
 using MongoDB.Driver;
 using WebService.Helpers.Exceptions;
-using WebService.Helpers.Extensions;
 using WebService.Models;
 using WebService.Models.Bases;
 using ArgumentNullException = System.ArgumentNullException;
