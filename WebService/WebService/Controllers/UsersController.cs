@@ -17,7 +17,7 @@ using WebService.Services.Logging;
 namespace WebService.Controllers
 {
     [Route("api/v1/[controller]")]
-    public class UsersController : ARestControllerBase<User>
+    public class UsersController : ARestControllerBase<User>, IUsersController
     {
         private readonly IUsersService _usersService;
 

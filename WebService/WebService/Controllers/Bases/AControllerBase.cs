@@ -25,7 +25,8 @@ namespace WebService.Controllers.Bases
         {
             _usersService = usersService;
             // disables auth
-            UserId = _usersService.GetAsync().Result.FirstOrDefault(x => x.UserType == EUserType.SysAdmin)?.Id ?? ObjectId.Empty;
+            UserId = _usersService.GetAsync().Result.FirstOrDefault(x => x.UserType == EUserType.SysAdmin)?.Id ??
+                     ObjectId.Empty;
         }
 
         #endregion CONSTRUCTRO
@@ -33,7 +34,7 @@ namespace WebService.Controllers.Bases
 
         #region PROPERTIES
 
-        public ObjectId UserId { get; set; }
+        public ObjectId UserId { get; set;  }
 
         #endregion PROPERTIES
 
