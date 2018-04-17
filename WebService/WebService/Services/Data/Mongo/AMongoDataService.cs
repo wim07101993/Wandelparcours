@@ -57,14 +57,10 @@ namespace WebService.Services.Data.Mongo
         public virtual async Task AddItemToListProperty<TValue>(ObjectId id,
             Expression<Func<T, IEnumerable<TValue>>> propertyToAddItemTo, TValue itemToAdd)
         {
-            switch (itemToAdd)
-            {
-                case null:
-                    throw new ArgumentNullException(nameof(itemToAdd));
-                case IModelWithID modelWithID:
-                    modelWithID.Id = ObjectId.GenerateNewId();
-                    break;
-            }
+            if (itemToAdd == null)
+                throw new ArgumentNullException(nameof(itemToAdd));
+            if (itemToAdd is IModelWithID modelWithID)
+                modelWithID.Id = ObjectId.GenerateNewId();
 
             var updater = Builders<T>.Update.Push(propertyToAddItemTo, itemToAdd);
             var result = await MongoCollection.FindOneAndUpdateAsync(x => x.Id == id, updater);
