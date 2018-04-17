@@ -23,6 +23,8 @@ namespace WebService.Services.Data
 
 
         Task UpdateAsync(T newItem, IEnumerable<Expression<Func<T, object>>> propertiesToUpdate = null);
+        
+        Task ReplaceAsync(T newItem);
 
         Task UpdatePropertyAsync<TValue>(ObjectId id, Expression<Func<T, TValue>> propertyToUpdate, TValue value);
 
