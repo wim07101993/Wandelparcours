@@ -86,25 +86,37 @@ namespace WebService.Services.Data.Mongo
         public virtual async Task<T> GetOneAsync(ObjectId id,
             IEnumerable<Expression<Func<T, object>>> propertiesToInclude = null)
         {
-            var find = MongoCollection.Find(x => x.Id == id);
+            return await GetByAsync(x => x.Id == id, propertiesToInclude);
+        }
+
+        public virtual async Task<TOut> GetPropertyAsync<TOut>(ObjectId id, Expression<Func<T, TOut>> propertyToSelect)
+        {
+            return await GetPropertyByAsync(x => x.Id == id, propertyToSelect);
+        }
+
+        protected async Task<T> GetByAsync(Expression<Func<T, bool>> condition,
+            IEnumerable<Expression<Func<T, object>>> propertiesToInclude = null)
+        {
+            var find = MongoCollection.Find(condition);
 
             if (find.Count() <= 0)
-                throw new NotFoundException<T>(nameof(IModelWithID.Id), id.ToString());
+                throw new NotFoundException<T>();
 
             return await find
                 .Select(propertiesToInclude)
                 .FirstOrDefaultAsync();
         }
 
-        public virtual async Task<TOut> GetPropertyAsync<TOut>(ObjectId id, Expression<Func<T, TOut>> propertyToSelect)
+        protected async Task<TOut> GetPropertyByAsync<TOut>(Expression<Func<T, bool>> condition,
+            Expression<Func<T, TOut>> propertyToSelect)
         {
             if (propertyToSelect == null)
                 throw new ArgumentNullException(nameof(propertyToSelect));
 
-            var find = MongoCollection.Find(x => x.Id == id);
+            var find = MongoCollection.Find(condition);
 
             if (find.Count() <= 0)
-                throw new NotFoundException<T>(nameof(IModelWithID.Id), id.ToString());
+                throw new NotFoundException<T>();
 
             var selector = Builders<T>.Projection.Include(new ExpressionFieldDefinition<T>(propertyToSelect));
             var item = await find
