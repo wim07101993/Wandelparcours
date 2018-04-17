@@ -21,39 +21,35 @@ using ArgumentNullException = WebService.Helpers.Exceptions.ArgumentNullExceptio
 
 namespace WebService.Controllers
 {
-    /// <inheritdoc cref="ARestControllerBase{T}"/>
-    /// <summary>
-    /// ResidentsController handles the reading and writing of residents data to the database.
-    /// </summary>
     [Route("api/v1/[controller]")]
     [SuppressMessage("ReSharper", "SpecifyACultureInStringConversionExplicitly")]
     public class ResidentsController : ARestControllerBase<Resident>, IResidentsController
     {
         #region FIELDS
 
-        public const string AddMusicDataTemplate = "{residentId}/Music/data";
-        public const string AddVideoDataTemplate = "{residentId}/Videos/data";
-        public const string AddImageDataTemplate = "{residentId}/Images/data";
-        public const string AddColorTemplate = "{residentId}/Colors/data";
+        private const string AddMusicDataTemplate = "{residentId}/Music/data";
+        private const string AddVideoDataTemplate = "{residentId}/Videos/data";
+        private const string AddImageDataTemplate = "{residentId}/Images/data";
+        private const string AddColorTemplate = "{residentId}/Colors/data";
 
-        public const string AddMusicUrlTemplate = "{residentId}/Music/url";
-        public const string AddVideoUrlTemplate = "{residentId}/Videos/url";
-        public const string AddImageUrlTemplate = "{residentId}/Images/url";
+        private const string AddMusicUrlTemplate = "{residentId}/Music/url";
+        private const string AddVideoUrlTemplate = "{residentId}/Videos/url";
+        private const string AddImageUrlTemplate = "{residentId}/Images/url";
 
-        public const string GetPictureTemplate = "{residentId}/picture";
-        public const string AddTagTemplate = "{residentId}/tags";
-        public const string GetByTagTemplate = "byTag/{tag}";
-        public const string GetRandomElementFromPropertyTemplate = "byTag/{tag}/{propertyName}/random";
-        public const string GetPropertyByTagTemplate = "byTag/{tag}/{propertyName}";
+        private const string GetPictureTemplate = "{residentId}/picture";
+        private const string AddTagTemplate = "{residentId}/tags";
+        private const string GetByTagTemplate = "byTag/{tag}";
+        private const string GetRandomElementFromPropertyTemplate = "byTag/{tag}/{propertyName}/random";
+        private const string GetPropertyByTagTemplate = "byTag/{tag}/{propertyName}";
 
-        public const string UpdatePictureTemplate = "{id}/picture";
+        private const string UpdatePictureTemplate = "{id}/picture";
 
-        public const string RemoveMusicTemplate = "{residentId}/Music/{musicId}";
-        public const string RemoveVideoTemplate = "{residentId}/Videos/{videoId}";
-        public const string RemoveImageTemplate = "{residentId}/Images/{imageId}";
-        public const string RemoveColorTemplate = "{residentId}/Colors";
+        private const string RemoveMusicTemplate = "{residentId}/Music/{musicId}";
+        private const string RemoveVideoTemplate = "{residentId}/Videos/{videoId}";
+        private const string RemoveImageTemplate = "{residentId}/Images/{imageId}";
+        private const string RemoveColorTemplate = "{residentId}/Colors";
 
-        public const string RemoveTagTemplate = "{residentId}/{tag}";
+        private const string RemoveTagTemplate = "{residentId}/{tag}";
 
         #endregion FIELDS
 
@@ -73,7 +69,6 @@ namespace WebService.Controllers
         protected override IEnumerable<Expression<Func<Resident, object>>> PropertiesToSendOnGetAll { get; }
             = new Expression<Func<Resident, object>>[]
             {
-                // specify the fields that need to be returned
                 x => x.FirstName,
                 x => x.LastName,
                 x => x.Room,
@@ -109,8 +104,7 @@ namespace WebService.Controllers
 
         private async Task<ObjectId> CanWriteDataToResidentAsync(string residentId)
         {
-            if (!ObjectId.TryParse(residentId, out var residentObjectId))
-                throw new NotFoundException<Resident>(nameof(IModelWithID.Id), residentId);
+            var residentObjectId = residentId.ToObjectId();
 
             var properties = new Expression<Func<User, object>>[] {x => x.Residents, x => x.UserType, x => x.Group};
             var user = await GetCurrentUser(properties);
@@ -141,8 +135,7 @@ namespace WebService.Controllers
 
         private async Task<ObjectId> CanGetDataFromResidentAsync(string residentId)
         {
-            if (!ObjectId.TryParse(residentId, out var residentObjectId))
-                throw new NotFoundException<Resident>(nameof(IModelWithID.Id), residentId);
+            var residentObjectId = residentId.ToObjectId();
 
             var properties = new Expression<Func<User, object>>[] {x => x.Residents, x => x.UserType, x => x.Group};
             var user = await GetCurrentUser(properties);
@@ -183,8 +176,12 @@ namespace WebService.Controllers
                 case EUserType.Nurse:
                     var residentRoom = await ((IResidentsService) DataService).GetPropertyAsync(tag, x => x.Room);
                     return new Regex($@"^{residentRoom}[0-9]*$").IsMatch(user.Group);
-                default:
+                case EUserType.User:
+                case EUserType.Module:
+                case EUserType.Guest:
                     return false;
+                default:
+                    throw new ArgumentOutOfRangeException();
             }
         }
 
@@ -203,8 +200,10 @@ namespace WebService.Controllers
                 case EUserType.User:
                     var residentId = await ((IResidentsService) DataService).GetPropertyAsync(tag, x => x.Id);
                     return user.Residents.Contains(residentId);
-                default:
+                case EUserType.Guest:
                     return false;
+                default:
+                    throw new ArgumentOutOfRangeException();
             }
         }
 
@@ -341,7 +340,6 @@ namespace WebService.Controllers
         public async Task<FileContentResult> GetPictureAsync(string residentId)
         {
             var objectId = await CanGetDataFromResidentAsync(residentId);
-
             var picture = await DataService.GetPropertyAsync(objectId, x => x.Picture);
 
             return picture == null
@@ -354,7 +352,6 @@ namespace WebService.Controllers
         [HttpGet(GetByTagTemplate)]
         public async Task<Resident> GetByTagAsync(int tag, [FromQuery] string[] propertiesToInclude)
         {
-            // convert the property names to selectors, if there are any
             var selectors = !EnumerableExtensions.IsNullOrEmpty(propertiesToInclude)
                 ? ConvertStringsToSelectors(propertiesToInclude)
                 : null;
@@ -364,7 +361,6 @@ namespace WebService.Controllers
 
             var resident = await ((IResidentsService) DataService).GetOneAsync(tag, selectors);
 
-            // return the fetched resident, if it is null, throw a not found exception
             if (resident == null)
                 throw new ElementNotFoundException<Resident>(nameof(Resident.Tags), "tag");
 
@@ -462,12 +458,13 @@ namespace WebService.Controllers
 
         #endregion put (update)
 
-        
+
         #region delete
 
         [Authorize(EUserType.SysAdmin, EUserType.Nurse)]
         [HttpDelete(DeleteTemplate)]
-        public override Task DeleteAsync(string id) => base.DeleteAsync(id);
+        public override Task DeleteAsync(string id)
+            => base.DeleteAsync(id);
 
         [Authorize(EUserType.SysAdmin, EUserType.Nurse, EUserType.Module, EUserType.User)]
         [HttpDelete(RemoveMusicTemplate)]
@@ -486,17 +483,13 @@ namespace WebService.Controllers
 
         public async Task RemoveMediaAsync(string residentId, string mediaId, EMediaType mediaType)
         {
-            // parse the media id
-            if (!ObjectId.TryParse(mediaId, out var mediaObjectId))
-                throw new ElementNotFoundException<Resident>(mediaType.ToString(), "media");
-
+            var mediaObjectId = mediaId.ToObjectId();
             var residentObjectId = await CanWriteDataToResidentAsync(residentId);
-            
-            // remove the media from the database
+
             await ((IResidentsService) DataService).RemoveMediaAsync(residentObjectId, mediaObjectId, mediaType);
         }
 
-        
+
         [Authorize(EUserType.SysAdmin, EUserType.Nurse, EUserType.Module, EUserType.User)]
         [HttpDelete(RemoveColorTemplate)]
         public async Task RemoveColorAsync(string residentId, [FromBody] Color color)
@@ -512,7 +505,7 @@ namespace WebService.Controllers
         public async Task RemoveTag(string residentId, int tag)
         {
             var objectId = await CanWriteDataToResidentAsync(residentId);
-            
+
             await DataService.RemoveItemFromList(objectId, x => x.Tags, tag);
         }
 
