@@ -5,6 +5,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Net;
+using System.Security.Cryptography.X509Certificates;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -17,6 +18,7 @@ using WebService.Services.Logging;
 using WebService.Models;
 using WebService.Models.Bases;
 using WebService.Services.Data;
+using ArgumentException = WebService.Helpers.Exceptions.ArgumentException;
 using ArgumentNullException = WebService.Helpers.Exceptions.ArgumentNullException;
 
 namespace WebService.Controllers
@@ -293,6 +295,13 @@ namespace WebService.Controllers
         {
             if (!ObjectId.TryParse(residentId, out var objectId))
                 throw new NotFoundException<Resident>(nameof(AModelWithID.Id), residentId);
+
+            var tagExists = (await DataService
+                    .GetAsync(new Expression<Func<Resident, object>>[] {x => x.Tags}))
+                .Any(x => x.Tags.Any(y => y == tag));
+
+            if (tagExists)
+                throw new ArgumentException("cannot have duplicate tags", nameof(tag));
 
             await DataService.AddItemToListProperty(objectId, x => x.Tags, tag);
             return await DataService.GetPropertyAsync(objectId, x => x.Tags);
