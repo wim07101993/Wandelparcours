@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {Http} from '@angular/http';
+import {Http, RequestOptions, Headers} from '@angular/http';
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/catch';
 import {Resident} from '../models/resident';
@@ -117,7 +117,7 @@ export class RestServiceService {
      * @returns True or false based on succes and Console log Message "Saved resident to database" on succes or "Could not save resident to database" on error.
      */
     addResident(data: any) {
-        console.log(data);
+        //console.log(data);
         return new Promise(resolve => {
             this.http.post(this.restUrl + 'api/v1/residents', data).subscribe(response => {
                 console.log("Saved resident to database");
@@ -146,11 +146,13 @@ export class RestServiceService {
     ////////
     //TAGS//
     ////////
+    headers = new Headers({ 'Content-Type': 'application/json' });
+    options = new RequestOptions({ headers: this.headers });
 
-    addTagToResident(uniqueIdentifier: string) {
+    addTagToResident(uniqueIdentifier: string, beaconMinorNumber: any) {
         return new Promise<number[]>(resolve => {
-            this.http.post(this.restUrl + 'api/v1/residents/' + uniqueIdentifier + '/tags', null).subscribe(response => {
-                console.log("add tag");
+            this.http.post(this.restUrl + 'api/v1/residents/' + uniqueIdentifier + '/tags', beaconMinorNumber, this.options).subscribe(response => {
+                //console.log("add tag");
                 resolve(<number[]>response.json());
             }, error => {
                 this.customErrorHandler.updateMessage(error);

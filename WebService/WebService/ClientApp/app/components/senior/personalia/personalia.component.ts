@@ -3,6 +3,7 @@ import { Resident } from '../../../models/resident';
 import { Router, ActivatedRoute } from '@angular/router';
 import { RestServiceService } from '../../../service/rest-service.service';
 import { MediaService } from '../../../service/media.service';
+import { NgForm } from '@angular/forms';
 declare var $: any;
 
 @Component({
@@ -13,6 +14,7 @@ declare var $: any;
 
 export class PersonaliaComponent implements OnInit {
     ngOnInit() { }
+    AmountBeacons = 0;
     updateResident: any;
     tag: any;
     id: string = this.route.snapshot.params['id'];
@@ -54,7 +56,7 @@ export class PersonaliaComponent implements OnInit {
     
 
     async addTag() {
-        this.resident.tags = await this.service.addTagToResident(this.resident.id);
+        
     }
 
 
@@ -71,8 +73,36 @@ export class PersonaliaComponent implements OnInit {
     deleteTagModal(tag: any) {
         this.tag = tag;
         // noinspection JSJQueryEfficiency
+        $("#deleteTagModal").modal();
         $("#deleteTagModal").modal("open");
 
+    }
+
+    openAddBeaconModal() {
+        $('#add-beacon-modal').modal();
+        $('#add-beacon-modal').modal("open");
+    }
+
+    /**
+    * Reset the form on close
+    * @param form of type NgForm
+    */
+    resetForm(form: NgForm) { form.reset(); }
+
+    async addBeaconTag(form: NgForm) {
+        let beaconMinorNumber = {
+            beaconNumber: form.value.aBeaconMinorNumber
+        }
+
+        let bmn = beaconMinorNumber.beaconNumber + ""
+
+        console.log(beaconMinorNumber.beaconNumber);
+        this.resident.tags = await this.service.addTagToResident(this.resident.id, bmn);
+
+        form.reset();
+        setTimeout(() => {
+            $("#add-beacon-modal").modal("close");
+        }, 200);
     }
 
 }
