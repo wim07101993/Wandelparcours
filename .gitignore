@@ -46,3 +46,10 @@ WebService/WebService.userprefs
 *.userprefs
 kiosk/.idea/
 kiosk/node_modules/
+ModuleSettingsEditor/.vs/
+ModuleSettingsEditor/ModuleSettingsEditor/bin/
+ModuleSettingsEditor/ModuleSettingsEditor/obj/
+ModuleSettingsEditor/ModuleSettingsEditor.WPF/bin/
+ModuleSettingsEditor/ModuleSettingsEditor.WPF/obj/
+WebService/DatabaseImporter/bin/
+WebService/DatabaseImporter/obj/
