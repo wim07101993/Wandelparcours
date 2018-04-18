@@ -180,7 +180,7 @@ export class GlobaltrackingComponent extends ARenderComponent implements OnInit 
     openListModal(){
         $('#modal1').modal();
         $('#modal1').modal('open');
-        $("#modal1").css({"width":"20%","height":"1200px"});
+        $("#modal1").css({"width":"25%","height":"100%"});
     }
 
    

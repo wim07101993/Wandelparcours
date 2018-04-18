@@ -100,7 +100,7 @@ export abstract class ARenderComponent {
         //return this.renderer.height;
         this.amountSizeCalculations++;
             if(this._height==undefined||this.amountSizeCalculations>10)
-                this._height=this.renderer.height
+                this._height=this.renderer.height;
             if(this.amountSizeCalculations>12)
                 this.amountSizeCalculations=0;
         return this._height;
