@@ -2,7 +2,7 @@
 
 namespace WebService.Controllers.Bases
 {
-    public interface ILocationController : IRestController<Location>
+    public interface ILocationController : IRestController<ResidentLocation>
     {
         
     }

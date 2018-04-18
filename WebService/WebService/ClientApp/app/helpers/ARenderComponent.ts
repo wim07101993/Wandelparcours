@@ -11,14 +11,25 @@ export abstract class ARenderComponent {
     renderBuffer: RenderBuffer;
     adMarker: any;
     mouseEvents: MouseEvents;
-    framerate = 5;
+    framerate = 1;
     zoomFactor: number = 1;
     markerscale=25;
     markersize=1;
+    hostElement:ElementRef
+    private _width:number;
+    private _height:number;
+    private amountSizeCalculations=0;
     public async abstract LoadComponent(): Promise<boolean>;
+    public async abstract spriteClicked(id?: string): Promise<boolean>;
+
+    constructor(){
+
+        //console.log(elRef);
+    }
 
     get BluePrintUrl() {
         return getBaseUrl() + "images/blueprint.jpg";
+
     }
 
     /**
@@ -43,6 +54,7 @@ export abstract class ARenderComponent {
             this.Tick()
         }, 1000 / this.framerate);
     }
+
 
     async LoadMap() {
 
@@ -73,14 +85,25 @@ export abstract class ARenderComponent {
     *    Getter calculates relative the width of the image
     */
     get width() {
-        return this.renderer.width;
+        this.amountSizeCalculations++;
+        if(this._width==undefined||this.amountSizeCalculations>10)
+            this._width=this.renderer.width;
+        if(this.amountSizeCalculations>12)
+            this.amountSizeCalculations=0;
+        return this._width;
     }
 
     /*
     *    Getter calculates relative the height of the image
     */
     get height() {
-        return this.renderer.height;
+        //return this.renderer.height;
+        this.amountSizeCalculations++;
+            if(this._height==undefined||this.amountSizeCalculations>10)
+                this._height=this.renderer.height;
+            if(this.amountSizeCalculations>12)
+                this.amountSizeCalculations=0;
+        return this._height;
     }
 
 
@@ -93,6 +116,7 @@ export abstract class ARenderComponent {
      *   this function is needed to zoomin
      */
     async ZoomIn() {
+        if(this.zoomFactor<5)
         this.zoomFactor *= 2;
         await this.Tick();
     }
@@ -101,9 +125,8 @@ export abstract class ARenderComponent {
     *    this function is needed to zoomout
     */
     async ZoomOut() {
-
-        this.zoomFactor /= 2;
-
+        if(this.zoomFactor>0.15)
+            this.zoomFactor /= 2;
         await this.Tick();
     }
 
@@ -113,9 +136,9 @@ export abstract class ARenderComponent {
     async RecalculateMap() {
         try {
 
-            this.canvasRef.nativeElement.height = window.innerHeight;
-            this.canvasRef.nativeElement.width = window.innerWidth;
-
+            this.canvasRef.nativeElement.height = this.hostElement.nativeElement.offsetHeight;
+            this.canvasRef.nativeElement.width = this.hostElement.nativeElement.offsetWidth;
+            
             //calculate zoom
             let height = this.height * this.zoomFactor;
             let width = this.width * this.zoomFactor;

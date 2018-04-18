@@ -1,25 +1,27 @@
 import * as PIXI from 'pixi.js'
 import {Sprites} from "./Sprites";
 import Sprite = PIXI.Sprite;
-
+import { ARenderComponent } from "./ARenderComponent";
 declare var window:any;
-
+declare var $:any;
 
 export class Renderer{
     app: PIXI.Application;
-    parentComponent: any;
+    parentComponent: ARenderComponent;
     images=new Map<string, string>();
 
 
     get width() {
         let width = 1;
         let map = this.CreateSprite(Sprites.map);
-
+        console.log();
+        let parentWidth=$(this.parentComponent.hostElement.nativeElement.tagName).width();
+        let parentHeight=$(this.parentComponent.hostElement.nativeElement.tagName).height();
         if (map == undefined) return 0;
-        if (window.innerHeight > window.innerWidth) {
-            width = window.innerHeight / map.height * map.width;
+        if (parentHeight > parentWidth) {
+            width = parentHeight / map.height * map.width;
         } else {
-            width = window.innerWidth;
+            width = parentWidth;
         }
         return width;
     }
@@ -30,17 +32,19 @@ export class Renderer{
     get height() {
         let height = 0;
         let map = this.CreateSprite(Sprites.map);
+        let parentWidth=$(this.parentComponent.hostElement.nativeElement.tagName).width();
+        let parentHeight=$(this.parentComponent.hostElement.nativeElement.tagName).height();
         if (map == undefined) return 0;
-        if (window.innerHeight > window.innerWidth) {
-            height = window.innerHeight;
+        if (parentHeight > parentWidth) {
+            height = parentHeight;
 
         } else {
-            height = window.innerWidth / map.width * map.height;
+            height = parentHeight/ map.width * map.height;
         }
         return height;
     }
 
-    constructor(parentComponent: any) {
+    constructor(parentComponent: ARenderComponent) {
         this.parentComponent = parentComponent;
             this.app=new PIXI.Application();
         (<HTMLDivElement>this.parentComponent.canvasRef.nativeElement).appendChild(this.app.view);
@@ -91,8 +95,8 @@ export class Renderer{
     
     
     async FixCanvas(){
-        let canvas = this.parentComponent.canvasRef.nativeElement;
-        this.app.renderer.resize(canvas.offsetWidth,canvas.offsetHeight);
+        
+        this.app.renderer.resize(this.width,this.height);
         this.app.renderer.autoResize=true;
         this.app.renderer.backgroundColor=0xffffff;
         return;

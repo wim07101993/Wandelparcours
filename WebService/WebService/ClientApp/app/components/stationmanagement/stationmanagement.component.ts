@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit,ElementRef} from '@angular/core';
 import {Point} from "../../helpers/MouseEvents"
 import {Station} from "../../models/station"
 import {Sprites} from "../../helpers/Sprites"
@@ -25,7 +25,7 @@ export class StationmanagementComponent extends ARenderComponent implements OnIn
     stations = new Map<string, Point>();
     stationsIds = new Map<string, string>();
     stationMacAdresses: string[] = [];
- 
+    
     rawstations:any;
     editing=false;
     editmac:string;
@@ -33,8 +33,9 @@ export class StationmanagementComponent extends ARenderComponent implements OnIn
      * Creating stationmanagement page.
      * @param {RestServiceService} service  - A constructer injected service holding the service for rest connection
      */
-    constructor(private service: RestServiceService) {
+    constructor(private service:RestServiceService,protected elRef:ElementRef) {
         super();
+        this.hostElement=this.elRef
     }
 
     get markerUrl(){
@@ -43,7 +44,10 @@ export class StationmanagementComponent extends ARenderComponent implements OnIn
     async ngOnInit() {
 
         super.ngOnInit();
-        await this.service.LoadStations(this);
+        await setTimeout(async () => {
+            await this.service.LoadStations(this);
+            
+        }, 100);
         
     }
 
@@ -86,16 +90,19 @@ export class StationmanagementComponent extends ARenderComponent implements OnIn
     *   Opens modal to delete a station 
     */
     async spriteClicked(id?: string) {
-
-        if (id != undefined) {
-            this.collidingElement = id;
-            this.editing = false;
-            // noinspection JSJQueryEfficiency
-            $("#deleteModal").modal();
-            // noinspection JSJQueryEfficiency
-            $("#deleteModal").modal("open");
+        try {
+            if (id != undefined) {
+                this.collidingElement = id;
+                this.editing = false;
+                // noinspection JSJQueryEfficiency
+                $("#deleteModal").modal();
+                // noinspection JSJQueryEfficiency
+                $("#deleteModal").modal("open");
+            }
+            return true;
+        } catch (error) {
+            return false
         }
-
 
     }
 

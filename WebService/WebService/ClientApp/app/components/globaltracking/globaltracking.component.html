@@ -1,2 +1,46 @@
-<div #myCanvas id="map">
+<div style="position:relative; max-height:100%;">
+    <div id="mapButtonHolder">
+        <br>
+        <a id="zoomInMap" class="btn-floating waves-effect waves-light green" (click)="ZoomIn()">
+            <i class="material-icons"> zoom_in</i>
+        </a>
+        <br>
+        <a id="zoomOutMap" class="btn-floating waves-effect waves-light orange" (click)="ZoomOut()">
+            <i class="material-icons"> zoom_out</i>
+        </a>
+        <br>
+        <!-- Modal Trigger -->
+        <a  *ngIf="id ==undefined" class="btn-floating waves-effect waves-light blue" (click)="openListModal()"><i class="material-icons"> group</i></a>
+    </div>
+    <div #myCanvas id="map">
+    </div>
+</div>
+
+
+<div id="residentModal" class="modal" *ngIf="id==undefined">
+    <div class="modal-content">
+      <h4>{{currentResident.firstName}} {{currentResident.lastName}}</h4>
+      <img class="residentImage" src="/api/v1/residents/{{currentResident.id}}/picture" alt="Geen foto gevonden" honError="this.onerror=null;this.src='/images/resident.jpg';"/>
+    </div>
+    <div class="modal-footer">
+    </div>
+  </div>
+
+
+<!-- Modal Structure -->
+<div id="modal1" class="modal bottom-sheet">
+    <div class="modal-content">
+        <h4>Modal Header</h4>
+        <div id="sidebar" *ngIf="id==undefined">
+            <ul style="border:2px solid deeppink">
+                <li *ngFor="let resident of aResidents">
+                   <p>{{resident.firstName}} {{resident.lastName}}</p> 
+                </li>
+            </ul>
+
+        </div>
+    </div>
+    <div class="modal-footer">
+        <a class="modal-action modal-close waves-effect waves-green btn-flat">Sluiten</a>
+    </div>
 </div>

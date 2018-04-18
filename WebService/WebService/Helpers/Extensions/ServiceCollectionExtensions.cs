@@ -18,7 +18,8 @@ namespace WebService.Helpers.Extensions
                 .AddSingleton<IResidentsService, ResidentsService>()
                 .AddSingleton<IReceiverModulesService, ReceiverModulesService>()
                 .AddSingleton<IUsersService, UsersService>()
-                .AddSingleton<ITokenService, TokenService>();
+                .AddSingleton<ITokenService, TokenService>()
+                .AddSingleton<ILocationService,LocationService>();
 
         public static IServiceCollection UseMockServices(this IServiceCollection This)
             => This
