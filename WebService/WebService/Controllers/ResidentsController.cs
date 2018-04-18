@@ -289,15 +289,12 @@ namespace WebService.Controllers
         }
 
         [HttpPost(AddTagTemplate)]
-        public async Task<IEnumerable<int>> AddTag(string residentId)
+        public async Task<IEnumerable<int>> AddTag(string residentId, [FromBody] int tag)
         {
             if (!ObjectId.TryParse(residentId, out var objectId))
                 throw new NotFoundException<Resident>(nameof(AModelWithID.Id), residentId);
 
-            var maxTag = await ((IResidentsService) DataService).GetHighestTagNumberAsync();
-            maxTag++;
-
-            await DataService.AddItemToListProperty(objectId, x => x.Tags, maxTag);
+            await DataService.AddItemToListProperty(objectId, x => x.Tags, tag);
             return await DataService.GetPropertyAsync(objectId, x => x.Tags);
         }
 

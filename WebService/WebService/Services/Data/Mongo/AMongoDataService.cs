@@ -28,7 +28,7 @@ namespace WebService.Services.Data.Mongo
 
         #region PROPERTIES
 
-        public IMongoCollection<T> MongoCollection { get; }
+        public MongoDB.Driver.IMongoCollection<T> MongoCollection { get; }
 
         #endregion PROPERTIES
 
@@ -125,6 +125,7 @@ namespace WebService.Services.Data.Mongo
                 throw new NotFoundException<T>();
 
             var selector = Builders<T>.Projection.Include(new ExpressionFieldDefinition<T>(propertyToSelect));
+            
             var item = await find
                 .Project<T>(selector)
                 .FirstOrDefaultAsync();
