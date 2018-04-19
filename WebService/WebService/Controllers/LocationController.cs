@@ -63,6 +63,15 @@ namespace WebService.Controllers
 
             return await _residentService.GetOneAsync(objectid, selectors);
         }
+        
+        [HttpGet("residents/{tag}/lastlocation")]
+        public async Task<Resident> GetLastLocationOneResident(int tag)
+        {
+            var selectors = new Expression<Func<Resident, object>>[]
+                {x => x.LastRecordedPosition, x => x.Id, x => x.LastName, x => x.FirstName};
+           
+            return await _residentService.GetOneAsync(tag, selectors);
+        }
 
         [HttpGet("residents/lastlocation")]
         public async Task<IEnumerable<Resident>> GetLastLocation()
@@ -102,6 +111,14 @@ namespace WebService.Controllers
                 throw new NotFoundException<Resident>(nameof(IModelWithID.Id), id);
 
             await _residentService.UpdatePropertyAsync(objectid, x => x.LastRecordedPosition, currentLocation);
+        }
+        
+        [HttpPost("{tag}/lastlocation")]
+        public async Task SetLastLocation(int tag, [FromBody] Point currentLocation)
+        {
+            currentLocation.TimeStamp = DateTime.Now;
+          
+            await _residentService.UpdatePropertyAsync(tag, x => x.LastRecordedPosition, currentLocation);
         }
     }
 }
