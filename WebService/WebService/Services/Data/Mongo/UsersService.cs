@@ -40,11 +40,7 @@ namespace WebService.Services.Data.Mongo
         }
 
         public async Task UpdatePasswordAsync(ObjectId id, string password)
-        {
-            var user = await GetOneAsync(id, new Expression<Func<User, object>>[] {x => x.Password});
-            user.Password = password;
-            await UpdatePropertyAsync(user.Id, x => x.Password, password.Hash(id));
-        }
+            => await UpdatePropertyAsync(id, x => x.Password, password.Hash(id));
 
         public async Task<User> GetByNameAsync(string userName,
             IEnumerable<Expression<Func<User, object>>> propertiesToInclude = null)

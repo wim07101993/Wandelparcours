@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using MongoDB.Driver;
 using WebService.Models;
@@ -10,7 +11,6 @@ namespace WebService.Services.Data.Mongo
         #region FIELDS
 
         private volatile bool _isWorking;
-        private volatile int _schedulingInterval;
         private volatile bool _isSchedulerRunning;
 
         private readonly IMongoCollection<Resident> _residentsCollection;
@@ -52,11 +52,7 @@ namespace WebService.Services.Data.Mongo
             private set => _isSchedulerRunning = value;
         }
 
-        public int SchedulingInterval
-        {
-            get => _schedulingInterval;
-            set => _schedulingInterval = value;
-        }
+        public TimeSpan SchedulingInterval { get; set; }
 
         #endregion PROPERTIES
 
@@ -114,7 +110,7 @@ namespace WebService.Services.Data.Mongo
             }
         }
 
-        public async Task ScheduleCleanup(int interval)
+        public async Task ScheduleCleanup(TimeSpan interval)
         {
             SchedulingInterval = interval;
             await ScheduleCleanup();

@@ -87,16 +87,12 @@ namespace WebService.Services.Data.Mongo
         #region READ
 
         public async Task<Resident> GetOneAsync(int tag,
-            IEnumerable<Expression<Func<Resident, object>>> propertiesToInclude = null)
-        {
-            return await GetByAsync(x => x.Tags != null && x.Tags.Contains(tag));
-        }
+            IEnumerable<Expression<Func<Resident, object>>> propertiesToInclude = null) 
+            => await GetByAsync(x => x.Tags != null && x.Tags.Contains(tag));
 
         public virtual async Task<TValue> GetPropertyAsync<TValue>(int tag,
-            Expression<Func<Resident, TValue>> propertyToSelect)
-        {
-            return await GetPropertyByAsync(x => x.Tags.Contains(tag), propertyToSelect);
-        }
+            Expression<Func<Resident, TValue>> propertyToSelect) 
+            => await GetPropertyByAsync(x => x.Tags.Contains(tag), propertyToSelect);
 
         public async Task<int> GetHighestTagNumberAsync()
         {

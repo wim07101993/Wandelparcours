@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -38,9 +39,7 @@ namespace WebService.Services.Data.Mongo
         #region create
 
         public virtual async Task CreateAsync(T item)
-        {
-            await CreateAsync(item, true);
-        }
+            => await CreateAsync(item, true);
 
         protected virtual async Task CreateAsync(T item, bool generateNewId)
         {
@@ -82,30 +81,25 @@ namespace WebService.Services.Data.Mongo
 
         public virtual async Task<IEnumerable<T>> GetAsync(
             IEnumerable<Expression<Func<T, object>>> propertiesToInclude = null)
-        {
-            return await MongoCollection
+            => await MongoCollection
                 .Find(FilterDefinition<T>.Empty)
                 .Select(propertiesToInclude)
                 .ToListAsync();
-        }
 
         public virtual async Task<T> GetOneAsync(ObjectId id,
             IEnumerable<Expression<Func<T, object>>> propertiesToInclude = null)
-        {
-            return await GetByAsync(x => x.Id == id, propertiesToInclude);
-        }
+            => await GetByAsync(x => x.Id == id, propertiesToInclude);
 
         public virtual async Task<TOut> GetPropertyAsync<TOut>(ObjectId id, Expression<Func<T, TOut>> propertyToSelect)
-        {
-            return await GetPropertyByAsync(x => x.Id == id, propertyToSelect);
-        }
+            => await GetPropertyByAsync(x => x.Id == id, propertyToSelect);
+
 
         protected async Task<T> GetByAsync(Expression<Func<T, bool>> condition,
             IEnumerable<Expression<Func<T, object>>> propertiesToInclude = null)
         {
             var find = MongoCollection.Find(condition);
 
-            if (find.Count() <= 0)
+            if (!find.Any())
                 throw new NotFoundException<T>();
 
             return await find
@@ -121,16 +115,14 @@ namespace WebService.Services.Data.Mongo
 
             var find = MongoCollection.Find(condition);
 
-            if (find.Count() <= 0)
+            if (!find.Any())
                 throw new NotFoundException<T>();
 
-            var selector = Builders<T>.Projection.Include(new ExpressionFieldDefinition<T>(propertyToSelect));
-            
-            var item = await find
-                .Project<T>(selector)
-                .FirstOrDefaultAsync();
+            var projector = Builders<T>.Projection.Expression(propertyToSelect);
 
-            return propertyToSelect.Compile()(item);
+            return await find
+                .Project(projector)
+                .FirstOrDefaultAsync();
         }
 
         #endregion read
@@ -151,15 +143,8 @@ namespace WebService.Services.Data.Mongo
                 throw new ArgumentNullException(nameof(newItem));
 
             var update = Builders<T>.Update.Set(x => x.Id, newItem.Id);
-            foreach (var selector in propertiesToUpdate)
-            {
-                var prop = selector.Body is MemberExpression expression
-                    ? expression.Member as PropertyInfo
-                    : ((MemberExpression) ((UnaryExpression) selector.Body).Operand).Member as PropertyInfo;
-
-                if (prop != null)
-                    update = update.Set(selector, prop.GetValue(newItem));
-            }
+            update = propertiesToUpdate.Aggregate(
+                update, (current, selector) => current.Set(selector, selector.Compile()(newItem)));
 
             var updateResult = await MongoCollection.UpdateOneAsync(x => x.Id == newItem.Id, update);
 
@@ -188,8 +173,8 @@ namespace WebService.Services.Data.Mongo
             if (propertyToUpdate == null)
                 throw new ArgumentNullException(nameof(propertyToUpdate));
 
-            var update = Builders<T>.Update.Set(propertyToUpdate, value);
-            var updateResult = await MongoCollection.UpdateOneAsync(x => x.Id == id, update);
+            var updater = Builders<T>.Update.Set(propertyToUpdate, value);
+            var updateResult = await MongoCollection.UpdateOneAsync(x => x.Id == id, updater);
 
             if (!updateResult.IsAcknowledged)
                 throw new DatabaseException(EDatabaseMethod.Update);
@@ -221,8 +206,8 @@ namespace WebService.Services.Data.Mongo
             if (itemToRemove == null)
                 throw new ArgumentNullException(nameof(itemToRemove));
 
-            var update = Builders<T>.Update.Pull(popertyToRemoveItemFrom, itemToRemove);
-            var result = await MongoCollection.FindOneAndUpdateAsync(x => x.Id == id, update);
+            var updater = Builders<T>.Update.Pull(popertyToRemoveItemFrom, itemToRemove);
+            var result = await MongoCollection.FindOneAndUpdateAsync(x => x.Id == id, updater);
 
             if (result == null)
                 throw new NotFoundException<T>(nameof(IModelWithID.Id), id.ToString());

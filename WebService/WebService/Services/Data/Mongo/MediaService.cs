@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using MongoDB.Bson;
 using MongoDB.Driver;
@@ -27,8 +25,8 @@ namespace WebService.Services.Data.Mongo
 
         public async Task RemoveByResident(ObjectId residentId)
         {
-            var deleteResult = await MongoCollection.DeleteManyAsync(
-                new FilterDefinitionBuilder<MediaData>().Eq(x => x.OwnerId, residentId));
+            var deleter = Builders<MediaData>.Filter.Eq(x => x.OwnerId, residentId);
+            var deleteResult = await MongoCollection.DeleteManyAsync(deleter);
 
             if (!deleteResult.IsAcknowledged)
                 throw new DatabaseException(EDatabaseMethod.Delete);

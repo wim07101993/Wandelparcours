@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 
 namespace WebService.Services.Data
 {
@@ -6,7 +7,7 @@ namespace WebService.Services.Data
     {
         bool IsWorking { get; }
         bool IsSchedulerRunning { get; }
-        int SchedulingInterval { get; set; }
+        TimeSpan SchedulingInterval { get; set; }
 
         Task RemoveUnresolvableRelations();
         Task RemoveRedundantData();
@@ -15,7 +16,7 @@ namespace WebService.Services.Data
         void Cleanup();
 
         Task ScheduleCleanup();
-        Task ScheduleCleanup(int interval);
+        Task ScheduleCleanup(TimeSpan interval);
         void CancelCleanupSchedule();
     }
 }
