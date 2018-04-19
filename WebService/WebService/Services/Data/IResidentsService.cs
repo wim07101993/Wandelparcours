@@ -53,6 +53,8 @@ namespace WebService.Services.Data
         /// <exception cref="ArgumentOutOfRangeException">when the media type doesn't exist</exception>
         Task AddMediaAsync(ObjectId residentId, string url, EMediaType mediaType);
 
+        Task UpdatePropertyAsync<TValue>(int tag, Expression<Func<Resident, TValue>> propertyToUpdate, TValue value);
+        
         /// <summary>
         /// RemoveMediaAsync is supposed to remove the media of type <see cref="mediaType"/> with as id <see cref="mediaId"/> of the
         /// <see cref="Resident"/> with as id <see cref="residentId"/>.

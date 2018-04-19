@@ -98,6 +98,11 @@ namespace WebService.Services.Data.Mock
             AddMedia(residentId, new MediaUrl {Id = ObjectId.GenerateNewId(), Url = url}, mediaType);
         }
 
+        public Task UpdatePropertyAsync<TValue>(int tag, Expression<Func<Resident, TValue>> propertyToUpdate, TValue value)
+        {
+            throw new NotImplementedException();
+        }
+
         private void AddMedia(ObjectId residentId, MediaUrl mediaData, EMediaType mediaType)
         {
             // search for the resident index

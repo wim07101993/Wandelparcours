@@ -146,7 +146,8 @@ namespace WebService.Services.Data.Mongo
                 .FirstOrDefaultAsync();
         }
 
-        public virtual async Task<TValue> GetPropertyAsync<TValue>(int tag, Expression<Func<Resident, TValue>> propertyToSelect)
+        public virtual async Task<TValue> GetPropertyAsync<TValue>(int tag,
+            Expression<Func<Resident, TValue>> propertyToSelect)
         {
             // if the property to select is null, throw exception
             if (propertyToSelect == null)
@@ -159,7 +160,7 @@ namespace WebService.Services.Data.Mongo
             if (find.Count() <= 0)
                 throw new ElementNotFoundException<Resident>(nameof(Resident.Tags), "tag");
 
-            
+
             var fieldDef = new ExpressionFieldDefinition<Resident>(propertyToSelect);
             // create a property filter
             var selector = Builders<Resident>.Projection.Include(fieldDef);
@@ -182,7 +183,7 @@ namespace WebService.Services.Data.Mongo
                     // group groups the maximums of the tags
                     new BsonDocument("$group", new BsonDocument
                     {
-                        {"_id" , "$_id"},
+                        {"_id", "$_id"},
                         {"max", new BsonDocument("$max", "$tags")}
                     }),
                     // sort sorts the maximums 
@@ -194,6 +195,30 @@ namespace WebService.Services.Data.Mongo
         }
 
         #endregion READ
+
+
+        #region UPDATE
+
+        public async Task UpdatePropertyAsync<TValue>(int tag, Expression<Func<Resident, TValue>> propertyToUpdate,
+            TValue value)
+        {
+            if (propertyToUpdate == null)
+                throw new ArgumentNullException(nameof(propertyToUpdate));
+
+            var update = Builders<Resident>.Update.Set(propertyToUpdate, value);
+
+            var updateResult = await MongoCollection.UpdateOneAsync(
+                x => x.Tags != null && x.Tags.Contains(tag),
+                update);
+
+            if (!updateResult.IsAcknowledged)
+                throw new DatabaseException(EDatabaseMethod.Update);
+
+            if (updateResult.MatchedCount <= 0)
+                throw new NotFoundException<Resident>(nameof(Resident.Tags), tag.ToString());
+        }
+
+        #endregion UPDATE
 
 
         #region DELETE

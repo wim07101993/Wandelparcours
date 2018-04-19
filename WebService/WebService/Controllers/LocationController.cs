@@ -112,5 +112,13 @@ namespace WebService.Controllers
 
             await _residentService.UpdatePropertyAsync(objectid, x => x.LastRecordedPosition, currentLocation);
         }
+        
+        [HttpPost("{tag}/lastlocation")]
+        public async Task SetLastLocation(int tag, [FromBody] Point currentLocation)
+        {
+            currentLocation.TimeStamp = DateTime.Now;
+          
+            await _residentService.UpdatePropertyAsync(tag, x => x.LastRecordedPosition, currentLocation);
+        }
     }
 }
