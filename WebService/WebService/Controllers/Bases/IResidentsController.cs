@@ -4,7 +4,7 @@ using WebService.Models;
 
 namespace WebService.Controllers.Bases
 {
-     public interface IResidentsController : IRestController<Resident>
+    public interface IResidentsController : IRestController<Resident>
     {
         #region CREATE
 

@@ -14,7 +14,7 @@ namespace WebService.Models
         public string LastName { get; set; }
 
         [BsonElement("picture")]
-        public byte[] Picture { get; set; } 
+        public byte[] Picture { get; set; }
 
         [BsonElement("room")]
         public string Room { get; set; }
@@ -26,7 +26,7 @@ namespace WebService.Models
         public Doctor Doctor { get; set; }
 
         [BsonElement("tags")]
-        public List<int> Tags { get; set; } 
+        public List<int> Tags { get; set; }
 
         [BsonElement("music")]
         public List<MediaUrl> Music { get; set; }

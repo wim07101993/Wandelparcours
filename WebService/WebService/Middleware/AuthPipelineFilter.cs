@@ -19,14 +19,14 @@ namespace WebService.Middleware
         private readonly ITokenService _tokenService;
         private readonly IUsersService _usersService;
 
-        
+
         public AuthPipelineFilter(ITokenService tokenService, IUsersService usersService)
         {
             _tokenService = tokenService;
             _usersService = usersService;
         }
 
-        
+
         public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
         {
             if (!(context.ActionDescriptor is ControllerActionDescriptor controllerActionDescriptor))

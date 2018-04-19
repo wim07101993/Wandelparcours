@@ -85,7 +85,7 @@ namespace WebService.Controllers.Bases
         {
             if (item == null)
                 throw new ArgumentNullException(nameof(item));
-            
+
             await DataService.CreateAsync(item);
             return item.Id.ToString();
         }
@@ -102,14 +102,15 @@ namespace WebService.Controllers.Bases
 
             if (property == null)
                 throw new PropertyNotFoundException<T>(nameof(propertyName));
-            var valueType = property.PropertyType.GetGenericArguments()[0];
 
+            var valueType = property.PropertyType.GetGenericArguments()[0];
             var objectId = id.ToObjectId();
-            
+
             try
             {
                 var value = JsonConvert.DeserializeObject(jsonValue, valueType);
-                await DataService.AddItemToListProperty(objectId,
+                await DataService.AddItemToListProperty(
+                    objectId,
                     // ReSharper disable once SuspiciousTypeConversion.Global
                     PropertySelectors[propertyName.ToUpperCamelCase()] as Expression<Func<T, IEnumerable<object>>>,
                     value);

@@ -9,6 +9,5 @@ namespace WebService.Models
 
         [BsonElement("phoneNumber")]
         public string PhoneNumber { get; set; }
-
     }
 }
