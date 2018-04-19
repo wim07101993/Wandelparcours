@@ -28,7 +28,7 @@ namespace WebService.Services.Data.Mongo
 
         #region PROPERTIES
 
-        public MongoDB.Driver.IMongoCollection<T> MongoCollection { get; }
+        public IMongoCollection<T> MongoCollection { get; }
 
         #endregion PROPERTIES
 

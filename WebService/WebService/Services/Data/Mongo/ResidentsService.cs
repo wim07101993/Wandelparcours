@@ -15,7 +15,7 @@ namespace WebService.Services.Data.Mongo
 {
     public class ResidentsService : AMongoDataService<Resident>, IResidentsService
     {
-        private readonly IDataService<MediaData> _mediaService;
+        private readonly IMediaService _mediaService;
 
         public ResidentsService(IConfiguration config, IMediaService mediaService)
             : base(config["Database:ConnectionString"],
@@ -168,6 +168,12 @@ namespace WebService.Services.Data.Mongo
 
             if (resident == null)
                 throw new NotFoundException<Resident>(nameof(IModelWithID.Id), residentId.ToString());
+        }
+
+        public override Task RemoveAsync(ObjectId id)
+        {
+            _mediaService.RemoveByResident(id);
+            return base.RemoveAsync(id);
         }
 
         #endregion DELETE
