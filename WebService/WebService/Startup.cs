@@ -42,6 +42,8 @@ namespace WebService
             {
                 app.UseExceptionHandler("/Home/Error");
             }
+            
+            
 
             app.UseCors(option => option.AllowAnyOrigin().AllowAnyMethod())
                 .UseStaticFiles()
