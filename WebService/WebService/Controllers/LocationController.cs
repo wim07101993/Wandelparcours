@@ -63,6 +63,15 @@ namespace WebService.Controllers
 
             return await _residentService.GetOneAsync(objectid, selectors);
         }
+        
+        [HttpGet("residents/{tag}/lastlocation")]
+        public async Task<Resident> GetLastLocationOneResident(int tag)
+        {
+            var selectors = new Expression<Func<Resident, object>>[]
+                {x => x.LastRecordedPosition, x => x.Id, x => x.LastName, x => x.FirstName};
+           
+            return await _residentService.GetOneAsync(tag, selectors);
+        }
 
         [HttpGet("residents/lastlocation")]
         public async Task<IEnumerable<Resident>> GetLastLocation()
