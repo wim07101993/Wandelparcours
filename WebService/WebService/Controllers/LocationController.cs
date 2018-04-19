@@ -39,10 +39,10 @@ namespace WebService.Controllers
             = new Dictionary<string, Expression<Func<ResidentLocation, object>>>
             {
                 {nameof(ResidentLocation.Id), x => x.Id},
-                {nameof(ResidentLocation.Id), x => x.ResidentId},
-                {nameof(ResidentLocation.Id), x => x.TimeStamp},
-                {nameof(ResidentLocation.Id), x => x.X},
-                {nameof(ResidentLocation.Id), x => x.Y},
+                {nameof(ResidentLocation.ResidentId), x => x.ResidentId},
+                {nameof(ResidentLocation.TimeStamp), x => x.TimeStamp},
+                {nameof(ResidentLocation.X), x => x.X},
+                {nameof(ResidentLocation.Y), x => x.Y},
             };
 
 
