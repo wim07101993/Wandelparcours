@@ -273,7 +273,7 @@ export class ResidentsComponent implements OnInit {
            await this.service.addProfilePic(id, this.fd);
             Materialize.toast(`bewoner: ${data.firstName} ${data.lastName} succesvol toegevoegd`, 5000);
         }else{
-            Materialize.toast(`niet gelukt lan`, 5000);
+            Materialize.toast(`Bewoner kon niet worden toegevoegd!`, 5000);
             this.router.navigate(["/error"]);
        }
 
