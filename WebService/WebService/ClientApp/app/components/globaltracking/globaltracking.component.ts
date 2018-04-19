@@ -8,6 +8,8 @@ import { Http } from '@angular/http';
 import { Resident } from "../../models/resident";
 import { getBaseUrl } from "../../app.module.browser";
 import {ActivatedRoute} from '@angular/router';
+import {Router} from '@angular/router';
+
 declare var $: any;
 @Component({
     selector: 'app-globaltracking',
@@ -40,7 +42,7 @@ export class GlobaltrackingComponent extends ARenderComponent implements OnInit 
         return getBaseUrl() + "images/resident.png";
     }
 
-    constructor(private http: Http, protected elRef: ElementRef,private route: ActivatedRoute) {
+    constructor(private http: Http, protected elRef: ElementRef,private route: ActivatedRoute, private router: Router) {
         super();
         this.hostElement = elRef;
 
@@ -127,7 +129,7 @@ export class GlobaltrackingComponent extends ARenderComponent implements OnInit 
                         this.residents.delete(key);
                         keyDeleted=true;
                     }
-                })
+                });
                     
                 
                 
@@ -183,5 +185,14 @@ export class GlobaltrackingComponent extends ARenderComponent implements OnInit 
         $("#modal1").css({"width":"25%","height":"100%"});
     }
 
-   
+    /*
+   *   this function selects and navigates to perosnal tracking page of the resident
+   */
+
+    navigateTo(resident: Resident) {
+        //console.log(resident.id);
+        this.router.navigate(['/resident/' + resident.id]);
+    }
+
+
 }
