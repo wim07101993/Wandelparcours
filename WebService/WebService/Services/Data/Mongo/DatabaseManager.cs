@@ -29,7 +29,8 @@ namespace WebService.Services.Data.Mongo
                 .GetDatabase(config["Database:DatabaseName"]);
 
             _residentsCollection = database.GetCollection<Resident>(config["Database:ResidentsCollectionName"]);
-            _receiverModulesCollection = database.GetCollection<ReceiverModule>(config["Database:ReceiverModulesCollectionName"]);
+            _receiverModulesCollection =
+                database.GetCollection<ReceiverModule>(config["Database:ReceiverModulesCollectionName"]);
             _mediaCollection = database.GetCollection<MediaData>(config["Database:MediaCollectionName"]);
             _usersCollection = database.GetCollection<User>(config["Database:UsersCollectionName"]);
         }
@@ -62,19 +63,33 @@ namespace WebService.Services.Data.Mongo
 
         #region METHODS
 
-        public Task RemoveUnresolvableRelations()
+        #region RemoveUnresolvableRelations
+
+        public async Task RemoveUnresolvableRelations()
         {
-            throw new System.NotImplementedException();
+            RemoveMediaWithNonExistingResident();
         }
 
-        public Task RemoveRedundantData()
+        private void RemoveMediaWithNonExistingResident()
         {
-            throw new System.NotImplementedException();
+            var residentIds = _residentsCollection
+                .Find(FilterDefinition<Resident>.Empty)
+                .Project(x => x.Id)
+                .ToList();
+
+            var ownerExistsFilter = Builders<MediaData>.Filter.In(x => x.OwnerId, residentIds);
+            _mediaCollection.DistinctAsync(x => x.OwnerId, ownerExistsFilter);
         }
 
-        public Task FillMissingFields()
+        #endregion RemoveUnresolvableRelations
+
+
+        public async Task RemoveRedundantData()
         {
-            throw new System.NotImplementedException();
+        }
+
+        public async Task FillMissingFields()
+        {
         }
 
 
