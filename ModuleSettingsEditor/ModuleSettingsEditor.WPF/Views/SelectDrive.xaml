@@ -1,0 +1,64 @@
+﻿<UserControl
+    x:Class="ModuleSettingsEditor.WPF.Views.SelectDrive"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:viewModelInterfaces="clr-namespace:ModuleSettingsEditor.WPF.ViewModelInterfaces"
+    xmlns:views="clr-namespace:ModuleSettingsEditor.WPF.Views"
+    d:DataContext="{d:DesignInstance viewModelInterfaces:ISelectDriveViewModel}"
+    mc:Ignorable="d">
+
+    <UserControl.Resources>
+        <Style BasedOn="{StaticResource MaterialDesignRaisedButton}" TargetType="{x:Type Button}">
+            <Setter Property="Width" Value="90" />
+        </Style>
+    </UserControl.Resources>
+
+
+    <materialDesign:DialogHost CloseOnClickAway="True" IsOpen="{Binding IsNoSelectedDriveVisible}">
+        <materialDesign:DialogHost.DialogContent>
+            <Grid Margin="16">
+                <Grid.RowDefinitions>
+                    <RowDefinition />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+
+                <TextBlock Grid.Row="0" Text="{Binding NoDriveSelectedMessage}" />
+                <Button
+                    Grid.Row="1"
+                    Margin="0,16,0,0"
+                    Command="{Binding NoSelectedDriveOkCommand}"
+                    Content="OK" />
+            </Grid>
+        </materialDesign:DialogHost.DialogContent>
+
+        <Grid Margin="16">
+            <Grid.RowDefinitions>
+                <RowDefinition />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+
+            <ComboBox
+                Grid.Row="0"
+                materialDesign:HintAssist.Hint="Station"
+                IsEditable="False"
+                ItemsSource="{Binding Drives}"
+                SelectedItem="{Binding SelectedDrive, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                ToolTip="De partitie waar de instellingen naar geëxprteerd moeten worden" />
+
+            <StackPanel
+                Grid.Row="1"
+                Margin="0,16,0,0"
+                Orientation="Horizontal">
+                <Button Command="{Binding OkCommand}" Content="OK" />
+                <Button
+                    Margin="8,0,0,0"
+                    Command="{Binding CancelCommand}"
+                    Content="CANCEL" />
+            </StackPanel>
+        </Grid>
+
+    </materialDesign:DialogHost>
+</UserControl>

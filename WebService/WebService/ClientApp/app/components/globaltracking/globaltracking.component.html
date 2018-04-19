@@ -10,7 +10,7 @@
         </a>
         <br>
         <!-- Modal Trigger -->
-        <a class="btn-floating waves-effect waves-light blue" (click)="openListModal()"><i class="material-icons"> group</i></a>
+        <a  *ngIf="id ==undefined" class="btn-floating waves-effect waves-light blue" (click)="openListModal()"><i class="material-icons"> group</i></a>
     </div>
     <div #myCanvas id="map">
     </div>
@@ -20,7 +20,7 @@
 <div id="residentModal" class="modal" *ngIf="id==undefined">
     <div class="modal-content">
       <h4>{{currentResident.firstName}} {{currentResident.lastName}}</h4>
-      <img class="residentImage" src="/api/v1/residents/{{currentResident.id}}/picture" alt="Geen foto gevonden" honError="this.onerror=null;this.src='/images/resident.jpg';"/>
+      <img class="residentImage" src="/api/v1/residents/{{currentResident.id}}/picture" alt="Geen foto gevonden" onError="this.onerror=null;this.src='/images/resident.jpg';"/>
     </div>
     <div class="modal-footer">
     </div>
@@ -30,10 +30,10 @@
 <!-- Modal Structure -->
 <div id="modal1" class="modal bottom-sheet">
     <div class="modal-content">
-        <h4>Modal Header</h4>
+        <h4>Bewoners</h4>
         <div id="sidebar" *ngIf="id==undefined">
-            <ul style="border:2px solid deeppink">
-                <li *ngFor="let resident of aResidents">
+            <ul>
+                <li *ngFor="let resident of aResidents" (click)="navigateTo(resident)">
                    <p>{{resident.firstName}} {{resident.lastName}}</p> 
                 </li>
             </ul>
@@ -41,6 +41,6 @@
         </div>
     </div>
     <div class="modal-footer">
-        <a class="modal-action modal-close waves-effect waves-green btn-flat">Agree</a>
+        <a class="modal-action modal-close waves-effect waves-green btn-flat">Sluiten</a>
     </div>
 </div>

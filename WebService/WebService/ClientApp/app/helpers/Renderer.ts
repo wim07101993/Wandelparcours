@@ -3,7 +3,7 @@ import {Sprites} from "./Sprites";
 import Sprite = PIXI.Sprite;
 import { ARenderComponent } from "./ARenderComponent";
 declare var window:any;
-
+declare var $:any;
 
 export class Renderer{
     app: PIXI.Application;
@@ -15,13 +15,13 @@ export class Renderer{
         let width = 1;
         let map = this.CreateSprite(Sprites.map);
         console.log();
-        let parentWidth=this.parentComponent.hostElement.nativeElement.offsetWidth;
-        let parentHeight=this.parentComponent.hostElement.nativeElement.offsetHeight;
+        let parentWidth=$(this.parentComponent.hostElement.nativeElement.tagName).width();
+        let parentHeight=$(this.parentComponent.hostElement.nativeElement.tagName).height();
         if (map == undefined) return 0;
         if (parentHeight > parentWidth) {
             width = parentHeight / map.height * map.width;
         } else {
-            width = window.innerWidth;
+            width = parentWidth;
         }
         return width;
     }
@@ -32,8 +32,8 @@ export class Renderer{
     get height() {
         let height = 0;
         let map = this.CreateSprite(Sprites.map);
-        let parentWidth=this.parentComponent.hostElement.nativeElement.offsetWidth;
-        let parentHeight=this.parentComponent.hostElement.nativeElement.offsetHeight;
+        let parentWidth=$(this.parentComponent.hostElement.nativeElement.tagName).width();
+        let parentHeight=$(this.parentComponent.hostElement.nativeElement.tagName).height();
         if (map == undefined) return 0;
         if (parentHeight > parentWidth) {
             height = parentHeight;
@@ -95,8 +95,8 @@ export class Renderer{
     
     
     async FixCanvas(){
-        let canvas = this.parentComponent.canvasRef.nativeElement;
-        this.app.renderer.resize(canvas.offsetWidth,canvas.offsetHeight);
+        
+        this.app.renderer.resize(this.width,this.height);
         this.app.renderer.autoResize=true;
         this.app.renderer.backgroundColor=0xffffff;
         return;
