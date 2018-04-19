@@ -296,9 +296,11 @@ namespace WebService.Controllers
             if (!ObjectId.TryParse(residentId, out var objectId))
                 throw new NotFoundException<Resident>(nameof(AModelWithID.Id), residentId);
 
-            var tagExists = (await DataService
-                    .GetAsync(new Expression<Func<Resident, object>>[] {x => x.Tags}))
-                .Any(x => x.Tags.Any(y => y == tag));
+            var res = await DataService
+                .GetAsync(new Expression<Func<Resident, object>>[] {x => x.Tags});
+
+            var tagExists = res
+                .Any(x => x.Tags?.Any(y => y == tag) == true);
 
             if (tagExists)
                 throw new ArgumentException("cannot have duplicate tags", nameof(tag));
