@@ -1,0 +1,15 @@
+/Users/kenan/Documents/GitHub/Wandelparcours/WebService/WebAPIUnitTests/bin/Debug/netcoreapp2.0/Microsoft.VisualStudio.TestPlatform.MSTest.TestAdapter.dll
+/Users/kenan/Documents/GitHub/Wandelparcours/WebService/WebAPIUnitTests/bin/Debug/netcoreapp2.0/Microsoft.VisualStudio.TestPlatform.MSTestAdapter.PlatformServices.Interface.dll
+/Users/kenan/Documents/GitHub/Wandelparcours/WebService/WebAPIUnitTests/bin/Debug/netcoreapp2.0/Microsoft.VisualStudio.TestPlatform.MSTestAdapter.PlatformServices.dll
+/Users/kenan/Documents/GitHub/Wandelparcours/WebService/WebAPIUnitTests/bin/Debug/netcoreapp2.0/WebAPIUnitTests.deps.json
+/Users/kenan/Documents/GitHub/Wandelparcours/WebService/WebAPIUnitTests/bin/Debug/netcoreapp2.0/WebAPIUnitTests.runtimeconfig.json
+/Users/kenan/Documents/GitHub/Wandelparcours/WebService/WebAPIUnitTests/bin/Debug/netcoreapp2.0/WebAPIUnitTests.runtimeconfig.dev.json
+/Users/kenan/Documents/GitHub/Wandelparcours/WebService/WebAPIUnitTests/bin/Debug/netcoreapp2.0/WebAPIUnitTests.dll
+/Users/kenan/Documents/GitHub/Wandelparcours/WebService/WebAPIUnitTests/bin/Debug/netcoreapp2.0/WebAPIUnitTests.pdb
+/Users/kenan/Documents/GitHub/Wandelparcours/WebService/WebAPIUnitTests/bin/Debug/netcoreapp2.0/WebService.dll
+/Users/kenan/Documents/GitHub/Wandelparcours/WebService/WebAPIUnitTests/bin/Debug/netcoreapp2.0/WebService.pdb
+/Users/kenan/Documents/GitHub/Wandelparcours/WebService/WebAPIUnitTests/obj/Debug/netcoreapp2.0/WebAPIUnitTests.csproj.CoreCompileInputs.cache
+/Users/kenan/Documents/GitHub/Wandelparcours/WebService/WebAPIUnitTests/obj/Debug/netcoreapp2.0/WebAPIUnitTests.AssemblyInfoInputs.cache
+/Users/kenan/Documents/GitHub/Wandelparcours/WebService/WebAPIUnitTests/obj/Debug/netcoreapp2.0/WebAPIUnitTests.AssemblyInfo.cs
+/Users/kenan/Documents/GitHub/Wandelparcours/WebService/WebAPIUnitTests/obj/Debug/netcoreapp2.0/WebAPIUnitTests.dll
+/Users/kenan/Documents/GitHub/Wandelparcours/WebService/WebAPIUnitTests/obj/Debug/netcoreapp2.0/WebAPIUnitTests.pdb
