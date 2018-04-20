@@ -1,21 +1,22 @@
 {
   "runtimeTarget": {
     "name": ".NETCoreApp,Version=v2.0",
-    "signature": "a143e5fe6868e177c71c2f36105314f552a2b808"
+    "signature": "2352abf9e3ab598ec21a63010c05903e6692267f"
   },
   "compilationOptions": {},
   "targets": {
     ".NETCoreApp,Version=v2.0": {
-      "WebService.Tests/1.0.0": {
+      "WebAPIUnitTests/1.0.0": {
         "dependencies": {
-          "FluentAssertions": "5.2.0",
+          "FluentAssertions": "5.1.2",
           "MSTest.TestAdapter": "1.2.0",
           "MSTest.TestFramework": "1.2.0",
           "Microsoft.NET.Test.Sdk": "15.5.0",
+          "Moq": "4.8.2",
           "WebService": "1.0.0"
         },
         "runtime": {
-          "WebService.Tests.dll": {}
+          "WebAPIUnitTests.dll": {}
         }
       },
       "BCrypt.Net-Core/1.4.0": {
@@ -24,6 +25,22 @@
         },
         "runtime": {
           "lib/netstandard1.3/BCrypt.Net-Core.dll": {}
+        }
+      },
+      "Castle.Core/4.2.1": {
+        "dependencies": {
+          "System.Collections.Specialized": "4.3.0",
+          "System.ComponentModel": "4.3.0",
+          "System.ComponentModel.TypeConverter": "4.3.0",
+          "System.Diagnostics.TraceSource": "4.3.0",
+          "System.Dynamic.Runtime": "4.3.0",
+          "System.Reflection": "4.3.0",
+          "System.Reflection.Emit": "4.3.0",
+          "System.Reflection.TypeExtensions": "4.3.0",
+          "System.Xml.XmlDocument": "4.3.0"
+        },
+        "runtime": {
+          "lib/netstandard1.3/Castle.Core.dll": {}
         }
       },
       "DnsClient/1.0.7": {
@@ -48,7 +65,7 @@
           "lib/netstandard1.3/DnsClient.dll": {}
         }
       },
-      "FluentAssertions/5.2.0": {
+      "FluentAssertions/5.1.2": {
         "dependencies": {
           "System.Configuration.ConfigurationManager": "4.4.0",
           "System.Reflection.Emit": "4.3.0",
@@ -2226,7 +2243,7 @@
           "MongoDB.Bson": "2.5.0",
           "MongoDB.Driver.Core": "2.5.0",
           "System.ComponentModel.TypeConverter": "4.3.0",
-          "System.Linq.Queryable": "4.0.1"
+          "System.Linq.Queryable": "4.3.0"
         },
         "runtime": {
           "lib/netstandard1.5/MongoDB.Driver.dll": {}
@@ -2244,6 +2261,18 @@
         },
         "runtime": {
           "lib/netstandard1.5/MongoDB.Driver.Core.dll": {}
+        }
+      },
+      "Moq/4.8.2": {
+        "dependencies": {
+          "Castle.Core": "4.2.1",
+          "System.Linq.Queryable": "4.3.0",
+          "System.Reflection.TypeExtensions": "4.3.0",
+          "System.Threading.Tasks.Extensions": "4.4.0",
+          "System.ValueTuple": "4.4.0"
+        },
+        "runtime": {
+          "lib/netstandard1.3/Moq.dll": {}
         }
       },
       "MSTest.TestAdapter/1.2.0": {
@@ -2309,7 +2338,7 @@
           "System.Diagnostics.Debug": "4.3.0",
           "System.Linq": "4.3.0",
           "System.Linq.Expressions": "4.3.0",
-          "System.Linq.Queryable": "4.0.1",
+          "System.Linq.Queryable": "4.3.0",
           "System.ObjectModel": "4.3.0",
           "System.Reflection": "4.3.0",
           "System.Reflection.Extensions": "4.3.0",
@@ -3067,7 +3096,7 @@
           "System.Threading.Tasks": "4.3.0"
         }
       },
-      "System.Linq.Queryable/4.0.1": {
+      "System.Linq.Queryable/4.3.0": {
         "dependencies": {
           "System.Collections": "4.3.0",
           "System.Diagnostics.Debug": "4.3.0",
@@ -3952,7 +3981,7 @@
     }
   },
   "libraries": {
-    "WebService.Tests/1.0.0": {
+    "WebAPIUnitTests/1.0.0": {
       "type": "project",
       "serviceable": false,
       "sha512": ""
@@ -3964,6 +3993,13 @@
       "path": "bcrypt.net-core/1.4.0",
       "hashPath": "bcrypt.net-core.1.4.0.nupkg.sha512"
     },
+    "Castle.Core/4.2.1": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-XSNA0Gc1Zu33L+8+/3Tqt+aFu8QWS8UenVHZ7RenIP5wJfhoLrA4PnNscpxReeo5aBq8PDoGnV8rNaOzIOUo/w==",
+      "path": "castle.core/4.2.1",
+      "hashPath": "castle.core.4.2.1.nupkg.sha512"
+    },
     "DnsClient/1.0.7": {
       "type": "package",
       "serviceable": true,
@@ -3971,12 +4007,12 @@
       "path": "dnsclient/1.0.7",
       "hashPath": "dnsclient.1.0.7.nupkg.sha512"
     },
-    "FluentAssertions/5.2.0": {
+    "FluentAssertions/5.1.2": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-Woli8Y2wkQyiUjQxiZW3zTKGXXKns83TPJKEmBeIG0efVoMdTQh4tEhJ/mFKyLzz5H97f6EqQfHKpGMvkO/7BQ==",
-      "path": "fluentassertions/5.2.0",
-      "hashPath": "fluentassertions.5.2.0.nupkg.sha512"
+      "sha512": "sha512-J0GNFJGqFziZPp+fMyRg22wPN+a6Scw/KcxMpgzRxL/Obl/l6WV9nZulTUG8wydGSpPNT0d0kYS1eYfSlD1pbA==",
+      "path": "fluentassertions/5.1.2",
+      "hashPath": "fluentassertions.5.1.2.nupkg.sha512"
     },
     "Libuv/1.10.0": {
       "type": "package",
@@ -5231,6 +5267,13 @@
       "path": "mongodb.driver.core/2.5.0",
       "hashPath": "mongodb.driver.core.2.5.0.nupkg.sha512"
     },
+    "Moq/4.8.2": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-Lz+cW0Qo8BlmT7DqMPzd6s7jpqYpxJ41T4f2wzbJ4bKUEdfTEfz1wD1/Q2Kh6DY4+qoqVwFa4JIhBq13j5RyOQ==",
+      "path": "moq/4.8.2",
+      "hashPath": "moq.4.8.2.nupkg.sha512"
+    },
     "MSTest.TestAdapter/1.2.0": {
       "type": "package",
       "serviceable": true,
@@ -5777,12 +5820,12 @@
       "path": "system.linq.parallel/4.3.0",
       "hashPath": "system.linq.parallel.4.3.0.nupkg.sha512"
     },
-    "System.Linq.Queryable/4.0.1": {
+    "System.Linq.Queryable/4.3.0": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-Yn/WfYe9RoRfmSLvUt2JerP0BTGGykCZkQPgojaxgzF2N0oPo+/AhB8TXOpdCcNlrG3VRtsamtK2uzsp3cqRVw==",
-      "path": "system.linq.queryable/4.0.1",
-      "hashPath": "system.linq.queryable.4.0.1.nupkg.sha512"
+      "sha512": "sha512-In1Bmmvl/j52yPu3xgakQSI0YIckPUr870w4K5+Lak3JCCa8hl+my65lABOuKfYs4ugmZy25ScFerC4nz8+b6g==",
+      "path": "system.linq.queryable/4.3.0",
+      "hashPath": "system.linq.queryable.4.3.0.nupkg.sha512"
     },
     "System.Net.Http/4.3.0": {
       "type": "package",

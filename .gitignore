@@ -19,6 +19,11 @@ WebService/WebService/*.user
 WebService/WebService/*.userosscache
 WebService/WebService/*.sln.docstates
 
+WebService/WebService.Tests/*.suo
+WebService/WebService.Tests/*.user
+WebService/WebService.Tests/*.userosscache
+WebService/WebService.Tests/*.sln.docstates
+
 
 WebService/WebService/bld/
 WebService/WebService/bin/
@@ -27,8 +32,8 @@ WebService/WebService/obj/
 WebService/WebService/Obj/
 WebService/WebService/wwwroot/dist/
 WebService/WebService/ClientApp/dist/
-WebService/WebAPIUnitTests/obj/
-WebService/WebAPIUnitTests/bin/
+WebService/WebService.Tests/obj/
+WebService/WebService.Tests/bin/
 WebService/.idea/
 
 # NuGet Packages

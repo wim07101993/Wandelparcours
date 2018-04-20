@@ -1,13 +1,13 @@
 ﻿{
   "version": "1.0.0",
   "restore": {
-    "projectUniqueName": "/Users/kenan/Documents/GitHub/Wandelparcours/WebService/WebService.Tests/WebService.Tests.csproj",
-    "projectName": "WebService.Tests",
-    "projectPath": "/Users/kenan/Documents/GitHub/Wandelparcours/WebService/WebService.Tests/WebService.Tests.csproj",
-    "outputPath": "/Users/kenan/Documents/GitHub/Wandelparcours/WebService/WebService.Tests/obj/",
+    "projectUniqueName": "/home/wim/dotnet/Wandelparcours/WebService/WebAPIUnitTests/WebAPIUnitTests.csproj",
+    "projectName": "WebAPIUnitTests",
+    "projectPath": "/home/wim/dotnet/Wandelparcours/WebService/WebAPIUnitTests/WebAPIUnitTests.csproj",
+    "outputPath": "/home/wim/dotnet/Wandelparcours/WebService/WebAPIUnitTests/obj/",
     "projectStyle": "PackageReference",
     "fallbackFolders": [
-      "/usr/local/share/dotnet/sdk/NuGetFallbackFolder"
+      "/usr/share/dotnet/sdk/NuGetFallbackFolder"
     ],
     "originalTargetFrameworks": [
       "netcoreapp2.0"
@@ -15,8 +15,8 @@
     "frameworks": {
       "netcoreapp2.0": {
         "projectReferences": {
-          "/Users/kenan/Documents/GitHub/Wandelparcours/WebService/WebService/WebService.csproj": {
-            "projectPath": "/Users/kenan/Documents/GitHub/Wandelparcours/WebService/WebService/WebService.csproj"
+          "/home/wim/dotnet/Wandelparcours/WebService/WebService/WebService.csproj": {
+            "projectPath": "/home/wim/dotnet/Wandelparcours/WebService/WebService/WebService.csproj"
           }
         }
       }
@@ -32,7 +32,7 @@
       "dependencies": {
         "FluentAssertions": {
           "target": "Package",
-          "version": "[5.2.0, )"
+          "version": "[5.1.2, )"
         },
         "MSTest.TestAdapter": {
           "target": "Package",
@@ -51,6 +51,10 @@
           "target": "Package",
           "version": "[2.0.0, )",
           "autoReferenced": true
+        },
+        "Moq": {
+          "target": "Package",
+          "version": "[4.8.2, )"
         }
       },
       "imports": [

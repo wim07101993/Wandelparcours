@@ -1,0 +1,15 @@
+/home/wim/dotnet/Wandelparcours/WebService/WebAPIUnitTests/bin/Debug/netcoreapp2.0/Microsoft.VisualStudio.TestPlatform.MSTest.TestAdapter.dll
+/home/wim/dotnet/Wandelparcours/WebService/WebAPIUnitTests/bin/Debug/netcoreapp2.0/Microsoft.VisualStudio.TestPlatform.MSTestAdapter.PlatformServices.Interface.dll
+/home/wim/dotnet/Wandelparcours/WebService/WebAPIUnitTests/bin/Debug/netcoreapp2.0/Microsoft.VisualStudio.TestPlatform.MSTestAdapter.PlatformServices.dll
+/home/wim/dotnet/Wandelparcours/WebService/WebAPIUnitTests/bin/Debug/netcoreapp2.0/WebAPIUnitTests.deps.json
+/home/wim/dotnet/Wandelparcours/WebService/WebAPIUnitTests/bin/Debug/netcoreapp2.0/WebAPIUnitTests.runtimeconfig.json
+/home/wim/dotnet/Wandelparcours/WebService/WebAPIUnitTests/bin/Debug/netcoreapp2.0/WebAPIUnitTests.runtimeconfig.dev.json
+/home/wim/dotnet/Wandelparcours/WebService/WebAPIUnitTests/bin/Debug/netcoreapp2.0/WebAPIUnitTests.dll
+/home/wim/dotnet/Wandelparcours/WebService/WebAPIUnitTests/bin/Debug/netcoreapp2.0/WebAPIUnitTests.pdb
+/home/wim/dotnet/Wandelparcours/WebService/WebAPIUnitTests/bin/Debug/netcoreapp2.0/WebService.dll
+/home/wim/dotnet/Wandelparcours/WebService/WebAPIUnitTests/bin/Debug/netcoreapp2.0/WebService.pdb
+/home/wim/dotnet/Wandelparcours/WebService/WebAPIUnitTests/obj/Debug/netcoreapp2.0/WebAPIUnitTests.csproj.CoreCompileInputs.cache
+/home/wim/dotnet/Wandelparcours/WebService/WebAPIUnitTests/obj/Debug/netcoreapp2.0/WebAPIUnitTests.AssemblyInfoInputs.cache
+/home/wim/dotnet/Wandelparcours/WebService/WebAPIUnitTests/obj/Debug/netcoreapp2.0/WebAPIUnitTests.AssemblyInfo.cs
+/home/wim/dotnet/Wandelparcours/WebService/WebAPIUnitTests/obj/Debug/netcoreapp2.0/WebAPIUnitTests.dll
+/home/wim/dotnet/Wandelparcours/WebService/WebAPIUnitTests/obj/Debug/netcoreapp2.0/WebAPIUnitTests.pdb
