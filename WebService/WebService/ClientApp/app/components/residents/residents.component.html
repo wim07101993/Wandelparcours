@@ -115,8 +115,8 @@
 <!--EDIT MODAL-->
 <div id="editModalResident" class="modal">
     <div class="modal-content">
+        <h6>Gegevens van <strong class="blue-text">{{modalResident.firstName}} {{modalResident.lastName}}</strong>  wijzigen?</h6>
         <div class="row">
-            <h6>Gegevens van <strong class="blue-text">{{modalResident.firstName}} {{modalResident.lastName}}</strong>  wijzigen?</h6>
             <div class="row">
                 <div class="input-field col s6">
                     <input placeholder="{{modalResident.firstName}}" [(ngModel)]="updateResident.firstName" id="first_name" type="text" class="validate">
@@ -149,22 +149,13 @@
             </div>
             <div class="row">
                 <div class="input-field col s6">
-                    <label>ProfielFoto</label>
-                </div>
-                <div class="input-field col s6">
-                    <img src="/api/v1/residents/{{modalResident.id}}/picture" alt="Geen foto gevonden" height="200"
-                         width="200" onError="this.onerror=null;this.src='/images/resident.jpg';"/>
-                </div>
-            </div>
-            <div class="row">
-                <div class="input-field col s6">
                     <input #myInput class="center" type="file" [(ngModel)]="updateResident.picture"
                            name="aProfilePicure" id="eProfilePicture" (change)="onFileSelected($event)"
-                           accept="image/*"/><sup style="color:#ff2200;">*</sup>
+                           accept="image/*" /><sup style="color:#ff2200;">*</sup>
                 </div>
                 <div class="input-field col s6">
                     <img [src]="profilePic" alt="Geen foto geselecteerd" for="eProfilePicture" height="200"
-                         width="200"/>
+                         width="200" />
                 </div>
             </div>
             <div class="right" style="margin-top: 30px">

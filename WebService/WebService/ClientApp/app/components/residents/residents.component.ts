@@ -226,6 +226,11 @@ export class ResidentsComponent implements OnInit {
             firstName: "", lastName: "", room: "", id: "", birthday: "", doctor: { name: "", phoneNumber: "" }
         };
 
+        this.reset();
+
+        setTimeout(() => {
+            $("#editModalResident").modal("close");
+        }, 200);
         //get all residents again after updating
         this.showAllResidents();
     }
