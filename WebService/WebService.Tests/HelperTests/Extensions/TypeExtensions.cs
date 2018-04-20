@@ -3,7 +3,7 @@ using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using WebService.Helpers.Extensions;
 
-namespace WebAPIUnitTests.HelperTests.Extensions
+namespace WebService.Tests.HelperTests.Extensions
 {
     [TestClass]
     public class TypeExtensions

@@ -4,7 +4,7 @@ using MongoDB.Bson;
 using WebService.Models;
 using WebService.Services.Randomizer;
 
-namespace WebAPIUnitTests.TestModels
+namespace WebService.Tests.TestModels
 {
     public static class TestData
     {

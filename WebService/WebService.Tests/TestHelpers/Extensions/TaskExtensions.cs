@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 
-namespace WebAPIUnitTests.TestHelpers.Extensions
+namespace WebService.Tests.TestHelpers.Extensions
 {
     public static class TaskExtensions
     {

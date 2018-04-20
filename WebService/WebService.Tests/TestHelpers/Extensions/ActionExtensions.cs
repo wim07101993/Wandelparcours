@@ -2,7 +2,7 @@
 using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace WebAPIUnitTests.TestHelpers.Extensions
+namespace WebService.Tests.TestHelpers.Extensions
 {
     public static class ActionExtensions
     {

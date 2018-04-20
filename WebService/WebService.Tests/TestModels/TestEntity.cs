@@ -1,6 +1,6 @@
 ﻿using WebService.Models.Bases;
 
-namespace WebAPIUnitTests.TestModels
+namespace WebService.Tests.TestModels
 {
     public class TestEntity : AModelWithID
     {

@@ -2,7 +2,7 @@
 using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace WebAPIUnitTests.HelperTests.Extensions
+namespace WebService.Tests.HelperTests.Extensions
 {
     [TestClass]
     public class EnumerableExtensions

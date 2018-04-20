@@ -3,7 +3,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MongoDB.Bson;
 using WebService.Helpers.Extensions;
 
-namespace WebAPIUnitTests.HelperTests.Extensions
+namespace WebService.Tests.HelperTests.Extensions
 {
     [TestClass]
     public class StringExtensions
