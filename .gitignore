@@ -27,9 +27,12 @@ WebService/WebService/obj/
 WebService/WebService/Obj/
 WebService/WebService/wwwroot/dist/
 WebService/WebService/ClientApp/dist/
-WebService/WebAPIUnitTests/obj/
-WebService/WebAPIUnitTests/bin/
+WebService/WebService.Tests/obj/
+WebService/WebService.Tests/bin/
 WebService/.idea/
+
+WebService/WebService/.vscode/
+WebService/WebService.Tests/.vscode/
 
 # NuGet Packages
 WebService/WebService/*.nupkg

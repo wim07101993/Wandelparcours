@@ -7,10 +7,10 @@
 using System;
 using System.Reflection;
 
-[assembly: System.Reflection.AssemblyCompanyAttribute("WebService.Tests")]
+[assembly: System.Reflection.AssemblyCompanyAttribute("WebAPIUnitTests")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
 [assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
-[assembly: System.Reflection.AssemblyProductAttribute("WebService.Tests")]
-[assembly: System.Reflection.AssemblyTitleAttribute("WebService.Tests")]
+[assembly: System.Reflection.AssemblyProductAttribute("WebAPIUnitTests")]
+[assembly: System.Reflection.AssemblyTitleAttribute("WebAPIUnitTests")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
