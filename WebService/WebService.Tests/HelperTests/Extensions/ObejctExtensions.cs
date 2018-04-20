@@ -17,6 +17,7 @@ namespace WebService.Tests.HelperTests.Extensions
             public bool B { get; set; }
         }
 
+        
         [TestMethod]
         public void SerializeObject()
         {
