@@ -9,10 +9,8 @@ using WebService.Controllers.Bases;
 using WebService.Helpers.Attributes;
 using WebService.Helpers.Exceptions;
 using WebService.Helpers.Extensions;
-using WebService.Models;
 using WebService.Services.Authorization;
 using WebService.Services.Data;
-using WebService.Services.Data.Mongo;
 
 namespace WebService.Middleware
 {
@@ -21,11 +19,13 @@ namespace WebService.Middleware
         private readonly ITokenService _tokenService;
         private readonly IUsersService _usersService;
 
+
         public AuthPipelineFilter(ITokenService tokenService, IUsersService usersService)
         {
             _tokenService = tokenService;
             _usersService = usersService;
         }
+
 
         public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
         {
@@ -39,14 +39,11 @@ namespace WebService.Middleware
                 return;
             }
 
-            var authorizeAttribute = (AuthorizeAttribute) method
+            var allowedUserTypes = method
                 .GetCustomAttributes()
-                .FirstOrDefault(x => x is AuthorizeAttribute);
-
-            if (authorizeAttribute == null)
-                throw new NotFoundException();
-
-            var allowedUserTypes = authorizeAttribute.AllowedUsers;
+                .Where(x => x is AuthorizeAttribute)
+                .Select(x => ((AuthorizeAttribute) x).AllowedUsers)
+                .FirstOrDefault();
 
             if (EnumerableExtensions.IsNullOrEmpty(allowedUserTypes))
             {

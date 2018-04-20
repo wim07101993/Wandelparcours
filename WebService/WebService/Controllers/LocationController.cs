@@ -32,10 +32,10 @@ namespace WebService.Controllers
         }
 
 
-        public override IEnumerable<Expression<Func<ResidentLocation, object>>> PropertiesToSendOnGetAll { get; } =
+        protected override IEnumerable<Expression<Func<ResidentLocation, object>>> PropertiesToSendOnGetAll { get; } =
             null;
 
-        public override IDictionary<string, Expression<Func<ResidentLocation, object>>> PropertySelectors { get; }
+        protected override IDictionary<string, Expression<Func<ResidentLocation, object>>> PropertySelectors { get; }
             = new Dictionary<string, Expression<Func<ResidentLocation, object>>>
             {
                 {nameof(ResidentLocation.Id), x => x.Id},
