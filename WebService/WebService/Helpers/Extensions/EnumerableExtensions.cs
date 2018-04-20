@@ -12,13 +12,20 @@ namespace WebService.Helpers.Extensions
             => This == null || !This.Any();
 
         public static object RandomItem(this IList This)
-            => This[Randomizer.Instance.Next(This.Count)];
-
+            => This.Count > 0
+                ? This[Randomizer.Instance.Next(This.Count)]
+                : throw new IndexOutOfRangeException();
 
         public static bool Remove<T>(this IList<T> This, Func<T, bool> predicate)
-            => This.Remove(This.First(predicate));
+        {
+            for (var i = 0; i < This.Count; i++)
+                if (predicate(This[i]))
+                {
+                    This.RemoveAt(i);
+                    return true;
+                }
 
-        public static void Remove(this IList This, Func<object, bool> predicate)
-            => This.RemoveAt(This.IndexOf(predicate));
+            return false;
+        }
     }
 }
