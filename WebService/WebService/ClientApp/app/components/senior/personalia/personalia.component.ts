@@ -30,6 +30,10 @@ export class PersonaliaComponent implements OnInit {
         //this.getVideoCount();
     }
 
+    get baseUr() {        
+            return document.getElementsByTagName('base')[0].href;
+    }
+
     async showOneResident() {
         let resident: any = await this.service.getResidentBasedOnId(this.id);
         console.log(resident);
