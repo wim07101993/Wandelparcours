@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
-using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using MongoDB.Bson;
 using WebService.Controllers.Bases;
 using WebService.Helpers.Attributes;
 using WebService.Helpers.Exceptions;
@@ -12,14 +10,10 @@ using WebService.Helpers.Extensions;
 using WebService.Models;
 using WebService.Services.Data;
 using WebService.Services.Logging;
-using ArgumentNullException = WebService.Helpers.Exceptions.ArgumentNullException;
+using ArgumentNullException = System.ArgumentNullException;
 
 namespace WebService.Controllers
 {
-    /// <inheritdoc cref="ARestControllerBase{T}"/>
-    /// <summary>
-    /// ReceiverModulesController handles the reading and writing of receiver module data to the database.
-    /// </summary>
     [Route("api/v1/[controller]")]
     public class ReceiverModulesController : ARestControllerBase<ReceiverModule>, IReceiverModulesController
     {
@@ -27,6 +21,7 @@ namespace WebService.Controllers
 
         public const string GetOneByMacTemplate = "bymac/{mac}";
         public const string DeleteByMacTemplate = "bymac/{mac}";
+
 
         #endregion FIELDS
 
@@ -44,9 +39,9 @@ namespace WebService.Controllers
 
         #region PROPERTIES
 
-        public override IEnumerable<Expression<Func<ReceiverModule, object>>> PropertiesToSendOnGetAll { get; } = null;
+        protected override IEnumerable<Expression<Func<ReceiverModule, object>>> PropertiesToSendOnGetAll => null;
 
-        public override IDictionary<string, Expression<Func<ReceiverModule, object>>> PropertySelectors { get; } =
+        protected override IDictionary<string, Expression<Func<ReceiverModule, object>>> PropertySelectors { get; } =
             new Dictionary<string, Expression<Func<ReceiverModule, object>>>
             {
                 {nameof(ReceiverModule.Mac), x => x.Mac},

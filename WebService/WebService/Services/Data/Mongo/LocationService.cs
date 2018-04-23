@@ -14,15 +14,10 @@ namespace WebService.Services.Data.Mongo
     public class LocationService : AMongoDataService<ResidentLocation>, ILocationService
     {
         public LocationService(IConfiguration config)
+            : base(config["Database:ConnectionString"], config["Database:DatabaseName"],
+                config["Database:LocationsCollectionName"])
         {
-            MongoCollection =
-                new MongoClient(config["Database:ConnectionString"])
-                    .GetDatabase(config["Database:DatabaseName"])
-                    .GetCollection<ResidentLocation>(config["Database:LocationsCollectionName"]);
         }
-
-
-        public override IMongoCollection<ResidentLocation> MongoCollection { get; }
 
 
         public async Task<IEnumerable<ResidentLocation>> GetSinceAsync(DateTime since, ObjectId residentId,
@@ -48,8 +43,8 @@ namespace WebService.Services.Data.Mongo
         public async Task<IEnumerable<ResidentLocation>> GetSinceAsync(DateTime since,
             IEnumerable<Expression<Func<ResidentLocation, object>>> propertiesToInclude = null)
         {
-            var filter = since == default(DateTime) 
-                ? FilterDefinition<ResidentLocation>.Empty 
+            var filter = since == default(DateTime)
+                ? FilterDefinition<ResidentLocation>.Empty
                 : new ExpressionFilterDefinition<ResidentLocation>(x => x.TimeStamp >= since);
 
             var foundItems = MongoCollection.Find(filter);

@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace WebService.Helpers.Exceptions
+﻿namespace WebService.Helpers.Exceptions
 {
     public class FileToLargeException : ArgumentException
     {

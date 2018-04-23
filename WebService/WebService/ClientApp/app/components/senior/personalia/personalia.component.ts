@@ -5,7 +5,7 @@ import { RestServiceService } from '../../../service/rest-service.service';
 import { MediaService } from '../../../service/media.service';
 import { NgForm } from '@angular/forms';
 declare var $: any;
-
+declare var Materialize: any;
 @Component({
   selector: 'app-personalia',
   templateUrl: './personalia.component.html',
@@ -28,6 +28,10 @@ export class PersonaliaComponent implements OnInit {
         this.showOneResident();
         this.getImageCount();
         //this.getVideoCount();
+    }
+
+    get baseUr() {        
+            return document.getElementsByTagName('base')[0].href;
     }
 
     async showOneResident() {
@@ -53,12 +57,6 @@ export class PersonaliaComponent implements OnInit {
         this.countV = count2.length
         this.countI = count.length;
     }
-    
-
-    async addTag() {
-        
-    }
-
 
     /*
     *   Closes the modal to delete a tag/beacon
@@ -96,8 +94,20 @@ export class PersonaliaComponent implements OnInit {
 
         let bmn = beaconMinorNumber.beaconNumber + ""
 
-        console.log(beaconMinorNumber.beaconNumber);
-        this.resident.tags = await this.service.addTagToResident(this.resident.id, bmn);
+        //console.log(beaconMinorNumber.beaconNumber);
+        let a = await this.service.addTagToResident(this.resident.id, bmn);
+        if (a != undefined) {
+            this.resident.tags = a;
+        }
+        else {
+            //alert("Oeps! Beacon is al gekoppeld aan een bewoner");
+            Materialize.toast('Oeps! Beacon ' + bmn + ' is al gekoppeld aan een bewoner ', 4000);
+            //todomaybe
+            /*
+            * get resident name that already has the beacontag value
+            *
+            */
+        }
 
         form.reset();
         setTimeout(() => {

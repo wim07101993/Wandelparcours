@@ -15,6 +15,6 @@ namespace WebService.Services.Data
         Task<User> GetByNameAsync(string userName,
             IEnumerable<Expression<Func<User, object>>> propertiesToInclude = null);
 
-        Task<object> GetPropertyByNameAsync(string userName, Expression<Func<User, object>> propertyToInclude = null);
+        Task<T> GetPropertyByNameAsync<T>(string userName, Expression<Func<User, T>> propertyToInclude = null);
     }
 }

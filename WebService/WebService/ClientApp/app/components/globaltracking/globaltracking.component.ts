@@ -68,7 +68,7 @@ export class GlobaltrackingComponent extends ARenderComponent implements OnInit 
 
     async spriteClicked(id?: string) {
         if (id == undefined)
-            return false
+            return false;
         try {
             let resident = this.residents.get(id);
             if (resident != undefined) {
@@ -116,7 +116,7 @@ export class GlobaltrackingComponent extends ARenderComponent implements OnInit 
 
         } else {
             try{
-                let control:string[]=new Array();
+                let control:string[]= new Array();
                 this.aResidents = [];
                 loaded.forEach((resident: Resident) => {
                     this.residents.set(resident.id, resident);
@@ -186,13 +186,21 @@ export class GlobaltrackingComponent extends ARenderComponent implements OnInit 
     }
 
     /*
-   *   this function selects and navigates to perosnal tracking page of the resident
+   *   this function selects and navigates to personal tracking page of the resident
    */
 
-    navigateTo(resident: Resident) {
-        //console.log(resident.id);
-        this.router.navigate(['/resident/' + resident.id]);
+    navigateToTracking(resident: Resident) {
+        $('#modal1').modal('close');
+        this.router.navigate([`/resident/${resident.id}/tracking`]);
     }
 
+    /*
+*   this function selects and navigates to perosnal page
+*/
+
+    navigateTo(resident: Resident) {
+        $('#modal1').modal('close');
+        this.router.navigate([`/resident/${resident.id}`]);
+    }
 
 }

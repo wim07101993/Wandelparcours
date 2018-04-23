@@ -1,8 +1,5 @@
 ﻿namespace WebService.Services.Logging
 {
-    /// <summary>
-    /// Defines logging severity levels.
-    /// </summary>
     public enum ELogLevel
     {
         /// <summary>

@@ -64,3 +64,13 @@
     width: 25%;
     text-align: center;
 }
+
+.modal .open{
+    width:50%;
+}
+
+li{
+    font-size: 1.35rem;
+    color: rebeccapurple;
+    cursor:pointer;
+}

@@ -17,15 +17,18 @@ using WebService.Services.Logging;
 namespace WebService.Controllers
 {
     [Route("api/v1/[controller]")]
-    public class UsersController : ARestControllerBase<User>
+    public class UsersController : ARestControllerBase<User>, IUsersController
     {
+        private readonly IUsersService _usersService;
+
         public UsersController(IUsersService dataService, ILogger logger, IUsersService usersService)
             : base(dataService, logger, usersService)
         {
+            _usersService = usersService;
         }
 
 
-        public override IEnumerable<Expression<Func<User, object>>> PropertiesToSendOnGetAll { get; } =
+        protected override IEnumerable<Expression<Func<User, object>>> PropertiesToSendOnGetAll { get; } =
             new Expression<Func<User, object>>[]
             {
                 x => x.Id,
@@ -34,7 +37,7 @@ namespace WebService.Controllers
                 x => x.UserType
             };
 
-        public override IDictionary<string, Expression<Func<User, object>>> PropertySelectors { get; } =
+        protected override IDictionary<string, Expression<Func<User, object>>> PropertySelectors { get; } =
             new Dictionary<string, Expression<Func<User, object>>>
             {
                 {nameof(Models.User.Id), x => x.Id},
@@ -48,11 +51,25 @@ namespace WebService.Controllers
 
         #region METHDOS
 
+        #region create
+
         [Authorize(EUserType.SysAdmin, EUserType.Nurse)]
         [HttpPost(CreateTemplate)]
-        public override Task<string> CreateAsync([FromBody] User item)
-            => base.CreateAsync(item);
+        public override async Task<string> CreateAsync([FromBody] User item)
+        {
+            return await base.CreateAsync(item);
+        }
 
+        [Authorize(EUserType.SysAdmin, EUserType.Nurse)]
+        [HttpPost(AddItemToListTemplate)]
+        public override Task<StatusCodeResult> AddItemToListAsync(string id, string propertyName, string jsonValue)
+        {
+            return base.AddItemToListAsync(id, propertyName, jsonValue);
+        }
+
+        #endregion create
+
+        #region read
 
         [Authorize(EUserType.SysAdmin, EUserType.Nurse)]
         [HttpGet(GetAllTemplate)]
@@ -61,24 +78,38 @@ namespace WebService.Controllers
 
         [Authorize(EUserType.SysAdmin, EUserType.Nurse, EUserType.User)]
         [HttpGet(GetOneTemplate)]
-        public override Task<User> GetOneAsync(string id, string[] propertiesToInclude) =>
-            base.GetOneAsync(id, propertiesToInclude);
+        public override Task<User> GetOneAsync(string id, string[] propertiesToInclude)
+            => base.GetOneAsync(id, propertiesToInclude);
 
         [Authorize(EUserType.SysAdmin, EUserType.Nurse, EUserType.User)]
         [HttpGet(GetPropertyTemplate)]
-        public override Task<object> GetPropertyAsync(string id, string propertyName) =>
-            base.GetPropertyAsync(id, propertyName);
+        public override Task<object> GetPropertyAsync(string id, string propertyName)
+            => base.GetPropertyAsync(id, propertyName);
 
+        #endregion read
+
+        #region update
 
         [Authorize(EUserType.SysAdmin, EUserType.Nurse, EUserType.User)]
         [HttpPut(UpdateTemplate)]
         public override async Task UpdateAsync([FromBody] User item, [FromQuery] string[] properties)
         {
+            var userTypeToEdit = await _usersService.GetPropertyAsync(item.Id, x => x.UserType);
+            var currentUserType = await _usersService.GetPropertyAsync(UserId, x => x.UserType);
+
+            if (userTypeToEdit > currentUserType ||
+                properties.Any(x => x.EqualsWithCamelCasing(nameof(Models.User.UserType))) &&
+                item.UserType > currentUserType)
+                throw new UnauthorizedException(item.UserType);
+
             if (properties.All(x => !x.EqualsWithCamelCasing(nameof(Models.User.Password))))
             {
                 await base.UpdateAsync(item, properties);
                 return;
             }
+
+            if (item.Id != UserId && currentUserType == item.UserType)
+                throw new UnauthorizedException("You cannot edit the password of another user with the same level.");
 
             if (properties.Length > 1)
             {
@@ -97,22 +128,51 @@ namespace WebService.Controllers
         [HttpPut(UpdatePropertyTemplate)]
         public override async Task UpdatePropertyAsync(string id, string propertyName, [FromQuery] string jsonValue)
         {
-            if (!propertyName.EqualsWithCamelCasing(nameof(Models.User.Password)))
-            {
-                await base.UpdatePropertyAsync(id, propertyName, jsonValue);
-                return;
-            }
-
             if (!ObjectId.TryParse(id, out var objectId))
                 throw new NotFoundException<User>(nameof(IModelWithID.Id), id);
 
-            await ((IUsersService) DataService).UpdatePasswordAsync(objectId, jsonValue);
+            var currentUserType = await GetPropertyOfCurrentUser(x => x.UserType);
+            var userTypeToEdit = await _usersService.GetPropertyAsync(objectId, x => x.UserType);
+
+            if (userTypeToEdit > currentUserType ||
+                propertyName.EqualsWithCamelCasing(nameof(Models.User.UserType)) &&
+                userTypeToEdit > currentUserType)
+                throw new UnauthorizedException(userTypeToEdit);
+
+            if (!propertyName.EqualsWithCamelCasing(nameof(Models.User.Password)))
+                await base.UpdatePropertyAsync(id, propertyName, jsonValue);
+            else
+            {
+                if (objectId != UserId && currentUserType == userTypeToEdit)
+                    throw new UnauthorizedException(
+                        "You cannot edit the password of another user with the same level.");
+
+                await ((IUsersService) DataService).UpdatePasswordAsync(objectId, jsonValue);
+            }
         }
 
+        #endregion update
+
+        #region delete
 
         [Authorize(EUserType.SysAdmin, EUserType.Nurse, EUserType.User)]
         [HttpDelete(DeleteTemplate)]
-        public override Task DeleteAsync(string id) => base.DeleteAsync(id);
+        public override async Task DeleteAsync(string id)
+        {
+            if (!ObjectId.TryParse(id, out var objectId))
+                throw new NotFoundException<User>(nameof(IModelWithID.Id), id);
+
+            var currentUserType = await GetPropertyOfCurrentUser(x => x.UserType);
+            var userTypeToEdit = await _usersService.GetPropertyAsync(objectId, x => x.UserType);
+
+            if (userTypeToEdit > currentUserType ||
+                objectId != UserId && currentUserType == userTypeToEdit)
+                throw new UnauthorizedException(userTypeToEdit);
+
+            await base.DeleteAsync(id);
+        }
+
+        #endregion delete
 
         #endregion METHODS
     }
