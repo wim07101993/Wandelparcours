@@ -122,6 +122,13 @@ namespace WebService.Controllers
 
         #endregion delete
 
+        [Authorize(EUserType.SysAdmin)]
+        [HttpPut(UpdatePropertyTemplate)]
+        public override Task UpdatePropertyAsync(string id, string propertyName, [FromBody]string jsonValue)
+        {
+            return base.UpdatePropertyAsync(id, propertyName, jsonValue);
+        }
+
         #endregion METHODS
     }
 }
