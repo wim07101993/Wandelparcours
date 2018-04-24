@@ -1,0 +1,43 @@
+table {
+    border-collapse: separate;
+}
+td, th{
+    text-transform: capitalize;
+}
+
+th {
+    color: teal;
+    font-weight: bolder;
+}
+
+img {
+    margin-top: 0.82rem;
+}
+
+.card-photo {
+    color: #333;
+}
+
+.card-video {
+    color: teal;
+}
+
+.card-audio {
+    color: #333;
+}
+
+.card-game {
+    color: teal;
+}
+
+.badge {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    border-radius: 16px;
+    padding: 0 12px;
+}
+
+h5 {
+    color: #333;
+}

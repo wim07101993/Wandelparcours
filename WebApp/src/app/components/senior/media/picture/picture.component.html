@@ -1,0 +1,46 @@
+<app-senior></app-senior>
+
+<div class="row">
+    <div class="col s6 m4 l3" *ngFor="let link of fullLinks">
+        <div class="card">
+            <img class="responsive-img" [src]="link.images.url" alt="Afbeelding bewoner">
+            <i class="material-icons red-text pointer" (click)="deleteModal(link);">delete_forever</i>
+        </div>
+    </div>
+</div>
+
+<!-- Modal popup asking/warning to delete picture -->
+<div id="deleteModal" class="modal">
+    <div class="modal-content">
+        
+            <div class="row valign-wrapper">
+                <div class="col s2 m2">
+                    <i class="large material-icons red-text">warning</i>
+                </div>
+
+                    <div>
+
+                    <h5>
+                        U staat op het punt volgende afbeelding te verwijderen:
+                        {{deleteResidentImage.images.id}} <br>
+                        Bent u zeker?
+                    </h5>
+                        
+                </div>
+            </div>
+            <div class="row">
+                <div class="col s12 right-align">
+                    <a (click)="CloseModal()" class="modal-close waves-effect waves-green btn-flat">Annuleren</a>
+                    <a (click)="deleteResidentMediaByUniqueId(deleteResidentImage.images.id)"
+                       class=" waves-effect waves-red btn-flat red-text">Verwijderen</a>
+                </div>
+            </div>
+        
+    </div>
+</div>
+
+<app-upload (reload)="reload()" [type]="typeOfMedia"></app-upload>
+
+
+
+

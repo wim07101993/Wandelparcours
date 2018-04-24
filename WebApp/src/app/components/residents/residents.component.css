@@ -1,0 +1,90 @@
+input.ng-invalid.ng-touched{
+    border: 1px dotted crimson;
+    border-radius: 4px;
+}
+
+thead{
+    font-weight: bold;
+}
+input[type=text]:not(.browser-default){
+    margin-bottom: 0;
+}
+
+td.cardviewtd, th.cardviewth{
+    padding-top:5px;
+    padding-bottom: 5px;
+}
+th:first-child.myth, td:first-child.mytd{
+    padding-left: 10px;
+}
+
+strong.attention{
+    color: crimson;
+    font-weight: bold;
+}
+h6{
+    margin-bottom: 10px;
+}
+label::after {
+    content:"*";
+}
+
+table{
+    margin: 16px;
+}
+
+.col:nth-child(odd) .card{
+    background: #edeae7; /* fallback for old browsers */
+    background: -webkit-linear-gradient(to right, #edeae7, #fdfdfd); /* Chrome 10-25, Safari 5.1-6 */
+    background: linear-gradient(to right, #edeae7, #fdfdfd);
+}
+
+#deleteModalResident.modal, #editModalResident.modal, #add-resident-modal.modal{
+    z-index: 99999999999 !important;
+}
+
+#content {
+    position: relative;
+}
+#content img {
+    border-radius: 50%;
+    width: 28%;
+    position: absolute;
+    top: -12px;
+    left: -12px;
+}
+.color-grad{
+    background: #edeae7; /* fallback for old browsers */
+    background: -webkit-linear-gradient(to right, #fdfdfd, #edeae7); /* Chrome 10-25, Safari 5.1-6 */
+    background: linear-gradient(to right,#fdfdfd , #edeae7);
+}
+
+
+.pointer {
+    cursor: pointer;
+}
+
+.searchButton {
+    position: relative;
+    right: 0;
+    left: 0;
+    bottom: 23px;
+    padding-top: 15px;
+    margin-bottom: 0;
+    z-index: 997;
+}
+
+.md-48{
+    font-size: 48px;
+}
+
+.test{
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    max-width: 100%;
+}
+
+.card{
+    padding-top: 3px;
+}

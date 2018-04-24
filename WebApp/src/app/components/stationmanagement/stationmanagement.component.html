@@ -1,0 +1,71 @@
+<div style="position:relative">
+    <div id="menuButton" (click)="menu=!menu;">
+        <a class="btn-floating waves-effect indigo lighten-4 z-depth-3">
+            <i class="large material-icons " *ngIf="!menu">menu</i>
+            <i class="large material-icons " *ngIf="menu">close</i>
+        </a>
+    </div>
+    <div id="sideBar" *ngIf="menu" class="indigo lighten-4 z-depth-3">
+        <div>
+            <h4>Stations</h4>
+
+            <ul>
+                <li *ngFor="let station of stationMacAdresses">
+                <span (click)="spriteClicked(station);">
+                <div>{{station}} <i class="material-icons ">cancel</i> </div>
+                </span>
+                </li>
+
+            </ul>
+        </div>
+    </div>
+    <div id="mapButtonHolder">
+
+        <a id="addPiButton" class="btn-floating  waves-effect waves-light red" *ngIf="!adMarker"
+           (click)="adMarker=true"><i class="material-icons"> add</i></a>
+        <a id="moveButton" class="btn-floating  waves-effect waves-light red" *ngIf="adMarker" (click)="adMarker=false"><i
+                class="material-icons"> open_with</i></a>
+        <br>
+        <a id="zoomInMap" class="btn-floating waves-effect waves-light green" (click)="ZoomIn()"><i
+                class="material-icons"> zoom_in</i></a>
+        <br>
+        <a id="zoomOutMap" class="btn-floating waves-effect waves-light orange" (click)="ZoomOut()"><i
+                class="material-icons"> zoom_out</i></a>
+    </div>
+
+    <div #myCanvas id="map">
+    </div>
+
+    <div id="markerModel" class="modal">
+        <div class="modal-content">
+            <h4>Station toevoegen</h4>
+            <div class="row">
+
+                <div class="input-field col s12">
+                    <input id="mac" placeholder="xx:xx:xx:xx:xx:xx" type="text" [(ngModel)]="saveStation.mac">
+                    <label data-error="wrong" data-success="right" class="active">Station Adres</label>
+                </div>
+
+            </div>
+        </div>
+        <div class="modal-footer">
+            <a (click)="CloseModal()" class="modal-action modal-close waves-effect waves-red btn-flat">Close</a>
+            <a (click)="SaveNewStation()" class=" waves-effect waves-green btn-flat">Voeg toe</a>
+        </div>
+    </div>
+
+    <div id="deleteModal" class="modal">
+        <div class="modal-content" *ngIf="collidingElement !=null">
+            <!--<a class="btn-floating btn-large waves-effect waves-light grey right btn-small " (click)="ShowEditBox()" ><i class="material-icons">edit</i></a>-->
+            <h4 *ngIf="editing ==false">{{collidingElement}}</h4>
+            <input *ngIf="editing ==true" [(ngModel)]="editmac"  />
+
+        </div>
+        <div class="modal-footer">
+            <a (click)="CloseModal()" class="modal-action modal-close waves-effect waves-green btn-flat">Close</a>
+            <a (click)="DeleteCurrentStation()" *ngIf="editing ==false" class=" waves-effect waves-red btn-flat">Verwijder</a>
+            <!--<a (click)="UpdateStation()" *ngIf="editing ==true" class=" waves-effect waves-green btn-flat">Wijzig</a>-->
+        </div>
+    </div>
+</div>
+
