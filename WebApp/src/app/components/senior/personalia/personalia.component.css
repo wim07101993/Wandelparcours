@@ -1,43 +1,43 @@
 table {
-    border-collapse: separate;
+  border-collapse: separate;
 }
 td, th{
-    text-transform: capitalize;
+  text-transform: capitalize;
 }
 
 th {
-    color: teal;
-    font-weight: bolder;
+  color: teal;
+  font-weight: bolder;
 }
 
 img {
-    margin-top: 0.82rem;
+  margin-top: 0.82rem;
 }
 
 .card-photo {
-    color: #333;
+  color: #333;
 }
 
 .card-video {
-    color: teal;
+  color: teal;
 }
 
 .card-audio {
-    color: #333;
+  color: #333;
 }
 
 .card-game {
-    color: teal;
+  color: teal;
 }
 
 .badge {
-    position: absolute;
-    top: 5px;
-    right: 5px;
-    border-radius: 16px;
-    padding: 0 12px;
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  border-radius: 16px;
+  padding: 0 12px;
 }
 
 h5 {
-    color: #333;
+  color: #333;
 }

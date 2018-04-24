@@ -9,32 +9,28 @@ declare var $: any;
   styleUrls: ['./senior.component.css']
 })
 export class SeniorComponent implements OnInit {
-    id: string = this.route.snapshot.params['id'];
-    type: string;
+  id: string = this.route.snapshot.params['id'];
+  type: string;
 
-    ngOnInit() {
-        this.route.url.subscribe(resolve => {
+  ngOnInit() {
+    this.route.url.subscribe(resolve => {
 
-            console.log(resolve.length);
-            if (resolve.length == 2) {
-                this.type = "personalia";
-            }
-            else {
-                this.type = resolve[resolve.length - 1].path;
-            }
+      console.log(resolve.length);
+      if (resolve.length === 2) {
+        this.type = 'personalia';
+      } else {
+        this.type = resolve[resolve.length - 1].path;
+      }
+    });
+    // $('.tabs').tabs();
 
+  }
 
-        });
-        //$('.tabs').tabs();
+  constructor(private route: ActivatedRoute) {
+  }
 
-    }
+  addActive() {
+    $('.test').addClass('active');
+  }
 
-    
-
-    constructor(private route: ActivatedRoute) {}
-
-    addActive() {
-        $('.test').addClass('active');
-    }
-   
 }

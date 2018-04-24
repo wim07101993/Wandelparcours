@@ -1,6 +1,5 @@
 export enum Sprites{
-    map="map",
-    marker="marker",
-    
+  map="map",
+  marker="marker",
 }
 

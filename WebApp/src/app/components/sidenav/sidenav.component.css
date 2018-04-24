@@ -1,25 +1,25 @@
 .side-nav li > a, .side-nav li > a > i.material-icons {
-    color: #333;
-    font-weight: bold;
+  color: #333;
+  font-weight: bold;
 }
 
 li:first-child {
-    margin-top: 79px;
+  margin-top: 79px;
 }
 
 .side-nav li > a {
-    padding:0 16px;
-    text-transform: uppercase;
-    letter-spacing: 1.25px;
+  padding:0 16px;
+  text-transform: uppercase;
+  letter-spacing: 1.25px;
 }
 
 ul#slide-out.sidenav{
-    width: 200px !important;
-    z-index: -1;
+  width: 200px !important;
+  z-index: -1;
 }
 
 ul.side-nav{
-    background: #bbd2c5; /* fallback for old browsers */
-    background: -webkit-linear-gradient(to right, #fefefe, #abbaab); /* Chrome 10-25, Safari 5.1-6 */
-    background: linear-gradient(to right, #fefefe, #abbaab);
+  background: #bbd2c5; /* fallback for old browsers */
+  background: -webkit-linear-gradient(to right, #fefefe, #abbaab); /* Chrome 10-25, Safari 5.1-6 */
+  background: linear-gradient(to right, #fefefe, #abbaab);
 }

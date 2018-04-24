@@ -1,6 +1,6 @@
 import { AppPage } from './app.po';
 
-describe('webservice App', () => {
+describe('wandelparcours-web-app App', () => {
   let page: AppPage;
 
   beforeEach(() => {

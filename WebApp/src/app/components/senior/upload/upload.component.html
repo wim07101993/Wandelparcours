@@ -1,25 +1,25 @@
 <!-- Popup Modal to choose & upload pictures -->
 <div id="addMedia" class="modal modal-fixed-footer">
-    <div class="modal-content">
-        <div class="row">
-            <div class="col s12 m10 offset-m1 l8 offset-l2">
-                <input type="file" name="file" id="file" class="inputfile"
-                       data-multiple-caption="{count} files selected" (change)="onFileSelected($event)" multiple
-                       [accept]="type"/>
-            </div>
-        </div>
+  <div class="modal-content">
+    <div class="row">
+      <div class="col s12 m10 offset-m1 l8 offset-l2">
+        <input type="file" name="file" id="file" class="inputfile"
+               data-multiple-caption="{count} files selected" (change)="onFileSelected($event)" multiple
+               [accept]="type"/>
+      </div>
     </div>
-    <div class="modal-footer">
-        <a class="waves-effect waves-green btn-flat" (click)="onUpload()">Uploaden</a>
-        <a class="modal-action modal-close waves-effect waves-red btn-flat">Sluiten</a>
-    </div>
+  </div>
+  <div class="modal-footer">
+    <a class="waves-effect waves-green btn-flat" (click)="onUpload()">Uploaden</a>
+    <a class="modal-action modal-close waves-effect waves-red btn-flat">Sluiten</a>
+  </div>
 </div>
 
 <div id="status"></div>
 
 <!-- This will pop up the form to add a resident -->
 <div class="fixed-action-btn">
-    <a class="btn-floating btn-large red" (click)="addModal()">
-        <i class="large material-icons">add_a_photo</i>
-    </a>
+  <a class="btn-floating btn-large red" (click)="addModal()">
+    <i class="large material-icons">add_a_photo</i>
+  </a>
 </div>

@@ -1,8 +1,8 @@
 #trackingmap{
-    position: relative;
+  position: relative;
 }
 
 app-globaltracking{
-    max-width:100% !important;
-    max-height: 60vh;
+  max-width:100% !important;
+  max-height: 60vh;
 }

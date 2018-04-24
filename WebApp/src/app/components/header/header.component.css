@@ -1,12 +1,15 @@
 header {
-    color: #222;
-    background: #abbaab; /* fallback for old browsers */
-    background: -webkit-linear-gradient(to right, #fdfdfd, #abbaab); /* Chrome 10-25, Safari 5.1-6 */
-    background: linear-gradient(to right, #fefefe, #abbaab); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+  color: #222;
+  /* fallback for old browsers */
+  background: #abbaab;
+  /* Chrome 10-25, Safari 5.1-6 */
+  background: -webkit-linear-gradient(to right, #fdfdfd, #abbaab);
+  /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+  background: linear-gradient(to right, #fefefe, #abbaab);
 }
 
 #hamburger {
-    font-weight: 500;
-    color: #222;
-    margin-left: 5%;
+  font-weight: 500;
+  color: #222;
+  margin-left: 5%;
 }

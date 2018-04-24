@@ -19,7 +19,7 @@ WebService/WebService/*.user
 WebService/WebService/*.userosscache
 WebService/WebService/*.sln.docstates
 
-
+WebApp/node_modules
 WebService/WebService/bld/
 WebService/WebService/bin/
 WebService/WebService/Bin/
