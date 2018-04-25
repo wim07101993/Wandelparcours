@@ -35,11 +35,9 @@ namespace WebService.Services.Logging
 
         #region PROPERTIES
 
-        public int Count
-            => _collection.Count;
+        public int Count => _collection.Count;
 
-        public bool IsReadOnly
-            => _collection.IsReadOnly;
+        public bool IsReadOnly => _collection.IsReadOnly;
 
         #endregion PROPERTIES
 

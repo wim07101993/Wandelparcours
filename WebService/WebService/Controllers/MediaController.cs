@@ -123,8 +123,8 @@ namespace WebService.Controllers
         {
             var objectId = await CanGetMediaAsync(id);
 
-            var media = await ((IMediaService) DataService).GetOneAsync(objectId,
-                new Expression<Func<MediaData, object>>[] {x => x.Data});
+            var media = await ((IMediaService) DataService)
+                .GetOneAsync(objectId, new Expression<Func<MediaData, object>>[] {x => x.Data});
 
             return Equals(media, default(MediaData))
                 ? throw new NotFoundException<MediaData>(nameof(IModelWithID.Id), id)

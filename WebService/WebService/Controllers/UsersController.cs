@@ -97,9 +97,9 @@ namespace WebService.Controllers
             var userTypeToEdit = await _usersService.GetPropertyAsync(item.Id, x => x.UserType);
             var currentUserType = await _usersService.GetPropertyAsync(UserId, x => x.UserType);
 
-            if (userTypeToEdit > currentUserType ||
-                properties.Any(x => x.EqualsWithCamelCasing(nameof(Models.User.UserType))) &&
-                item.UserType > currentUserType)
+            if (userTypeToEdit > currentUserType
+                || properties.Any(x => x.EqualsWithCamelCasing(nameof(Models.User.UserType)))
+                && item.UserType > currentUserType)
                 throw new UnauthorizedException(item.UserType);
 
             if (properties.All(x => !x.EqualsWithCamelCasing(nameof(Models.User.Password))))
@@ -134,9 +134,9 @@ namespace WebService.Controllers
             var currentUserType = await GetPropertyOfCurrentUser(x => x.UserType);
             var userTypeToEdit = await _usersService.GetPropertyAsync(objectId, x => x.UserType);
 
-            if (userTypeToEdit > currentUserType ||
-                propertyName.EqualsWithCamelCasing(nameof(Models.User.UserType)) &&
-                userTypeToEdit > currentUserType)
+            if (userTypeToEdit > currentUserType
+                || propertyName.EqualsWithCamelCasing(nameof(Models.User.UserType))
+                && userTypeToEdit > currentUserType)
                 throw new UnauthorizedException(userTypeToEdit);
 
             if (!propertyName.EqualsWithCamelCasing(nameof(Models.User.Password)))
@@ -165,8 +165,7 @@ namespace WebService.Controllers
             var currentUserType = await GetPropertyOfCurrentUser(x => x.UserType);
             var userTypeToEdit = await _usersService.GetPropertyAsync(objectId, x => x.UserType);
 
-            if (userTypeToEdit > currentUserType ||
-                objectId != UserId && currentUserType == userTypeToEdit)
+            if (userTypeToEdit > currentUserType || objectId != UserId && currentUserType == userTypeToEdit)
                 throw new UnauthorizedException(userTypeToEdit);
 
             await base.DeleteAsync(id);

@@ -64,6 +64,5 @@ namespace WebService.Services.Randomizer
             => Chars[Next(Chars.Length)];
 
         #endregion METHODS
-
     }
 }

@@ -1,7 +1,7 @@
 ﻿namespace WebService.Services.Logging
 {
-   public interface ILogBuilder
+    public interface ILogBuilder
     {
-       string BuildLogEntry(string tag, ELogLevel logLevel, string message);
+        string BuildLogEntry(string tag, ELogLevel logLevel, string message);
     }
 }

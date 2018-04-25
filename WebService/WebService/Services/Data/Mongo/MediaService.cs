@@ -10,7 +10,8 @@ namespace WebService.Services.Data.Mongo
     public class MediaService : AMongoDataService<MediaData>, IMediaService
     {
         public MediaService(IConfiguration config)
-            : base(config["Database:ConnectionString"],
+            : base(
+                config["Database:ConnectionString"],
                 config["Database:DatabaseName"],
                 config["Database:MediaCollectionName"])
         {

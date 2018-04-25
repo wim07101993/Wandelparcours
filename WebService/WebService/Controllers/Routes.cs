@@ -25,7 +25,8 @@
         public const string DeleteByMac = "bymac/{mac}";
 
         #endregion RECEIVER MODULES
-        
+
+
         #region RESIDENTS
 
         public const string AddMusicData = "{residentId:length(24)}/Music/data";

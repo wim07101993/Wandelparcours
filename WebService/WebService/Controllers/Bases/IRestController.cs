@@ -5,7 +5,8 @@ using WebService.Models.Bases;
 
 namespace WebService.Controllers.Bases
 {
-    public interface IRestController<T> : IController where T : IModelWithID
+    public interface IRestController<T> : IController
+        where T : IModelWithID
     {
         #region CREATE
 

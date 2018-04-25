@@ -10,7 +10,8 @@ namespace WebService.Services.Data.Mongo
     public class ReceiverModulesService : AMongoDataService<ReceiverModule>, IReceiverModulesService
     {
         public ReceiverModulesService(IConfiguration config)
-            : base(config["Database:ConnectionString"],
+            : base(
+                config["Database:ConnectionString"],
                 config["Database:DatabaseName"],
                 config["Database:ReceiverModulesCollectionName"])
         {

@@ -46,12 +46,13 @@ namespace WebService.Services.Authorization
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
-            var token = new JwtSecurityTokenHandler().WriteToken(new JwtSecurityToken(
-                issuer: _configuration["Jwt:Issuer"],
-                audience: _configuration["Jwt:Issuer"],
-                expires: DateTime.Now.AddMinutes(TokenLifeTime),
-                signingCredentials: creds
-            ));
+            var token = new JwtSecurityTokenHandler().WriteToken(
+                new JwtSecurityToken(
+                    issuer: _configuration["Jwt:Issuer"],
+                    audience: _configuration["Jwt:Issuer"],
+                    expires: DateTime.Now.AddMinutes(TokenLifeTime),
+                    signingCredentials: creds
+                ));
 
             _issuedTokens.Add(token, id);
             _logger.Log(this, ELogLevel.Information, $"Issued new token: {token}");

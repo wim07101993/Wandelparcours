@@ -14,7 +14,8 @@ namespace WebService.Services.Data.Mongo
     public class LocationService : AMongoDataService<ResidentLocation>, ILocationService
     {
         public LocationService(IConfiguration config)
-            : base(config["Database:ConnectionString"], config["Database:DatabaseName"],
+            : base(
+                config["Database:ConnectionString"], config["Database:DatabaseName"],
                 config["Database:LocationsCollectionName"])
         {
         }

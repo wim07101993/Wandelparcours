@@ -12,7 +12,8 @@ using ArgumentNullException = WebService.Helpers.Exceptions.ArgumentNullExceptio
 
 namespace WebService.Services.Data.Mongo
 {
-    public abstract class AMongoDataService<T> : IDataService<T> where T : IModelWithID
+    public abstract class AMongoDataService<T> : IDataService<T>
+        where T : IModelWithID
     {
         #region CONSTRUCTORS
 

@@ -68,8 +68,7 @@ namespace WebService.Controllers
 //
 //            return await _residentService.GetOneAsync(objectid, selectors);
         }
-        
-        
+
         [Authorize(EUserType.Nurse, EUserType.User)]
         [HttpGet("residents/{tag}/lastlocation")]
         public LocalRedirectResult GetLastLocationOneResident(int tag)
@@ -125,13 +124,13 @@ namespace WebService.Controllers
 
             await _residentService.UpdatePropertyAsync(objectid, x => x.LastRecordedPosition, currentLocation);
         }
-        
+
         [Authorize(EUserType.Nurse, EUserType.User)]
         [HttpPost("{tag}/lastlocation/bytag")]
         public async Task SetLastLocation(int tag, [FromBody] Point currentLocation)
         {
             currentLocation.TimeStamp = DateTime.Now;
-          
+
             await _residentService.UpdatePropertyAsync(tag, x => x.LastRecordedPosition, currentLocation);
         }
     }

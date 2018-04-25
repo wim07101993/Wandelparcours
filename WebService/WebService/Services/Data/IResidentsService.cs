@@ -23,7 +23,7 @@ namespace WebService.Services.Data
 
 
         Task UpdatePropertyAsync<TValue>(int tag, Expression<Func<Resident, TValue>> propertyToUpdate, TValue value);
-        
+
 
         Task RemoveMediaAsync(ObjectId residentId, ObjectId mediaId, EMediaType mediaType);
 

@@ -6,6 +6,6 @@ namespace WebService.Services.Logging
     {
         void Log<T>(T sender, ELogLevel logLevel, Exception exception);
 
-       void Log<T>(T sender, ELogLevel logLevel, string message);
+        void Log<T>(T sender, ELogLevel logLevel, string message);
     }
 }

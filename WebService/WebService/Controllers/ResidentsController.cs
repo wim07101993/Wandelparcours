@@ -306,13 +306,13 @@ namespace WebService.Controllers
 
         [Authorize(EUserType.SysAdmin, EUserType.Nurse, EUserType.Module, EUserType.User)]
         [HttpGet(Routes.GetOne)]
-        public override Task<Resident> GetOneAsync(string id, string[] propertiesToInclude) =>
-            base.GetOneAsync(id, propertiesToInclude);
+        public override Task<Resident> GetOneAsync(string id, string[] propertiesToInclude)
+            => base.GetOneAsync(id, propertiesToInclude);
 
         [Authorize(EUserType.SysAdmin, EUserType.Nurse, EUserType.Module, EUserType.User)]
         [HttpGet(Routes.GetProperty)]
-        public override Task<object> GetPropertyAsync(string id, string propertyName) =>
-            base.GetPropertyAsync(id, propertyName);
+        public override Task<object> GetPropertyAsync(string id, string propertyName)
+            => base.GetPropertyAsync(id, propertyName);
 
         [Authorize(EUserType.SysAdmin, EUserType.Nurse, EUserType.Module, EUserType.User)]
         [HttpGet(Routes.GetPicture)]
@@ -322,9 +322,7 @@ namespace WebService.Controllers
             var picture = await DataService.GetPropertyAsync(objectId, x => x.Picture);
 
             return picture == null
-
                 ? throw new NotFoundException<Resident>($"Resident with id {residentId} has no picture")
-
                 : File(picture, "image/jpg");
         }
 
@@ -396,8 +394,8 @@ namespace WebService.Controllers
             if (!await CanGetDataFromResidentAsync(tag))
                 throw new ElementNotFoundException<Resident>(nameof(Resident.Tags), "tag");
 
-            return await ((IResidentsService) DataService).GetPropertyAsync(tag,
-                PropertySelectors[propertyName.ToUpperCamelCase()]);
+            return await ((IResidentsService) DataService)
+                .GetPropertyAsync(tag, PropertySelectors[propertyName.ToUpperCamelCase()]);
         }
 
         #endregion get (read)

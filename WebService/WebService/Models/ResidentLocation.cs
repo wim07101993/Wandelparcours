@@ -18,7 +18,7 @@ namespace WebService.Models
         [BsonId]
         [JsonConverter(typeof(ObjectIdConverter))]
         public virtual ObjectId Id { get; set; }
-   
+
 
         /// <summary>
         /// X is the x coordinate of the Location
@@ -27,6 +27,6 @@ namespace WebService.Models
         /// </summary>
         [BsonElement("residentId")]
         [JsonConverter(typeof(ObjectIdConverter))]
-         public ObjectId ResidentId { get; set; }
+        public ObjectId ResidentId { get; set; }
     }
 }

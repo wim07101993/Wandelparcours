@@ -28,7 +28,8 @@ namespace WebService.Helpers
 
             return aIPHostAddresses
                 .Where(ipHost => ipHost.AddressFamily == AddressFamily.InterNetworkV6)
-                .SelectMany(address => Dns.GetHostEntry(address).AddressList,
+                .SelectMany(
+                    address => Dns.GetHostEntry(address).AddressList,
                     (ipHostEntry, ipEntry) => new {ipHostEntry, ipEntry})
                 .Where(t => t.ipEntry.AddressFamily == AddressFamily.InterNetwork)
                 .Select(t => t.ipEntry.ToString())

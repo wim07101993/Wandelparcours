@@ -2,7 +2,7 @@
 
 namespace WebService.Services.Logging
 {
-   public interface ILoggerCollection : ILogger, ICollection<ILogger>
+    public interface ILoggerCollection : ILogger, ICollection<ILogger>
     {
     }
 }

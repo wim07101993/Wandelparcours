@@ -18,7 +18,8 @@ namespace WebService.Services.Data.Mongo
         private readonly IMediaService _mediaService;
 
         public ResidentsService(IConfiguration config, IMediaService mediaService)
-            : base(config["Database:ConnectionString"],
+            : base(
+                config["Database:ConnectionString"],
                 config["Database:DatabaseName"],
                 config["Database:ResidentsCollectionName"])
         {
@@ -87,26 +88,27 @@ namespace WebService.Services.Data.Mongo
         #region READ
 
         public async Task<Resident> GetOneAsync(int tag,
-
-            IEnumerable<Expression<Func<Resident, object>>> propertiesToInclude = null) 
+            IEnumerable<Expression<Func<Resident, object>>> propertiesToInclude = null)
             => await GetByAsync(x => x.Tags != null && x.Tags.Contains(tag));
 
         public virtual async Task<TValue> GetPropertyAsync<TValue>(int tag,
-            Expression<Func<Resident, TValue>> propertyToSelect) 
+            Expression<Func<Resident, TValue>> propertyToSelect)
             => await GetPropertyByAsync(x => x.Tags.Contains(tag), propertyToSelect);
 
         public async Task<int> GetHighestTagNumberAsync()
         {
             var result = await MongoCollection
-                .AggregateAsync(PipelineDefinition<Resident, BsonDocument>.Create(
-                    new BsonDocument("$unwind", "$tags"),
-                    new BsonDocument("$group", new BsonDocument
-                    {
-                        {"_id", "$_id"},
-                        {"max", new BsonDocument("$max", "$tags")}
-                    }),
-                    new BsonDocument("$sort", new BsonDocument("max", -1)),
-                    new BsonDocument("$limit", 1)));
+                .AggregateAsync(
+                    PipelineDefinition<Resident, BsonDocument>.Create(
+                        new BsonDocument("$unwind", "$tags"),
+                        new BsonDocument(
+                            "$group", new BsonDocument
+                            {
+                                {"_id", "$_id"},
+                                {"max", new BsonDocument("$max", "$tags")}
+                            }),
+                        new BsonDocument("$sort", new BsonDocument("max", -1)),
+                        new BsonDocument("$limit", 1)));
 
             return result.Single()["max"].AsInt32;
         }

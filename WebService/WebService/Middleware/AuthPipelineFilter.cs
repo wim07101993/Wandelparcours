@@ -65,7 +65,7 @@ namespace WebService.Middleware
                 throw new UnauthorizedException(allowedUserTypes);
 
             var userType = await _usersService.GetPropertyAsync(userId, x => x.UserType);
-  
+
             // ReSharper disable once AssignNullToNotNullAttribute
             if (userType != EUserType.SysAdmin && !allowedUserTypes.Contains(userType))
                 throw new UnauthorizedException(allowedUserTypes);

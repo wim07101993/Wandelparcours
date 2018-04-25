@@ -7,7 +7,7 @@ namespace WebService.Services.Logging
     {
         private readonly ILogBuilder _logBuilder;
 
-   
+
         public FileLogger(ILogBuilder logBuilder)
         {
             _logBuilder = logBuilder;
@@ -18,11 +18,10 @@ namespace WebService.Services.Logging
             _logBuilder = new LogBuilder();
         }
 
-        
-        private static string FilePath
-            => $"{DateTime.Now:yyyy-MMMM-dd}.log";
 
-        
+        private static string FilePath => $"{DateTime.Now:yyyy-MMMM-dd}.log";
+
+
         public void Log<T>(T sender, ELogLevel logLevel, Exception exception)
         {
 #if DEBUG

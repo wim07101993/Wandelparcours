@@ -9,7 +9,7 @@
         public ArgumentException(string message) : base(message)
         {
         }
-        
+
         public ArgumentException(string message, string paramName) : base(message, paramName)
         {
         }

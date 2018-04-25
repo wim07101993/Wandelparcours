@@ -13,7 +13,8 @@ namespace WebService.Services.Data.Mongo
     public class UsersService : AMongoDataService<User>, IUsersService
     {
         public UsersService(IConfiguration config)
-            : base(config["Database:ConnectionString"],
+            : base(
+                config["Database:ConnectionString"],
                 config["Database:DatabaseName"],
                 config["Database:UsersCollectionName"])
         {

@@ -18,22 +18,24 @@ namespace WebService
             services
                 .AddCors()
                 .UseServices()
-                .AddMvc(options =>
-                {
-                    options.Filters.Add<ReturnCreatedIfPostSucceedsPipeline>();
-                    //options.Filters.Add<AuthPipelineFilter>();
-                })
-                .AddJsonOptions(options =>
-                {
-                    options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
-                });
+                .AddMvc(
+                    options =>
+                    {
+                        options.Filters.Add<ReturnCreatedIfPostSucceedsPipeline>();
+                        //options.Filters.Add<AuthPipelineFilter>();
+                    })
+                .AddJsonOptions(
+                    options =>
+                    {
+                        options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
+                    });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, IDatabaseManager databaseManager)
         {
             databaseManager.ScheduleCleanup(TimeSpan.FromDays(1));
-            
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
