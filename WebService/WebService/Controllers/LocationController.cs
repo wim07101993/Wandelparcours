@@ -57,7 +57,7 @@ namespace WebService.Controllers
         }
 
         [Authorize(EUserType.Nurse, EUserType.User)]
-        [HttpGet("residents/{id}/lastlocation")]
+        [HttpGet(Routes.Locations.GetLastLocationOneResident)]
         public LocalRedirectResult GetLastLocationOneResident(string id)
         {
             return LocalRedirect($"~/api/v1/residents/{id}/LastRecordedPosition");

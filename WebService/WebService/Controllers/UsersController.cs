@@ -54,14 +54,14 @@ namespace WebService.Controllers
         #region create
 
         [Authorize(EUserType.SysAdmin, EUserType.Nurse)]
-        [HttpPost(Routes.Create)]
+        [HttpPost(Routes.RestBase.Create)]
         public override async Task<string> CreateAsync([FromBody] User item)
         {
             return await base.CreateAsync(item);
         }
 
         [Authorize(EUserType.SysAdmin, EUserType.Nurse)]
-        [HttpPost(Routes.AddItemToList)]
+        [HttpPost(Routes.RestBase.AddItemToList)]
         public override Task<StatusCodeResult> AddItemToListAsync(string id, string propertyName, string jsonValue)
         {
             return base.AddItemToListAsync(id, propertyName, jsonValue);
@@ -72,17 +72,17 @@ namespace WebService.Controllers
         #region read
 
         [Authorize(EUserType.SysAdmin, EUserType.Nurse)]
-        [HttpGet(Routes.GetAll)]
+        [HttpGet(Routes.RestBase.GetAll)]
         public override Task<IEnumerable<User>> GetAllAsync(string[] propertiesToInclude)
             => base.GetAllAsync(propertiesToInclude);
 
         [Authorize(EUserType.SysAdmin, EUserType.Nurse, EUserType.User)]
-        [HttpGet(Routes.GetOne)]
+        [HttpGet(Routes.RestBase.GetOne)]
         public override Task<User> GetOneAsync(string id, string[] propertiesToInclude)
             => base.GetOneAsync(id, propertiesToInclude);
 
         [Authorize(EUserType.SysAdmin, EUserType.Nurse, EUserType.User)]
-        [HttpGet(Routes.GetProperty)]
+        [HttpGet(Routes.RestBase.GetProperty)]
         public override Task<object> GetPropertyAsync(string id, string propertyName)
             => base.GetPropertyAsync(id, propertyName);
 
@@ -91,7 +91,7 @@ namespace WebService.Controllers
         #region update
 
         [Authorize(EUserType.SysAdmin, EUserType.Nurse, EUserType.User)]
-        [HttpPut(Routes.Update)]
+        [HttpPut(Routes.RestBase.Update)]
         public override async Task UpdateAsync([FromBody] User item, [FromQuery] string[] properties)
         {
             var userTypeToEdit = await _usersService.GetPropertyAsync(item.Id, x => x.UserType);
@@ -125,7 +125,7 @@ namespace WebService.Controllers
         }
 
         [Authorize(EUserType.SysAdmin, EUserType.Nurse, EUserType.User)]
-        [HttpPut(Routes.UpdateProperty)]
+        [HttpPut(Routes.RestBase.UpdateProperty)]
         public override async Task UpdatePropertyAsync(string id, string propertyName, [FromQuery] string jsonValue)
         {
             if (!ObjectId.TryParse(id, out var objectId))
@@ -156,7 +156,7 @@ namespace WebService.Controllers
         #region delete
 
         [Authorize(EUserType.SysAdmin, EUserType.Nurse, EUserType.User)]
-        [HttpDelete(Routes.Delete)]
+        [HttpDelete(Routes.RestBase.Delete)]
         public override async Task DeleteAsync(string id)
         {
             if (!ObjectId.TryParse(id, out var objectId))

@@ -14,7 +14,7 @@ using ArgumentNullException = System.ArgumentNullException;
 
 namespace WebService.Controllers
 {
-    [Route(Routes.ReceiverModulesController)]
+    [Route(Routes.ReceiverModules.Route)]
     public class ReceiverModulesController : ARestControllerBase<ReceiverModule>, IReceiverModulesController
     {
         #region CONSTRUCTOR
@@ -49,7 +49,7 @@ namespace WebService.Controllers
         #region post (create)
 
         [Authorize(EUserType.SysAdmin)]
-        [HttpPost(Routes.Create)]
+        [HttpPost(Routes.RestBase.Create)]
         public override async Task<string> CreateAsync([FromBody] ReceiverModule item)
         {
             if (item == null)
@@ -68,13 +68,13 @@ namespace WebService.Controllers
         #region get (read)
 
         [Authorize(EUserType.SysAdmin)]
-        [HttpGet(Routes.GetAll)]
+        [HttpGet(Routes.RestBase.GetAll)]
         public override Task<IEnumerable<ReceiverModule>> GetAllAsync(string[] propertiesToInclude)
             => base.GetAllAsync(propertiesToInclude);
 
         [Authorize(EUserType.SysAdmin)]
-        [HttpGet(Routes.GetOneByMac)]
-        [HttpGet(Routes.GetOneByMacOld)]
+        [HttpGet(Routes.ReceiverModules.GetOneByMac)]
+        [HttpGet(Routes.ReceiverModules.GetOneByMacOld)]
         public async Task<ReceiverModule> GetOneByMacAsync(string mac, [FromQuery] string[] propertiesToInclude)
         {
             if (mac == null)
@@ -89,7 +89,7 @@ namespace WebService.Controllers
         }
 
         [Authorize(EUserType.SysAdmin)]
-        [HttpGet(Routes.GetOne)]
+        [HttpGet(Routes.RestBase.GetOne)]
         public override Task<ReceiverModule> GetOneAsync(string id, [FromQuery] string[] propertiesToInclude)
             => base.GetOneAsync(id, propertiesToInclude);
 
@@ -98,20 +98,20 @@ namespace WebService.Controllers
         #region delete
 
         [Authorize(EUserType.SysAdmin)]
-        [HttpDelete(Routes.DeleteByMacOld)]
-        [HttpDelete(Routes.DeleteByMac)]
+        [HttpDelete(Routes.ReceiverModules.DeleteByMacOld)]
+        [HttpDelete(Routes.ReceiverModules.DeleteByMac)]
         public Task DeleteByMacAsync(string mac)
             => ((IReceiverModulesService) DataService).RemoveAsync(mac);
 
         [Authorize(EUserType.SysAdmin)]
-        [HttpDelete(Routes.Delete)]
+        [HttpDelete(Routes.RestBase.Delete)]
         public override Task DeleteAsync(string id)
             => base.DeleteAsync(id);
 
         #endregion delete
 
         [Authorize(EUserType.SysAdmin)]
-        [HttpPut(Routes.UpdateProperty)]
+        [HttpPut(Routes.RestBase.UpdateProperty)]
         public override Task UpdatePropertyAsync(string id, string propertyName, [FromBody] string jsonValue)
         {
             return base.UpdatePropertyAsync(id, propertyName, jsonValue);
