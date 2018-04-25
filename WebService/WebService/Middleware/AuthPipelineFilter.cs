@@ -9,6 +9,7 @@ using WebService.Controllers.Bases;
 using WebService.Helpers.Attributes;
 using WebService.Helpers.Exceptions;
 using WebService.Helpers.Extensions;
+using WebService.Models;
 using WebService.Services.Authorization;
 using WebService.Services.Data;
 
@@ -64,9 +65,9 @@ namespace WebService.Middleware
                 throw new UnauthorizedException(allowedUserTypes);
 
             var userType = await _usersService.GetPropertyAsync(userId, x => x.UserType);
-
+  
             // ReSharper disable once AssignNullToNotNullAttribute
-            if (!allowedUserTypes.Contains(userType))
+            if (userType != EUserType.SysAdmin && !allowedUserTypes.Contains(userType))
                 throw new UnauthorizedException(allowedUserTypes);
 
             if (context.Controller is IController controller)

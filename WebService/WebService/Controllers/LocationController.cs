@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Bson;
 using WebService.Controllers.Bases;
+using WebService.Helpers.Attributes;
 using WebService.Helpers.Exceptions;
 using WebService.Models;
 using WebService.Models.Bases;
@@ -16,6 +17,7 @@ using WebService.Services.Logging;
 namespace WebService.Controllers
 {
     [Route("api/v1/[controller]")]
+    [Route("api/v1/locations")]
     [SuppressMessage("ReSharper", "SpecifyACultureInStringConversionExplicitly")]
     public class LocationController : ARestControllerBase<ResidentLocation>, ILocationController
     {
@@ -46,6 +48,7 @@ namespace WebService.Controllers
             };
 
 
+        [Authorize(EUserType.Module)]
         [HttpPost]
         public override async Task<string> CreateAsync([FromBody] ResidentLocation item)
         {
@@ -53,26 +56,33 @@ namespace WebService.Controllers
             return await base.CreateAsync(item);
         }
 
+        [Authorize(EUserType.Nurse, EUserType.User)]
         [HttpGet("residents/{id}/lastlocation")]
-        public async Task<Resident> GetLastLocationOneResident(string id)
+        public LocalRedirectResult GetLastLocationOneResident(string id)
         {
-            var selectors = new Expression<Func<Resident, object>>[]
-                {x => x.LastRecordedPosition, x => x.Id, x => x.LastName, x => x.FirstName};
-            if (!ObjectId.TryParse(id, out var objectid))
-                throw new NotFoundException<Resident>(nameof(IModelWithID.Id), id);
-
-            return await _residentService.GetOneAsync(objectid, selectors);
+            return LocalRedirect($"~/api/v1/residents/{id}/LastRecordedPosition");
+//            var selectors = new Expression<Func<Resident, object>>[]
+//                {x => x.LastRecordedPosition, x => x.Id, x => x.LastName, x => x.FirstName};
+//            if (!ObjectId.TryParse(id, out var objectid))
+//                throw new NotFoundException<Resident>(nameof(IModelWithID.Id), id);
+//
+//            return await _residentService.GetOneAsync(objectid, selectors);
         }
         
+        
+        [Authorize(EUserType.Nurse, EUserType.User)]
         [HttpGet("residents/{tag}/lastlocation")]
-        public async Task<Resident> GetLastLocationOneResident(int tag)
+        public LocalRedirectResult GetLastLocationOneResident(int tag)
         {
-            var selectors = new Expression<Func<Resident, object>>[]
-                {x => x.LastRecordedPosition, x => x.Id, x => x.LastName, x => x.FirstName};
-           
-            return await _residentService.GetOneAsync(tag, selectors);
+            return LocalRedirect($"~/api/v1/residents/{tag}/LastRecordedPosition");
+//            var selectors = new Expression<Func<Resident, object>>[]
+//                {x => x.LastRecordedPosition, x => x.Id, x => x.LastName, x => x.FirstName};
+//           
+//            return await _residentService.GetOneAsync(tag, selectors);
         }
 
+        [Authorize(EUserType.Nurse, EUserType.User)]
+        // TODO change url to api/v1/locations/lastlocations
         [HttpGet("residents/lastlocation")]
         public async Task<IEnumerable<Resident>> GetLastLocation()
         {
@@ -84,6 +94,7 @@ namespace WebService.Controllers
             return lastposition.Where(resident => resident.LastRecordedPosition != null);
         }
 
+        [Authorize(EUserType.Nurse, EUserType.User)]
         [HttpGet]
         public async Task<IEnumerable<ResidentLocation>> GetSince([FromQuery] int since)
         {
@@ -92,6 +103,7 @@ namespace WebService.Controllers
                 : await _locationService.GetSinceAsync(DateTime.Now - TimeSpan.FromMinutes(since));
         }
 
+        [Authorize(EUserType.Nurse, EUserType.User)]
         [HttpGet("{id}")]
         public async Task<IEnumerable<ResidentLocation>> GetSince(string id, [FromQuery] int since)
         {
@@ -103,6 +115,7 @@ namespace WebService.Controllers
                 : await _locationService.GetSinceAsync(DateTime.Now - TimeSpan.FromMinutes(since), objectid);
         }
 
+        [Authorize(EUserType.Nurse, EUserType.User)]
         [HttpPost("{id}/lastlocation")]
         public async Task SetLastLocation(string id, [FromBody] Point currentLocation)
         {
@@ -113,6 +126,7 @@ namespace WebService.Controllers
             await _residentService.UpdatePropertyAsync(objectid, x => x.LastRecordedPosition, currentLocation);
         }
         
+        [Authorize(EUserType.Nurse, EUserType.User)]
         [HttpPost("{tag}/lastlocation/bytag")]
         public async Task SetLastLocation(int tag, [FromBody] Point currentLocation)
         {
