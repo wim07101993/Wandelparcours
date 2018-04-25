@@ -17,7 +17,7 @@ using WebService.Services.Logging;
 namespace WebService.Controllers
 {
     [Route(Routes.RestBase.ControllerRoute)]
-    [Route(Routes.Locations.RouteOld)]
+    [Route(Routes.Locations.RouteOld)] //TODO
     [SuppressMessage("ReSharper", "SpecifyACultureInStringConversionExplicitly")]
     public class LocationsController : ARestControllerBase<ResidentLocation>, ILocationController
     {
@@ -58,7 +58,7 @@ namespace WebService.Controllers
 
         [Authorize(EUserType.Nurse, EUserType.User)]
         [HttpGet(Routes.Locations.GetLastLocationOneResident)]
-        [Obsolete]
+        [Obsolete] //TODO
         public LocalRedirectResult GetLastLocationOneResident(string id)
         {
             return LocalRedirect($"~/api/v1/residents/{id}/LastRecordedPosition");
@@ -72,7 +72,7 @@ namespace WebService.Controllers
 
         [Authorize(EUserType.Nurse, EUserType.User)]
         [HttpGet(Routes.Locations.GetlastLocationOneResidentByTag)]
-        [Obsolete]
+        [Obsolete] //TODO
         public LocalRedirectResult GetLastLocationOneResidentByTag(int tag)
         {
             return LocalRedirect($"~/api/v1/residents/{tag}/LastRecordedPosition");
@@ -84,7 +84,7 @@ namespace WebService.Controllers
 
         [Authorize(EUserType.Nurse, EUserType.User)]
         [HttpGet(Routes.Locations.GetAllLastLocations)]
-        [HttpGet(Routes.Locations.GetAllLastLocationsOld)]
+        [HttpGet(Routes.Locations.GetAllLastLocationsOld)] //TODO
         public async Task<IEnumerable<Resident>> GetLastLocation()
         {
             var selectors = new Expression<Func<Resident, object>>[]
@@ -118,7 +118,7 @@ namespace WebService.Controllers
 
         [Authorize(EUserType.Nurse, EUserType.User)]
         [HttpPost(Routes.Locations.SetLastLocation)]
-        [Obsolete]
+        [Obsolete] //TODO
         public async Task SetLastLocation(string id, [FromBody] Point currentLocation)
         {
             currentLocation.TimeStamp = DateTime.Now;
@@ -130,7 +130,7 @@ namespace WebService.Controllers
 
         [Authorize(EUserType.Nurse, EUserType.User)]
         [HttpPost(Routes.Locations.SetlastLocationByTag)]
-        [Obsolete]
+        [Obsolete] //TODO
         public async Task SetLastLocation(int tag, [FromBody] Point currentLocation)
         {
             currentLocation.TimeStamp = DateTime.Now;

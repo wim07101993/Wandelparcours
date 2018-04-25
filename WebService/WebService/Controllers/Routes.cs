@@ -33,7 +33,7 @@ namespace WebService.Controllers
             public const string GetAllLastLocations = "lastlocations";
 
             [Obsolete]
-            public const string RouteOld = "api/v1/location";
+            public const string RouteOld = RestBase.Route + "/location";
 
             [Obsolete]
             public const string GetLastLocationOneResident = "residents/{id:length(24)}/lastlocation";
