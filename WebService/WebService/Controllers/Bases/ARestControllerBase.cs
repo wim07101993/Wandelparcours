@@ -7,7 +7,6 @@ using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
-using WebService.Helpers.Attributes;
 using WebService.Helpers.Exceptions;
 using WebService.Helpers.Extensions;
 using WebService.Models.Bases;
@@ -23,21 +22,10 @@ namespace WebService.Controllers.Bases
     /// ARestControllerBase is an abstract class that holds the methods to Get, Create, Delete and Update data to a database.
     /// </summary>
     /// <typeparam name="T">is the type of the data to handle</typeparam>
-    public abstract class ARestControllerBase<T> : AControllerBase, IRestController<T> where T : IModelWithID
+    public abstract class ARestControllerBase<T> : AControllerBase, IRestController<T>
+        where T : IModelWithID
     {
         #region FIELDS
-
-        protected const string CreateTemplate = "";
-        protected const string AddItemToListTemplate = "{id}/{propertyName}";
-
-        protected const string GetAllTemplate = "";
-        protected const string GetOneTemplate = "{id}";
-        protected const string GetPropertyTemplate = "{id}/{propertyName}";
-
-        protected const string UpdateTemplate = "";
-        protected const string UpdatePropertyTemplate = "{id}/{propertyName}";
-
-        protected const string DeleteTemplate = "{id}";
 
         protected readonly IDataService<T> DataService;
 
@@ -71,14 +59,13 @@ namespace WebService.Controllers.Bases
 
         protected IEnumerable<Expression<Func<T, object>>> ConvertStringsToSelectors(IEnumerable<string> propertyNames)
             => propertyNames
-                .Select(x => PropertySelectors.FirstOrDefault(y => y.Key.EqualsWithCamelCasing(x)).Value
-                             ?? throw new PropertyNotFoundException<T>(x));
+                .Select(
+                    x => PropertySelectors.FirstOrDefault(y => y.Key.EqualsWithCamelCasing(x)).Value
+                         ?? throw new PropertyNotFoundException<T>(x));
 
         #region create
 
-        [Authorize]
-        [HttpPost(CreateTemplate)]
-        public virtual async Task<string> CreateAsync([FromBody] T item)
+        public virtual async Task<string> CreateAsync(T item)
         {
             if (item == null)
                 throw new ArgumentNullException(nameof(item));
@@ -87,15 +74,14 @@ namespace WebService.Controllers.Bases
             return item.Id.ToString();
         }
 
-        [HttpPost(AddItemToListTemplate)]
-        public virtual async Task<StatusCodeResult> AddItemToListAsync(string id, string propertyName,
-            [FromBody] string jsonValue)
+        public virtual async Task<StatusCodeResult> AddItemToListAsync(string id, string propertyName, string jsonValue)
         {
             var property = typeof(T)
                 .GetProperties()
-                .FirstOrDefault(x => x.Name.EqualsWithCamelCasing(propertyName) &&
-                                     x.PropertyType.IsGenericType &&
-                                     typeof(IEnumerable).IsAssignableFrom(x.PropertyType));
+                .FirstOrDefault(
+                    x => x.Name.EqualsWithCamelCasing(propertyName)
+                         && x.PropertyType.IsGenericType
+                         && typeof(IEnumerable).IsAssignableFrom(x.PropertyType));
 
             if (property == null)
                 throw new PropertyNotFoundException<T>(nameof(propertyName));
@@ -121,10 +107,10 @@ namespace WebService.Controllers.Bases
 
         #endregion create
 
+
         #region read
 
-        [HttpGet(GetAllTemplate)]
-        public virtual async Task<IEnumerable<T>> GetAllAsync([FromQuery] string[] propertiesToInclude)
+        public virtual async Task<IEnumerable<T>> GetAllAsync(string[] propertiesToInclude)
         {
             var selectors = !EnumerableExtensions.IsNullOrEmpty(propertiesToInclude)
                 ? ConvertStringsToSelectors(propertiesToInclude)
@@ -133,8 +119,7 @@ namespace WebService.Controllers.Bases
             return await DataService.GetAsync(selectors);
         }
 
-        [HttpGet(GetOneTemplate)]
-        public virtual async Task<T> GetOneAsync(string id, [FromQuery] string[] propertiesToInclude)
+        public virtual async Task<T> GetOneAsync(string id, string[] propertiesToInclude)
         {
             var objectId = id.ToObjectId();
             var selectors = !EnumerableExtensions.IsNullOrEmpty(propertiesToInclude)
@@ -148,7 +133,6 @@ namespace WebService.Controllers.Bases
                 : item;
         }
 
-        [HttpGet(GetPropertyTemplate)]
         public virtual async Task<object> GetPropertyAsync(string id, string propertyName)
         {
             if (!typeof(T).GetProperties().Any(x => x.Name.EqualsWithCamelCasing(propertyName)))
@@ -160,10 +144,10 @@ namespace WebService.Controllers.Bases
 
         #endregion read
 
+
         #region update
 
-        [HttpPut(UpdateTemplate)]
-        public virtual async Task UpdateAsync([FromBody] T item, [FromQuery] string[] properties)
+        public virtual async Task UpdateAsync(T item, string[] properties)
         {
             var selectors = !EnumerableExtensions.IsNullOrEmpty(properties)
                 ? ConvertStringsToSelectors(properties)
@@ -172,8 +156,7 @@ namespace WebService.Controllers.Bases
             await DataService.UpdateAsync(item, selectors);
         }
 
-        [HttpPut(UpdatePropertyTemplate)]
-        public virtual async Task UpdatePropertyAsync(string id, string propertyName, [FromBody] string jsonValue)
+        public virtual async Task UpdatePropertyAsync(string id, string propertyName, string jsonValue)
         {
             var property = typeof(T)
                 .GetProperties()
@@ -186,15 +169,9 @@ namespace WebService.Controllers.Bases
             try
             {
                 // try to convert the jsonValue to the type of the property       
-                if (typeof(String)==property.PropertyType)
-                {
-                    value = jsonValue;
-                }
-                else
-                {
-                    value = JsonConvert.DeserializeObject(jsonValue, property.PropertyType);
-                }
-
+                value = typeof(string) == property.PropertyType
+                    ? jsonValue
+                    : JsonConvert.DeserializeObject(jsonValue, property.PropertyType);
             }
             catch (JsonException)
             {
@@ -208,9 +185,9 @@ namespace WebService.Controllers.Bases
 
         #endregion update
 
+
         #region delete
 
-        [HttpDelete(DeleteTemplate)]
         public virtual async Task DeleteAsync(string id)
         {
             var objectId = id.ToObjectId();
