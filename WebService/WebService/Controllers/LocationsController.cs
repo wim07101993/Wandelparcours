@@ -16,16 +16,16 @@ using WebService.Services.Logging;
 
 namespace WebService.Controllers
 {
-    [Route("api/v1/[controller]")]
-    [Route("api/v1/locations")]
+    [Route(Routes.Locations.Route)]
+    [Route(Routes.Locations.RouteOld)]
     [SuppressMessage("ReSharper", "SpecifyACultureInStringConversionExplicitly")]
-    public class LocationController : ARestControllerBase<ResidentLocation>, ILocationController
+    public class LocationsController : ARestControllerBase<ResidentLocation>, ILocationController
     {
         private readonly IResidentsService _residentService;
         private readonly ILocationService _locationService;
 
 
-        public LocationController(ILocationService dataService, ILogger logger, IResidentsService residentService,
+        public LocationsController(ILocationService dataService, ILogger logger, IResidentsService residentService,
             IUsersService usersService, ILocationService locationService)
             : base(dataService, logger, usersService)
         {
@@ -58,6 +58,7 @@ namespace WebService.Controllers
 
         [Authorize(EUserType.Nurse, EUserType.User)]
         [HttpGet(Routes.Locations.GetLastLocationOneResident)]
+        [Obsolete]
         public LocalRedirectResult GetLastLocationOneResident(string id)
         {
             return LocalRedirect($"~/api/v1/residents/{id}/LastRecordedPosition");
@@ -70,8 +71,9 @@ namespace WebService.Controllers
         }
 
         [Authorize(EUserType.Nurse, EUserType.User)]
-        [HttpGet("residents/{tag}/lastlocation")]
-        public LocalRedirectResult GetLastLocationOneResident(int tag)
+        [HttpGet(Routes.Locations.GetlastLocationOneResidentByTag)]
+        [Obsolete]
+        public LocalRedirectResult GetLastLocationOneResidentByTag(int tag)
         {
             return LocalRedirect($"~/api/v1/residents/{tag}/LastRecordedPosition");
 //            var selectors = new Expression<Func<Resident, object>>[]
@@ -81,8 +83,8 @@ namespace WebService.Controllers
         }
 
         [Authorize(EUserType.Nurse, EUserType.User)]
-        // TODO change url to api/v1/locations/lastlocations
-        [HttpGet("residents/lastlocation")]
+        [HttpGet(Routes.Locations.GetAllLastLocations)]
+        [HttpGet(Routes.Locations.GetAllLastLocationsOld)]
         public async Task<IEnumerable<Resident>> GetLastLocation()
         {
             var selectors = new Expression<Func<Resident, object>>[]
@@ -94,7 +96,7 @@ namespace WebService.Controllers
         }
 
         [Authorize(EUserType.Nurse, EUserType.User)]
-        [HttpGet]
+        [HttpGet(Routes.RestBase.GetAll)]
         public async Task<IEnumerable<ResidentLocation>> GetSince([FromQuery] int since)
         {
             return since == 0
@@ -103,7 +105,7 @@ namespace WebService.Controllers
         }
 
         [Authorize(EUserType.Nurse, EUserType.User)]
-        [HttpGet("{id}")]
+        [HttpGet(Routes.RestBase.GetOne)]
         public async Task<IEnumerable<ResidentLocation>> GetSince(string id, [FromQuery] int since)
         {
             if (!ObjectId.TryParse(id, out var objectid))
@@ -115,7 +117,8 @@ namespace WebService.Controllers
         }
 
         [Authorize(EUserType.Nurse, EUserType.User)]
-        [HttpPost("{id}/lastlocation")]
+        [HttpPost(Routes.Locations.SetLastLocation)]
+        [Obsolete]
         public async Task SetLastLocation(string id, [FromBody] Point currentLocation)
         {
             currentLocation.TimeStamp = DateTime.Now;
@@ -126,7 +129,8 @@ namespace WebService.Controllers
         }
 
         [Authorize(EUserType.Nurse, EUserType.User)]
-        [HttpPost("{tag}/lastlocation/bytag")]
+        [HttpPost(Routes.Locations.SetlastLocationByTag)]
+        [Obsolete]
         public async Task SetLastLocation(int tag, [FromBody] Point currentLocation)
         {
             currentLocation.TimeStamp = DateTime.Now;

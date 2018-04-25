@@ -30,8 +30,27 @@ namespace WebService.Controllers
 
         public static class Locations
         {
+            public const string Route = "api/v1/[controller]";
+
+            public const string GetAllLastLocations = "lastlocations";
+
             [Obsolete]
-            public const string GetLastLocationOneResident = "residents/{id}/lastlocation";
+            public const string RouteOld = "api/v1/location";
+
+            [Obsolete]
+            public const string GetLastLocationOneResident = "residents/{id:length(24)}/lastlocation";
+
+            [Obsolete]
+            public const string GetlastLocationOneResidentByTag = "bytag/residents/{tag}/lastlocation";
+
+            [Obsolete]
+            public const string GetAllLastLocationsOld = "residents/lastlocation";
+
+            [Obsolete]
+            public const string SetLastLocation = "{id:length(24)}/lastlocation";
+
+            [Obsolete]
+            public const string SetlastLocationByTag = "{tag}/lastlocation/bytag";
         }
 
 
