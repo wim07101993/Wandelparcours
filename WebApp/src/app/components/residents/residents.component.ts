@@ -17,8 +17,8 @@ declare var Materialize: any;
 
 export class ResidentsComponent implements OnInit {
   view = 'card-view';
-  data: any = null;
-  residents: Resident[];
+  term: any = null;
+  residents: any = [];
   modalResident: Resident;
   updateResident: any;
   search = false;
@@ -35,42 +35,44 @@ export class ResidentsComponent implements OnInit {
    * @param router Router
    */
   constructor(private service: RestServiceService, private router: Router) {
-    this.showAllResidents();
-    this.residents = [];
-    this.profilePic = [];
-
-    /*Creates empty modals to avoid collision with previous existing modals should they not be deleted*/
-    this.modalResident = <Resident>{
-      firstName: '',
-      lastName: '',
-      room: '',
-      id: '',
-      birthday: new Date(),
-      doctor: {name: '', phoneNumber: ''},
-      pictureUrl: ''
-    };
-    this.updateResident = {
-      firstName: '', lastName: '', room: '', id: '', birthday: '', doctor: {name: '', phoneNumber: ''}
-    };
 
   }
+
+    ngOnInit(): void {
+        this.showAllResidents();
+        this.residents = [];
+        this.profilePic = [];
+
+        /*Creates empty modals to avoid collision with previous existing modals should they not be deleted*/
+        this.modalResident = <Resident>{
+            firstName: '',
+            lastName: '',
+            room: '',
+            id: '',
+            birthday: new Date(),
+            doctor: {name: '', phoneNumber: ''},
+            pictureUrl: ''
+        };
+        this.updateResident = {
+            firstName: '', lastName: '', room: '', id: '', birthday: '', doctor: {name: '', phoneNumber: ''}
+        };
+
+    }
 
   /**
    * Close modal
    */
 
-  static closeModal() {
+  closeModal() {
     $().modal('close');
   }
 
-  ngOnInit(): void {
-  }
+
 
   /**
    * Focus to input for the searchbar --> input will be active if event 'button' has been pressed
    */
   focusInput() {
-    let a: any;
     setTimeout(() => {
       $('#focusToInput').focus();
     }, 200);
@@ -200,7 +202,7 @@ export class ResidentsComponent implements OnInit {
     console.log('test');
 
 
-    for (const file in this.selectedFile) {
+    for(const file in this.selectedFile) {
       try {
         const index = parseInt(file);
         if (!isNaN(index)) {
@@ -217,12 +219,8 @@ export class ResidentsComponent implements OnInit {
       } catch (e) {
         console.log(e);
       }
-
     }
-
     await this.service.editResidentWithData(updateData, changedProperties);
-
-
     this.updateResident = {
       firstName: '', lastName: '', room: '', id: '', birthday: '', doctor: {name: '', phoneNumber: ''}
     };
@@ -236,9 +234,6 @@ export class ResidentsComponent implements OnInit {
     this.showAllResidents();
   }
 
-  cleanForm() {
-  }
-
   /**
    * Add resident to database
    * @param form of type NgForm
@@ -248,7 +243,7 @@ export class ResidentsComponent implements OnInit {
     const birthday = $('#abirthdate').val();
     let a;
 
-    if (birthday != '') {
+    if (birthday !== '') {
       a = new Date(birthday);
     }
 
@@ -258,8 +253,9 @@ export class ResidentsComponent implements OnInit {
         // this.loading = "uploading...";
         this.fd = new FormData();
         this.fd.append('File', this.selectedFile[index], this.selectedFile[index].name);
-        if (this.selectedFile[index].type.indexOf('image') != -1) {
-          this.selectedFileImage = this.selectedFile[index]; //   this.check = await this.restService.addCorrectMediaToDatabase(this.id, fd, this.addPicture);
+        if (this.selectedFile[index].type.indexOf('image') !== -1) {
+          this.selectedFileImage = this.selectedFile[index];
+          //this.check = await this.restService.addCorrectMediaToDatabase(this.id, fd, this.addPicture);
         }
       }
     }
@@ -276,7 +272,7 @@ export class ResidentsComponent implements OnInit {
 
     // Send gathered data over the resrService
     const id = await this.service.addResident(data);
-    if (id != undefined) {
+    if (id !== undefined) {
       await this.service.addProfilePic(id, this.fd);
       Materialize.toast(`bewoner: ${data.firstName} ${data.lastName} succesvol toegevoegd`, 5000);
     } else {
