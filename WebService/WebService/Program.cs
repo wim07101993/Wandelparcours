@@ -5,10 +5,11 @@ namespace WebService
 {
     public static class Program
     {
-        public static void Main(string[] args) => BuildWebHost(args).Run();
+        public static void Main(string[] args)
+            => BuildWebHost(args).Run();
 
-        private static IWebHost BuildWebHost(string[] args) =>
-            WebHost.CreateDefaultBuilder(args)
+        private static IWebHost BuildWebHost(string[] args)
+            => WebHost.CreateDefaultBuilder(args)
                 .UseStartup<Startup>()
                 .UseUrls("http://0.0.0.0:5000")
                 .Build();
