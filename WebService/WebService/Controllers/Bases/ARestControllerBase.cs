@@ -28,7 +28,6 @@ namespace WebService.Controllers.Bases
         #region FIELDS
 
         protected readonly IDataService<T> DataService;
-
         protected readonly ILogger Logger;
 
         #endregion FIELDS

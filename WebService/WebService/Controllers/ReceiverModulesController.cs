@@ -14,7 +14,7 @@ using ArgumentNullException = System.ArgumentNullException;
 
 namespace WebService.Controllers
 {
-    [Route("api/v1/[controller]")]
+    [Route(Routes.ReceiverModulesController)]
     public class ReceiverModulesController : ARestControllerBase<ReceiverModule>, IReceiverModulesController
     {
         #region CONSTRUCTOR
@@ -74,6 +74,7 @@ namespace WebService.Controllers
 
         [Authorize(EUserType.SysAdmin)]
         [HttpGet(Routes.GetOneByMac)]
+        [HttpGet(Routes.GetOneByMacOld)]
         public async Task<ReceiverModule> GetOneByMacAsync(string mac, [FromQuery] string[] propertiesToInclude)
         {
             if (mac == null)
@@ -97,6 +98,7 @@ namespace WebService.Controllers
         #region delete
 
         [Authorize(EUserType.SysAdmin)]
+        [HttpDelete(Routes.DeleteByMacOld)]
         [HttpDelete(Routes.DeleteByMac)]
         public Task DeleteByMacAsync(string mac)
             => ((IReceiverModulesService) DataService).RemoveAsync(mac);

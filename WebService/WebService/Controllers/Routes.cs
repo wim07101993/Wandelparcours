@@ -1,57 +1,101 @@
-﻿namespace WebService.Controllers
+﻿using System;
+
+namespace WebService.Controllers
 {
     internal static class Routes
     {
+        private const string PropertyName = "{propertyName}";
+
+        private const string ById = "{id:length(24)}";
+        private const string PropertyById = ById + "/" + PropertyName;
+
+
         #region BASE REST CONSTROLLER TEMPLATES
 
+        private const string BaseController = "api/v1";
+
         public const string Create = "";
-        public const string AddItemToList = "{id:length(24)}/{propertyName}";
+        public const string AddItemToList = PropertyById;
 
         public const string GetAll = "";
-        public const string GetOne = "{id:length(24)}";
-        public const string GetProperty = "{id:length(24)}/{propertyName}";
+        public const string GetOne = ById;
+        public const string GetProperty = PropertyById;
 
         public const string Update = "";
-        public const string UpdateProperty = "{id:length(24)}/{propertyName}";
+        public const string UpdateProperty = PropertyById;
 
-        public const string Delete = "{id:length(24)}";
+        public const string Delete = ById;
 
         #endregion BASE REST CONSTROLLER TEMPLATES
 
 
         #region RECEIVER MODULES
 
-        public const string GetOneByMac = "bymac/{mac}";
-        public const string DeleteByMac = "bymac/{mac}";
+        public const string ReceiverModulesController = BaseController + "/[Controller]";
+
+        private const string MacAddressRegex = @"^([[A-f0-9]]{{2}}[[:-\\.]]){{5}}[[A-f0-9]]{{2}}$";
+        private const string ByMac = "{mac:regex(" + MacAddressRegex + ")}";
+
+        public const string GetOneByMac = ByMac;
+
+        [Obsolete]
+        public const string GetOneByMacOld = "bymac/" + ByMac;
+
+        public const string DeleteByMac = ByMac;
+
+        [Obsolete]
+        public const string DeleteByMacOld = "bymac/" + ByMac;
 
         #endregion RECEIVER MODULES
 
 
         #region RESIDENTS
 
-        public const string AddMusicData = "{residentId:length(24)}/Music/data";
-        public const string AddVideoData = "{residentId:length(24)}/Videos/data";
-        public const string AddImageData = "{residentId:length(24)}/Images/data";
-        public const string AddColor = "{residentId:length(24)}/Colors/data";
+        public const string ResidentsModulesController = BaseController + "/[Controller]";
 
-        public const string AddMusicUrl = "{residentId:length(24)}/Music/url";
-        public const string AddVideoUrl = "{residentId:length(24)}/Videos/url";
-        public const string AddImageUrl = "{residentId:length(24)}/Images/url";
+        private const string ByTag = "{tag}";
 
-        public const string GetPicture = "{residentId:length(24)}/picture";
-        public const string AddTag = "{residentId:length(24)}/tags";
-        public const string GetByTag = "byTag/{tag}";
-        public const string GetRandomElementFromProperty = "byTag/{tag}/{propertyName}/random";
-        public const string GetPropertyByTag = "byTag/{tag}/{propertyName}";
+        [Obsolete]
+        private const string ByTagOld = "byTag/" + ByTag;
 
-        public const string UpdatePicture = "{id}/picture";
+        private const string PropertyByTag = ByTag + "/" + PropertyName;
+        private const string PropertyByTagOld = ByTagOld + "/" + PropertyName;
 
-        public const string RemoveMusic = "{residentId:length(24)}/Music/{musicId}";
-        public const string RemoveVideo = "{residentId:length(24)}/Videos/{videoId}";
-        public const string RemoveImage = "{residentId:length(24)}/Images/{imageId}";
-        public const string RemoveColor = "{residentId:length(24)}/Colors";
 
-        public const string RemoveTag = "{residentId:length(24)}/{tag}";
+        public const string AddMusicData = ById + "/Music/data";
+        public const string AddVideoData = ById + "/Videos/data";
+        public const string AddImageData = ById + "/Images/data";
+        public const string AddColor = ById + "/Colors/data";
+
+        public const string AddMusicUrl = ById + "/Music/url";
+        public const string AddVideoUrl = ById + "/Videos/url";
+        public const string AddImageUrl = ById + "/Images/url";
+
+        public const string GetPicture = ById + "/picture";
+        public const string AddTag = ById + "/tags";
+        public const string GetByTag = ByTag;
+
+        [Obsolete]
+        public const string GetByTagOld = ByTagOld;
+
+        public const string GetRandomElementFromProperty = PropertyByTag + "/random";
+
+        [Obsolete]
+        public const string GetRandomElementFromPropertyOld = PropertyByTagOld + "/random";
+
+        public const string GetPropertyByTag = PropertyByTag;
+
+        [Obsolete]
+        public const string GetPropertyByTagOld = PropertyByTagOld;
+
+        public const string UpdatePicture = ById + "/picture";
+
+        public const string RemoveMusic = ById + "/Music/{musicId}";
+        public const string RemoveVideo = ById + "/Videos/{videoId}";
+        public const string RemoveImage = ById + "/Images/{imageId}";
+        public const string RemoveColor = ById + "/Colors";
+
+        public const string RemoveTag = ById + "/{tag}";
 
         #endregion RESIDENTS
     }
