@@ -16,10 +16,16 @@ using WebService.Services.Logging;
 
 namespace WebService.Controllers
 {
-    [Route("api/v1/[controller]")]
+    [Route(Routes.RestBase.ControllerRoute)]
     public class UsersController : ARestControllerBase<User>, IUsersController
     {
+        #region FIELDS
+
         private readonly IUsersService _usersService;
+
+        #endregion FIELDS
+
+        #region CONSTRUCTORS
 
         public UsersController(IUsersService dataService, ILogger logger, IUsersService usersService)
             : base(dataService, logger, usersService)
@@ -27,6 +33,10 @@ namespace WebService.Controllers
             _usersService = usersService;
         }
 
+        #endregion CONSTRUCTORS
+
+
+        #region PROPERTIES
 
         protected override IEnumerable<Expression<Func<User, object>>> PropertiesToSendOnGetAll { get; } =
             new Expression<Func<User, object>>[]
@@ -47,6 +57,8 @@ namespace WebService.Controllers
                 {nameof(Models.User.UserType), x => x.UserType},
                 {nameof(Models.User.Residents), x => x.Residents},
             };
+
+        #endregion PROPERTIES
 
 
         #region METHDOS
