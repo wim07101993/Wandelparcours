@@ -16,7 +16,7 @@ using WebService.Services.Logging;
 
 namespace WebService.Controllers
 {
-    [Route(Routes.Locations.Route)]
+    [Route(Routes.RestBase.ControllerRoute)]
     [Route(Routes.Locations.RouteOld)]
     [SuppressMessage("ReSharper", "SpecifyACultureInStringConversionExplicitly")]
     public class LocationsController : ARestControllerBase<ResidentLocation>, ILocationController

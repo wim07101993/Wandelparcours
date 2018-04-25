@@ -13,6 +13,7 @@ namespace WebService.Controllers
         public static class RestBase
         {
             internal const string Route = "api/v1";
+            internal const string ControllerRoute = Route + "/[controller]";
 
             public const string Create = "";
             public const string AddItemToList = PropertyById;
@@ -27,11 +28,8 @@ namespace WebService.Controllers
             public const string Delete = ById;
         }
 
-
         public static class Locations
         {
-            public const string Route = "api/v1/[controller]";
-
             public const string GetAllLastLocations = "lastlocations";
 
             [Obsolete]
@@ -53,11 +51,14 @@ namespace WebService.Controllers
             public const string SetlastLocationByTag = "{tag}/lastlocation/bytag";
         }
 
+        public static class Media
+        {
+            public const string GetOneFileWithExtension = ById + "/file.{extension}";
+            public const string GetFile = ById + "/file";
+        }
 
         public static class ReceiverModules
         {
-            public const string Route = RestBase.Route + "/[Controller]";
-
             private const string MacAddressRegex = @"^([[A-f0-9]]{{2}}[[:-\\.]]){{5}}[[A-f0-9]]{{2}}$";
             private const string ByMac = "{mac:regex(" + MacAddressRegex + ")}";
 
@@ -71,11 +72,8 @@ namespace WebService.Controllers
             public const string GetOneByMacOld = "bymac/" + ByMac;
         }
 
-
         public static class Residents
         {
-            public const string Route = RestBase.Route + "/[Controller]";
-
             private const string ByTag = "{tag}";
             private const string PropertyByTag = ByTag + "/" + PropertyName;
 
@@ -117,6 +115,11 @@ namespace WebService.Controllers
 
             [Obsolete]
             public const string GetPropertyByTagOld = PropertyByTagOld;
+        }
+
+        public static class Tokens
+        {
+            public const string CreateTokenTemplate = "";
         }
     }
 }

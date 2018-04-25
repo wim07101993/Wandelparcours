@@ -22,7 +22,7 @@ using ArgumentNullException = WebService.Helpers.Exceptions.ArgumentNullExceptio
 
 namespace WebService.Controllers
 {
-    [Route(Routes.Residents.Route)]
+    [Route(Routes.RestBase.ControllerRoute)]
     [SuppressMessage("ReSharper", "SpecifyACultureInStringConversionExplicitly")]
     public class ResidentsController : ARestControllerBase<Resident>, IResidentsController
     {

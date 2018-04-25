@@ -14,7 +14,7 @@ using ArgumentNullException = System.ArgumentNullException;
 
 namespace WebService.Controllers
 {
-    [Route(Routes.ReceiverModules.Route)]
+    [Route(Routes.RestBase.ControllerRoute)]
     public class ReceiverModulesController : ARestControllerBase<ReceiverModule>, IReceiverModulesController
     {
         #region CONSTRUCTOR
