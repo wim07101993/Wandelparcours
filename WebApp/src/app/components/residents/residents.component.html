@@ -31,20 +31,21 @@
   </div>
 </div>
 
+<ng-template #loading>
+  Loading Residents...
+</ng-template>
+
 <!--Switch to cardview-->
-<div class="row" *ngIf="view=='card-view'">
+<div class="row" *ngIf="view=='card-view';">
   <div class="col s12 m6 l4" *ngFor="let resident of residents | filter:term">
-
-    <!-- resident's perosnal content on cradview -->
+    <!-- resident's personal content on cardview -->
     <div id="content" class="card">
-
-      <img onError="this.onerror=null;this.src='/images/resident.jpg';"
+      <img onError="this.onerror=null;this.src='assets/images/residents.jpg';"
            style="cursor:pointer"
            src="/api/v1/residents/{{resident.id}}/picture"
            class="z-depth-2"
            (click)="navigateTo(resident)"/>
       <table>
-
         <tr>
           <td colspan="2" class="cardviewtd center">{{resident.firstName}}, {{resident.lastName}}</td>
         </tr>
@@ -64,9 +65,7 @@
           <th class="cardviewth right">tel:</th>
           <td class="cardviewtd">{{resident.doctor.phoneNumber}}</td>
         </tr>
-
       </table>
-
       <!-- action buttons per resident-card -->
       <div class="row">
         <div class="col s4 center">
@@ -99,7 +98,6 @@
       <th colspan="3">Actie</th>
     </tr>
     </thead>
-
     <tbody>
     <tr *ngFor="let resident of residents | filter:term">
       <td class="mytd">{{resident.firstName}}</td>

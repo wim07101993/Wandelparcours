@@ -1,12 +1,17 @@
 import {Injectable} from '@angular/core';
-import {Headers, Http, RequestOptions} from '@angular/http';
-
+import { HttpClient } from '@angular/common/http';
+import axios from 'axios';
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/catch';
 import {Resident} from '../models/resident';
 import {Station} from '../models/station';
 import {CustomErrorHandler} from './customErrorHandler';
 import {StationmanagementComponent} from '../components/stationmanagement/stationmanagement.component';
+import {Observable} from 'rxjs/Observable';
+import {catchError, tap} from 'rxjs/operators';
+import {of} from 'rxjs/observable/of';
+import {tryCatch} from 'rxjs/util/tryCatch';
+//import {RequestOptions, Headers} from '@angular/http';
 
 @Injectable()
 export class RestServiceService {
@@ -26,7 +31,7 @@ export class RestServiceService {
     this.url = val;
   }
 
-  constructor(private http: Http, private customErrorHandler: CustomErrorHandler) {
+  constructor(private http: HttpClient, private customErrorHandler: CustomErrorHandler) {
   }
 
 
@@ -34,20 +39,12 @@ export class RestServiceService {
    * Get all residents from database
    * @returns {Resident} residents of type Resident or undefined
    */
-  getAllResidents() {
-    return new Promise<Resident[]>(resolve => {
-      this.http.get(this.restUrl + 'api/v1/residents').subscribe(response => {
-          resolve(<Resident[]>response.json());
-        },
-        error => {
-
-          this.customErrorHandler.updateMessage(error);
-          resolve(undefined);
-
-        }
-      );
-    });
-
+  async getAllResidents() {
+      try {
+          return  (await axios.get(this.restUrl+"api/v1/residents")).data;
+          }catch (e) {
+          this.customErrorHandler.updateMessage(e.toString());
+      }
   }
 
   /**
@@ -55,22 +52,14 @@ export class RestServiceService {
    * @param uniqueIdentifier unique id of resident
    * @returns {Resident} one resident of type Resident with only the requested properties or undefined
    */
-  getResidentBasedOnId(uniqueIdentifier: string) {
-    return new Promise<Resident>(resolve => {
-      const query = '?properties=firstName&properties=lastName&properties=room&properties=birthday&properties=doctor';
-      this.http
-        .get(this.restUrl + 'api/v1/residents/' + uniqueIdentifier + query)
-        .subscribe(response => {
-            resolve(<Resident>response.json());
-          },
-          error => {
-            this.customErrorHandler.updateMessage(error);
-            resolve(undefined);
-          }
-        );
-    });
+  async getResidentBasedOnId(uniqueIdentifier: string){
+    try {
+        const query = '?properties=firstName&properties=lastName&properties=room&properties=birthday&properties=doctor';
+        return (await axios.get(this.restUrl + 'api/v1/residents/' + uniqueIdentifier + query)).data;
+    }catch (e) {
+        console.log(e.toString());
+    }
   }
-
 
   /**
    * delete resident from database based on id
@@ -78,17 +67,12 @@ export class RestServiceService {
    * @returns message "Deleted" on succes or "Something went wrong" on error
    */
 
-  deleteResidentByUniqueId(uniqueIdentifier: string) {
-    return new Promise(resolve => {
-      this.http.delete(this.restUrl + 'api/v1/residents/' + uniqueIdentifier).subscribe(response => {
-        console.log('Deleted');
-        resolve();
-      }, error => {
-        console.log('Something went wrong');
-        this.customErrorHandler.updateMessage(error);
-        resolve();
-      });
-    });
+  async deleteResidentByUniqueId(uniqueIdentifier: string) {
+    try{
+      await axios.delete(this.restUrl + 'api/v1/residents/' + uniqueIdentifier)
+    }catch (e) {
+        console.log(e.toString());
+    }
   }
 
   /**
@@ -122,8 +106,8 @@ export class RestServiceService {
    * @param data Object resident with all saved properties
    * @returns True or false based on succes and Console log Message "Saved resident to database" on succes or "Could not save resident to database" on error.
    */
+  /*
   addResident(data: any) {
-    //console.log(data);
     return new Promise(resolve => {
       this.http.post(this.restUrl + 'api/v1/residents', data).subscribe(response => {
         console.log('Saved resident to database');
@@ -135,14 +119,13 @@ export class RestServiceService {
       });
     });
   }
+  */
 
   addProfilePic(uniqueIdentifier: any, picture: any) {
     return new Promise(resolve => {
       this.http.put(this.restUrl + 'api/v1/residents/' + uniqueIdentifier + '/picture', picture).subscribe(response => {
-        //console.log("Saved residentimage to database");
         resolve(true);
       }, error => {
-        //console.log("Could not save resident to database!");
         this.customErrorHandler.updateMessage(error);
         resolve(false);
       });
@@ -152,10 +135,10 @@ export class RestServiceService {
   ////////
   //TAGS//
   ////////
-  headers = new Headers({'Content-Type': 'application/json'});
-  options = new RequestOptions({headers: this.headers});
+  //headers = new Headers({'Content-Type': 'application/json'});
+  //options = new RequestOptions({headers: this.headers});
 
-  addTagToResident(uniqueIdentifier: string, beaconMinorNumber: any) {
+  /*addTagToResident(uniqueIdentifier: string, beaconMinorNumber: any) {
     return new Promise<number[]>(resolve => {
       this.http.post(this.restUrl + 'api/v1/residents/' + uniqueIdentifier + '/tags', beaconMinorNumber, this.options).subscribe(response => {
         //console.log("add tag");
@@ -166,6 +149,7 @@ export class RestServiceService {
       });
     });
   }
+  */
 
   deleteTagFromResident(uniqueIdentifier: string, uniqueTagId: string) {
     return new Promise(resolve => {
@@ -207,7 +191,7 @@ export class RestServiceService {
    * @param type string: urlLink of media
    * returns true or false--> updates errormessage
    */
-  getCorrectMediaOfResidentBasedOnId(uniqueIdentifier: string, type: string) {
+  /*getCorrectMediaOfResidentBasedOnId(uniqueIdentifier: string, type: string) {
     return new Promise<Resident[]>(resolve => {
       this.http.get(this.restUrl + 'api/v1/residents/' + uniqueIdentifier + type).subscribe(response => {
           resolve(<Resident[]>response.json());
@@ -219,6 +203,7 @@ export class RestServiceService {
       );
     });
   }
+  */
 
   /**
    * delete resident based on uniqueid
@@ -291,7 +276,7 @@ export class RestServiceService {
 
     });
   }
-
+  /*
   LoadStations(parent: StationmanagementComponent) {
     if (parent.stations != undefined) {
       parent.stations.clear();
@@ -327,5 +312,26 @@ export class RestServiceService {
         });
     });
   }
+  */
+    /**
+     * Handle Http operation that failed.
+     * Let the app continue.
+     * @param operation - name of the operation that failed
+     * @param result - optional value to return as the observable result
+     */
+    private handleError<T> (operation = 'operation', result?: T) {
+        return (error: any): Observable<T> => {
+
+            // TODO: send the error to remote logging infrastructure
+            console.error(error); // log to console instead
+
+            // TODO: better job of transforming error for user consumption
+            this.log(`${operation} failed: ${error.message}`);
+
+            // Let the app keep running by returning an empty result.
+            return of(result as T);
+        };
+    }
+
 
 }

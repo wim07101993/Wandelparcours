@@ -2,7 +2,7 @@ import {BrowserModule} from '@angular/platform-browser';
 import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {FormsModule} from '@angular/forms';
-import {HttpModule} from '@angular/http';
+import {HttpClientModule} from '@angular/common/http';
 import {RouterModule, Routes} from '@angular/router';
 
 
@@ -23,21 +23,21 @@ import { TrackingComponent } from './components/senior/tracking/tracking.compone
 import { GlobaltrackingComponent } from './components/globaltracking/globaltracking.component';
 
 const appRoutes: Routes = [
-  {path: '', redirectTo: 'residents', pathMatch: 'full'},
-  {path: 'residents', component: ResidentsComponent},
-  { path: 'resident/:id', component: PersonaliaComponent },
-  { path: 'resident/:id/picture', component: PictureComponent },
-  { path: 'resident/:id/video', component: VideoComponent },
-  { path: 'resident/:id/audio', component: AudioComponent },
-  { path: 'resident/:id/game', component: GameComponent },
-  { path: 'resident/:id/tracking', component: TrackingComponent },
+      {path: '', redirectTo: 'residents', pathMatch: 'full'},
+      {path: 'residents', component: ResidentsComponent},
+      { path: 'resident/:id', component: PersonaliaComponent },
+      { path: 'resident/:id/picture', component: PictureComponent },
+      { path: 'resident/:id/video', component: VideoComponent },
+      { path: 'resident/:id/audio', component: AudioComponent },
+      { path: 'resident/:id/game', component: GameComponent },
+      { path: 'resident/:id/tracking', component: TrackingComponent },
   // { path: 'counter', component: CounterComponent },
-  // { path: 'fetch-data', component: FetchDataComponent },
-  // { path: 'modules', component: StationmanagementComponent },
-  // { path: 'error', component: ErrorPageComponent},
-  {path: 'residents', component: ResidentsComponent},
-  // {path: 'tracking', component: GlobaltrackingComponent},
-  {path: '**', redirectTo: 'residents'}
+  // { path: 'fetch-data', component: FetchDataComponent }
+      { path: 'modules', component: StationmanagementComponent },
+      //{ path: 'error', component: ErrorPageComponent},
+      { path: 'residents', component: ResidentsComponent},
+      { path: 'tracking', component: GlobaltrackingComponent},
+      { path: '**', redirectTo: 'residents'}
 ];
 
 @NgModule({
@@ -60,7 +60,7 @@ const appRoutes: Routes = [
   imports: [
     CommonModule,
     Ng2SearchPipeModule,
-    HttpModule,
+    HttpClientModule,
     FormsModule,
     RouterModule.forRoot(appRoutes),
     BrowserModule
