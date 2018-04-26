@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import '/Users/kenan/Documents/GitHub/Wandelparcours/WebApp/src/assets/login-animation.js';
+declare var $: any;
+declare var Materialize: any;
 
 @Component({
   selector: 'app-login',
@@ -11,7 +13,9 @@ export class LoginComponent implements OnInit {
 
   email: string;
   password: string;
-  constructor() {}
+  constructor() {
+    $('Header').hide();
+  }
 
   ngOnInit() {}
 
