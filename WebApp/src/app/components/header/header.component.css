@@ -6,6 +6,8 @@ header {
   background: -webkit-linear-gradient(to right, #fdfdfd, #abbaab);
   /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
   background: linear-gradient(to right, #fefefe, #abbaab);
+  padding-top:16px;
+  padding-bottom: 1px;
 }
 
 #hamburger {
