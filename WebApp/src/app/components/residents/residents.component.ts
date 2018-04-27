@@ -36,7 +36,7 @@ export class ResidentsComponent implements OnInit {
    */
   constructor(private service: RestServiceService, private router: Router) {}
 
-  ngOnInit(): void {
+    ngOnInit(): void {
         this.showAllResidents();
         this.residents = [];
         this.profilePic = [];
@@ -213,7 +213,7 @@ export class ResidentsComponent implements OnInit {
       $('#editModalResident').modal('close');
     }, 200);
     // get all residents again after updating
-    this.showAllResidents();
+    await this.showAllResidents();
   }
 
   /**
