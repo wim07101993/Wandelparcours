@@ -21,11 +21,14 @@ export class VideoComponent implements OnInit {
   fullLinks: any = [];
   url: any = "http://localhost:5000/api/v1/media/";
 
-  constructor(private route: ActivatedRoute, private media: MediaService, private router: Router) {
-    this.typeOfMedia = "video/*";
-    this.getAllVideos();
-    this.deleteResidentVideo = <Resident>{videos: {}}
-  }
+  constructor(private route: ActivatedRoute, private media: MediaService) {}
+
+
+  ngOnInit() {
+      this.typeOfMedia = "video/*";
+      this.getAllVideos();
+      this.deleteResidentVideo = <Resident>{videos: {}}
+    }
   /**
    * reload the page
    */
@@ -48,16 +51,11 @@ export class VideoComponent implements OnInit {
    * Either reloads the page or sends user to error page
    */
   async deleteResidentMediaByUniqueId(uniqueVideoId: string) {
-    this.check = await this.media.deleteMedia(this.id, uniqueVideoId, this.video);
-    if (this.check) {
+      await this.media.deleteMedia(this.id, uniqueVideoId, this.video);
+      setTimeout(() => {
+          $("#deleteModalVideo").modal("close");
+      }, 200)
       this.getAllVideos();
-    } else {
-      this.router.navigate(["/error"]);
-    }
-    $("#deleteModalVideo").modal("close");
-  }
-
-  ngOnInit() {
   }
 
   /*
@@ -71,14 +69,8 @@ export class VideoComponent implements OnInit {
   *   Opens modal to delete a station
   */
   async deleteModal(resident: Resident) {
-
     this.deleteResidentVideo = resident;
-    console.log(resident.images.id);
-    // noinspection JSJQueryEfficiency
     $("#deleteModalVideo").modal();
-    // noinspection JSJQueryEfficiency
     $("#deleteModalVideo").modal("open");
-
   }
-
 }

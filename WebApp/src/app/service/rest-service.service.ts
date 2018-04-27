@@ -10,8 +10,6 @@ import {StationmanagementComponent} from '../components/stationmanagement/statio
 import {Observable} from 'rxjs/Observable';
 import {catchError, tap} from 'rxjs/operators';
 import {of} from 'rxjs/observable/of';
-import {tryCatch} from 'rxjs/util/tryCatch';
-//import {RequestOptions, Headers} from '@angular/http';
 
 @Injectable()
 export class RestServiceService {
@@ -31,9 +29,7 @@ export class RestServiceService {
     this.url = val;
   }
 
-  constructor(private http: HttpClient, private customErrorHandler: CustomErrorHandler) {
-  }
-
+  constructor(private http: HttpClient, private customErrorHandler: CustomErrorHandler) {}
 
   /**
    * Get all residents from database
@@ -41,7 +37,7 @@ export class RestServiceService {
    */
   async getAllResidents() {
       try {
-          return  (await axios.get(this.restUrl+"api/v1/residents")).data;
+          return  (await axios.get("/api/v1/residents")).data;
           }catch (e) {
           this.customErrorHandler.updateMessage(e.toString());
       }
@@ -55,7 +51,7 @@ export class RestServiceService {
   async getResidentBasedOnId(uniqueIdentifier: string){
     try {
         const query = '?properties=firstName&properties=lastName&properties=room&properties=birthday&properties=doctor';
-        return (await axios.get(this.restUrl + 'api/v1/residents/' + uniqueIdentifier + query)).data;
+        return (await axios.get('/api/v1/residents/' + uniqueIdentifier + query)).data;
     }catch (e) {
         console.log(e.toString());
     }
@@ -66,39 +62,29 @@ export class RestServiceService {
    * @param uniqueIdentifier unique id of resident
    * @returns message "Deleted" on succes or "Something went wrong" on error
    */
-
   async deleteResidentByUniqueId(uniqueIdentifier: string) {
     try{
-      await axios.delete(this.restUrl + 'api/v1/residents/' + uniqueIdentifier)
+      await axios.delete('/api/v1/residents/' + uniqueIdentifier)
     }catch (e) {
         console.log(e.toString());
     }
   }
-
   /**
    * Edit resident in database based on Resident object with properties and only the properties that have been changed
    * @param dataToUpdate Object Resident with all properties
    * @param changedProperties properties != dataToUpdate
    * @returns message "updated" on succes or "Could not update data!" on error.
    */
-  editResidentWithData(dataToUpdate: any, changedProperties: any) {
-    console.log(dataToUpdate);
-    const s = '';
+  async editResidentWithData(dataToUpdate: any, changedProperties: any) {
     let url: string = '?properties=' + changedProperties[0];
     for (let _i = 1; _i < changedProperties.length; _i++) {
       url += '&properties=' + changedProperties[_i];
     }
-
-    return new Promise(resolve => {
-      this.http.put(this.restUrl + 'api/v1/residents' + url, dataToUpdate).subscribe(response => {
-        console.log('updated');
-        resolve();
-      }, error => {
-        console.log('Could not update data!');
-        this.customErrorHandler.updateMessage(error);
-        resolve();
-      });
-    });
+    try {
+       return (await axios.put("/api/v1/residents" + url, dataToUpdate));
+    }catch (e) {
+        console.log("Error Message: "+ e.toString())
+    }
   }
 
   /**
@@ -106,61 +92,59 @@ export class RestServiceService {
    * @param data Object resident with all saved properties
    * @returns True or false based on succes and Console log Message "Saved resident to database" on succes or "Could not save resident to database" on error.
    */
-  /*
-  addResident(data: any) {
-    return new Promise(resolve => {
-      this.http.post(this.restUrl + 'api/v1/residents', data).subscribe(response => {
-        console.log('Saved resident to database');
-        resolve(response.text());
-      }, error => {
-        console.log('Could not save resident to database!');
-        this.customErrorHandler.updateMessage(error);
-        resolve(undefined);
-      });
-    });
+  async addResident(dataOfResident: any) {
+    try{
+       return (await axios.post('/api/v1/residents', dataOfResident)).data
+    }catch (e) {
+        console.log(e.toString());
+    }
   }
-  */
 
-  addProfilePic(uniqueIdentifier: any, picture: any) {
-    return new Promise(resolve => {
-      this.http.put(this.restUrl + 'api/v1/residents/' + uniqueIdentifier + '/picture', picture).subscribe(response => {
-        resolve(true);
-      }, error => {
-        this.customErrorHandler.updateMessage(error);
-        resolve(false);
-      });
-    });
+  /**
+     * Profilepicture will always be null when a resident is created
+     * When a picture is selected null -> picture (param)
+     * @param uniqueIdentifier
+     * @param picture
+     * @returns {Promise<void>}
+     */
+  async addProfilePic(uniqueIdentifier: any, picture: any) {
+    await axios.put('/api/v1/residents/' + uniqueIdentifier + '/picture', picture)
   }
 
   ////////
   //TAGS//
   ////////
-  //headers = new Headers({'Content-Type': 'application/json'});
-  //options = new RequestOptions({headers: this.headers});
 
-  /*addTagToResident(uniqueIdentifier: string, beaconMinorNumber: any) {
-    return new Promise<number[]>(resolve => {
-      this.http.post(this.restUrl + 'api/v1/residents/' + uniqueIdentifier + '/tags', beaconMinorNumber, this.options).subscribe(response => {
-        //console.log("add tag");
-        resolve(<number[]>response.json());
-      }, error => {
-        this.customErrorHandler.updateMessage(error);
-        resolve(undefined);
-      });
-    });
+  /**
+     * Add a beaconTag to a resident
+     * @param {string} uniqueIdentifier
+     * @param beaconMinorNumber
+     * @returns {Promise<any>}
+     */
+  async addTagToResident(uniqueIdentifier: string, beaconMinorNumber: any){
+    try {
+        return (await axios.post('/api/v1/residents/' + uniqueIdentifier + '/tags', beaconMinorNumber, {
+          headers: {
+            'Content-type' : 'application/json'
+          }
+        })).data
+    }catch (e) {
+        console.log('Errormessage: ' + e.toString())
+    }
   }
-  */
 
-  deleteTagFromResident(uniqueIdentifier: string, uniqueTagId: string) {
-    return new Promise(resolve => {
-      this.http.delete(this.restUrl + 'api/v1/residents/' + uniqueIdentifier + '/' + uniqueTagId).subscribe(response => {
-        console.log(response);
-        resolve();
-      }, error => {
-        this.customErrorHandler.updateMessage(error);
-        resolve();
-      });
-    });
+  /**
+     * Delete a beaconTag from a resident
+     * @param {string} uniqueIdentifier
+     * @param {string} uniqueTagId
+     * @returns {Promise<any>}
+     */
+  async deleteTagFromResident(uniqueIdentifier: string, uniqueTagId: string) {
+    try {
+        await axios.delete('/api/v1/residents/' + uniqueIdentifier + '/' + uniqueTagId);
+    }catch (e) {
+        console.log('Errormessage : ' + e.toString());
+    }
   }
 
   /////////
@@ -174,15 +158,12 @@ export class RestServiceService {
    * @param addMedia string: medialink
    * Returns true or false or updates error message
    */
-  addCorrectMediaToDatabase(uniqueIdentifier: any, media: any, addMedia: string) {
-    return new Promise(resolve => {
-      this.http.post(this.restUrl + 'api/v1/residents/' + uniqueIdentifier + addMedia, media).subscribe(response => {
-        resolve(true);
-      }, error => {
-        this.customErrorHandler.updateMessage(error);
-        resolve(false);
-      });
-    });
+  async addCorrectMediaToDatabase(uniqueIdentifier: any, media: any, addMedia: string) {
+    try {
+        return (await axios.post('/api/v1/residents/' + uniqueIdentifier + addMedia, media)).data;
+    }catch (e) {
+        console.log('Errormessage: ' + e.toString());
+    }
   }
 
   /**
@@ -191,36 +172,29 @@ export class RestServiceService {
    * @param type string: urlLink of media
    * returns true or false--> updates errormessage
    */
-  /*getCorrectMediaOfResidentBasedOnId(uniqueIdentifier: string, type: string) {
-    return new Promise<Resident[]>(resolve => {
-      this.http.get(this.restUrl + 'api/v1/residents/' + uniqueIdentifier + type).subscribe(response => {
-          resolve(<Resident[]>response.json());
-        },
-        error => {
-          this.customErrorHandler.updateMessage(error);
-          resolve(undefined);
-        }
-      );
-    });
+  async getCorrectMediaOfResidentBasedOnId(uniqueIdentifier: string, type: string) {
+    try {
+         const response  = (await axios.get('/api/v1/residents/' + uniqueIdentifier + type)).data;
+         console.log(response);
+         return response;
+    } catch (e) {
+        console.log('Errormessage: ' + e.toString());
+    }
   }
-  */
 
   /**
-   * delete resident based on uniqueid
+   * delete resident media based on uniqueid
    * @param uniqueIdentifier string: Resident id
    * @param uniqueMediaIdentifier string: Media id
    * @param type string: urlLink
    * returns true or false --> updates errormessage
    */
-  deleteResidentMediaByUniqueId(uniqueIdentifier: string, uniqueMediaIdentifier: string, type: string) {
-    return new Promise(resolve => {
-      this.http.delete(this.restUrl + 'api/v1/residents/' + uniqueIdentifier + type + '/' + uniqueMediaIdentifier).subscribe(response => {
-        resolve(true);
-      }, error => {
-        this.customErrorHandler.updateMessage(error);
-        resolve(false);
-      });
-    });
+  async deleteResidentMediaByUniqueId(uniqueIdentifier: string, uniqueMediaIdentifier: string, type: string) {
+    try {
+      await axios.delete('/api/v1/residents/' + uniqueIdentifier + type + '/' + uniqueMediaIdentifier);
+    }catch (e) {
+        console.log('Errormessage: ' + e.toString())
+    }
   }
 
   ////////////////
@@ -313,25 +287,4 @@ export class RestServiceService {
     });
   }
   */
-    /**
-     * Handle Http operation that failed.
-     * Let the app continue.
-     * @param operation - name of the operation that failed
-     * @param result - optional value to return as the observable result
-     */
-    private handleError<T> (operation = 'operation', result?: T) {
-        return (error: any): Observable<T> => {
-
-            // TODO: send the error to remote logging infrastructure
-            console.error(error); // log to console instead
-
-            // TODO: better job of transforming error for user consumption
-            this.log(`${operation} failed: ${error.message}`);
-
-            // Let the app keep running by returning an empty result.
-            return of(result as T);
-        };
-    }
-
-
 }

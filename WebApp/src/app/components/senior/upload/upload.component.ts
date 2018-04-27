@@ -13,31 +13,22 @@ export class UploadComponent implements OnInit {
   localUrl: any[];
   id: string = this.route.snapshot.params['id'];
   @Input() type: string;
-  fd: FormData;
   selectedFile: any;
   loading: string = "";
-  check: any;
   addPicture: string = "/images/data";
   addVideo: string = "/videos/data";
   @Output() reload = new EventEmitter();
 
-  constructor(private restService: RestServiceService, private route: ActivatedRoute, private router: Router) {}
+  constructor(private restService: RestServiceService, private route: ActivatedRoute) {}
 
-  ngOnInit() {
-  }
+  ngOnInit() {}
 
   /**
    * Observer event if anything changes
    * @param event
    */
   onFileSelected(event: any) {
-
-    //this.loading = "Upload";
-
     this.selectedFile = <any>event.target.files;
-
-    console.log(this.selectedFile.length);
-
     for (let i = 0; i < this.selectedFile.length; i++) {
       if (event.target.files && event.target.files[i]) {
         let reader = new FileReader();
@@ -46,13 +37,8 @@ export class UploadComponent implements OnInit {
         };
         reader.readAsDataURL(event.target.files[i]);
         $('.preview').append('test');
-
       }
     }
-
-
-    //$('.preview').html('<img [src]="localUrl" *ngIf="localUrl" class="imgPlaceholder">');
-
   }
 
   /**
@@ -61,7 +47,6 @@ export class UploadComponent implements OnInit {
    * Loop through all selectedfiles
    *
    */
-
   async onUpload() {
     for (const file in this.selectedFile) {
       const index = parseInt(file);
@@ -70,31 +55,20 @@ export class UploadComponent implements OnInit {
         const fd = new FormData();
         fd.append("File", this.selectedFile[index], this.selectedFile[index].name);
         if (this.selectedFile[index].type.indexOf("image") != -1) {
-          this.check = await this.restService.addCorrectMediaToDatabase(this.id, fd, this.addPicture);
+          await this.restService.addCorrectMediaToDatabase(this.id, fd, this.addPicture);
         }
         else if (this.selectedFile[index].type.indexOf("video") != -1) {
-          this.check = await this.restService.addCorrectMediaToDatabase(this.id, fd, this.addVideo);
+          await this.restService.addCorrectMediaToDatabase(this.id, fd, this.addVideo);
         }
         else{
-          alert("won't work");
+          alert("Kan geen media uploaden! Probeer later nog eens!");
         }
-
+          //clear selected files
+          this.selectedFile = null;
       }
-
       $("#addMedia").modal("close");
-
     }
-
-    //clear selected files
-    this.selectedFile = null;
-    if (this.check) {
-      this.selectedFile = null;
-      this.reload.emit();
-      //this.loading = "Uploaded!"
-    } else{
-      this.router.navigate(["/error"]);
-    }
-
+    this.reload.emit();
   }
 
 

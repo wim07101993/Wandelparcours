@@ -23,7 +23,7 @@ export class MediaService {
    */
   async getMedia(id: string, media: string) {
     this.fullLinks = [];
-    const mediaType = await this.service.getCorrectMediaOfResidentBasedOnId(id, media);
+    let mediaType = await this.service.getCorrectMediaOfResidentBasedOnId(id, media);
     for (const a of mediaType) {
       const url2 = this.url + a.id + '/file';
       const fullLinks = new Resident();
@@ -49,6 +49,6 @@ export class MediaService {
    * returns true or false
    */
   async deleteMedia(id: string, mediaId: string, media: string) {
-    return this.check = await this.service.deleteResidentMediaByUniqueId(id, mediaId, media);
+    await this.service.deleteResidentMediaByUniqueId(id, mediaId, media);
   }
 }

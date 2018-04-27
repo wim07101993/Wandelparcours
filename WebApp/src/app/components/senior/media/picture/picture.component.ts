@@ -14,21 +14,18 @@ declare var $: any;
 export class PictureComponent implements OnInit {
   typeOfMedia: string;
   picture: string = "/images";
-  check: any;
-  ngOnInit() { }
-
   deleteResidentImage: Resident;
   images: Resident[];
   fullLinks: any=[];
   id: string = this.route.snapshot.params['id'];
-  selectedFile: File;
 
-  constructor(private route: ActivatedRoute, private router: Router, private media: MediaService) {
+  constructor(private route: ActivatedRoute, private media: MediaService) {}
+
+  ngOnInit() {
     this.getAllImages();
     this.typeOfMedia = "image/*";
     this.deleteResidentImage = <Resident>{images: {}};
   }
-
   /**
    * reload page
    */
@@ -42,7 +39,6 @@ export class PictureComponent implements OnInit {
   async getAllImages() {
     this.fullLinks = [];
     this.fullLinks = await this.media.getMedia(this.id, this.picture);
-    //console.log(this.fullLinks);
   }
 
   /**
@@ -51,13 +47,11 @@ export class PictureComponent implements OnInit {
    * Either reloads the page or sends user to errorpage
    */
   async deleteResidentMediaByUniqueId(uniquePictureID: string) {
-    this.check = await this.media.deleteMedia(this.id, uniquePictureID, this.picture);
-    if (this.check) {
-      this.getAllImages();
-    } else {
-      this.router.navigate(["/error"]);
-    }
-    $("#deleteModal").modal("close");
+    await this.media.deleteMedia(this.id, uniquePictureID, this.picture);
+    setTimeout(()=>{
+        $("#deleteModal").modal("close");
+    }, 200);
+    this.getAllImages();
   }
 
   /*
@@ -71,14 +65,8 @@ export class PictureComponent implements OnInit {
   *   Opens modal to delete a picture
   */
   deleteModal(resident: Resident) {
-
     this.deleteResidentImage = resident;
-    console.log(resident.images.id);
-    // noinspection JSJQueryEfficiency
     $("#deleteModal").modal();
-    // noinspection JSJQueryEfficiency
     $("#deleteModal").modal("open");
-
   }
-
 }

@@ -16,7 +16,12 @@ namespace WebService
         public void ConfigureServices(IServiceCollection services)
         {
             services
-                .AddCors()
+                .AddCors(options =>options.AddPolicy("AllowAllMethods",
+                    builder =>
+                    {
+                        builder.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin();
+                    })
+                )
                 .UseServices()
                 .AddMvc(
                     options =>
@@ -41,7 +46,7 @@ namespace WebService
                 app.UseDeveloperExceptionPage();
             }
 
-            app.UseCors(option => option.AllowAnyOrigin().AllowAnyMethod())
+            app.UseCors(option => option.AllowAnyOrigin().AllowAnyMethod().AllowAnyOrigin().AllowAnyHeader())
                 .UseStaticFiles()
                 .UseExceptionMiddelware()
                 .UseMvc();

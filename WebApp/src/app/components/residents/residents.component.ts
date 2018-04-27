@@ -34,11 +34,9 @@ export class ResidentsComponent implements OnInit {
    * @param service Restservice
    * @param router Router
    */
-  constructor(private service: RestServiceService, private router: Router) {
+  constructor(private service: RestServiceService, private router: Router) {}
 
-  }
-
-    ngOnInit(): void {
+  ngOnInit(): void {
         this.showAllResidents();
         this.residents = [];
         this.profilePic = [];
@@ -62,12 +60,9 @@ export class ResidentsComponent implements OnInit {
   /**
    * Close modal
    */
-
   closeModal() {
     $().modal('close');
   }
-
-
 
   /**
    * Focus to input for the searchbar --> input will be active if event 'button' has been pressed
@@ -99,7 +94,6 @@ export class ResidentsComponent implements OnInit {
    * @param modalResident
    */
   openModal(modalResident: Resident) {
-    // alert(uniqueIdentifier);
     this.modalResident = modalResident;
     $('#deleteModalResident').modal();
     $('#deleteModalResident').modal('open');
@@ -113,7 +107,6 @@ export class ResidentsComponent implements OnInit {
    */
   openEditModal(modalResident: Resident) {
     this.modalResident = modalResident;
-    console.log(this.modalResident);
     $('#editModalResident').modal();
     $('#editModalResident').modal('open');
     $('.datepicker').pickadate(
@@ -139,7 +132,6 @@ export class ResidentsComponent implements OnInit {
    */
   async showAllResidents() {
     const residents: any = await this.service.getAllResidents();
-    console.log(residents);
     if (residents !== undefined) {
       this.residents = residents;
     } else {
@@ -161,19 +153,13 @@ export class ResidentsComponent implements OnInit {
    * Edit and save resident from service
    * @param resident of type Resident
    */
-
   async editResident(resident: Resident) {
     // get correct ID
     this.updateResident.id = resident.id;
     const birthDay = $('#birthDay').val();
-
-    console.log(birthDay);
-
     // if birthday hasn't been entered make sure birthday is of type Date
     if (birthDay !== '') {
-      // console.log("update birthday");
       const a = new Date(birthDay);
-      console.log(a);
       this.updateResident.birthday = a;
     }
     /**
@@ -194,13 +180,10 @@ export class ResidentsComponent implements OnInit {
     if (this.updateResident.birthday === '') {
       this.updateResident.birthday = this.modalResident.birthday;
     }
-    console.log(changedProperties);
 
     $('#birthDay').val('');
 
     const updateData = this.updateResident;
-    console.log('test');
-
 
     for(const file in this.selectedFile) {
       try {
@@ -212,12 +195,11 @@ export class ResidentsComponent implements OnInit {
           if (this.selectedFile[index].type.indexOf('image') != -1) {
             await this.service.addProfilePic(this.updateResident.id, fd);
           } else {
-            alert('won\'t work');
+            alert('Could not update profile picture!');
           }
-
         }
       } catch (e) {
-        console.log(e);
+        console.log("Error message :" + e.toString());
       }
     }
     await this.service.editResidentWithData(updateData, changedProperties);
@@ -255,7 +237,6 @@ export class ResidentsComponent implements OnInit {
         this.fd.append('File', this.selectedFile[index], this.selectedFile[index].name);
         if (this.selectedFile[index].type.indexOf('image') !== -1) {
           this.selectedFileImage = this.selectedFile[index];
-          //this.check = await this.restService.addCorrectMediaToDatabase(this.id, fd, this.addPicture);
         }
       }
     }
@@ -268,13 +249,16 @@ export class ResidentsComponent implements OnInit {
       birthday: a,
       doctor: {name: form.value.aDoctor, phoneNumber: form.value.aTelefoon},
     };
-    console.log(this.fd);
 
-    // Send gathered data over the resrService
+    // Send gathered data over the restService
     const id = await this.service.addResident(data);
     if (id !== undefined) {
-      await this.service.addProfilePic(id, this.fd);
-      Materialize.toast(`bewoner: ${data.firstName} ${data.lastName} succesvol toegevoegd`, 5000);
+        if(this.fd !== undefined){
+            await this.service.addProfilePic(id, this.fd);
+            Materialize.toast(`bewoner: ${data.firstName} ${data.lastName} succesvol toegevoegd met foto`, 5000);
+        }else{
+            Materialize.toast(`bewoner: ${data.firstName} ${data.lastName} succesvol toegevoegd zonder profielfoto`, 5000);
+        }
     } else {
       Materialize.toast(`Bewoner kon niet worden toegevoegd!`, 5000);
       this.router.navigate(['/error']);
@@ -323,12 +307,13 @@ export class ResidentsComponent implements OnInit {
     });
   }
 
+  /**
+     * Resets profilePicture so it won't be shown
+     * Does this function do anything usefull?
+     */
   reset() {
-    console.log(this.myInputVariable.nativeElement.files);
     this.myInputVariable.nativeElement.value = '';
-    // this.myInputImage.nativeElement.value = "Geen bestand geselecteerd";
     this.profilePic = '';
-    console.log(this.myInputVariable.nativeElement.files);
   }
 
   /**
@@ -337,7 +322,6 @@ export class ResidentsComponent implements OnInit {
    * @param resident of type Resident
    */
   navigateTo(resident: Resident) {
-    // console.log(resident.id);
     this.router.navigate(['/resident/' + resident.id]);
   }
 }

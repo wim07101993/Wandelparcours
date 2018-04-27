@@ -12,6 +12,8 @@ export class SeniorComponent implements OnInit {
   id: string = this.route.snapshot.params['id'];
   type: string;
 
+  constructor(private route: ActivatedRoute) {}
+
   ngOnInit() {
     this.route.url.subscribe(resolve => {
 
@@ -22,15 +24,5 @@ export class SeniorComponent implements OnInit {
         this.type = resolve[resolve.length - 1].path;
       }
     });
-    // $('.tabs').tabs();
-
   }
-
-  constructor(private route: ActivatedRoute) {
-  }
-
-  addActive() {
-    $('.test').addClass('active');
-  }
-
 }

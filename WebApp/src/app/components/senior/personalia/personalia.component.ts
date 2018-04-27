@@ -23,17 +23,13 @@ export class PersonaliaComponent implements OnInit {
   countI = 0;
   countV = 0;
 
-  // router: Router;
+  constructor(private service: RestServiceService, private media: MediaService, private route: ActivatedRoute, private router: Router) {}
 
-  ngOnInit() {
-  }
-
-  constructor(private service: RestServiceService, private media: MediaService, private route: ActivatedRoute, private router: Router) {
-    this.resident = <Resident>{firstName: '', lastName: '', room: '', id: '', birthday: new Date(), doctor: {name: '', phoneNumber: ''}};
-    this.showOneResident();
-    this.getImageCount();
-    // this.getVideoCount();
-  }
+    ngOnInit() {
+        this.resident = <Resident>{firstName: '', lastName: '', room: '', id: '', birthday: new Date(), doctor: {name: '', phoneNumber: ''}};
+        this.showOneResident();
+        this.getImageCount();
+    }
 
   get baseUr() {
     return document.getElementsByTagName('base')[0].href;
@@ -41,7 +37,6 @@ export class PersonaliaComponent implements OnInit {
 
   async showOneResident() {
     const resident: any = await this.service.getResidentBasedOnId(this.id);
-    console.log(resident);
     if (resident !== undefined) {
       this.resident = resident;
     } else {
@@ -50,7 +45,6 @@ export class PersonaliaComponent implements OnInit {
   }
 
   async deleteTag(tag: any) {
-    console.log(tag);
     await this.service.deleteTagFromResident(this.id, tag);
     this.showOneResident();
     $('#deleteTagModal').modal('close');
@@ -75,7 +69,6 @@ export class PersonaliaComponent implements OnInit {
   */
   deleteTagModal(tag: any) {
     this.tag = tag;
-    // noinspection JSJQueryEfficiency
     $('#deleteTagModal').modal();
     $('#deleteTagModal').modal('open');
 
@@ -101,18 +94,11 @@ export class PersonaliaComponent implements OnInit {
 
     const bmn = beaconMinorNumber.beaconNumber + '';
 
-    // console.log(beaconMinorNumber.beaconNumber);
     const a = await this.service.addTagToResident(this.resident.id, bmn);
     if (a !== undefined) {
       this.resident.tags = a;
     } else {
-      // alert("Oeps! Beacon is al gekoppeld aan een bewoner");
       Materialize.toast('Oeps! Beacon ' + bmn + ' is al gekoppeld aan een bewoner ', 4000);
-      // todomaybe
-      /*
-      * get resident name that already has the beacontag value
-      *
-      */
     }
 
     form.reset();
