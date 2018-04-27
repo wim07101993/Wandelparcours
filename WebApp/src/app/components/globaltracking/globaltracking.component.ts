@@ -37,7 +37,7 @@ export class GlobaltrackingComponent extends ARenderComponent implements OnInit 
   }
 
   get markerUrl() {
-    return getBaseUrl() + 'images/resident.png';
+    return getBaseUrl() + 'assets/images/resident.png';
   }
 
   constructor(private http: Http, protected elRef: ElementRef, private route: ActivatedRoute, private router: Router) {

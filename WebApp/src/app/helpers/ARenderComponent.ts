@@ -24,13 +24,10 @@ export abstract class ARenderComponent {
 
   public abstract spriteClicked(id?: string): Promise<boolean>;
 
-  constructor() {
-
-    //console.log(elRef);
-  }
+  constructor() {}
 
   get BluePrintUrl() {
-    return getBaseUrl() + "images/blueprint.jpg";
+    return getBaseUrl() + "assets/images/blueprint.jpg";
 
   }
 

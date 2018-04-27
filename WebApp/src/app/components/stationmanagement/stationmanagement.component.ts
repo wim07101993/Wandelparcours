@@ -41,8 +41,9 @@ export class StationmanagementComponent extends ARenderComponent implements OnIn
   }
 
   get markerUrl() {
-    return getBaseUrl() + "images/station.png";
+    return getBaseUrl() + "assets/images/station.png";
   }
+
 
   async ngOnInit() {
 
@@ -110,11 +111,9 @@ export class StationmanagementComponent extends ARenderComponent implements OnIn
 
   }
 
-
   /*
   *  tick does the needed calculatations for the render, and draws the rendering on the canvas
   */
-
 
   /*
    *  This function causes to draw a station on the cursor when add station button is clicked

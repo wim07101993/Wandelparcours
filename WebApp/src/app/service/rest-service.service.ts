@@ -7,9 +7,7 @@ import {Resident} from '../models/resident';
 import {Station} from '../models/station';
 import {CustomErrorHandler} from './customErrorHandler';
 import {StationmanagementComponent} from '../components/stationmanagement/stationmanagement.component';
-import {Observable} from 'rxjs/Observable';
-import {catchError, tap} from 'rxjs/operators';
-import {of} from 'rxjs/observable/of';
+//import {stat} from 'fs';
 
 @Injectable()
 export class RestServiceService {
@@ -202,22 +200,11 @@ export class RestServiceService {
   ////////////////
     // TODO
   async SaveStationToDatabase(station: Station) {
-    return new Promise(resolve => {
-
-      this.http.post(this.restUrl + 'api/v1/receivermodules', station).subscribe(response => {
-          try {
-            resolve(true);
-          } catch (e) {
-            resolve(false);
-          }
-
-        },
-        error => {
-          console.log(error);
-          resolve(false);
-        }
-      );
-    });
+      try {
+          await axios.post('/api/v1/receivermodules',station);
+      }catch (e) {
+          console.log('Errormessage: ' + e.toString());
+      }
   }
 
   async DeleteStation(mac: string) {
