@@ -1,13 +1,10 @@
 import {Injectable} from '@angular/core';
-import { HttpClient } from '@angular/common/http';
 import axios from 'axios';
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/catch';
 import {Resident} from '../models/resident';
 import {Station} from '../models/station';
-import {CustomErrorHandler} from './customErrorHandler';
 import {StationmanagementComponent} from '../components/stationmanagement/stationmanagement.component';
-//import {stat} from 'fs';
 
 @Injectable()
 export class RestServiceService {
@@ -27,7 +24,7 @@ export class RestServiceService {
     this.url = val;
   }
 
-  constructor(private http: HttpClient, private customErrorHandler: CustomErrorHandler) {}
+  constructor() {}
 
   /**
    * Get all residents from database
@@ -198,7 +195,7 @@ export class RestServiceService {
   ////////////////
   //LOCALISATION//
   ////////////////
-    // TODO
+
   async SaveStationToDatabase(station: Station) {
       try {
           await axios.post('/api/v1/receivermodules',station);
@@ -206,8 +203,8 @@ export class RestServiceService {
           console.log('Errormessage: ' + e.toString());
       }
   }
-
-  async DeleteStation(mac: string) {
+    // TODO
+  /*async DeleteStation(mac: string) {
     return new Promise(resolve => {
 
       this.http.delete(this.restUrl + 'api/v1/receivermodules/bymac/' + mac).subscribe(response => {
@@ -225,9 +222,9 @@ export class RestServiceService {
       );
     });
 
-  }
+  }*/
 
-  UpdateStation(id: string, newMac: string) {
+  /*UpdateStation(id: string, newMac: string) {
     return new Promise(resolve => {
       this.http.put(this.restUrl + 'api/v1/receivermodules/' + id + '/Mac', newMac).subscribe(response => {
         resolve(true);
@@ -236,7 +233,7 @@ export class RestServiceService {
       });
 
     });
-  }
+  }*/
 
   /*LoadStations(parent: StationmanagementComponent) {
     if (parent.stations != undefined) {
