@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import '/Users/kenan/Documents/GitHub/Wandelparcours/WebApp/src/assets/login-animation.js';
+import 'assets/login-animation.js';
 declare var $: any;
 declare var Materialize: any;
 

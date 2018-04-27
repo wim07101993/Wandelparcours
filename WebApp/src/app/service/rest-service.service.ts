@@ -200,7 +200,7 @@ export class RestServiceService {
   ////////////////
   //LOCALISATION//
   ////////////////
-
+    // TODO
   async SaveStationToDatabase(station: Station) {
     return new Promise(resolve => {
 
@@ -250,8 +250,8 @@ export class RestServiceService {
 
     });
   }
-  /*
-  LoadStations(parent: StationmanagementComponent) {
+
+  /*LoadStations(parent: StationmanagementComponent) {
     if (parent.stations != undefined) {
       parent.stations.clear();
     }
@@ -285,6 +285,5 @@ export class RestServiceService {
           resolve(false);
         });
     });
-  }
-  */
+  }*/
 }
