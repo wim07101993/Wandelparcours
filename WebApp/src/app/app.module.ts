@@ -21,6 +21,7 @@ import { UploadComponent } from './components/senior/upload/upload.component';
 import { TrackingComponent } from './components/senior/tracking/tracking.component';
 import { GlobaltrackingComponent } from './components/globaltracking/globaltracking.component';
 import { LoginComponent } from './components/login/login.component';
+import { UsersComponent } from './components/users/users.component';
 
 const appRoutes: Routes = [
       { path: '', redirectTo: 'residents', pathMatch: 'full' },
@@ -54,6 +55,7 @@ const appRoutes: Routes = [
     TrackingComponent,
     GlobaltrackingComponent,
     LoginComponent,
+    UsersComponent,
   ],
   imports: [
     CommonModule,
