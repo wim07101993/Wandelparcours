@@ -18,13 +18,10 @@ using WebService.Services.Logging;
 
 namespace WebService.Controllers
 {
-    [Route("api/v1/[controller]")]
+    [Route(Routes.RestBase.ControllerRoute)]
     public class MediaController : ARestControllerBase<MediaData>, IMediaController
     {
         #region FIELDS
-
-        private const string GetOneFileWithExtensionTemplate = "{id}/file.{extension}";
-        private const string GetFileTemplate = "{id}/file";
 
         private readonly IResidentsService _residentsService;
 
@@ -101,7 +98,7 @@ namespace WebService.Controllers
         #region read
 
         [Authorize(EUserType.Module, EUserType.SysAdmin, EUserType.User, EUserType.User)]
-        [HttpGet(GetOneFileWithExtensionTemplate)]
+        [HttpGet(Routes.Media.GetOneFileWithExtension)]
         public async Task<FileContentResult> GetOneAsync(string id, string extension)
         {
             if (string.IsNullOrWhiteSpace(extension))
@@ -118,7 +115,7 @@ namespace WebService.Controllers
         }
 
         [Authorize(EUserType.Module, EUserType.SysAdmin, EUserType.User, EUserType.User)]
-        [HttpGet(GetFileTemplate)]
+        [HttpGet(Routes.Media.GetFile)]
         public async Task<FileContentResult> GetFileAsync(string id)
         {
             var objectId = await CanGetMediaAsync(id);

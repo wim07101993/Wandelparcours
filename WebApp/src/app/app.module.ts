@@ -21,9 +21,11 @@ import { VideoComponent } from './components/senior/media/video/video.component'
 import { UploadComponent } from './components/senior/upload/upload.component';
 import { TrackingComponent } from './components/senior/tracking/tracking.component';
 import { GlobaltrackingComponent } from './components/globaltracking/globaltracking.component';
+import { LoginComponent } from './components/login/login.component';
 
 const appRoutes: Routes = [
       {path: '', redirectTo: 'residents', pathMatch: 'full'},
+      {path: 'login', component: LoginComponent},
       {path: 'residents', component: ResidentsComponent},
       { path: 'resident/:id', component: PersonaliaComponent },
       { path: 'resident/:id/picture', component: PictureComponent },
@@ -35,7 +37,7 @@ const appRoutes: Routes = [
   // { path: 'fetch-data', component: FetchDataComponent }
       { path: 'modules', component: StationmanagementComponent },
       //{ path: 'error', component: ErrorPageComponent},
-      { path: 'residents', component: ResidentsComponent},
+      //{ path: 'residents', component: ResidentsComponent},
       { path: 'tracking', component: GlobaltrackingComponent},
       { path: '**', redirectTo: 'residents'}
 ];
@@ -56,6 +58,7 @@ const appRoutes: Routes = [
     UploadComponent,
     TrackingComponent,
     GlobaltrackingComponent,
+    LoginComponent,
   ],
   imports: [
     CommonModule,
