@@ -195,7 +195,7 @@ export class RestServiceService {
   ////////////////
   //LOCALISATION//
   ////////////////
-
+    // TODO
   async SaveStationToDatabase(station: Station) {
       try {
           await axios.post('/api/v1/receivermodules',station);
@@ -203,26 +203,14 @@ export class RestServiceService {
           console.log('Errormessage: ' + e.toString());
       }
   }
-    // TODO
-  /*async DeleteStation(mac: string) {
-    return new Promise(resolve => {
 
-      this.http.delete(this.restUrl + 'api/v1/receivermodules/bymac/' + mac).subscribe(response => {
-          try {
-            resolve(true);
-          } catch (e) {
-            resolve(false);
-          }
-
-        },
-        error => {
-          console.log(error);
-          resolve(false);
-        }
-      );
-    });
-
-  }*/
+  async DeleteStation(mac: string) {
+      try {
+          axios.delete('/api/v1/receivermodules/bymac/' + mac)
+      }catch (e) {
+          console.log('Errormessage: ' + e.toString())
+      }
+  }
 
   /*UpdateStation(id: string, newMac: string) {
     return new Promise(resolve => {
@@ -235,39 +223,58 @@ export class RestServiceService {
     });
   }*/
 
-  /*LoadStations(parent: StationmanagementComponent) {
-    if (parent.stations != undefined) {
-      parent.stations.clear();
-    }
-    if (parent.renderBuffer.buffer != undefined) {
-      parent.renderBuffer.buffer.clear();
-    }
-    if (parent.stationMacAdresses != undefined) {
-      parent.stationMacAdresses = [];
-    }
-    return new Promise<boolean>(resolve => {
-      this.http.get(this.restUrl + 'api/v1/receivermodules').subscribe(response => {
-
-          const tryParse = <Array<any>>(response.json());
-
-          let station: any;
-          if (tryParse != undefined) {
-            for (station of tryParse) {
-              if (station == undefined) {
-                continue;
+  async LoadStations(parent: StationmanagementComponent) {
+      if (parent.stations != undefined) {
+          parent.stations.clear();
+      }
+      if (parent.renderBuffer.buffer != undefined) {
+          parent.renderBuffer.buffer.clear();
+      }
+      if (parent.stationMacAdresses != undefined) {
+          parent.stationMacAdresses = [];
+      }
+      try {
+          axios.get('/api/v1/receivermodules').then(function (response) {
+              const tryParse = <Array<any>>(response.data);
+              let station: any;
+              if (tryParse != undefined) {
+                  for (station of tryParse) {
+                      if (station == undefined) {
+                          continue;
+                      }
+                      parent.stationMacAdresses.push(station.mac);
+                      parent.stations.set(station.mac, station.position);
+                      parent.stationsIds.set(station.mac, station.id);
+                  }
               }
-              parent.stationMacAdresses.push(station.mac);
-              parent.stations.set(station.mac, station.position);
-              parent.stationsIds.set(station.mac, station.id);
+              return true;
+          })
+      } catch (e) {
+          console.log('Errormessage: ' + e.toString());
+      }
+      /*return new Promise<boolean>(resolve => {
+        this.http.get(this.restUrl + 'api/v1/receivermodules').subscribe(response => {
+
+            const tryParse = <Array<any>>(response.json());
+
+            let station: any;
+            if (tryParse != undefined) {
+              for (station of tryParse) {
+                if (station == undefined) {
+                  continue;
+                }
+                parent.stationMacAdresses.push(station.mac);
+                parent.stations.set(station.mac, station.position);
+                parent.stationsIds.set(station.mac, station.id);
+              }
             }
-          }
-          resolve(true);
-        },
-        error => {
-          console.log('can\'t load stations');
-          console.log(error);
-          resolve(false);
-        });
-    });
-  }*/
+            resolve(true);
+          },
+          error => {
+            console.log('can\'t load stations');
+            console.log(error);
+            resolve(false);
+          });
+      });*/
+    }
 }

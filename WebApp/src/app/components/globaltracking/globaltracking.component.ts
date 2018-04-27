@@ -47,10 +47,10 @@ export class GlobaltrackingComponent extends ARenderComponent implements OnInit 
   }
 
   async ngOnInit() {
-    super.ngOnInit();
+    await super.ngOnInit();
     this.id = this.route.snapshot.params['id'];
     this.residents = new Map<string, Resident>();
-    this.loadResidents();
+    await this.loadResidents();
     this.markerscale = 50;
     setInterval(() => {
       this.loadResidents();
@@ -78,7 +78,6 @@ export class GlobaltrackingComponent extends ARenderComponent implements OnInit 
     } catch (error) {
       return false;
     }
-    //alert("clicked");
   }
 
   async loadResidents() {
@@ -136,7 +135,7 @@ export class GlobaltrackingComponent extends ARenderComponent implements OnInit 
 
         if (keyDeleted) {
           this.renderBuffer.buffer.clear();
-          this.RecalculateResidents();
+          await this.RecalculateResidents();
         }
       } catch (e) {
       }

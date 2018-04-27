@@ -23,9 +23,9 @@ import { GlobaltrackingComponent } from './components/globaltracking/globaltrack
 import { LoginComponent } from './components/login/login.component';
 
 const appRoutes: Routes = [
-      {path: '', redirectTo: 'residents', pathMatch: 'full'},
-      {path: 'login', component: LoginComponent},
-      {path: 'residents', component: ResidentsComponent},
+      { path: '', redirectTo: 'residents', pathMatch: 'full' },
+      { path: 'login', component: LoginComponent },
+      { path: 'residents', component: ResidentsComponent },
       { path: 'resident/:id', component: PersonaliaComponent },
       { path: 'resident/:id/picture', component: PictureComponent },
       { path: 'resident/:id/video', component: VideoComponent },
@@ -33,8 +33,8 @@ const appRoutes: Routes = [
       { path: 'resident/:id/game', component: GameComponent },
       { path: 'resident/:id/tracking', component: TrackingComponent },
       { path: 'modules', component: StationmanagementComponent },
-      { path: 'tracking', component: GlobaltrackingComponent},
-      { path: '**', redirectTo: 'residents'}
+      { path: 'tracking', component: GlobaltrackingComponent },
+      { path: '**', redirectTo: 'residents' }
 ];
 
 @NgModule({
