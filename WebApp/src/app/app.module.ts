@@ -4,7 +4,7 @@ import {CommonModule} from '@angular/common';
 import {FormsModule} from '@angular/forms';
 import {HttpClientModule} from '@angular/common/http';
 import {RouterModule, Routes} from '@angular/router';
-
+import { LoginService } from "./service/login-service.service";
 
 import {AppComponent} from './components/app/app.component';
 import {StationmanagementComponent} from './components/stationmanagement/stationmanagement.component';
@@ -68,7 +68,7 @@ const appRoutes: Routes = [
     RouterModule.forRoot(appRoutes),
     BrowserModule
   ],
-  providers: [],
+  providers: [LoginService],
   bootstrap: [AppComponent]
 })
 export class AppModuleShared {

@@ -1,20 +1,32 @@
 import { Component, OnInit } from '@angular/core';
-import '/Users/kenan/Documents/GitHub/Wandelparcours/WebApp/src/assets/login-animation.js';
+import 'assets/login-animation.js';
 declare var $: any;
 declare var Materialize: any;
+import { LoginService } from "../../service/login-service.service";
+import axios from 'axios';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
-  styleUrls: ['./login.component.css']
+  styleUrls: ['./login.component.css'],
 })
 
 export class LoginComponent implements OnInit {
 
-  email: string;
-  password: string;
-  constructor() {
-    $('Header').hide();
+  private email: string;
+  private password: string;
+  private rememberMe:boolean=false;
+  private waitingResponse=false;
+  cookieLaw=true;
+  constructor(private loginService:LoginService, private router:Router) {
+    let cookie = this.getCookie("login");
+    if(cookie!=null){
+      let login =JSON.parse(window.atob(cookie));
+      this.email=login.username;
+      this.password=login.password;
+      this.login();
+    }
   }
 
   ngOnInit() {}
@@ -24,9 +36,53 @@ export class LoginComponent implements OnInit {
     (window as any).initialize();
   }
 
+  
+
   login(){
-    console.log(`email: ${this.email} password: ${this.password}`)
-    alert(`Email: ${this.email} Password: ${this.password}`)
+    this.waitingResponse=true;
+    this.loginService.login(this.email,this.password).then((result)=>
+    {
+      this.waitingResponse=false;
+      if(result==true){
+        let redirectURL= this.loginService.surfUrl=="/login"? "/":this.loginService.surfUrl; 
+        this.router.navigate([redirectURL]);
+        if(this.rememberMe){
+          let login:any = {username:this.email,password:this.password};
+          login = JSON.stringify(login);
+          login = window.btoa(login);
+          this.setCookie("login",login,30);
+        }
+      }else{
+        alert("ga weg lan");
+      }
+    }
+    ).catch(()=>{this.waitingResponse=false});
   }
 
+ setCookie(name,value,days) {
+    var expires = "";
+    if (days) {
+        var date = new Date();
+        date.setTime(date.getTime() + (days*24*60*60*1000));
+        expires = "; expires=" + date.toUTCString();
+    }
+    document.cookie = name + "=" + (value || "")  + expires + "; path=/";
+}
+getCookie(name) {
+    var nameEQ = name + "=";
+    var ca = document.cookie.split(';');
+    for(var i=0;i < ca.length;i++) {
+        var c = ca[i];
+        while (c.charAt(0)==' ') c = c.substring(1,c.length);
+        if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
+    }
+    return null;
+}
+
+
+  cancelFormEvent(empForm: any, event: Event) {
+    event.preventDefault();
+    this.login();
+    
+  }
 }

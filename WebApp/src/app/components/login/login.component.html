@@ -1,4 +1,6 @@
-<form #loginForm="ngForm" (ngSubmit)="login()">
+
+
+<form #loginForm="ngForm" (ngSubmit)="cancelFormEvent(empForm, $event)">
 	<div class="svgContainer">
 	  <div>
 		<svg class="mySVG" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 200 200">
@@ -129,7 +131,30 @@
 	  <label for="password">Password</label>
 	  <input type="password" id="password" name="password" [(ngModel)]="password" class="password" required/>
 	</div>
+		<p>
+			<label>
+				<input type="checkbox" [(ngModel)]="rememberMe" name="remember" style="opacity:1;" />
+				<span>Onthoud mij</span>
+			</label>
+		</p>
+		
 	<div class="inputGroup inputGroup3">
 	  <button id="login" type="submit" [disabled]="loginForm.invalid">Log in</button>
 	</div>
-  </form>
+	</form>
+	
+	<div id="eu-cookie-law" *ngIf="cookieLaw" >
+		<p>Deze website maakt gebruik van cookies om je login gegevens te onthouden <button class="btn btn-default" (click)="cookieLaw=false;">Sluiten</button></p>
+	</div>
+	<div class="waitingForLogin" *ngIf="waitingResponse==true" >
+		<div class="preloader-wrapper big active">
+      <div class="spinner-layer spinner-blue">
+        <div class="circle-clipper left">
+          <div class="circle"></div>
+        </div><div class="gap-patch">
+          <div class="circle"></div>
+        </div><div class="circle-clipper right">
+          <div class="circle"></div>
+        </div>
+      </div>
+	</div>
