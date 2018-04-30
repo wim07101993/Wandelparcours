@@ -3,7 +3,7 @@ using MongoDB.Bson;
 
 namespace WebService.Services.Authorization
 {
-    public interface ITokenService
+    public interface ITokensService
     {
         Task<string> CreateTokenAsync(ObjectId id, string password);
         Task<ObjectId> GetIdFromToken(string token);

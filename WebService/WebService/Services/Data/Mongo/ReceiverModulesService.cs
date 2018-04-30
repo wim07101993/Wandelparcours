@@ -18,7 +18,7 @@ namespace WebService.Services.Data.Mongo
         }
 
 
-        public async Task<ReceiverModule> GetAsync(string mac,
+        public async Task<ReceiverModule> GetOneAsync(string mac,
             IEnumerable<Expression<Func<ReceiverModule, object>>> propertiesToInclude = null)
             => await GetByAsync(x => x.Mac == mac);
 

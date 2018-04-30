@@ -11,13 +11,13 @@ namespace WebService.Controllers
     [Route(Routes.RestBase.ControllerRoute)]
     public class TokensController : AControllerBase, ITokenController
     {
-        private readonly ITokenService _tokenService;
+        private readonly ITokensService _tokensService;
         private readonly IUsersService _usersService;
 
 
-        public TokensController(ITokenService tokenService, IUsersService usersService) : base(usersService)
+        public TokensController(ITokensService tokensService, IUsersService usersService) : base(usersService)
         {
-            _tokenService = tokenService;
+            _tokensService = tokensService;
             _usersService = usersService;
         }
 
@@ -27,7 +27,7 @@ namespace WebService.Controllers
         public async Task<string> CreateTokenAsync([FromHeader] string userName, [FromHeader] string password)
         {
             var id = await _usersService.GetPropertyByNameAsync(userName, x => x.Id);
-            return await _tokenService.CreateTokenAsync(id, password)
+            return await _tokensService.CreateTokenAsync(id, password)
                    ?? throw new UnauthorizedAccessException();
         }
     }

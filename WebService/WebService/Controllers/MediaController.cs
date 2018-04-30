@@ -31,7 +31,7 @@ namespace WebService.Controllers
         #region COSNTRUCTROS
 
         public MediaController(IMediaService dataService, IUsersService usersService, ILogger logger,
-            ITokenService tokenService, IResidentsService residentsService)
+            ITokensService tokensService, IResidentsService residentsService)
             : base(dataService, logger, usersService)
         {
             _residentsService = residentsService;

@@ -11,9 +11,9 @@ using WebService.Models;
 
 namespace WebService.Services.Data.Mongo
 {
-    public class LocationService : AMongoDataService<ResidentLocation>, ILocationService
+    public class LocationsService : AMongoDataService<ResidentLocation>, ILocationsService
     {
-        public LocationService(IConfiguration config)
+        public LocationsService(IConfiguration config)
             : base(
                 config["Database:ConnectionString"], config["Database:DatabaseName"],
                 config["Database:LocationsCollectionName"])
