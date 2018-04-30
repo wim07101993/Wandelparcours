@@ -8,7 +8,7 @@ namespace WebService.Services.Data
 {
     public interface IReceiverModulesService : IDataService<ReceiverModule>
     {
-        Task<ReceiverModule> GetAsync(string mac,
+        Task<ReceiverModule> GetOneAsync(string mac,
             IEnumerable<Expression<Func<ReceiverModule, object>>> propertiesToInclude = null);
 
         Task RemoveAsync(string mac);

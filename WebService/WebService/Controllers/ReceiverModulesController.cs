@@ -84,7 +84,7 @@ namespace WebService.Controllers
                 ? ConvertStringsToSelectors(propertiesToInclude)
                 : new Expression<Func<ReceiverModule, object>>[0];
 
-            return await ((IReceiverModulesService) DataService).GetAsync(mac, selectors)
+            return await ((IReceiverModulesService) DataService).GetOneAsync(mac, selectors)
                    ?? throw new NotFoundException<ReceiverModule>(nameof(ReceiverModule.Mac), mac);
         }
 
