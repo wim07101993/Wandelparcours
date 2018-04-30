@@ -19,7 +19,6 @@ declare var Materialize: any;
 /** Class representing stationmanagement page. */
 export class StationmanagementComponent extends ARenderComponent implements OnInit {
   position: Point;
-  imageUrl = "";
   collidingElement: any;
   saveStation: Station = new Station();
   menu: boolean = false;
@@ -27,7 +26,6 @@ export class StationmanagementComponent extends ARenderComponent implements OnIn
   stationsIds = new Map<string, string>();
   stationMacAdresses: string[] = [];
 
-  rawstations: any;
   editing = false;
   editmac: string;
 
@@ -73,7 +71,10 @@ export class StationmanagementComponent extends ARenderComponent implements OnIn
       console.log(updateStatus);
       if (updateStatus == true) {
         await this.service.LoadStations(this);
-        //this.CloseModal();
+        setTimeout(()=>{
+            $("#deleteModal").modal("close");
+        }, 200);
+
       } else {
         Materialize.toast('Er ging iets mis!', 4000);
       }
@@ -85,7 +86,7 @@ export class StationmanagementComponent extends ARenderComponent implements OnIn
   /*
   *   Closes the modal to add a station
   */
-  async CloseModal() {
+  CloseModal() {
     $("#markerModel").modal("close");
   }
 
@@ -200,7 +201,9 @@ export class StationmanagementComponent extends ARenderComponent implements OnIn
   async DeleteCurrentStation() {
     await this.service.DeleteStation(this.collidingElement);
     await this.service.LoadStations(this);
-    $("#deleteModal").modal("close");
+    setTimeout(()=>{
+        $("#deleteModal").modal("close");
+    }, 200);
   }
 
   /*

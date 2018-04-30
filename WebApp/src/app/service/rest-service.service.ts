@@ -208,7 +208,7 @@ export class RestServiceService {
 
   async UpdateStation(id: string, newMac: string) {
       try {
-          const resp = await axios.put('/api/v1/receivermodules/'+ id + '/Mac', newMac, {
+          const resp = await axios.put('/api/v1/receivermodules/'+ id + '/Mac', "'" + newMac + "'", {
               headers: {
                   'Content-type' : 'application/json'
               }
