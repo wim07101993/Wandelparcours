@@ -35,6 +35,7 @@ const appRoutes: Routes = [
       { path: 'resident/:id/tracking', component: TrackingComponent },
       { path: 'modules', component: StationmanagementComponent },
       { path: 'tracking', component: GlobaltrackingComponent },
+      { path: 'users', component: UsersComponent },
       { path: '**', redirectTo: 'residents' }
 ];
 
