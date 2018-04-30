@@ -5,7 +5,7 @@ declare var Materialize: any;
 import { LoginService } from "../../service/login-service.service";
 import axios from 'axios';
 import { Router } from '@angular/router';
-
+import {  StoreService } from "../../service/store.service";
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
@@ -18,8 +18,9 @@ export class LoginComponent implements OnInit {
   private password: string;
   private rememberMe:boolean=false;
   private waitingResponse=false;
+
   cookieLaw=true;
-  constructor(private loginService:LoginService, private router:Router) {
+  constructor(private loginService:LoginService, private router:Router,private store:StoreService) {
     let cookie = this.getCookie("login");
     if(cookie!=null){
       let login =JSON.parse(window.atob(cookie));
@@ -27,6 +28,7 @@ export class LoginComponent implements OnInit {
       this.password=login.password;
       this.login();
     }
+
   }
 
   ngOnInit() {}
@@ -46,6 +48,7 @@ export class LoginComponent implements OnInit {
       if(result==true){
         let redirectURL= this.loginService.surfUrl=="/login"? "/":this.loginService.surfUrl; 
         this.router.navigate([redirectURL]);
+        this.store.Set("acl",0);
         if(this.rememberMe){
           let login:any = {username:this.email,password:this.password};
           login = JSON.stringify(login);
@@ -86,3 +89,11 @@ getCookie(name) {
     
   }
 }
+
+/*
+SysAdmin    0,
+Nurse       1,
+User        2,
+Module      3,
+Guest       4
+  */

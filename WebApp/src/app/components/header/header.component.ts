@@ -11,7 +11,7 @@ export class HeaderComponent implements OnInit {
 
   user = 'Beheerder';
   pageTitle = 'Pagina Titel';
-  
+  initialized=false;
   constructor() {
   }
 
@@ -21,7 +21,12 @@ export class HeaderComponent implements OnInit {
 
   ngOnInit() {
         // Initialize collapse button
-        $(".button-collapse").sideNav();
+        if(this.initialized==false){
+          $(".button-collapse").sideNav();
+          this.initialized=true;
+        }
+        
+        
         // Initialize collapsible (uncomment the line below if you use the dropdown variation)
         $('.button-collapse').collapsible();
   }

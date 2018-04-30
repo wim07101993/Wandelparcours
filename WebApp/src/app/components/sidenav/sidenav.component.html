@@ -1,8 +1,13 @@
 <!-- These are the menu-items of the side-navigation -->
 <ul id="slide-out" class="side-nav">
+    <li *ngFor="let link of listUrlForAcl" [routerLinkActive]="['link-active']"  (click)="closeSideNav()" [routerLink]="link.url"><i class="material-icons">{{link.icon}}</i>
+      {{link.text}}
+    </li>
 
-  <li [routerLinkActive]="['link-active']" (click)="closeSideNav()"><a [routerLink]="['/residents']"><i class="material-icons">people</i>Bewoners</a></li>
+  
+  
+  <!-- <li [routerLinkActive]="['link-active']" (click)="closeSideNav()"><a [routerLink]="['/residents']"><i class="material-icons">people</i>Bewoners</a></li>
   <li [routerLinkActive]="['link-active']" (click)="closeSideNav()"><a [routerLink]="['/users']"><i class="material-icons">verified_user</i>Gebruikers</a></li>
   <li [routerLinkActive]="['link-active']" (click)="closeSideNav()"><a [routerLink]="['/modules']"><i class="material-icons">location_on</i>Modules</a></li>
-  <li [routerLinkActive]="['link-active']" (click)="closeSideNav()"><a [routerLink]="['/tracking']"><i class="material-icons">accessibility</i>Tracking</a></li>
+  <li [routerLinkActive]="['link-active']" (click)="closeSideNav()"><a [routerLink]="['/tracking']"><i class="material-icons">accessibility</i>Tracking</a></li> -->
 </ul>
