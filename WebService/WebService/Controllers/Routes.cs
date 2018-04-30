@@ -121,5 +121,11 @@ namespace WebService.Controllers
         {
             public const string CreateTokenTemplate = "";
         }
+
+        public static class Users
+        {
+            public const string GetByName = "{userName}";
+            public const string GetPropertyByName = "{userName}/{propertyName}";
+        } 
     }
 }

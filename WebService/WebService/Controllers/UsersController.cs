@@ -83,20 +83,52 @@ namespace WebService.Controllers
 
         #region read
 
-        [Authorize(EUserType.SysAdmin, EUserType.Nurse)]
+        [Authorize(EUserType.SysAdmin)]
         [HttpGet(Routes.RestBase.GetAll)]
         public override Task<IEnumerable<User>> GetAllAsync(string[] propertiesToInclude)
             => base.GetAllAsync(propertiesToInclude);
 
-        [Authorize(EUserType.SysAdmin, EUserType.Nurse, EUserType.User)]
+        [Authorize(EUserType.SysAdmin, EUserType.User)]
         [HttpGet(Routes.RestBase.GetOne)]
         public override Task<User> GetOneAsync(string id, string[] propertiesToInclude)
             => base.GetOneAsync(id, propertiesToInclude);
 
-        [Authorize(EUserType.SysAdmin, EUserType.Nurse, EUserType.User)]
+        [Authorize(EUserType.SysAdmin, EUserType.User)]
         [HttpGet(Routes.RestBase.GetProperty)]
         public override Task<object> GetPropertyAsync(string id, string propertyName)
             => base.GetPropertyAsync(id, propertyName);
+
+        [Authorize(EUserType.SysAdmin, EUserType.Nurse, EUserType.User, EUserType.Module)]
+        [HttpGet(Routes.Users.GetByName)]
+        public async Task<User> GetByNameAsync(string userName, string[] propertiesToInclude)
+        {
+            var user = await GetCurrentUser();
+
+            if (user.UserType != EUserType.SysAdmin && user.UserName != userName)
+                throw new NotFoundException<User>(nameof(user.UserName), userName);
+
+            var selectors = !EnumerableExtensions.IsNullOrEmpty(propertiesToInclude)
+                ? ConvertStringsToSelectors(propertiesToInclude)
+                : PropertiesToSendOnGetAll;
+
+            return await _usersService.GetByNameAsync(userName, selectors);
+        }
+
+        [Authorize(EUserType.SysAdmin, EUserType.Nurse, EUserType.User, EUserType.Module)]
+        [HttpGet(Routes.Users.GetPropertyByName)]
+        public async Task<object> GetPropertyByNameAsync(string userName, string propertyName)
+        {
+            var user = await GetCurrentUser();
+
+            if (user.UserType != EUserType.SysAdmin && user.UserName != userName)
+                throw new NotFoundException<User>(nameof(user.UserName), userName);
+
+            if (!typeof(User).GetProperties().Any(x => x.Name.EqualsWithCamelCasing(propertyName)))
+                throw new PropertyNotFoundException<User>(propertyName);
+
+            return await _usersService.GetPropertyByNameAsync(
+                userName, PropertySelectors[propertyName.ToUpperCamelCase()]);
+        }
 
         #endregion read
 
