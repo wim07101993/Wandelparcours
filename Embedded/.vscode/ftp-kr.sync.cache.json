@@ -1,0 +1,65 @@
+{
+  "ftp://192.168.2.9@pi": {
+    "home": {
+      "pi": {
+        "toermalien": {
+          "index.js": {
+            "type": "-",
+            "size": 1331,
+            "lmtime": 0,
+            "modified": false
+          },
+          "kiosk": {},
+          "library": {
+            "loader.js": {
+              "type": "-",
+              "size": 204,
+              "lmtime": 0,
+              "modified": false
+            },
+            "mac.js": {
+              "type": "-",
+              "size": 226,
+              "lmtime": 0,
+              "modified": false
+            },
+            "node_modules": {},
+            "package-lock.json": {
+              "type": "-",
+              "size": 37712,
+              "lmtime": 0,
+              "modified": false
+            },
+            "package.json": {
+              "type": "-",
+              "size": 280,
+              "lmtime": 0,
+              "modified": false
+            },
+            "scanner.js": {
+              "type": "-",
+              "size": 1485,
+              "lmtime": 1524470856126,
+              "modified": false
+            },
+            "wificonnect.js": {
+              "type": "-",
+              "size": 1300,
+              "lmtime": 0,
+              "modified": false
+            }
+          },
+          "path": {},
+          "scanstation": {},
+          "startup.sh": {
+            "type": "-",
+            "size": 51,
+            "lmtime": 0,
+            "modified": false
+          }
+        }
+      }
+    }
+  },
+  "$version": 1
+}

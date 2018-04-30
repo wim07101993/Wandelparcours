@@ -1,0 +1,19 @@
+{
+    "host": "192.168.2.9",
+    "username": "pi",
+    "password": "raspberry",
+    "remotePath": "/home/pi/toermalien",
+    "protocol": "ftp",
+    "port": 0,
+    "fileNameEncoding": "utf8",
+    "autoUpload": true,
+    "autoDelete": true,
+    "autoDownload": false,
+    "ignore": [
+        ".git",
+        "/.vscode",
+        "/kiosk/node_modules",
+        "/scanstation/node_modules",
+        "/library/node_modules"
+    ]
+}

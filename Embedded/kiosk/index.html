@@ -15,9 +15,9 @@
       require('./renderer.js');
       Store = require("electron-store");
       const store = new Store();
-      store.set("resturl","http://192.168.137.1:5000/");
+      store.set("resturl","http://localhost:5000");
       store.delete("beacon");
-      window.location="./Pages/ImageViewer.html";
+      window.location="./Pages/Game.html";
     </script>
   </body>
 </html>
