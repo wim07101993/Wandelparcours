@@ -179,7 +179,7 @@ namespace WebService.Controllers.Bases
 
             var objectId = id.ToObjectId();
 
-            await DataService.UpdatePropertyAsync(objectId, PropertySelectors[propertyName], value);
+            await DataService.UpdatePropertyAsync(objectId, PropertySelectors[propertyName.ToUpperCamelCase()], value);
         }
 
         #endregion update
