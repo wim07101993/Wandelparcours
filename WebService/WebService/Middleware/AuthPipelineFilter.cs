@@ -17,13 +17,13 @@ namespace WebService.Middleware
 {
     public class AuthPipelineFilter : IAsyncActionFilter
     {
-        private readonly ITokenService _tokenService;
+        private readonly ITokensService _tokensService;
         private readonly IUsersService _usersService;
 
 
-        public AuthPipelineFilter(ITokenService tokenService, IUsersService usersService)
+        public AuthPipelineFilter(ITokensService tokensService, IUsersService usersService)
         {
-            _tokenService = tokenService;
+            _tokensService = tokensService;
             _usersService = usersService;
         }
 
@@ -57,10 +57,10 @@ namespace WebService.Middleware
                 throw new UnauthorizedException();
 
             var strToken = headers["token"];
-            if (!_tokenService.ValidateToken(strToken))
+            if (!_tokensService.ValidateToken(strToken))
                 throw new UnauthorizedException();
 
-            var userId = await _tokenService.GetIdFromToken(strToken);
+            var userId = await _tokensService.GetIdFromToken(strToken);
             if (userId == ObjectId.Empty)
                 throw new UnauthorizedException(allowedUserTypes);
 

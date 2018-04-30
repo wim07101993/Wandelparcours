@@ -13,7 +13,7 @@ using WebService.Services.Logging;
 
 namespace WebService.Services.Authorization
 {
-    public class TokenService : ITokenService
+    public class TokensService : ITokensService
     {
         private const int TokenLifeTime = 30;
 
@@ -23,7 +23,7 @@ namespace WebService.Services.Authorization
         private readonly IDictionary<string, ObjectId> _issuedTokens = new Dictionary<string, ObjectId>();
 
 
-        public TokenService(IConfiguration configuration, IUsersService usersService, ILogger logger)
+        public TokensService(IConfiguration configuration, IUsersService usersService, ILogger logger)
         {
             _configuration = configuration;
             _usersService = usersService;

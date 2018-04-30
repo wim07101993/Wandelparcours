@@ -17,7 +17,7 @@ namespace WebService.Helpers.Extensions
                 .AddSingleton<IResidentsService, ResidentsService>()
                 .AddSingleton<IReceiverModulesService, ReceiverModulesService>()
                 .AddSingleton<IUsersService, UsersService>()
-                .AddSingleton<ITokenService, TokenService>()
+                .AddSingleton<ITokensService, TokensService>()
                 .AddSingleton<ILocationService, LocationService>()
                 .AddSingleton<IDatabaseManager, DatabaseManager>();
     }
