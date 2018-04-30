@@ -296,10 +296,11 @@ export class RestServiceService {
 
     async getOneResidentWithAKnownLastLocation(uniqueIdentifier: string){
       try {
-          const resp = (await axios.get('/api/v1/location/residents/' + uniqueIdentifier + '/lastlocation')).data
-          return resp;
+            const query= "propertiesToInclude=id &propertiesToInclude=firstName&propertiesToInclude=lastName&propertiesToInclude=lastRecordedPosition";
+            const resp = (await axios.get(`/api/v1/residents/${uniqueIdentifier}?${query}`)).data
+            return resp;
       }catch (e) {
-          console.log('Errormessage: ' + e.toString());
+            console.log('Errormessage: ' + e.toString());
       }
     }
 }

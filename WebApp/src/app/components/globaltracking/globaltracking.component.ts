@@ -87,6 +87,12 @@ export class GlobaltrackingComponent extends ARenderComponent implements OnInit 
       loaded = await this.service.getAllResidentsWithAKnownLastLocation();
     } else {
       loaded = await this.service.getOneResidentWithAKnownLastLocation(this.id);
+      if (typeof loaded === 'boolean') {
+        return;
+  
+        } else {
+          loaded=[loaded];
+        }
       }
 
     if (typeof loaded === 'boolean') {
