@@ -4,6 +4,6 @@ namespace WebService.Controllers.Bases
 {
     public interface ITokenController : IController
     {
-        Task<string> CreateTokenAsync(string userName, string password);
+        Task<object> CreateTokenAsync(string userName, string password);
     }
 }
