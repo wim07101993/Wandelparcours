@@ -280,4 +280,26 @@ export class RestServiceService {
           });
       });*/
     }
+
+    ///////////////////
+    //Global tracking//
+    ///////////////////
+
+    async getAllResidentsWithAKnownLastLocation(){
+      try {
+          const resp = (await axios.get('/api/v1/location/residents/lastlocation')).data;
+          return resp;
+      }catch (e) {
+          console.log('Errormessage: '+ e.toString());
+      }
+    }
+
+    async getOneResidentWithAKnownLastLocation(uniqueIdentifier: string){
+      try {
+          const resp = (await axios.get('/api/v1/location/residents/' + uniqueIdentifier + '/lastlocation')).data
+          return resp;
+      }catch (e) {
+          console.log('Errormessage: ' + e.toString());
+      }
+    }
 }

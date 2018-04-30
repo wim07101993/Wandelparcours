@@ -1,10 +1,10 @@
 import {Component, ElementRef, OnInit} from '@angular/core';
 import {Sprites} from '../../helpers/Sprites';
 import {ARenderComponent} from '../../helpers/ARenderComponent';
-import {Http} from '@angular/http';
 import {Resident} from '../../models/resident';
 import {getBaseUrl} from '../../app.module.browser';
 import {ActivatedRoute, Router} from '@angular/router';
+import {RestServiceService} from '../../service/rest-service.service';
 
 declare var $: any;
 
@@ -40,7 +40,7 @@ export class GlobaltrackingComponent extends ARenderComponent implements OnInit 
     return getBaseUrl() + 'assets/images/resident.png';
   }
 
-  constructor(private http: Http, protected elRef: ElementRef, private route: ActivatedRoute, private router: Router) {
+  constructor(private service: RestServiceService, protected elRef: ElementRef, private route: ActivatedRoute, private router: Router) {
     super();
     this.hostElement = elRef;
 
@@ -84,33 +84,10 @@ export class GlobaltrackingComponent extends ARenderComponent implements OnInit 
     let loaded: any;
 
     if (this.id == undefined) {
-      loaded = await new Promise<any>(resolve => {
-        try {
-          this.http.get(getBaseUrl() + 'api/v1/location/residents/lastlocation').subscribe(response => {
-
-            resolve(response.json());
-          }, error => {
-            resolve(false);
-          });
-        } catch (e) {
-          resolve(false);
-        }
-      });
-
+      loaded = await this.service.getAllResidentsWithAKnownLastLocation();
     } else {
-      loaded = await new Promise<any>(resolve => {
-        try {
-          this.http.get(getBaseUrl() + 'api/v1/location/residents/' + this.id + '/lastlocation').subscribe(response => {
-            resolve([response.json()]);
-          }, error => {
-            resolve(false);
-          });
-        } catch (e) {
-          resolve(false);
-        }
-      });
-
-    }
+      loaded = await this.service.getOneResidentWithAKnownLastLocation(this.id);
+      }
 
     if (typeof loaded === 'boolean') {
       return;
