@@ -1,3 +1,29 @@
+:host{
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    min-width: 100%;
+    min-height: 100%;
+    overflow: auto;
+    z-index: 9999999999999;
+    background: -webkit-linear-gradient(to right, #f6f6f6, #fafafa);  /* Chrome 10-25, Safari 5.1-6 */
+    background: linear-gradient(to right,  #f6f6f6, #fafafa); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+}
+
+ #eu-cookie-law{
+  text-align: center;
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: #000;
+  background-color: rgba(0, 0, 0, 0.4);
+  color: #FFF;
+ }
+
+ 
 form {
     position: absolute;
     top: 50%;
@@ -138,4 +164,17 @@ form {
     -webkit-transform: translate(1.4em, 2em) scale(0.65);
             transform: translate(1.4em, 2em) scale(0.65);
     opacity: 1;
+  }
+
+  .waitingForLogin{
+    background: white;
+    position: fixed;
+    top:0;
+    bottom:0;
+    left:0;
+    right:0;
+  }
+
+  .waitingForLogin > div {
+    margin: 23% 47%;
   }

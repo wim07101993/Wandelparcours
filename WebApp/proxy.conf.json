@@ -2,13 +2,5 @@
   "/api": {
     "target" : "http://localhost:5000",
     "secure" : false
-  },
-  "/posts": {
-    "target": "http://localhost:5000",
-    "secure": true,
-    "pathRewrite": {
-      "^/posts": ""
-    },
-    "changeOrigin": true
   }
 }
