@@ -22,15 +22,15 @@ namespace WebService.Controllers
     public class LocationsController : ARestControllerBase<ResidentLocation>, ILocationController
     {
         private readonly IResidentsService _residentService;
-        private readonly ILocationService _locationService;
+        private readonly ILocationsService _locationsService;
 
 
-        public LocationsController(ILocationService dataService, ILogger logger, IResidentsService residentService,
-            IUsersService usersService, ILocationService locationService)
+        public LocationsController(ILocationsService dataService, ILogger logger, IResidentsService residentService,
+            IUsersService usersService, ILocationsService locationsService)
             : base(dataService, logger, usersService)
         {
             _residentService = residentService;
-            _locationService = locationService;
+            _locationsService = locationsService;
         }
 
 
@@ -101,7 +101,7 @@ namespace WebService.Controllers
         {
             return since == 0
                 ? await GetAllAsync(null)
-                : await _locationService.GetSinceAsync(DateTime.Now - TimeSpan.FromMinutes(since));
+                : await _locationsService.GetSinceAsync(DateTime.Now - TimeSpan.FromMinutes(since));
         }
 
         [Authorize(EUserType.Nurse, EUserType.User)]
@@ -112,8 +112,8 @@ namespace WebService.Controllers
                 throw new NotFoundException<Resident>(nameof(IModelWithID.Id), id);
 
             return since == 0
-                ? await _locationService.GetSinceAsync(default(DateTime), objectid)
-                : await _locationService.GetSinceAsync(DateTime.Now - TimeSpan.FromMinutes(since), objectid);
+                ? await _locationsService.GetSinceAsync(default(DateTime), objectid)
+                : await _locationsService.GetSinceAsync(DateTime.Now - TimeSpan.FromMinutes(since), objectid);
         }
 
         [Authorize(EUserType.Nurse, EUserType.User)]

@@ -7,7 +7,7 @@ using WebService.Models;
 
 namespace WebService.Services.Data
 {
-    public interface ILocationService : IDataService<ResidentLocation>
+    public interface ILocationsService : IDataService<ResidentLocation>
     {
         Task<IEnumerable<ResidentLocation>> GetSinceAsync(DateTime since, ObjectId residentId,
             IEnumerable<Expression<Func<ResidentLocation, object>>> propertiesToInclude = null);
