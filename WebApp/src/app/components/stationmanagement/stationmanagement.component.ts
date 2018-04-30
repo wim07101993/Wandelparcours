@@ -46,7 +46,6 @@ export class StationmanagementComponent extends ARenderComponent implements OnIn
 
 
   async ngOnInit() {
-
     super.ngOnInit();
     await setTimeout(async () => {
       await this.service.LoadStations(this);
@@ -67,19 +66,19 @@ export class StationmanagementComponent extends ARenderComponent implements OnIn
   //TODO
   async UpdateStation() {
     try {
-
       let id = this.stationsIds.get(this.collidingElement);
       if (id == null || id == undefined)
         throw "no el";
       let updateStatus = await this.service.UpdateStation(id, this.editmac);
+      console.log(updateStatus);
       if (updateStatus == true) {
         await this.service.LoadStations(this);
-        this.CloseModal();
+        //this.CloseModal();
       } else {
         Materialize.toast('Er ging iets mis!', 4000);
       }
     } catch (e) {
-
+        console.log('Errormessage: ' + e.toString());
     }
   }
 
@@ -87,7 +86,6 @@ export class StationmanagementComponent extends ARenderComponent implements OnIn
   *   Closes the modal to add a station
   */
   async CloseModal() {
-
     $("#markerModel").modal("close");
   }
 
@@ -99,9 +97,7 @@ export class StationmanagementComponent extends ARenderComponent implements OnIn
       if (id != undefined) {
         this.collidingElement = id;
         this.editing = false;
-        // noinspection JSJQueryEfficiency
         $("#deleteModal").modal();
-        // noinspection JSJQueryEfficiency
         $("#deleteModal").modal("open");
       }
       return true;

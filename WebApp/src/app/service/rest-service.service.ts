@@ -19,7 +19,6 @@ export class RestServiceService {
       return this.url;
     }
   }
-
   set restUrl(val: string) {
     this.url = val;
   }
@@ -37,7 +36,6 @@ export class RestServiceService {
           this.customErrorHandler.updateMessage(e.toString());
       }
   }
-
   /**
    * get one resident and only the needed properties
    * @param uniqueIdentifier unique id of resident
@@ -51,7 +49,6 @@ export class RestServiceService {
         console.log(e.toString());
     }
   }
-
   /**
    * delete resident from database based on id
    * @param uniqueIdentifier unique id of resident
@@ -81,7 +78,6 @@ export class RestServiceService {
         console.log("Error Message: "+ e.toString())
     }
   }
-
   /**
    * Add resident to database
    * @param data Object resident with all saved properties
@@ -94,7 +90,6 @@ export class RestServiceService {
         console.log(e.toString());
     }
   }
-
   /**
      * Profilepicture will always be null when a resident is created
      * When a picture is selected null -> picture (param)
@@ -170,7 +165,6 @@ export class RestServiceService {
   async getCorrectMediaOfResidentBasedOnId(uniqueIdentifier: string, type: string) {
     try {
          const response  = (await axios.get('/api/v1/residents/' + uniqueIdentifier + type)).data;
-         console.log(response);
          return response;
     } catch (e) {
         console.log('Errormessage: ' + e.toString());
@@ -195,7 +189,7 @@ export class RestServiceService {
   ////////////////
   //LOCALISATION//
   ////////////////
-    // TODO
+
   async SaveStationToDatabase(station: Station) {
       try {
           await axios.post('/api/v1/receivermodules',station);
@@ -212,16 +206,25 @@ export class RestServiceService {
       }
   }
 
-  /*UpdateStation(id: string, newMac: string) {
-    return new Promise(resolve => {
-      this.http.put(this.restUrl + 'api/v1/receivermodules/' + id + '/Mac', newMac).subscribe(response => {
-        resolve(true);
-      }, error => {
-        resolve(false);
-      });
+  async UpdateStation(id: string, newMac: string) {
+      try {
+          const resp = await axios.put('/api/v1/receivermodules/'+ id + '/Mac', newMac, {
+              headers: {
+                  'Content-type' : 'application/json'
+              }
+          });
+          console.log(resp.status);
+          if(resp.status >= 200 && resp.status < 300){
+              return true;
+          }
+          else{
+              return false;
+          }
 
-    });
-  }*/
+      } catch (e) {
+          console.log('Errormessage: ' + e.toString());
+      }
+  }
 
   async LoadStations(parent: StationmanagementComponent) {
       if (parent.stations != undefined) {
