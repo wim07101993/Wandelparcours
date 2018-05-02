@@ -2,5 +2,7 @@
     <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary Source="Views/Styles/NumericTextBox.xaml" />
         <ResourceDictionary Source="Views/Styles/TextBlockStyles.xaml" />
+        <ResourceDictionary Source="Views/Styles/ColorSpectrumSlidere.xaml" />
+        <ResourceDictionary Source="Views/Styles/ColorPicker.xaml" />
     </ResourceDictionary.MergedDictionaries>
 </ResourceDictionary>
