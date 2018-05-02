@@ -95,6 +95,7 @@ export class PersonaliaComponent implements OnInit {
     const bmn = beaconMinorNumber.beaconNumber + '';
 
     const a = await this.service.addTagToResident(this.resident.id, bmn);
+    console.log(a);
     if (a !== undefined) {
       this.resident.tags = a;
     } else {

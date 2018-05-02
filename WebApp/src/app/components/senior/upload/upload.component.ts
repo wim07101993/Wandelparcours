@@ -82,4 +82,7 @@ export class UploadComponent implements OnInit {
     $("#addMedia").modal("open");
   }
 
+    closeModal() {
+        $("#addMedia").modal('close');
+    }
 }

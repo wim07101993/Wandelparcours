@@ -5,15 +5,13 @@ import {Resident} from '../models/resident';
 @Injectable()
 export class MediaService {
   fullLinks: any = [];
-  check: any;
 
   get url(): string {
     return 'http://localhost:5000/api/v1/media/';
     // return document.getElementsByTagName('base')[0].href + 'api/v1/media/';
   }
 
-  constructor(private service: RestServiceService) {
-  }
+  constructor(private service: RestServiceService) {}
 
   /**
    * Get correct media of resident based on id and media type

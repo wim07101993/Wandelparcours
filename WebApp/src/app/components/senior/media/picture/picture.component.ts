@@ -50,7 +50,7 @@ export class PictureComponent implements OnInit {
     await this.media.deleteMedia(this.id, uniquePictureID, this.picture);
     setTimeout(()=>{
         $("#deleteModal").modal("close");
-    }, 200);
+    }, 200)
     this.getAllImages();
   }
 
