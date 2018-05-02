@@ -27,16 +27,16 @@ namespace WebService.Models
         public Doctor Doctor { get; set; }
 
         [BsonElement("tags")]
-        public List<int> Tags { get; set; }
+        public List<int> Tags { get; set; } = new List<int>();
 
         [BsonElement("music")]
-        public List<MediaUrl> Music { get; set; }
+        public List<MediaUrl> Music { get; set; } = new List<MediaUrl>();
 
         [BsonElement("videos")]
-        public List<MediaUrl> Videos { get; set; }
+        public List<MediaUrl> Videos { get; set; } = new List<MediaUrl>();
 
         [BsonElement("images")]
-        public List<MediaUrl> Images { get; set; }
+        public List<MediaUrl> Images { get; set; } = new List<MediaUrl>();
 
         [BsonElement("colors")]
         public List<Color> Colors { get; set; }
@@ -45,6 +45,6 @@ namespace WebService.Models
         public ResidentLocation LastRecordedPosition { get; set; }
 
         [BsonElement("locations")]
-        public List<ObjectId> Locations { get; set; }
+        public List<ObjectId> Locations { get; set; } = new List<ObjectId>();
     }
 }
