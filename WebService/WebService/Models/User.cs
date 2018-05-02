@@ -20,7 +20,7 @@ namespace WebService.Models
         public EUserType UserType { get; set; } = EUserType.Guest;
 
         [BsonElement("residents")]
-        public IEnumerable<ObjectId> Residents { get; set; }
+        public IEnumerable<ObjectId> Residents { get; set; } = new List<ObjectId>();
 
         [BsonElement("group")]
         public string Group { get; set; }
