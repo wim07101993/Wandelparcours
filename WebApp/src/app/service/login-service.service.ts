@@ -72,7 +72,7 @@ export class LoginService {
     });
     http.post("/api/v1/tokens").then((result)=>{
       this.token=result.data.token;
-      this.acl=result.data.user.userType;
+      this.level=result.data.user.userType;
     }).catch(()=>{
       setTimeout(()=>{
         this.refreshToken();
