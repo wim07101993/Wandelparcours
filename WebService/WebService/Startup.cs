@@ -26,7 +26,7 @@ namespace WebService
                     options =>
                     {
                         options.Filters.Add<ReturnCreatedIfPostSucceedsPipeline>();
-                        //options.Filters.Add<AuthPipelineFilter>();
+                        options.Filters.Add<AuthPipelineFilter>();
                     })
                 .AddJsonOptions(
                     options =>
