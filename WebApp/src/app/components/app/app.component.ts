@@ -26,7 +26,7 @@ export class AppComponent {
 
   
   ]
-  constructor(private router:Router,private loginService:LoginService,private store:StoreService){
+  constructor(private router:Router,private loginService:LoginService){
     this.loginService.checkLogin();
     this.router.events.filter(event => event instanceof NavigationStart)
     .subscribe((event:NavigationStart)=>{
@@ -35,9 +35,9 @@ export class AppComponent {
   }
   async checkAcces(url:string){
     try {
-      
+      if(url=="/login") return;
       await this.awaitTime(100);
-      let acl = this.store.Get("acl"); 
+      let acl = this.loginService.level; 
       
       let route =this.accessPerRoute.find((apr)=>{
         return url.indexOf(apr.url)>=0;
