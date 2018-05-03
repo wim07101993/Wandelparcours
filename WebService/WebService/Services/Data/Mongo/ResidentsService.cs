@@ -55,17 +55,25 @@ namespace WebService.Services.Data.Mongo
 
         public async Task<IEnumerable<Resident>> GetAllInGroup(string group,
             IEnumerable<Expression<Func<Resident, object>>> propertiesToInclude = null)
-            => await MongoCollection
-                .Find(x => x.Room.StartsWith(group))
-                .Select(propertiesToInclude)
-                .ToListAsync();
+        {
+            return group == null
+                ? null
+                : await MongoCollection
+                    .Find(x => x.Room.StartsWith(@group))
+                    .Select(propertiesToInclude)
+                    .ToListAsync();
+        }
 
         public async Task<IEnumerable<Resident>> GetMany(IEnumerable<ObjectId> objectIds,
             IEnumerable<Expression<Func<Resident, object>>> propertiesToInclude = null)
-            => await MongoCollection
-                .Find(x => objectIds.Any(y => y == x.Id))
-                .Select(propertiesToInclude)
-                .ToListAsync();
+        {
+            return objectIds == null
+                ? null
+                : await MongoCollection
+                    .Find(x => objectIds.Any(y => y == x.Id))
+                    .Select(propertiesToInclude)
+                    .ToListAsync();
+        }
 
         private async Task AddMediaAsync(ObjectId residentId, MediaUrl mediaUrl, EMediaType mediaType)
         {
