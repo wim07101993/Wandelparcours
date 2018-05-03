@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using System.Windows.Media;
 using Microsoft.Practices.Unity;
 using Microsoft.Win32;
 using ModuleSettingsEditor.WPF.Helpers.Events;
@@ -82,7 +83,7 @@ namespace ModuleSettingsEditor.WPF.ViewModels
                     Settings.KioskType = PossibleKioskTypes.First();
             }
         }
-
+        
         public bool IsDriveDialogVisible
         {
             get => _isDriveDialogVisible;

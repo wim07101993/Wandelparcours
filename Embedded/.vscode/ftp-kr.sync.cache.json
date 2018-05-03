@@ -1,54 +1,238 @@
 {
-  "ftp://192.168.2.9@pi": {
+  "ftp://172.16.10.61@pi": {
     "home": {
       "pi": {
         "toermalien": {
           "index.js": {
             "type": "-",
-            "size": 1331,
-            "lmtime": 0,
+            "size": 1242,
+            "lmtime": 1525264165592,
             "modified": false
           },
-          "kiosk": {},
-          "library": {
-            "loader.js": {
+          "kiosk": {
+            ".DS_Store": {
               "type": "-",
-              "size": 204,
+              "size": 6148,
               "lmtime": 0,
               "modified": false
             },
-            "mac.js": {
+            ".babelrc": {
               "type": "-",
-              "size": 226,
+              "size": 145,
+              "lmtime": 1525264434291,
+              "modified": false
+            },
+            "LICENSE.md": {
+              "type": "-",
+              "size": 6546,
+              "lmtime": 0,
+              "modified": false
+            },
+            "Pages": {
+              ".DS_Store": {
+                "type": "-",
+                "size": 8196,
+                "lmtime": 0,
+                "modified": false
+              },
+              "Game.html": {
+                "type": "-",
+                "size": 3319,
+                "lmtime": 0,
+                "modified": false
+              },
+              "ImageViewer.html": {
+                "type": "-",
+                "size": 693,
+                "lmtime": 0,
+                "modified": false
+              },
+              "ImageViewer.js": {
+                "type": "-",
+                "size": 3018,
+                "lmtime": 0,
+                "modified": false
+              },
+              "VideoViewer.html": {
+                "type": "-",
+                "size": 696,
+                "lmtime": 0,
+                "modified": false
+              },
+              "VideoViewer.js": {
+                "type": "-",
+                "size": 2195,
+                "lmtime": 0,
+                "modified": false
+              },
+              "css": {},
+              "es7": {
+                "AbstractViewer.1.js": {
+                  "type": "-",
+                  "size": 1259,
+                  "lmtime": 1525266431941,
+                  "modified": false
+                },
+                "AbstractViewer.js": {
+                  "type": "-",
+                  "size": 1259,
+                  "lmtime": 1525255092761,
+                  "modified": false
+                },
+                "ImageViewer.1.js": {
+                  "type": "-",
+                  "size": 2948,
+                  "lmtime": 1525266428002,
+                  "modified": false
+                },
+                "ImageViewer.js": {
+                  "type": "-",
+                  "size": 2919,
+                  "lmtime": 1525264818581,
+                  "modified": false
+                },
+                "VideoViewer.1.js": {
+                  "type": "-",
+                  "size": 1415,
+                  "lmtime": 1525266461008,
+                  "modified": false
+                },
+                "VideoViewer.js": {
+                  "type": "-",
+                  "size": 1386,
+                  "lmtime": 1525264809159,
+                  "modified": false
+                },
+                "game.js": {
+                  "type": "-",
+                  "size": 3225,
+                  "lmtime": 1524831145320,
+                  "modified": false
+                },
+                "scanClosest.js": {
+                  "type": "-",
+                  "size": 1831,
+                  "lmtime": 1524734337000,
+                  "modified": false
+                }
+              },
+              "images": {},
+              "scanBeacons.py": {
+                "type": "-",
+                "size": 995,
+                "lmtime": 0,
+                "modified": false
+              },
+              "scanBeaconsMockup.py": {
+                "type": "-",
+                "size": 318,
+                "lmtime": 0,
+                "modified": false
+              },
+              "js": {
+                "AbstractViewer.js": {
+                  "type": "-",
+                  "size": 1259,
+                  "lmtime": 1525265538678,
+                  "modified": false
+                },
+                "ImageViewer.js": {
+                  "type": "-",
+                  "size": 2878,
+                  "lmtime": 1525266881000,
+                  "modified": false
+                },
+                "VideoViewer.js": {
+                  "type": "-",
+                  "size": 1415,
+                  "lmtime": 1525266785708,
+                  "modified": false
+                },
+                "game.js": {
+                  "type": "-",
+                  "size": 3225,
+                  "lmtime": 1525265538678,
+                  "modified": false
+                },
+                "oldVideoViewer.js": {
+                  "type": "-",
+                  "size": 2195,
+                  "lmtime": 1525265538678,
+                  "modified": false
+                },
+                "scanClosest.js": {
+                  "type": "-",
+                  "size": 1872,
+                  "lmtime": 1525266898106,
+                  "modified": false
+                }
+              }
+            },
+            "README.md": {
+              "type": "-",
+              "size": 2328,
+              "lmtime": 0,
+              "modified": false
+            },
+            "etc": {},
+            "index.html": {
+              "type": "-",
+              "size": 1008,
+              "lmtime": 1525267397681,
+              "modified": false
+            },
+            "jquery": {},
+            "main.js": {
+              "type": "-",
+              "size": 1886,
               "lmtime": 0,
               "modified": false
             },
             "node_modules": {},
-            "package-lock.json": {
+            "npm-debug.log": {
               "type": "-",
-              "size": 37712,
+              "size": 28715,
               "lmtime": 0,
               "modified": false
+            },
+            "package-lock.json": {
+              "type": "-",
+              "size": 412719,
+              "lmtime": 1525265047673,
+              "modified": true
             },
             "package.json": {
               "type": "-",
-              "size": 280,
+              "size": 1112,
+              "lmtime": 1525267347566,
+              "modified": false
+            },
+            "renderer.js": {
+              "type": "-",
+              "size": 171,
               "lmtime": 0,
               "modified": false
             },
-            "scanner.js": {
+            "startbluetooth.sh": {
               "type": "-",
-              "size": 1485,
-              "lmtime": 1524470856126,
+              "size": 50,
+              "lmtime": 0,
               "modified": false
             },
-            "wificonnect.js": {
+            "webpack.config.js": {
               "type": "-",
-              "size": 1300,
+              "size": 644,
+              "lmtime": 1525264736613,
+              "modified": false
+            },
+            "yarn.lock": {
+              "type": "-",
+              "size": 61176,
               "lmtime": 0,
               "modified": false
             }
           },
+          "library": {},
           "path": {},
           "scanstation": {},
           "startup.sh": {

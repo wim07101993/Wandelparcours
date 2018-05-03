@@ -60,8 +60,6 @@ export class GlobaltrackingComponent extends ARenderComponent implements OnInit 
   async Tick() {
     super.Tick();
     await this.RecalculateResidents();
-
-
   }
 
   async spriteClicked(id?: string) {
@@ -159,8 +157,6 @@ export class GlobaltrackingComponent extends ARenderComponent implements OnInit 
   /*
   *   this function loads the image of the building
   */
-
-
   openListModal() {
     $('#modal1').modal();
     $('#modal1').modal('open');
@@ -170,16 +166,14 @@ export class GlobaltrackingComponent extends ARenderComponent implements OnInit 
   /*
  *   this function selects and navigates to personal tracking page of the resident
  */
-
   navigateToTracking(resident: Resident) {
     $('#modal1').modal('close');
     this.router.navigate([`/resident/${resident.id}/tracking`]);
   }
 
   /*
-*   this function selects and navigates to perosnal page
-*/
-
+  *   this function selects and navigates to perosnal page
+  */
   navigateTo(resident: Resident) {
     $('#modal1').modal('close');
     this.router.navigate([`/resident/${resident.id}`]);

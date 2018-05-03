@@ -42,14 +42,11 @@ export class StationmanagementComponent extends ARenderComponent implements OnIn
     return getBaseUrl() + "assets/images/station.png";
   }
 
-
   async ngOnInit() {
     super.ngOnInit();
     await setTimeout(async () => {
       await this.service.LoadStations(this);
-
     }, 100);
-
   }
 
   async Tick() {
@@ -61,7 +58,6 @@ export class StationmanagementComponent extends ARenderComponent implements OnIn
       console.log(ex);
     }
   }
-  //TODO
   async UpdateStation() {
     try {
       let id = this.stationsIds.get(this.collidingElement);
@@ -87,7 +83,7 @@ export class StationmanagementComponent extends ARenderComponent implements OnIn
   *   Closes the modal to add a station
   */
   CloseModal() {
-    $("#markerModel").modal("close");
+    $().modal("close");
   }
 
   /*
