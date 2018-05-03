@@ -4,7 +4,7 @@ import {ActivatedRoute, Router} from '@angular/router';
 import {RestServiceService} from '../../../service/rest-service.service';
 import {MediaService} from '../../../service/media.service';
 import {NgForm} from '@angular/forms';
-
+import { LoginService } from '../../../service/login-service.service';
 declare var $: any;
 declare var Materialize: any;
 
@@ -24,8 +24,8 @@ export class PersonaliaComponent implements OnInit {
   countI = 0;
   countV = 0;
 
-  constructor(private service: RestServiceService, private media: MediaService, private route: ActivatedRoute, private router: Router) {
-      this.src2 = "/api/v1/residents/" + this.id + "/picture" ;
+  constructor(private service: RestServiceService, private media: MediaService, private route: ActivatedRoute, private router: Router,private login:LoginService) {
+      this.src2 = "/api/v1/residents/" + this.id + "/picture?token="+this.login.token;
   }
 
     ngOnInit() {
