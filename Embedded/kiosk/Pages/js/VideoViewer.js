@@ -1,6 +1,4 @@
-var AbstractViewer =  require(__dirname+"/js/AbstractViewer").AbstractViewer;
-
-
+var AbstractViewer = require(__dirname+"/js/AbstractViewer").AbstractViewer;
 class VideoViewer extends AbstractViewer{
     constructor(){
         super();

@@ -1,25 +1,29 @@
+
 let settings = require("./library/loader").loadsettings();
 var bashExec = require('child_process').exec;
 var wificonnect = require("./library/wificonnect").connect;
-console.log("startup")
+
+let kioskCommand="sudo electron "+__dirname+"/kiosk/main.js";
+let stationCommand="sudo npm run start --prefix "+__dirname+"/scanstation";
+
 try {
     wificonnect(settings.WifiSSID,settings.WifiWPA).then(function(){ 
         console.log("wificonnect");
         switch(settings.KioskType){
             case "Tag detector":
-                StartScriptInFolder("scanstation");
+                    RunCommand(stationCommand);
                 break;
             case "Afbeelding":
-                StartScriptInFolder("kiosk");
+                    RunCommand(kioskCommand);
                 break;
             case "Video":
-                StartScriptInFolder("kiosk");
+                    RunCommand(kioskCommand);
                 break;
             case "Muziek":
-                StartScriptInFolder("kiosk");
+                    RunCommand(kioskCommand);
                 break;
             case "Spel":
-                StartScriptInFolder("kiosk");
+                    RunCommand(kioskCommand);
                 break;
         }
     
@@ -27,8 +31,7 @@ try {
 } catch (error) {
     console.log(error);
 }
-function StartScriptInFolder(folder){
-    var run ="sudo npm run start --prefix "+__dirname+"/"+folder;
+function RunCommand(run){
     console.log(run);
     bashExec(run,function(error, stdout, stderr) {
         console.log(`${stdout}`);

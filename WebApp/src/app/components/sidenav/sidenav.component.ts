@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import { StoreService } from "../../service/store.service";
+import { LoginService } from "../../service/login-service.service";
 declare var $:any;
 
 @Component({
@@ -18,14 +18,18 @@ export class SidenavComponent implements OnInit {
 
   
 
-  constructor(private store:StoreService) { }
+  constructor(private login:LoginService) { }
 
   ngOnInit() {
 
   }
+  logOut(){
+    this.login.logout();
+    this.closeSideNav();
+  }
   get listUrlForAcl(){
     //*ngIf="link.acl.includes(acl)!=undefined'"
-    let acl = this.store.Get("acl");
+    let acl = this.login.level;
     acl = acl==undefined ? 4:acl;
     let links = this.links.filter((link)=>{
       return link.acl.includes(acl);
