@@ -21,14 +21,15 @@ namespace WebService.Services.Data.Mongo
         }
 
 
-        public override async Task CreateAsync(User item)
+        public override async Task CreateAsync(User user)
         {
-            if (item == null)
-                throw new ArgumentNullException(nameof(item));
+            if (user == null)
+                throw new ArgumentNullException(nameof(user));
 
-            item.Password = item.Password.Hash(item.Id);
+            user.Id = ObjectId.GenerateNewId();
+            user.Password = user.Password.Hash(user.Id);
 
-            await CreateAsync(item, true);
+            await CreateAsync(user, false);
         }
 
         public async Task<bool> CheckCredentialsAsync(ObjectId id, string password)
