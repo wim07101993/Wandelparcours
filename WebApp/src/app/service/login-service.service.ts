@@ -5,7 +5,7 @@ import { Router } from '@angular/router';
 @Injectable()
 export class LoginService {
 
-  private token:string;
+  public token:string;
   private username:string;
   private password:string;
   public level:number;

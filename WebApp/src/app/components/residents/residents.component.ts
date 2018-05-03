@@ -3,7 +3,7 @@ import {Resident} from '../../models/resident';
 import {RestServiceService} from '../../service/rest-service.service';
 import {NgForm} from '@angular/forms';
 import {Router} from '@angular/router';
-
+import {LoginService} from '../../service/login-service.service';
 
 declare var $: any;
 declare var Materialize: any;
@@ -34,7 +34,7 @@ export class ResidentsComponent implements OnInit {
    * @param service Restservice
    * @param router Router
    */
-  constructor(private service: RestServiceService, private router: Router) {}
+  constructor(private service: RestServiceService, private router: Router,private login:LoginService) {}
 
     ngOnInit(): void {
         this.showAllResidents();

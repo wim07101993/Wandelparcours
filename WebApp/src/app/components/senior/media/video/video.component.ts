@@ -2,7 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import {Resident} from '../../../../models/resident';
 import {MediaService} from '../../../../service/media.service';
-
+import { LoginService } from '../../../../service/login-service.service';
 declare var $: any;
 
 @Component({
@@ -21,7 +21,7 @@ export class VideoComponent implements OnInit {
   fullLinks: any = [];
   url: any = "http://localhost:5000/api/v1/media/";
 
-  constructor(private route: ActivatedRoute, private media: MediaService) {}
+  constructor(private route: ActivatedRoute, private media: MediaService,private login:LoginService) {}
 
 
   ngOnInit() {
