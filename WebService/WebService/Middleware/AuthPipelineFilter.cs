@@ -53,10 +53,16 @@ namespace WebService.Middleware
             }
 
             var headers = context.HttpContext.Request.Headers;
-            if (!headers.ContainsKey("token"))
+            var query = context.HttpContext.Request.Query;
+
+            var headerContainsToken = headers.ContainsKey("token");
+            if (!headerContainsToken && !query.ContainsKey("token"))
                 throw new UnauthorizedException();
 
-            var strToken = headers["token"];
+            string strToken = headerContainsToken
+                ? headers["token"]
+                : query["token"];
+            
             if (!_tokensService.ValidateToken(strToken))
                 throw new UnauthorizedException();
 
