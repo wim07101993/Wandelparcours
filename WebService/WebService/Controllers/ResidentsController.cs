@@ -17,6 +17,7 @@ using WebService.Services.Logging;
 using WebService.Models;
 using WebService.Models.Bases;
 using WebService.Services.Data;
+using WebService.Services.Data.Mongo;
 using ArgumentException = WebService.Helpers.Exceptions.ArgumentException;
 using ArgumentNullException = WebService.Helpers.Exceptions.ArgumentNullException;
 
@@ -77,7 +78,13 @@ namespace WebService.Controllers
         private async Task<ObjectId> CanWriteDataToResidentAsync(string id)
         {
             var residentObjectId = id.ToObjectId();
+            if (!await CanWriteDataToResidentAsync(residentObjectId))
+                throw new NotFoundException<Resident>(nameof(IModelWithID.Id), id);
+            return residentObjectId;
+        }
 
+        private async Task<bool> CanWriteDataToResidentAsync(ObjectId id)
+        {
             var properties = new Expression<Func<User, object>>[] {x => x.Residents, x => x.UserType, x => x.Group};
             var user = await GetCurrentUser(properties);
             var isResponsible = false;
@@ -87,11 +94,11 @@ namespace WebService.Controllers
                     isResponsible = true;
                     break;
                 case EUserType.Nurse:
-                    var residentRoom = await DataService.GetPropertyAsync(residentObjectId, x => x.Room);
+                    var residentRoom = await DataService.GetPropertyAsync(id, x => x.Room);
                     isResponsible = new Regex($@"^{residentRoom}[0-9]*$").IsMatch(user.Group);
                     break;
                 case EUserType.User:
-                    isResponsible = user.Residents.Contains(residentObjectId);
+                    isResponsible = user.Residents.Contains(id);
                     break;
                 case EUserType.Guest:
                 case EUserType.Module:
@@ -100,9 +107,7 @@ namespace WebService.Controllers
                     throw new ArgumentOutOfRangeException();
             }
 
-            return isResponsible
-                ? residentObjectId
-                : throw new NotFoundException<Resident>(nameof(IModelWithID.Id), id);
+            return isResponsible;
         }
 
         private async Task<ObjectId> CanGetDataFromResidentAsync(string id)
@@ -134,27 +139,6 @@ namespace WebService.Controllers
             return isResponsible
                 ? residentObjectId
                 : throw new NotFoundException<Resident>(nameof(IModelWithID.Id), id);
-        }
-
-
-        private async Task<bool> CanWriteDataToResidentAsync(int tag)
-        {
-            var properties = new Expression<Func<User, object>>[] {x => x.Residents, x => x.UserType, x => x.Group};
-            var user = await GetCurrentUser(properties);
-            switch (user.UserType)
-            {
-                case EUserType.SysAdmin:
-                    return true;
-                case EUserType.Nurse:
-                    var residentRoom = await ((IResidentsService) DataService).GetPropertyAsync(tag, x => x.Room);
-                    return new Regex($@"^{residentRoom}[0-9]*$").IsMatch(user.Group);
-                case EUserType.User:
-                case EUserType.Module:
-                case EUserType.Guest:
-                    return false;
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
         }
 
         private async Task<bool> CanGetDataFromResidentAsync(int tag)
@@ -289,16 +273,27 @@ namespace WebService.Controllers
         [HttpGet(Routes.RestBase.GetAll)]
         public override async Task<IEnumerable<Resident>> GetAllAsync(string[] propertiesToInclude)
         {
-            var properties = new Expression<Func<User, object>>[] {x => x.Residents, x => x.UserType};
+            var properties = new Expression<Func<User, object>>[]
+            {
+                x => x.Residents,
+                x => x.UserType,
+                x => x.Group,
+                x => x.Residents
+            };
             var user = await GetCurrentUser(properties);
+
+            var selectors = !EnumerableExtensions.IsNullOrEmpty(propertiesToInclude)
+                ? ConvertStringsToSelectors(propertiesToInclude)
+                : PropertiesToSendOnGetAll;
 
             switch (user.UserType)
             {
                 case EUserType.SysAdmin:
+                    return await DataService.GetAsync(selectors);
                 case EUserType.Nurse:
-                    return await base.GetAllAsync(propertiesToInclude);
+                    return await ((ResidentsService) DataService).GetAllInGroup(user.Group, selectors);
                 case EUserType.User:
-                    return await base.GetAllAsync(propertiesToInclude);
+                    return await ((ResidentsService) DataService).GetMany(user.Residents, selectors);
                 default:
                     throw new UnauthorizedException(EUserType.SysAdmin, EUserType.Nurse, EUserType.User);
             }
@@ -306,13 +301,19 @@ namespace WebService.Controllers
 
         [Authorize(EUserType.SysAdmin, EUserType.Nurse, EUserType.Module, EUserType.User)]
         [HttpGet(Routes.RestBase.GetOne)]
-        public override Task<Resident> GetOneAsync(string id, string[] propertiesToInclude)
-            => base.GetOneAsync(id, propertiesToInclude);
+        public override async Task<Resident> GetOneAsync(string id, string[] propertiesToInclude)
+        {
+            await CanGetDataFromResidentAsync(id);
+            return await base.GetOneAsync(id, propertiesToInclude);
+        }
 
         [Authorize(EUserType.SysAdmin, EUserType.Nurse, EUserType.Module, EUserType.User)]
         [HttpGet(Routes.RestBase.GetProperty)]
-        public override Task<object> GetPropertyAsync(string id, string propertyName)
-            => base.GetPropertyAsync(id, propertyName);
+        public override async Task<object> GetPropertyAsync(string id, string propertyName)
+        {
+            await CanGetDataFromResidentAsync(id);
+            return base.GetPropertyAsync(id, propertyName);
+        }
 
         [Authorize(EUserType.SysAdmin, EUserType.Nurse, EUserType.Module, EUserType.User)]
         [HttpGet(Routes.Residents.GetPicture)]
@@ -408,13 +409,19 @@ namespace WebService.Controllers
 
         [Authorize(EUserType.SysAdmin, EUserType.Nurse, EUserType.User)]
         [HttpPut(Routes.RestBase.Update)]
-        public override Task UpdateAsync([FromBody] Resident item, [FromQuery] string[] properties)
-            => base.UpdateAsync(item, properties);
+        public override async Task UpdateAsync([FromBody] Resident item, [FromQuery] string[] properties)
+        {
+            await CanWriteDataToResidentAsync(item.Id);
+            await base.UpdateAsync(item, properties);
+        }
 
         [Authorize(EUserType.SysAdmin, EUserType.Nurse, EUserType.User)]
         [HttpPut(Routes.RestBase.UpdateProperty)]
-        public override Task UpdatePropertyAsync(string id, string propertyName, [FromBody] string jsonValue)
-            => base.UpdatePropertyAsync(id, propertyName, jsonValue);
+        public override async Task UpdatePropertyAsync(string id, string propertyName, [FromBody] string jsonValue)
+        {
+            await CanWriteDataToResidentAsync(id);
+            await base.UpdatePropertyAsync(id, propertyName, jsonValue);
+        }
 
         [Authorize(EUserType.SysAdmin, EUserType.Nurse, EUserType.User)]
         [HttpPut(Routes.Residents.UpdatePicture)]
@@ -424,7 +431,7 @@ namespace WebService.Controllers
             if (picture?.File == null)
                 throw new ArgumentNullException(nameof(picture));
 
-            var objectId = await CanGetDataFromResidentAsync(id);
+            var objectId = await CanWriteDataToResidentAsync(id);
 
             try
             {

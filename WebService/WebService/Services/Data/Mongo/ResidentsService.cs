@@ -7,6 +7,7 @@ using Microsoft.Extensions.Configuration;
 using MongoDB.Bson;
 using MongoDB.Driver;
 using WebService.Helpers.Exceptions;
+using WebService.Helpers.Extensions;
 using WebService.Models;
 using WebService.Models.Bases;
 using ArgumentNullException = System.ArgumentNullException;
@@ -51,6 +52,20 @@ namespace WebService.Services.Data.Mongo
 
             await AddMediaAsync(residentId, new MediaUrl {Id = ObjectId.GenerateNewId(), Url = url}, mediaType);
         }
+
+        public async Task<IEnumerable<Resident>> GetAllInGroup(string group,
+            IEnumerable<Expression<Func<Resident, object>>> propertiesToInclude = null)
+            => await MongoCollection
+                .Find(x => x.Room.StartsWith(group))
+                .Select(propertiesToInclude)
+                .ToListAsync();
+
+        public async Task<IEnumerable<Resident>> GetMany(IEnumerable<ObjectId> objectIds,
+            IEnumerable<Expression<Func<Resident, object>>> propertiesToInclude = null)
+            => await MongoCollection
+                .Find(x => objectIds.Any(y => y == x.Id))
+                .Select(propertiesToInclude)
+                .ToListAsync();
 
         private async Task AddMediaAsync(ObjectId residentId, MediaUrl mediaUrl, EMediaType mediaType)
         {
