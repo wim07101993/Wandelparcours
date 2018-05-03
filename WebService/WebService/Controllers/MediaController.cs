@@ -99,7 +99,7 @@ namespace WebService.Controllers
 
         [Authorize(EUserType.Module, EUserType.SysAdmin, EUserType.User, EUserType.User)]
         [HttpGet(Routes.Media.GetOneFileWithExtension)]
-        public async Task<FileContentResult> GetOneAsync(string id, string extension)
+        public async Task<FileContentResult> GetOneAsync(string id, string extension, [FromQuery] string token)
         {
             if (string.IsNullOrWhiteSpace(extension))
                 throw new NotFoundException<MediaData>(nameof(MediaData.Extension), extension);
@@ -116,7 +116,7 @@ namespace WebService.Controllers
 
         [Authorize(EUserType.Module, EUserType.SysAdmin, EUserType.User, EUserType.User)]
         [HttpGet(Routes.Media.GetFile)]
-        public async Task<FileContentResult> GetFileAsync(string id)
+        public async Task<FileContentResult> GetFileAsync(string id, [FromQuery] string token)
         {
             var objectId = await CanGetMediaAsync(id);
 

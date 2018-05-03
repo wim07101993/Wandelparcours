@@ -3,7 +3,7 @@
 <div class="row">
   <div class="col s6 m4 l3" *ngFor="let link of fullLinks">
     <div class="card">
-      <img class="responsive-img" [src]="link.images.url" alt="Afbeelding bewoner">
+      <img class="responsive-img" [src]="link.images.url+'?token='+login.token" alt="Afbeelding bewoner">
       <i class="material-icons red-text pointer" (click)="deleteModal(link);">delete_forever</i>
     </div>
   </div>

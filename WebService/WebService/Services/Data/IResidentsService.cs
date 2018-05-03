@@ -15,6 +15,12 @@ namespace WebService.Services.Data
         Task AddMediaAsync(ObjectId residentId, string url, EMediaType mediaType);
 
 
+        Task<IEnumerable<Resident>> GetAllInGroup(string group,
+            IEnumerable<Expression<Func<Resident, object>>> propertiesToInclude = null);
+
+        Task<IEnumerable<Resident>> GetMany(IEnumerable<ObjectId> objectIds,
+            IEnumerable<Expression<Func<Resident, object>>> propertiesToInclude = null);
+
         Task<Resident> GetOneAsync(int tag, IEnumerable<Expression<Func<Resident, object>>> propertiesToInclude = null);
 
         Task<TValue> GetPropertyAsync<TValue>(int tag, Expression<Func<Resident, TValue>> propertyToSelect);

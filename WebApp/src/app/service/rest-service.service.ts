@@ -1,11 +1,10 @@
 import {Injectable} from '@angular/core';
-import axios from 'axios';
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/catch';
 import {Resident} from '../models/resident';
 import {Station} from '../models/station';
 import {StationmanagementComponent} from '../components/stationmanagement/stationmanagement.component';
-
+import { LoginService } from "./login-service.service";
 @Injectable()
 export class RestServiceService {
   [x: string]: any;
@@ -23,7 +22,7 @@ export class RestServiceService {
     this.url = val;
   }
 
-  constructor() {}
+  constructor(private login:LoginService) {}
 
   /**
    * Get all residents from database
@@ -31,7 +30,7 @@ export class RestServiceService {
    */
   async getAllResidents() {
       try {
-          return  (await axios.get("/api/v1/residents")).data;
+          return  (await this.login.axios.get("/api/v1/residents")).data;
           }catch (e) {
           this.customErrorHandler.updateMessage(e.toString());
       }
@@ -44,7 +43,7 @@ export class RestServiceService {
   async getResidentBasedOnId(uniqueIdentifier: string){
     try {
         const query = '?properties=firstName&properties=lastName&properties=room&properties=birthday&properties=doctor';
-        return (await axios.get('/api/v1/residents/' + uniqueIdentifier + query)).data;
+        return (await this.login.axios.get('/api/v1/residents/' + uniqueIdentifier + query)).data;
     }catch (e) {
         console.log(e.toString());
     }
@@ -56,7 +55,7 @@ export class RestServiceService {
    */
   async deleteResidentByUniqueId(uniqueIdentifier: string) {
     try{
-      await axios.delete('/api/v1/residents/' + uniqueIdentifier)
+      await this.login.axios.delete('/api/v1/residents/' + uniqueIdentifier)
     }catch (e) {
         console.log(e.toString());
     }
@@ -73,7 +72,7 @@ export class RestServiceService {
       url += '&properties=' + changedProperties[_i];
     }
     try {
-       return (await axios.put("/api/v1/residents" + url, dataToUpdate));
+       return (await this.login.axios.put("/api/v1/residents" + url, dataToUpdate));
     }catch (e) {
         console.log("Error Message: "+ e.toString())
     }
@@ -85,7 +84,7 @@ export class RestServiceService {
    */
   async addResident(dataOfResident: any) {
     try{
-       return (await axios.post('/api/v1/residents', dataOfResident)).data
+       return (await this.login.axios.post('/api/v1/residents', dataOfResident)).data
     }catch (e) {
         console.log(e.toString());
     }
@@ -98,7 +97,7 @@ export class RestServiceService {
      * @returns {Promise<void>}
      */
   async addProfilePic(uniqueIdentifier: any, picture: any) {
-    await axios.put('/api/v1/residents/' + uniqueIdentifier + '/picture', picture)
+    await this.login.axios.put('/api/v1/residents/' + uniqueIdentifier + '/picture', picture)
   }
 
   ////////
@@ -113,7 +112,7 @@ export class RestServiceService {
      */
   async addTagToResident(uniqueIdentifier: string, beaconMinorNumber: any){
     try {
-        return (await axios.post('/api/v1/residents/' + uniqueIdentifier + '/tags', beaconMinorNumber, {
+        return (await this.login.axios.post('/api/v1/residents/' + uniqueIdentifier + '/tags', beaconMinorNumber, {
           headers: {
             'Content-type' : 'application/json'
           }
@@ -131,7 +130,7 @@ export class RestServiceService {
      */
   async deleteTagFromResident(uniqueIdentifier: string, uniqueTagId: string) {
     try {
-        await axios.delete('/api/v1/residents/' + uniqueIdentifier + '/' + uniqueTagId);
+        await this.login.axios.delete('/api/v1/residents/' + uniqueIdentifier + '/' + uniqueTagId);
     }catch (e) {
         console.log('Errormessage : ' + e.toString());
     }
@@ -150,7 +149,7 @@ export class RestServiceService {
    */
   async addCorrectMediaToDatabase(uniqueIdentifier: any, media: any, addMedia: string) {
     try {
-        return (await axios.post('/api/v1/residents/' + uniqueIdentifier + addMedia, media)).data;
+        return (await this.login.axios.post('/api/v1/residents/' + uniqueIdentifier + addMedia, media)).data;
     }catch (e) {
         console.log('Errormessage: ' + e.toString());
     }
@@ -164,7 +163,7 @@ export class RestServiceService {
    */
   async getCorrectMediaOfResidentBasedOnId(uniqueIdentifier: string, type: string) {
     try {
-         const response  = (await axios.get('/api/v1/residents/' + uniqueIdentifier + type)).data;
+         const response  = (await this.login.axios.get('/api/v1/residents/' + uniqueIdentifier + type)).data;
          return response;
     } catch (e) {
         console.log('Errormessage: ' + e.toString());
@@ -180,7 +179,7 @@ export class RestServiceService {
    */
   async deleteResidentMediaByUniqueId(uniqueIdentifier: string, uniqueMediaIdentifier: string, type: string) {
     try {
-      await axios.delete('/api/v1/residents/' + uniqueIdentifier + type + '/' + uniqueMediaIdentifier);
+      await this.login.axios.delete('/api/v1/residents/' + uniqueIdentifier + type + '/' + uniqueMediaIdentifier);
     }catch (e) {
         console.log('Errormessage: ' + e.toString())
     }
@@ -192,7 +191,7 @@ export class RestServiceService {
 
   async SaveStationToDatabase(station: Station) {
       try {
-          await axios.post('/api/v1/receivermodules',station);
+          await this.login.axios.post('/api/v1/receivermodules',station);
       }catch (e) {
           console.log('Errormessage: ' + e.toString());
       }
@@ -200,7 +199,7 @@ export class RestServiceService {
 
   async DeleteStation(mac: string) {
       try {
-          axios.delete('/api/v1/receivermodules/bymac/' + mac)
+          this.login.axios.delete('/api/v1/receivermodules/bymac/' + mac)
       }catch (e) {
           console.log('Errormessage: ' + e.toString())
       }
@@ -208,7 +207,7 @@ export class RestServiceService {
 
   async UpdateStation(id: string, newMac: string) {
       try {
-          const resp = await axios.put('/api/v1/receivermodules/'+ id + '/Mac', "'" + newMac + "'", {
+          const resp = await this.login.axios.put('/api/v1/receivermodules/'+ id + '/Mac', "'" + newMac + "'", {
               headers: {
                   'Content-type' : 'application/json'
               }
@@ -237,7 +236,7 @@ export class RestServiceService {
           parent.stationMacAdresses = [];
       }
       try {
-          axios.get('/api/v1/receivermodules').then(function (response) {
+          this.login.axios.get('/api/v1/receivermodules').then(function (response) {
               const tryParse = <Array<any>>(response.data);
               let station: any;
               if (tryParse != undefined) {
@@ -287,7 +286,7 @@ export class RestServiceService {
 
     async getAllResidentsWithAKnownLastLocation(){
       try {
-          const resp = (await axios.get('/api/v1/location/residents/lastlocation')).data;
+          const resp = (await this.login.axios.get('/api/v1/location/residents/lastlocation')).data;
           return resp;
       }catch (e) {
           console.log('Errormessage: '+ e.toString());
@@ -297,10 +296,18 @@ export class RestServiceService {
     async getOneResidentWithAKnownLastLocation(uniqueIdentifier: string){
       try {
             const query= "propertiesToInclude=id &propertiesToInclude=firstName&propertiesToInclude=lastName&propertiesToInclude=lastRecordedPosition";
-            const resp = (await axios.get(`/api/v1/residents/${uniqueIdentifier}?${query}`)).data
+            const resp = (await this.login.axios.get(`/api/v1/residents/${uniqueIdentifier}?${query}`)).data
             return resp;
       }catch (e) {
             console.log('Errormessage: ' + e.toString());
       }
+    }
+    async createUser(userName,password,userType){
+        try {
+            let login =await this.login.axios.post("/api/v1/users",{"userName":userName,"password":password,"userType":userType});
+            return true;
+        } catch (error) {
+            return false;
+        }
     }
 }

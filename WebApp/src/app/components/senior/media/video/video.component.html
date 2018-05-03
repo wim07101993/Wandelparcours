@@ -5,7 +5,7 @@
   <div class="col s12 m6" *ngFor="let link of fullLinks">
     <div class="crd z-depth-2">
       <video class="responsive-video" controls>
-        <source [src]="link.videos.url">
+        <source [src]="link.videos.url+'?token='+login.token">
       </video>
       <i class="material-icons red-text pointer" (click)="deleteModal(link);">delete</i>
     </div>
