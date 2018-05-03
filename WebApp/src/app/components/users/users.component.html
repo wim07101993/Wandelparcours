@@ -1,3 +1,149 @@
-<p>
-  users works!
-</p>
+<div class="row">
+	<div class="col s1 offsetsearchButton">
+		<a class="btn-floating btn-large waves-effect waves-light amber darken-2" *ngIf="!search" (click)="search=!search;focusInput()">
+			<i class="material-icons">search</i>
+		</a>
+		<a class="btn-floating btn-large waves-effect waves-light amber darken-4" *ngIf="search" (click)="search=!search">
+			<i class="material-icons">zoom_out</i>
+		</a>
+	</div>
+
+	<div class="col s10" *ngIf="search">
+		<input id="focusToInput" type="text" [(ngModel)]="term" placeholder="Zoek..." autofocus>
+	</div>
+</div>
+
+<ng-template #loading>
+	Loading Residents...
+</ng-template>
+
+<!--Switch to cardview-->
+<div class="row">
+	<!-- <div class="col s12 m6 l4" *ngFor="let resident of residents | filter:term"> -->
+	<div class="col s12 m6 l4">
+		<!-- resident's personal content on cardview -->
+		<div id="content" class="card">
+		<img class="z-depth-2"/>
+		<table>
+			<tr>
+				<td>voornaam</td>
+				<td>achternaam</td>
+			</tr>
+			<tr>
+				<td>email</td>
+				<td>type</td>
+			</tr>
+		</table>
+
+		<!-- action buttons per resident-card -->
+		<div class="row">
+			<div class="col s4 center">
+				<i class="material-icons blue-text pointer">edit</i>
+			</div>
+			<div class="col s4 center" title="Toegewezen bewoners bekijken">
+				<i class="material-icons red-text pointer">group</i>
+			</div>
+			<div class="col s4 center">
+				<i class="material-icons red-text pointer">delete</i>
+			</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+
+<!-- Form to add user -->
+<div id="add-user-modal" class="modal">
+	<div class="modal-content">
+		<h5>Een nieuw gebruiker toevoegen</h5>
+
+		<form class="col s12" (ngSubmit)="createUser(f)" #f="ngForm">
+
+			<div class="row">
+				<div class="input-field col s6">
+					<input id="firstname" type="text" class="validate" ngModel name="firstname" required>
+					<label for="firstname">Voornaam<sup style="color:#ff2200;">*</sup></label>
+				</div>
+				<div class="input-field col s6">
+					<input id="lastname" type="text" class="validate" ngModel name="lastname" required>
+					<label for="lastname">Familienaam<sup style="color:#ff2200;">*</sup></label>
+				</div>
+			</div>
+
+			<div class="row">
+				<div class="input-field col s6">
+					<input id="email" type="email" class="validate" ngModel name="email" required>
+					<label for="email">Email<sup style="color:#ff2200;">*</sup></label>
+				</div>
+				<div class="input-field col s6">
+					<select>
+						<option value="" disabled selected>Kies gebruikerstype</option>
+						<option value="0">Admininstrator</option>
+						<option value="1">Zorgkundige</option>
+						<option value="2">Aandachtspersoon</option>
+						<option value="2">Familielid</option>
+					</select>
+				</div>
+			</div>
+
+			<div class="row">
+				<div class="input-field col s6">
+					<input id="password" type="password" class="validate" [(ngModel)]="password" name="password" required>
+					<label for="password">Wachtwoord<sup style="color:#ff2200;">*</sup></label>
+				</div>
+				<div class="input-field col s6">
+					<input id="password-check" type="password" class="validate" [(ngModel)]="passwordcheck" name="password-check" required>
+					<label for="password-check">Wachtwoord<sup style="color:#ff2200;">*</sup></label>
+				</div>
+			</div>
+			<!-- <div class="row">
+				<div class="input-field col s12">
+					<select>
+						<option value="" disabled selected>Kies wooneenheid</option>
+						<option value="0">Amber WU1</option>
+						<option value="1">Amber WU2</option>
+						<option value="2">Amber WU3</option>
+						<option value="3">Amber WU4</option>
+						<option value="0">Amethis WU1</option>
+						<option value="1">Amethis WU2</option>
+						<option value="2">Amethis WU3</option>
+						<option value="3">Amethis WU4</option>
+						<option value="4">Aquamarijn WU1</option>
+						<option value="5">Aquamarijn WU2</option>
+						<option value="6">Aquamarijn WU3</option>
+						<option value="7">Aquamarijn WU4</option>
+						<option value="4">Saffier WU1</option>
+						<option value="5">Saffier WU2</option>
+						<option value="6">Saffier WU3</option>
+						<option value="7">Saffier WU4</option>
+					</select>
+				</div>
+			</div> -->
+
+			<div class="modal-footer">
+				<button class="btn waves-effect waves-light green lighten-1"
+				type="submit"
+				name="action"
+				[disabled]="!f.valid" (click)="validatePassword()">
+				Toevoegen
+				<i class="material-icons right">send</i>
+				</button>
+				<a (click)="resetForm(f)"
+				class="btn waves-effect waves-light red lighten-1 modal-action modal-close">
+				Annuleren
+				<i class="material-icons right">cancel</i>
+				</a>
+			</div>
+
+		</form>
+	</div>
+</div>
+
+<!-- Modal Trigger -->
+<!-- This will pop up the form to add a resident -->
+<div class="fixed-action-btn">
+	<a class="btn-floating btn-large red" (click)="openAddUserModal()">
+		<i class="large material-icons">person_add</i>
+	</a>
+</div>
