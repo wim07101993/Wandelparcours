@@ -19,7 +19,7 @@ import { promise } from 'protractor';
 export class AppComponent {
   accessPerRoute=[
     {url:"/modules","acl":[0]},
-    {url:"/tracking","acl":[0]},
+    {url:"/tracking","acl":[0,1]},
     {url:"/residents","acl":[0,1,2]}  ,
     {url:"/resident/","acl":[0,1,2]} ,
     {url:"/users","acl":[0]},

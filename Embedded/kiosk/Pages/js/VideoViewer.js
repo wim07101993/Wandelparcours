@@ -9,11 +9,11 @@ class VideoViewer extends AbstractViewer{
             this.scanBeacon();
             return;
         }else{
-            this.http.get(`${this.url}/API/v1/residents/bytag/${this.beacon}/videos/random`).then((request) => {
+            this.axios().get(`${this.url}/API/v1/residents/bytag/${this.beacon}/videos/random`).then((request) => {
                 try {
                     var id = request.data.id;
                     var video = document.createElement('video');
-                    video.src = `${this.url}/api/v1/media/${id}/file`;
+                    video.src = `${this.url}/api/v1/media/${id}/file?token=${this.token}`;
                     video.autoplay = true;
                     $("#video").empty()
                     $(video).appendTo("#video");

@@ -25,7 +25,6 @@ socket.on('clientcode', function(data){
 });
 
 
-
 socket.on('disconnect', function(){});
 } catch (globalError) {
     console.log(globalError);

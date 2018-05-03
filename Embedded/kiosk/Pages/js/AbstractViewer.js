@@ -5,10 +5,49 @@ class AbstractViewer{
         this.scanClosest= require(__dirname+"/scanClosest").scanClosest;
         this.store = new Store();
         this.url = this.store.get("resturl");
-        this.scanBeacon();
         this.debugTimeout=0;
+        this.username='module';
+        this.password="kiosktoermalien"
+        this.token=null;
+        this.login();
+        this.scanBeacon();
     }
-
+    refreshToken(){
+        const http = this.http.create({
+          headers: {'userName': this.username,"password":this.password}
+        });
+        this.http.post(`${this.url}/api/v1/tokens`).then((result)=>{
+          this.token=result.data.token;
+          this.level=result.data.user.userType;
+        }).catch(()=>{
+          setTimeout(()=>{
+            this.refreshToken();
+          },60*1000);
+        });
+          
+      }
+     axios(){
+        const instance = this.http.create({
+          headers: {'token': this.token,'Content-type' : 'application/json'}
+        });
+        return instance;
+      }
+    login(){
+        
+        const http = this.http.create({
+          headers: {'userName': this.username,"password":this.password}
+        });
+        try{
+           http.post(`${this.url}/api/v1/tokens`).then((token)=>{
+              this.token = token.data.token;
+              this.level= token.data.user.userType;
+              this.refreshTokenInterval =setInterval(()=>{this.refreshToken()},10*60*1000);
+          });
+        }catch(ex){
+            setTimeout(()=>{this.login()},2000);
+        }
+    
+      }
     loadData(){}
 
     scanBeacon(){
