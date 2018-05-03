@@ -32,7 +32,7 @@ export class RestServiceService {
       try {
           return  (await this.login.axios.get("/api/v1/residents")).data;
           }catch (e) {
-          this.customErrorHandler.updateMessage(e.toString());
+          console.log('Errormessage: ' + e.toString());
       }
   }
   /**
@@ -302,6 +302,11 @@ export class RestServiceService {
             console.log('Errormessage: ' + e.toString());
       }
     }
+
+
+    /////////
+    //Users//
+    /////////
     async createUser(userName,password,userType){
         try {
             let login =await this.login.axios.post("/api/v1/users",{"userName":userName,"password":password,"userType":userType});
@@ -309,5 +314,34 @@ export class RestServiceService {
         } catch (error) {
             return false;
         }
+    }
+
+    async updateUser(dataToUpdate: any, changedProperties: any){
+        let url: string = '?properties=' + changedProperties[0];
+        for (let _i = 1; _i < changedProperties.length; _i++) {
+            url += '&properties=' + changedProperties[_i];
+        }
+        try {
+            return (await this.login.axios.put("/api/v1/users" + url, dataToUpdate));
+        }catch (e) {
+            console.log("Error Message: "+ e.toString())
+        }
+    }
+
+    async deleteUser(uniqueIdentifier: string){
+        try{
+            await this.login.axios.delete('/api/v1/users/' + uniqueIdentifier)
+        }catch (e) {
+            console.log(e.toString());
+        }
+    }
+
+    async getUsers(){
+      try{
+          const resp = (await this.login.axios.get('/api/v1/users')).data;
+          return resp;
+      }catch (e) {
+          console.log('Errormessage: ' + e.toString());
+      }
     }
 }
