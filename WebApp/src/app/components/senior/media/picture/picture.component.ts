@@ -1,7 +1,8 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, VERSION} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import {Resident} from '../../../../models/resident';
 import {MediaService} from '../../../../service/media.service';
+
 
 declare var $: any;
 
@@ -18,8 +19,11 @@ export class PictureComponent implements OnInit {
   images: Resident[];
   fullLinks: any=[];
   id: string = this.route.snapshot.params['id'];
+    name: string;
 
   constructor(private route: ActivatedRoute, private media: MediaService) {}
+
+
 
   ngOnInit() {
     this.getAllImages();
@@ -50,7 +54,7 @@ export class PictureComponent implements OnInit {
     await this.media.deleteMedia(this.id, uniquePictureID, this.picture);
     setTimeout(()=>{
         $("#deleteModal").modal("close");
-    }, 200);
+    }, 200)
     this.getAllImages();
   }
 

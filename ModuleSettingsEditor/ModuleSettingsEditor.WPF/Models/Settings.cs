@@ -1,4 +1,5 @@
-﻿using Prism.Mvvm;
+﻿using System.Windows.Media;
+using Prism.Mvvm;
 
 namespace ModuleSettingsEditor.WPF.Models
 {
@@ -13,9 +14,10 @@ namespace ModuleSettingsEditor.WPF.Models
         private string _wifiSSID;
         private string _wifiWPA;
         private string _kioskType;
+        private double _timePerSlide;
+        private byte[] _backgroundColor;
 
         #endregion FIELDS
-
 
 
         public string RestServerIP
@@ -61,6 +63,28 @@ namespace ModuleSettingsEditor.WPF.Models
         {
             get => _kioskType;
             set => SetProperty(ref _kioskType, value);
+        }
+
+
+        public double TimePerSlide
+        {
+            get => _timePerSlide;
+            set => SetProperty(ref _timePerSlide, value);
+        }
+
+        public byte[] BackgroundColor
+        {
+            get => _backgroundColor;
+            set => SetProperty(ref _backgroundColor, value);
+        }
+
+
+        public Color BackgroundColorAsColor
+        {
+            get => BackgroundColor == null || BackgroundColor.Length < 3
+                ? Colors.Black
+                : Color.FromRgb(BackgroundColor[0], BackgroundColor[1], BackgroundColor[2]);
+            set => BackgroundColor = new[] {value.R, value.G, value.B};
         }
     }
 }

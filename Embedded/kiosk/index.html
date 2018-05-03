@@ -13,11 +13,27 @@
   <body>
     <script>
       require('./renderer.js');
-      Store = require("electron-store");
+      var settings = require("../library/loader").loadsettings();
+      var Store = require("electron-store");
       const store = new Store();
-      store.set("resturl","http://localhost:5000");
+      store.set("resturl",`http://${settings.RestServerIP}:${settings.RestServerPort}`);
       store.delete("beacon");
-      window.location="./Pages/Game.html";
+      switch(settings.KioskType){
+            case "Afbeelding":
+                window.location="./Pages/ImageViewer.html";
+                break;
+            case "Video":
+                window.location="./Pages/VideoViewer.html";
+                break;
+            case "Muziek":
+                window.location="./Pages/Game.html";
+                break;
+            case "Spel":
+                window.location="./Pages/Game.html";
+                break;
+        }
+
+      
     </script>
   </body>
 </html>

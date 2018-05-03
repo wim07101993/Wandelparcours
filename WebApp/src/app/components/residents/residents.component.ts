@@ -195,7 +195,7 @@ export class ResidentsComponent implements OnInit {
           if (this.selectedFile[index].type.indexOf('image') != -1) {
             await this.service.addProfilePic(this.updateResident.id, fd);
           } else {
-            alert('Could not update profile picture!');
+            Materialize.toast('Could not update profile picture!', 5000);
           }
         }
       } catch (e) {
@@ -261,7 +261,6 @@ export class ResidentsComponent implements OnInit {
         }
     } else {
       Materialize.toast(`Bewoner kon niet worden toegevoegd!`, 5000);
-      this.router.navigate(['/error']);
     }
 
     // Reset Residents form

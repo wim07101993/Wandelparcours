@@ -17,13 +17,16 @@ declare var Materialize: any;
 export class PersonaliaComponent implements OnInit {
   AmountBeacons = 0;
   updateResident: any;
+  src2: any;
   tag: any;
   id: string = this.route.snapshot.params['id'];
   resident: Resident;
   countI = 0;
   countV = 0;
 
-  constructor(private service: RestServiceService, private media: MediaService, private route: ActivatedRoute, private router: Router) {}
+  constructor(private service: RestServiceService, private media: MediaService, private route: ActivatedRoute, private router: Router) {
+      this.src2 = "/api/v1/residents/" + this.id + "/picture" ;
+  }
 
     ngOnInit() {
         this.resident = <Resident>{firstName: '', lastName: '', room: '', id: '', birthday: new Date(), doctor: {name: '', phoneNumber: ''}};
@@ -95,6 +98,7 @@ export class PersonaliaComponent implements OnInit {
     const bmn = beaconMinorNumber.beaconNumber + '';
 
     const a = await this.service.addTagToResident(this.resident.id, bmn);
+    console.log(a);
     if (a !== undefined) {
       this.resident.tags = a;
     } else {

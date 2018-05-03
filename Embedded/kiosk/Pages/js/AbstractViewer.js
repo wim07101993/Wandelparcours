@@ -1,6 +1,6 @@
 class AbstractViewer{
     constructor(){
-        let Store = require("electron-store");
+        var Store = require("electron-store");
         this.http = require("axios");
         this.scanClosest= require(__dirname+"/scanClosest").scanClosest;
         this.store = new Store();
@@ -22,13 +22,13 @@ class AbstractViewer{
     timeOut(delay){
         
         this.debugTimeout++;
-        let deepcopy = this.debugTimeout+"";
+        var deepcopy = this.debugTimeout+"";
 
         console.log(`timeout start ${deepcopy}`)
         return new Promise((resolve)=>{
-            let timeEnd = Date.now() + delay;
-            let interval = setInterval(()=>{
-                let dif = Date.now()- timeEnd;
+            var timeEnd = Date.now() + delay;
+            var interval = setInterval(()=>{
+                var dif = Date.now()- timeEnd;
                 if(dif > 0)
                 {
                     console.log(`timeout stop  ${deepcopy}`)

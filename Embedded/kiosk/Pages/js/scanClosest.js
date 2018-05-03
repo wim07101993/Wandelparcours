@@ -34,7 +34,9 @@ function scanner() {
             setTimeout(()=>{
                 resolve(beacons);
             },3000)
-        } catch (e) {resolve([])}
+        } catch (e) {
+            console.log(e);
+            resolve([])}
     });
 
 }

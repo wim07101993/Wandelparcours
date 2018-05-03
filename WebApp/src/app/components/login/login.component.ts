@@ -56,7 +56,7 @@ export class LoginComponent implements OnInit {
           this.setCookie("login",login,30);
         }
       }else{
-        alert("ga weg lan");
+        alert("Toegang verboden!");
       }
     }
     ).catch(()=>{this.waitingResponse=false});

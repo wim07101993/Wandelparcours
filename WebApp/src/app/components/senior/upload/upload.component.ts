@@ -36,7 +36,7 @@ export class UploadComponent implements OnInit {
           this.localUrl = event.target.result;
         };
         reader.readAsDataURL(event.target.files[i]);
-        $('.preview').append('test');
+        //$('.preview').append('test');
       }
     }
   }
@@ -51,7 +51,7 @@ export class UploadComponent implements OnInit {
     for (const file in this.selectedFile) {
       const index = parseInt(file);
       if (!isNaN(index)) {
-        this.loading = "uploading...";
+        //this.loading = "uploading...";
         const fd = new FormData();
         fd.append("File", this.selectedFile[index], this.selectedFile[index].name);
         if (this.selectedFile[index].type.indexOf("image") != -1) {
@@ -63,11 +63,11 @@ export class UploadComponent implements OnInit {
         else{
           alert("Kan geen media uploaden! Probeer later nog eens!");
         }
-          //clear selected files
-          this.selectedFile = null;
       }
       $("#addMedia").modal("close");
     }
+    //clear selected files
+    this.selectedFile = null;
     this.reload.emit();
   }
 
@@ -82,4 +82,7 @@ export class UploadComponent implements OnInit {
     $("#addMedia").modal("open");
   }
 
+    closeModal() {
+        $("#addMedia").modal('close');
+    }
 }
