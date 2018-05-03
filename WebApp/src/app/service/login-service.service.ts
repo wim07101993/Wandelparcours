@@ -35,6 +35,8 @@ export class LoginService {
     }
   }
   async login(username:string,password:string){
+    this.username=username;
+    this.password=password;
     const http = axios.create({
       headers: {'userName': username,"password":password}
     });
@@ -68,8 +70,9 @@ export class LoginService {
     const http = axios.create({
       headers: {'userName': this.username,"password":this.password}
     });
-    http.post("/api/v1/tokens").then((token)=>{
-      this.token=token.data;
+    http.post("/api/v1/tokens").then((result)=>{
+      this.token=result.data.token;
+      this.acl=result.data.user.userType;
     }).catch(()=>{
       setTimeout(()=>{
         this.refreshToken();
