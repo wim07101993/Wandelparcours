@@ -9,20 +9,25 @@ export class LoginService {
   private username:string;
   private password:string;
   private level:number;
-  
+  public acl:number;
   surfUrl:string="/";
   constructor(private router: Router) { }
   
 
 
   async login(username:string,password:string){
+    this.username=username;
+    this.password=password;
     const http = axios.create({
       headers: {'userName': username,"password":password}
     });
     try{
-      let token =  await http.post("/api/v1/tokens");
-      this.token = token.data;
+      let result =  await http.post("/api/v1/tokens");
+      this.token=result.data.token;
+      this.acl=result.data.user.userType;
+      
       setInterval(()=>{this.refreshToken()},15*60*1000);
+      //15*60*1000
       return true
     }catch(ex){return false}
 
@@ -48,8 +53,9 @@ export class LoginService {
     const http = axios.create({
       headers: {'userName': this.username,"password":this.password}
     });
-    http.post("/api/v1/tokens").then((token)=>{
-      this.token=token.data;
+    http.post("/api/v1/tokens").then((result)=>{
+      this.token=result.data.token;
+      this.acl=result.data.user.userType;
     }).catch(()=>{
       setTimeout(()=>{
         this.refreshToken();

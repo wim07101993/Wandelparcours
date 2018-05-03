@@ -48,7 +48,7 @@ export class LoginComponent implements OnInit {
       if(result==true){
         let redirectURL= this.loginService.surfUrl=="/login"? "/":this.loginService.surfUrl; 
         this.router.navigate([redirectURL]);
-        this.store.Set("acl",0);
+        this.store.Set("acl",this.loginService.acl);
         if(this.rememberMe){
           let login:any = {username:this.email,password:this.password};
           login = JSON.stringify(login);
