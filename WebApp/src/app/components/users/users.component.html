@@ -26,17 +26,25 @@
 		<img class="z-depth-2"/>
 		<table>
 			<tr>
-				<td colspan="2" class="cardviewtd center">voornaam, achternaam</td>
+				<td>voornaam</td>
+				<td>achternaam</td>
+			</tr>
+			<tr>
+				<td>email</td>
+				<td>type</td>
 			</tr>
 		</table>
 
 		<!-- action buttons per resident-card -->
 		<div class="row">
-			<div class="col s6 center">
-			<i class="material-icons blue-text pointer">edit</i>
+			<div class="col s4 center">
+				<i class="material-icons blue-text pointer">edit</i>
 			</div>
-			<div class="col s6 center">
-			<i class="material-icons red-text pointer" (click)="openModal(resident)">delete</i>
+			<div class="col s4 center" title="Toegewezen bewoners bekijken">
+				<i class="material-icons red-text pointer">group</i>
+			</div>
+			<div class="col s4 center">
+				<i class="material-icons red-text pointer">delete</i>
 			</div>
 			</div>
 		</div>
@@ -48,9 +56,9 @@
 <!-- Form to add user -->
 <div id="add-user-modal" class="modal">
 	<div class="modal-content">
-		<h5>Een nieuwe gebruiker tooevoegen</h5>
+		<h5>Een nieuw gebruiker toevoegen</h5>
 
-		<form class="col s12" (ngSubmit)="addUser(f)" #f="ngForm">
+		<form class="col s12" (ngSubmit)="createUser(f)" #f="ngForm">
 
 			<div class="row">
 				<div class="input-field col s6">
@@ -69,27 +77,55 @@
 					<label for="email">Email<sup style="color:#ff2200;">*</sup></label>
 				</div>
 				<div class="input-field col s6">
-					<input id="alast_name" type="text" class="validate" ngModel name="aLastName" required>
-					<label for="alast_name">Type<sup style="color:#ff2200;">*</sup></label>
+					<select>
+						<option value="" disabled selected>Kies gebruikerstype</option>
+						<option value="0">Admininstrator</option>
+						<option value="1">Zorgkundige</option>
+						<option value="2">Aandachtspersoon</option>
+						<option value="2">Familielid</option>
+					</select>
 				</div>
 			</div>
 
 			<div class="row">
-					<div class="input-field col s6">
-						<input id="password" type="password" class="validate" ngModel name="password" required>
-						<label for="password">Wachtwoord<sup style="color:#ff2200;">*</sup></label>
-					</div>
-					<div class="input-field col s6">
-						<input id="password" type="password" class="validate" ngModel name="password" required>
-						<label for="password">Wachtwoord<sup style="color:#ff2200;">*</sup></label>
-					</div>
+				<div class="input-field col s6">
+					<input id="password" type="password" class="validate" [(ngModel)]="password" name="password" required>
+					<label for="password">Wachtwoord<sup style="color:#ff2200;">*</sup></label>
 				</div>
+				<div class="input-field col s6">
+					<input id="password-check" type="password" class="validate" [(ngModel)]="passwordcheck" name="password-check" required>
+					<label for="password-check">Wachtwoord<sup style="color:#ff2200;">*</sup></label>
+				</div>
+			</div>
+			<!-- <div class="row">
+				<div class="input-field col s12">
+					<select>
+						<option value="" disabled selected>Kies wooneenheid</option>
+						<option value="0">Amber WU1</option>
+						<option value="1">Amber WU2</option>
+						<option value="2">Amber WU3</option>
+						<option value="3">Amber WU4</option>
+						<option value="0">Amethis WU1</option>
+						<option value="1">Amethis WU2</option>
+						<option value="2">Amethis WU3</option>
+						<option value="3">Amethis WU4</option>
+						<option value="4">Aquamarijn WU1</option>
+						<option value="5">Aquamarijn WU2</option>
+						<option value="6">Aquamarijn WU3</option>
+						<option value="7">Aquamarijn WU4</option>
+						<option value="4">Saffier WU1</option>
+						<option value="5">Saffier WU2</option>
+						<option value="6">Saffier WU3</option>
+						<option value="7">Saffier WU4</option>
+					</select>
+				</div>
+			</div> -->
 
 			<div class="modal-footer">
 				<button class="btn waves-effect waves-light green lighten-1"
 				type="submit"
 				name="action"
-				[disabled]="!f.valid">
+				[disabled]="!f.valid" (click)="validatePassword()">
 				Toevoegen
 				<i class="material-icons right">send</i>
 				</button>
