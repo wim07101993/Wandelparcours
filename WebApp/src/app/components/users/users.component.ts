@@ -1,4 +1,7 @@
 import { Component, OnInit } from '@angular/core';
+import {NgForm} from '@angular/forms';
+declare var $: any;
+declare var Materialize: any;
 
 @Component({
   selector: 'app-users',
@@ -12,5 +15,17 @@ export class UsersComponent implements OnInit {
   ngOnInit() {
   }
 
+    /**
+   * Reset the form on close
+   * @param form of type NgForm
+   */
+  resetForm(form: NgForm) {
+    form.reset();
+  }
   
+
+  openAddUserModal() {
+    $('#add-user-modal').modal();
+    $('#add-user-modal').modal('open');
+  }
 }
