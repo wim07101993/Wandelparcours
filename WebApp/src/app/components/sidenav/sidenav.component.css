@@ -3,6 +3,10 @@
   font-weight: bold;
 }
 
+li {
+  cursor: pointer;
+}
+
 li:first-child {
   margin-top: 79px;
 }
