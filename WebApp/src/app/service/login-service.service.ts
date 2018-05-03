@@ -84,7 +84,7 @@ export class LoginService {
 
   get axios(){
     const instance = axios.create({
-      headers: {'token': this.token}
+      headers: {'token': this.token,'Content-type' : 'application/json'}
     });
     return instance;
   }

@@ -5,7 +5,7 @@ import 'rxjs/add/operator/catch';
 import {Resident} from '../models/resident';
 import {Station} from '../models/station';
 import {StationmanagementComponent} from '../components/stationmanagement/stationmanagement.component';
-
+import { LoginService } from "./login-service.service";
 @Injectable()
 export class RestServiceService {
   [x: string]: any;
@@ -23,7 +23,7 @@ export class RestServiceService {
     this.url = val;
   }
 
-  constructor() {}
+  constructor(private login:LoginService) {}
 
   /**
    * Get all residents from database
@@ -302,5 +302,13 @@ export class RestServiceService {
       }catch (e) {
             console.log('Errormessage: ' + e.toString());
       }
+    }
+    async createUser(userName,password,userType){
+        try {
+            let login =await this.login.axios.post("/api/v1/users",{"userName":userName,"password":password,"userType":userType});
+            return true;
+        } catch (error) {
+            return false;
+        }
     }
 }
