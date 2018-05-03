@@ -312,7 +312,7 @@ namespace WebService.Controllers
         public override async Task<object> GetPropertyAsync(string id, string propertyName)
         {
             await CanGetDataFromResidentAsync(id);
-            return base.GetPropertyAsync(id, propertyName);
+            return await base.GetPropertyAsync(id, propertyName);
         }
 
         [Authorize(EUserType.SysAdmin, EUserType.Nurse, EUserType.Module, EUserType.User)]
