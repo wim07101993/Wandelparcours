@@ -7,24 +7,24 @@ const BrowserWindow = electron.BrowserWindow
 const path = require('path')
 const url = require('url')
 
-Store = require("electron-store");
-const store = new Store();
 
-store.delete("beacon");
+
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
-let mainWindow
+var mainWindow
 
-var subpy
+app.disableHardwareAcceleration(); 
+
 app.on('ready', function(){
-  var spawn = require("child_process").spawn;
-
-  subpy = spawn('python', ['./rest.py']);
-
   createWindow();
 });
 function createWindow () {
-   mainWindow = new BrowserWindow({width: 800, height: 600,frame: false,fullscreen:true})
+   mainWindow = new BrowserWindow({
+     width: 800,  
+     height: 600,
+     frame: false,fullscreen:true
+    })
+   // mainWindow.webContents.openDevTools()
 
   // and load the index.html of the app.
   mainWindow.loadURL(url.format({
@@ -42,10 +42,6 @@ function createWindow () {
 
   // Emitted when the window is closed.
   mainWindow.on('closed', function () {
-    // Dereference the window object, usually you would store windows
-    // in an array if your app supports multi windows, this is the time
-    // when you should delete the corresponding element
-    subpy.kill('SIGINT');
 
     mainWindow = null
   })

@@ -1,8 +1,8 @@
-var AbstractViewer =  require(__dirname+"/js/AbstractViewer").AbstractViewer;
 
-
+var AbstractViewer = require(__dirname+"/js/AbstractViewer").AbstractViewer;
 class ImageViewer extends AbstractViewer{
     constructor(){
+        
         super();
         this.images = [];
         this.index = 0;
@@ -14,11 +14,14 @@ class ImageViewer extends AbstractViewer{
     }
     
     loadData(){
+        
         if(this.beacon==null|| this.beacon == undefined){
             this.scanBeacon();
             return;
         }else{
+            console.log("beacon loaded");
             this.http.get(`${this.url}/API/v1/residents/bytag/${this.beacon}/images`).then((request) => {
+                console.log("request done");
                 this.images = request.data;
                 this.images=this.shuffle(this.images);
                 setTimeout(()=>{
@@ -37,6 +40,7 @@ class ImageViewer extends AbstractViewer{
                     this.scanBeacon();
                 }
             }).catch(()=>{
+                console.log("couldn't request");
                 setTimeout(() => {
                     this.scanBeacon();
                 }, 5000);
@@ -44,7 +48,7 @@ class ImageViewer extends AbstractViewer{
         }
     }
     createLoop() {
-        let img = new Image()
+        var img = new Image()
         img.onload = ()=> { 
            this.nextLoop=this.timeOut((this.loopspeed*1000));
             this.nextLoop.then(()=>{this.createLoop()});
@@ -81,7 +85,7 @@ class ImageViewer extends AbstractViewer{
         
     }
     shuffle(a) {
-        for (let i = a.length - 1; i > 0; i--) {
+        for (var i = a.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
             [a[i], a[j]] = [a[j], a[i]];
         }
