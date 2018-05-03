@@ -57,3 +57,4 @@ ModuleSettingsEditor/ModuleSettingsEditor.WPF/obj/
 WebService/DatabaseImporter/bin/
 WebService/DatabaseImporter/obj/
 WebApp/.idea/
+WebService/WebService/appsettings.json
