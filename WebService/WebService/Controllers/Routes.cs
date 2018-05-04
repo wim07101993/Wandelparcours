@@ -31,24 +31,6 @@ namespace WebService.Controllers
         public static class Locations
         {
             public const string GetAllLastLocations = "lastlocations";
-
-            [Obsolete]
-            public const string RouteOld = RestBase.Route + "/location";
-
-            [Obsolete]
-            public const string GetLastLocationOneResident = "residents/{id:length(24)}/lastlocation";
-
-            [Obsolete]
-            public const string GetlastLocationOneResidentByTag = "bytag/residents/{tag}/lastlocation";
-
-            [Obsolete]
-            public const string GetAllLastLocationsOld = "residents/lastlocation";
-
-            [Obsolete]
-            public const string SetLastLocation = "{id:length(24)}/lastlocation";
-
-            [Obsolete]
-            public const string SetlastLocationByTag = "{tag}/lastlocation/bytag";
         }
 
         public static class Media
@@ -126,6 +108,6 @@ namespace WebService.Controllers
         {
             public const string GetByName = "{userName}";
             public const string GetPropertyByName = "{userName}/{propertyName}";
-        } 
+        }
     }
 }
