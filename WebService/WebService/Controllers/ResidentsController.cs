@@ -9,6 +9,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Bson;
+using Newtonsoft.Json;
 using WebService.Controllers.Bases;
 using WebService.Helpers.Attributes;
 using WebService.Helpers.Exceptions;
@@ -27,11 +28,15 @@ namespace WebService.Controllers
     [SuppressMessage("ReSharper", "SpecifyACultureInStringConversionExplicitly")]
     public class ResidentsController : ARestControllerBase<Resident>, IResidentsController
     {
+        private readonly ILocationsService _locationsService;
+
         #region CONSTRUCTOR
 
-        public ResidentsController(IResidentsService dataService, ILogger logger, IUsersService usersService)
+        public ResidentsController(ILocationsService locationsService, IResidentsService dataService, ILogger logger,
+            IUsersService usersService)
             : base(dataService, logger, usersService)
         {
+            _locationsService = locationsService;
         }
 
         #endregion CONSTRUCTOR
@@ -161,6 +166,31 @@ namespace WebService.Controllers
                 default:
                     throw new ArgumentOutOfRangeException();
             }
+        }
+
+        private async Task<bool> CanWriteDataToResidentAsync(int tag)
+        {
+            var properties = new Expression<Func<User, object>>[] {x => x.Residents, x => x.UserType, x => x.Group};
+            var user = await GetCurrentUser(properties);
+            var isResponsible = false;
+            switch (user.UserType)
+            {
+                case EUserType.SysAdmin:
+                    isResponsible = true;
+                    break;
+                case EUserType.Nurse:
+                    var residentRoom = await ((IResidentsService) DataService).GetPropertyAsync(tag, x => x.Room);
+                    isResponsible = new Regex($@"^{residentRoom}[0-9]*$").IsMatch(user.Group);
+                    break;
+                case EUserType.User:
+                case EUserType.Guest:
+                case EUserType.Module:
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+
+            return isResponsible;
         }
 
         #endregion auth
@@ -427,7 +457,70 @@ namespace WebService.Controllers
         public override async Task UpdatePropertyAsync(string id, string propertyName, [FromBody] string jsonValue)
         {
             await CanWriteDataToResidentAsync(id);
-            await base.UpdatePropertyAsync(id, propertyName, jsonValue);
+            if (propertyName == nameof(Resident.LastRecordedPosition))
+                await UpdateLastRecordedPosition(id.ToObjectId(), jsonValue);
+            else
+                await base.UpdatePropertyAsync(id, propertyName, jsonValue);
+        }
+
+        [Authorize(EUserType.SysAdmin, EUserType.Module)]
+        [HttpPut(Routes.RestBase.UpdateProperty)]
+        public async Task UpdatePropertyByTagAsync(int tag, string propertyName, [FromBody] string jsonValue)
+        {
+            await CanWriteDataToResidentAsync(tag);
+            if (await GetPropertyOfCurrentUser(x => x.UserType) == EUserType.Module
+                && propertyName != nameof(Resident.LastRecordedPosition))
+                throw new UnauthorizedException(EUserType.SysAdmin);
+
+            if (propertyName == nameof(Resident.LastRecordedPosition))
+            {
+                var id = await ((IResidentsService) DataService).GetPropertyAsync(tag, x => x.Id);
+                await UpdateLastRecordedPosition(id, jsonValue);
+            }
+            else
+            {
+                var property = typeof(Resident)
+                    .GetProperties()
+                    .FirstOrDefault(propertyInfo => propertyInfo.Name.EqualsWithCamelCasing(propertyName));
+
+                if (property == null)
+                    throw new PropertyNotFoundException<Resident>(nameof(propertyName));
+
+                object value;
+                try
+                {
+                    // try to convert the jsonValue to the type of the property       
+                    value = typeof(string) == property.PropertyType
+                        ? jsonValue
+                        : JsonConvert.DeserializeObject(jsonValue, property.PropertyType);
+                }
+                catch (JsonException)
+                {
+                    throw new WrongArgumentTypeException(jsonValue, property.PropertyType);
+                }
+
+                await ((IResidentsService) DataService)
+                    .UpdatePropertyAsync(tag, PropertySelectors[propertyName.ToUpperCamelCase()], value);
+            }
+        }
+
+        private async Task UpdateLastRecordedPosition(ObjectId id, string jsonValue)
+        {
+            ResidentLocation value;
+            try
+            {
+                value = jsonValue.Deserialize<ResidentLocation>();
+            }
+            catch (JsonException)
+            {
+                throw new WrongArgumentTypeException(jsonValue, typeof(ResidentLocation));
+            }
+
+            value.Id = ObjectId.GenerateNewId();
+            await _locationsService.CreateAsync(value);
+            await ((IResidentsService) DataService)
+                .UpdatePropertyAsync(id, x => x.LastRecordedPosition, value);
+            await DataService.AddItemToListProperty(id, x => x.Locations, value.Id);
         }
 
         [Authorize(EUserType.SysAdmin, EUserType.Nurse, EUserType.User)]
