@@ -68,7 +68,7 @@ namespace WebService.Controllers
 
         #region create
 
-        [Authorize(EUserType.SysAdmin, EUserType.Nurse)]
+        [Authorize(EUserType.SysAdmin)]
         [HttpPost(Routes.RestBase.Create)]
         public override async Task<string> CreateAsync([FromBody] User item)
         {
@@ -79,7 +79,7 @@ namespace WebService.Controllers
             return await base.CreateAsync(item);
         }
 
-        [Authorize(EUserType.SysAdmin, EUserType.Nurse)]
+        [Authorize(EUserType.SysAdmin)]
         [HttpPost(Routes.RestBase.AddItemToList)]
         public override async Task<StatusCodeResult> AddItemToListAsync(string id, string propertyName,
             [FromBody] string jsonValue)
@@ -92,8 +92,8 @@ namespace WebService.Controllers
                 await DataService.AddItemToListProperty(userId, x => x.Residents, residentId);
                 return StatusCode((int) HttpStatusCode.Created);
             }
-            else
-                return await base.AddItemToListAsync(id, propertyName, jsonValue);
+
+            return await base.AddItemToListAsync(id, propertyName, jsonValue);
         }
 
         #endregion create
@@ -105,24 +105,45 @@ namespace WebService.Controllers
         public override Task<IEnumerable<User>> GetAllAsync(string[] propertiesToInclude)
             => base.GetAllAsync(propertiesToInclude);
 
-        [Authorize(EUserType.SysAdmin, EUserType.User)]
+        [Authorize(EUserType.SysAdmin, EUserType.Nurse, EUserType.User)]
         [HttpGet(Routes.RestBase.GetOne)]
-        public override Task<User> GetOneAsync(string id, string[] propertiesToInclude)
-            => base.GetOneAsync(id, propertiesToInclude);
+        public override async Task<User> GetOneAsync(string id, string[] propertiesToInclude)
+        {
+            var userId = id.ToObjectId();
 
-        [Authorize(EUserType.SysAdmin, EUserType.User)]
+            var userType = await GetPropertyOfCurrentUser(x => x.UserType);
+            if (userType != EUserType.SysAdmin && userId != UserId)
+                throw new NotFoundException<User>(nameof(Models.User.Id), id);
+
+            return await base.GetOneAsync(id, propertiesToInclude);
+        }
+
+        [Authorize(EUserType.SysAdmin, EUserType.Nurse, EUserType.User)]
         [HttpGet(Routes.RestBase.GetProperty)]
-        public override Task<object> GetPropertyAsync(string id, string propertyName)
-            => base.GetPropertyAsync(id, propertyName);
+        public override async Task<object> GetPropertyAsync(string id, string propertyName)
+        {
+            var userId = id.ToObjectId();
+
+            var userType = await GetPropertyOfCurrentUser(x => x.UserType);
+            if (userType != EUserType.SysAdmin && userId != UserId)
+                throw new NotFoundException<User>(nameof(Models.User.Id), id);
+
+            return await base.GetPropertyAsync(id, propertyName);
+        }
 
         [Authorize(EUserType.SysAdmin, EUserType.Nurse, EUserType.User, EUserType.Module)]
         [HttpGet(Routes.Users.GetByName)]
         public async Task<User> GetByNameAsync(string userName, string[] propertiesToInclude)
         {
-            var user = await GetCurrentUser();
+            var user = await GetCurrentUser(
+                new Expression<Func<User, object>>[]
+                {
+                    x => x.UserName,
+                    x => x.UserType
+                });
 
             if (user.UserType != EUserType.SysAdmin && user.UserName != userName)
-                throw new NotFoundException<User>(nameof(user.UserName), userName);
+                throw new NotFoundException<User>(nameof(Models.User.UserName), userName);
 
             var selectors = !EnumerableExtensions.IsNullOrEmpty(propertiesToInclude)
                 ? ConvertStringsToSelectors(propertiesToInclude)
@@ -155,13 +176,16 @@ namespace WebService.Controllers
         [HttpPut(Routes.RestBase.Update)]
         public override async Task UpdateAsync([FromBody] User item, [FromQuery] string[] properties)
         {
-            var userTypeToEdit = await _usersService.GetPropertyAsync(item.Id, x => x.UserType);
-            var currentUserType = await _usersService.GetPropertyAsync(UserId, x => x.UserType);
+            var currentUserType = await GetPropertyOfCurrentUser(x => x.UserType);
 
-            if (userTypeToEdit > currentUserType
-                || properties.Any(x => x.EqualsWithCamelCasing(nameof(Models.User.UserType)))
-                && item.UserType > currentUserType)
-                throw new UnauthorizedException(item.UserType);
+            if (currentUserType != EUserType.SysAdmin)
+            {
+                if (UserId != item.Id)
+                    throw new NotFoundException<User>(nameof(Models.User.Id), item.Id.ToString());
+                if (properties.Any(x => x.EqualsWithCamelCasing(nameof(Models.User.UserType))))
+                    throw new UnauthorizedException(EUserType.SysAdmin);
+            }
+
 
             if (properties.Any(x => x.EqualsWithCamelCasing(nameof(Models.User.Group))))
                 item.Group = item.Group?.ToUpper();
@@ -171,9 +195,6 @@ namespace WebService.Controllers
                 await base.UpdateAsync(item, properties);
                 return;
             }
-
-            if (item.Id != UserId && currentUserType == item.UserType)
-                throw new UnauthorizedException("You cannot edit the password of another user with the same level.");
 
             if (properties.Length > 1)
             {
@@ -196,30 +217,26 @@ namespace WebService.Controllers
                 throw new NotFoundException<User>(nameof(IModelWithID.Id), id);
 
             var currentUserType = await GetPropertyOfCurrentUser(x => x.UserType);
-            var userTypeToEdit = await _usersService.GetPropertyAsync(objectId, x => x.UserType);
 
-            if (userTypeToEdit > currentUserType
-                || propertyName.EqualsWithCamelCasing(nameof(Models.User.UserType))
-                && userTypeToEdit > currentUserType)
-                throw new UnauthorizedException(userTypeToEdit);
+            if (currentUserType != EUserType.SysAdmin)
+            {
+                if (UserId != objectId)
+                    throw new NotFoundException<User>(nameof(Models.User.Id), objectId.ToString());
+                if (propertyName.EqualsWithCamelCasing(nameof(Models.User.UserType)))
+                    throw new UnauthorizedException(EUserType.SysAdmin);
+            }
 
             if (!propertyName.EqualsWithCamelCasing(nameof(Models.User.Password)))
                 await base.UpdatePropertyAsync(id, propertyName, jsonValue);
             else
-            {
-                if (objectId != UserId && currentUserType == userTypeToEdit)
-                    throw new UnauthorizedException(
-                        "You cannot edit the password of another user with the same level.");
-
                 await ((IUsersService) DataService).UpdatePasswordAsync(objectId, jsonValue);
-            }
         }
 
         #endregion update
 
         #region delete
 
-        [Authorize(EUserType.SysAdmin, EUserType.Nurse, EUserType.User)]
+        [Authorize(EUserType.SysAdmin)]
         [HttpDelete(Routes.RestBase.Delete)]
         public override async Task DeleteAsync(string id)
         {
@@ -228,12 +245,6 @@ namespace WebService.Controllers
 
             if (objectId == UserId)
                 throw new ArgumentException("You cannot delete yourself", nameof(id));
-
-            var currentUserType = await GetPropertyOfCurrentUser(x => x.UserType);
-            var userTypeToEdit = await _usersService.GetPropertyAsync(objectId, x => x.UserType);
-
-            if (userTypeToEdit > currentUserType || objectId != UserId && currentUserType == userTypeToEdit)
-                throw new UnauthorizedException(userTypeToEdit);
 
             await base.DeleteAsync(id);
         }
