@@ -26,4 +26,10 @@ ul.side-nav{
   background: #bbd2c5; /* fallback for old browsers */
   background: -webkit-linear-gradient(to right, #fefefe, #abbaab); /* Chrome 10-25, Safari 5.1-6 */
   background: linear-gradient(to right, #fefefe, #abbaab);
+  width: 220px;
+  z-index: 1;
+}
+hr{
+  margin-top: 40px;
+  margin-bottom: 20px;
 }
