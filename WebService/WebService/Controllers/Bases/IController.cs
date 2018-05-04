@@ -4,6 +4,6 @@ namespace WebService.Controllers.Bases
 {
     public interface IController
     {
-        ObjectId UserId { get; set; }
+        ObjectId CurrentUserId { get; set; }
     }
 }

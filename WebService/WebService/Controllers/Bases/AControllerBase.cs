@@ -28,13 +28,13 @@ namespace WebService.Controllers.Bases
         }
 
 
-        public ObjectId UserId { get; set; }
+        public ObjectId CurrentUserId { get; set; }
 
 
         protected async Task<User> GetCurrentUser(IEnumerable<Expression<Func<User, object>>> propertiesToSelect = null)
-            => await _usersService.GetOneAsync(UserId, propertiesToSelect);
+            => await _usersService.GetOneAsync(CurrentUserId, propertiesToSelect);
 
         protected async Task<T> GetPropertyOfCurrentUser<T>(Expression<Func<User, T>> propertyToGet)
-            => await _usersService.GetPropertyAsync(UserId, propertyToGet);
+            => await _usersService.GetPropertyAsync(CurrentUserId, propertyToGet);
     }
 }

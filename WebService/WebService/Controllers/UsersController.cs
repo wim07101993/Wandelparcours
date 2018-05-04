@@ -28,6 +28,7 @@ namespace WebService.Controllers
 
         #endregion FIELDS
 
+
         #region CONSTRUCTORS
 
         public UsersController(IUsersService dataService, ILogger logger, IUsersService usersService)
@@ -112,7 +113,7 @@ namespace WebService.Controllers
                 case EUserType.SysAdmin:
                     break;
                 default:
-                    if (id.ToObjectId() != UserId)
+                    if (id.ToObjectId() != CurrentUserId)
                         throw new NotFoundException<User>(nameof(Models.User.Id), id);
                     break;
             }
@@ -129,7 +130,7 @@ namespace WebService.Controllers
                 case EUserType.SysAdmin:
                     break;
                 default:
-                    if (id.ToObjectId() != UserId)
+                    if (id.ToObjectId() != CurrentUserId)
                         throw new NotFoundException<User>(nameof(Models.User.Id), id);
                     break;
             }
@@ -201,7 +202,7 @@ namespace WebService.Controllers
                 case EUserType.SysAdmin:
                     break;
                 default:
-                    if (UserId != item.Id)
+                    if (CurrentUserId != item.Id)
                         throw new NotFoundException<User>(nameof(Models.User.Id), item.Id.ToString());
                     if (properties.Any(x => x.EqualsWithCamelCasing(nameof(Models.User.UserType))))
                         throw new UnauthorizedException(EUserType.SysAdmin);
@@ -242,7 +243,7 @@ namespace WebService.Controllers
                 case EUserType.SysAdmin:
                     break;
                 default:
-                    if (UserId != objectId)
+                    if (CurrentUserId != objectId)
                         throw new NotFoundException<User>(nameof(Models.User.Id), objectId.ToString());
                     if (propertyName.EqualsWithCamelCasing(nameof(Models.User.UserType)))
                         throw new UnauthorizedException(EUserType.SysAdmin);
@@ -266,7 +267,7 @@ namespace WebService.Controllers
             if (!ObjectId.TryParse(id, out var objectId))
                 throw new NotFoundException<User>(nameof(IModelWithID.Id), id);
 
-            if (objectId == UserId)
+            if (objectId == CurrentUserId)
                 throw new ArgumentException("You cannot delete yourself", nameof(id));
 
             await base.DeleteAsync(id);
