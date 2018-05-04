@@ -11,55 +11,61 @@ declare var Materialize: any;
 })
 export class UsersComponent implements OnInit {
 
-  constructor(private service: RestServiceService) { }
+    constructor(private service: RestServiceService) {
+    }
 
-  async getUsers(){
-    const users  = await this.service.getUsers();
-    console.log(users);
-  }
+    async getUsers() {
+        const users = await this.service.getUsers();
+        console.log(users);
+    }
 
-  async deleteUser(userId : string){
-    await this.service.deleteUser(userId);
-    this.getUsers();
-  }
+    async deleteUser(userId: string) {
+        await this.service.deleteUser(userId);
+        this.getUsers();
+    }
 
-  createUser(form : NgForm){
-    const data = {};
+    createUser(form: NgForm) {
+        const data = {
+            firstName: form.value.firstname,
+        };
 
-    this.service.createUser("","","");
-  }
+        console.log("firstname" + data.firstName);
+        //this.service.createUser("","","");
+    }
 
-  password:string;
-  passwordcheck:string;
+    password: string;
+    passwordcheck: string;
 
-  ngOnInit() {
-	this.getUsers()
-    $('select').material_select();
-  }
+    ngOnInit() {
+        this.getUsers()
+        $('select').material_select();
+    }
 
     /**
-   * Reset the form on close
-   * @param form of type NgForm
-   */
-  resetForm(form: NgForm) {
-    form.reset();
-  }
-  
-
-  openAddUserModal() {
-    $('#add-user-modal').modal();
-    $('#add-user-modal').modal('open');
-  }
-
-  validatePassword(){
-
-    console.log(this.password);
-    console.log(this.passwordcheck);
-    if (this.password !== this.passwordcheck){
-      alert('Wachtwoorden komen niet overeen!')
+     * Reset the form on close
+     * @param form of type NgForm
+     */
+    resetForm(form: NgForm) {
+        form.reset();
     }
-    else{
-      alert('Wachtwoorden komen wel overeen!')
+
+
+    openAddUserModal() {
+        $('#add-user-modal').modal();
+        $('#add-user-modal').modal('open');
     }
-  }
+
+    validatePassword() {
+
+        console.log(this.password);
+        console.log(this.passwordcheck);
+        if (this.password !== this.passwordcheck) {
+            alert('Wachtwoorden komen niet overeen!')
+        }
+        else {
+            alert('Wachtwoorden komen wel overeen!')
+        }
+    }
+
 }
+
