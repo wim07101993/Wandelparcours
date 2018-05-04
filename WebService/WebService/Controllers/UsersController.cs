@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Bson;
@@ -74,9 +75,19 @@ namespace WebService.Controllers
 
         [Authorize(EUserType.SysAdmin, EUserType.Nurse)]
         [HttpPost(Routes.RestBase.AddItemToList)]
-        public override Task<StatusCodeResult> AddItemToListAsync(string id, string propertyName, string jsonValue)
+        public override async Task<StatusCodeResult> AddItemToListAsync(string id, string propertyName,
+            [FromBody] string jsonValue)
         {
-            return base.AddItemToListAsync(id, propertyName, jsonValue);
+            if (propertyName?.EqualsWithCamelCasing(nameof(Models.User.Residents)) == true)
+            {
+                var residentId = jsonValue.ToObjectId();
+                var userId = id.ToObjectId();
+
+                await DataService.AddItemToListProperty(userId, x => x.Residents, residentId);
+                return StatusCode((int) HttpStatusCode.Created);
+            }
+            else
+                return await base.AddItemToListAsync(id, propertyName, jsonValue);
         }
 
         #endregion create

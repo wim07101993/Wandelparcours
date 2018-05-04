@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-
+import { LoginService } from "../../service/login-service.service";
 declare var $: any;
 
 @Component({
@@ -9,16 +9,19 @@ declare var $: any;
 })
 export class HeaderComponent implements OnInit {
 
-  user = 'Beheerder';
-  pageTitle = 'Pagina Titel';
+  //user = 'Beheerder';
+  pageTitle = 'Toermalien';
   initialized=false;
-  constructor() {
+  constructor(private login:LoginService) {
   }
 
   openSideNav(){
     $('.button-collapse').sideNav('show');
   }
 
+  get user(){
+    return this.login.username;
+  }
   ngOnInit() {
         // Initialize collapse button
         if(this.initialized==false){

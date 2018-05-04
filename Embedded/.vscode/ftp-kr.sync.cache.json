@@ -5,21 +5,15 @@
         "toermalien": {
           "index.js": {
             "type": "-",
-            "size": 1242,
-            "lmtime": 1525264165592,
-            "modified": false
+            "size": 1277,
+            "lmtime": 1525330281075,
+            "modified": true
           },
           "kiosk": {
             ".DS_Store": {
               "type": "-",
               "size": 6148,
               "lmtime": 0,
-              "modified": false
-            },
-            ".babelrc": {
-              "type": "-",
-              "size": 145,
-              "lmtime": 1525264434291,
               "modified": false
             },
             "LICENSE.md": {
@@ -66,56 +60,6 @@
                 "modified": false
               },
               "css": {},
-              "es7": {
-                "AbstractViewer.1.js": {
-                  "type": "-",
-                  "size": 1259,
-                  "lmtime": 1525266431941,
-                  "modified": false
-                },
-                "AbstractViewer.js": {
-                  "type": "-",
-                  "size": 1259,
-                  "lmtime": 1525255092761,
-                  "modified": false
-                },
-                "ImageViewer.1.js": {
-                  "type": "-",
-                  "size": 2948,
-                  "lmtime": 1525266428002,
-                  "modified": false
-                },
-                "ImageViewer.js": {
-                  "type": "-",
-                  "size": 2919,
-                  "lmtime": 1525264818581,
-                  "modified": false
-                },
-                "VideoViewer.1.js": {
-                  "type": "-",
-                  "size": 1415,
-                  "lmtime": 1525266461008,
-                  "modified": false
-                },
-                "VideoViewer.js": {
-                  "type": "-",
-                  "size": 1386,
-                  "lmtime": 1525264809159,
-                  "modified": false
-                },
-                "game.js": {
-                  "type": "-",
-                  "size": 3225,
-                  "lmtime": 1524831145320,
-                  "modified": false
-                },
-                "scanClosest.js": {
-                  "type": "-",
-                  "size": 1831,
-                  "lmtime": 1524734337000,
-                  "modified": false
-                }
-              },
               "images": {},
               "scanBeacons.py": {
                 "type": "-",
@@ -132,20 +76,20 @@
               "js": {
                 "AbstractViewer.js": {
                   "type": "-",
-                  "size": 1259,
-                  "lmtime": 1525265538678,
+                  "size": 2514,
+                  "lmtime": 1525346998324,
                   "modified": false
                 },
                 "ImageViewer.js": {
                   "type": "-",
-                  "size": 2878,
-                  "lmtime": 1525266881000,
+                  "size": 2901,
+                  "lmtime": 1525347083269,
                   "modified": false
                 },
                 "VideoViewer.js": {
                   "type": "-",
-                  "size": 1415,
-                  "lmtime": 1525266785708,
+                  "size": 1438,
+                  "lmtime": 1525347512500,
                   "modified": false
                 },
                 "game.js": {
@@ -184,8 +128,8 @@
             "jquery": {},
             "main.js": {
               "type": "-",
-              "size": 1886,
-              "lmtime": 0,
+              "size": 1884,
+              "lmtime": 1525330508683,
               "modified": false
             },
             "node_modules": {},
@@ -219,12 +163,6 @@
               "lmtime": 0,
               "modified": false
             },
-            "webpack.config.js": {
-              "type": "-",
-              "size": 644,
-              "lmtime": 1525264736613,
-              "modified": false
-            },
             "yarn.lock": {
               "type": "-",
               "size": 61176,
@@ -237,9 +175,9 @@
           "scanstation": {},
           "startup.sh": {
             "type": "-",
-            "size": 51,
+            "size": 74,
             "lmtime": 0,
-            "modified": false
+            "modified": true
           }
         }
       }

@@ -34,13 +34,9 @@ export class ChatServer {
             axios.get(`${this.restUrl}/api/v1/receivermodules`).then((resp)=>{
                 
                 resp.data.forEach((station)=>{
-                    this.stations.set(station.name,station.position);
+                    this.stations.set(station.mac,station.position);
                 });
-            }).catch((e)=>{
-                setTimeout(() => {
-                    doRequest();
-                }, 50);
-            });
+            }).catch((e)=>{console.log("axios")});
         }
         doRequest();
         setInterval(async () => {

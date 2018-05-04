@@ -1,0 +1,24 @@
+table{
+    margin: 16px;
+}
+
+#content {
+    position: relative;
+}
+
+.card{
+    padding-top: 3px;
+}
+
+.pointer {
+    cursor: pointer;
+}
+
+.modal .modal-content{
+    padding: 48px;
+    padding-top: 24px;
+}
+
+h5{
+    margin-bottom: 2%;
+}

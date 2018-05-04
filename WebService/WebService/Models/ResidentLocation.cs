@@ -28,5 +28,8 @@ namespace WebService.Models
         [BsonElement("residentId")]
         [JsonConverter(typeof(ObjectIdConverter))]
         public ObjectId ResidentId { get; set; }
+        
+        [BsonElement("name")]
+        public string Name{get;set;}
     }
 }
