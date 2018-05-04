@@ -483,7 +483,7 @@ namespace WebService.Controllers
         }
 
         [Authorize(EUserType.SysAdmin, EUserType.Module)]
-        [HttpPut(Routes.Residents.UpdatePropertyByTag)]
+        [HttpPut(Routes.Residents.UpdateLastRecordedPosition)]
         public async Task UpdateLastRecordedLocation(int tag, [FromBody] ResidentLocation location)
         {
             location.Id = ObjectId.GenerateNewId();
