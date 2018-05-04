@@ -18,5 +18,6 @@ namespace WebService.Services.Data
         Task ScheduleCleanup();
         Task ScheduleCleanup(TimeSpan interval);
         void CancelCleanupSchedule();
+        void ConfigureDB();
     }
 }

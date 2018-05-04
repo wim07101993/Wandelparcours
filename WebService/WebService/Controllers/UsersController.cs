@@ -14,6 +14,7 @@ using WebService.Models;
 using WebService.Models.Bases;
 using WebService.Services.Data;
 using WebService.Services.Logging;
+using ArgumentException = WebService.Helpers.Exceptions.ArgumentException;
 
 namespace WebService.Controllers
 {
@@ -216,6 +217,9 @@ namespace WebService.Controllers
         {
             if (!ObjectId.TryParse(id, out var objectId))
                 throw new NotFoundException<User>(nameof(IModelWithID.Id), id);
+
+            if (objectId == UserId)
+                throw new ArgumentException("You cannot delete yourself", nameof(id));
 
             var currentUserType = await GetPropertyOfCurrentUser(x => x.UserType);
             var userTypeToEdit = await _usersService.GetPropertyAsync(objectId, x => x.UserType);
