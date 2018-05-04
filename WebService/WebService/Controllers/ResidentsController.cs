@@ -489,6 +489,7 @@ namespace WebService.Controllers
             location.Id = ObjectId.GenerateNewId();
             var id = await ((IResidentsService) DataService).GetPropertyAsync(tag, x => x.Id);
             location.ResidentId = id;
+            location.TimeStamp = DateTime.Now;
             await _locationsService.CreateAsync(location);
             await ((IResidentsService) DataService)
                 .UpdatePropertyAsync(tag, x => x.LastRecordedPosition, location);
