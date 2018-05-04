@@ -59,7 +59,7 @@ namespace WebService.Services.Data.Mongo
             return group == null
                 ? null
                 : await MongoCollection
-                    .Find(x => x.Room.StartsWith(@group))
+                    .Find(x => x.Room.StartsWith(group))
                     .Select(propertiesToInclude)
                     .ToListAsync();
         }

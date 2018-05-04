@@ -15,6 +15,7 @@ using WebService.Models.Bases;
 using WebService.Services.Data;
 using WebService.Services.Logging;
 using ArgumentException = WebService.Helpers.Exceptions.ArgumentException;
+using ArgumentNullException = WebService.Helpers.Exceptions.ArgumentNullException;
 
 namespace WebService.Controllers
 {
@@ -71,6 +72,10 @@ namespace WebService.Controllers
         [HttpPost(Routes.RestBase.Create)]
         public override async Task<string> CreateAsync([FromBody] User item)
         {
+            if (item == null)
+                throw new ArgumentNullException(nameof(item));
+
+            item.Group = item.Group?.ToUpper();
             return await base.CreateAsync(item);
         }
 
@@ -157,6 +162,9 @@ namespace WebService.Controllers
                 || properties.Any(x => x.EqualsWithCamelCasing(nameof(Models.User.UserType)))
                 && item.UserType > currentUserType)
                 throw new UnauthorizedException(item.UserType);
+
+            if (properties.Any(x => x.EqualsWithCamelCasing(nameof(Models.User.Group))))
+                item.Group = item.Group?.ToUpper();
 
             if (properties.All(x => !x.EqualsWithCamelCasing(nameof(Models.User.Password))))
             {
