@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
+using MongoDB.Bson;
 using MongoDB.Driver;
+using WebService.Helpers.Extensions;
 using WebService.Models;
 
 namespace WebService.Services.Data.Mongo
@@ -118,6 +120,41 @@ namespace WebService.Services.Data.Mongo
 
         public void CancelCleanupSchedule()
             => IsSchedulerRunning = false;
+
+
+        public void ConfigureDB()
+        {
+            if (!_usersCollection.Find(x => x.UserType == EUserType.Module).Any())
+                CreateDefaultModuleUser();
+            if (!_usersCollection.Find(x => x.UserType == EUserType.SysAdmin).Any())
+                CreateDefaultAdmin();
+        }
+
+        private void CreateDefaultModuleUser()
+        {
+            var id = ObjectId.GenerateNewId();
+            _usersCollection.InsertOne(
+                new User
+                {
+                    Id = id,
+                    UserName = "Modul3",
+                    Password = "KioskTo3rmali3n".Hash(id),
+                    UserType = EUserType.Module
+                });
+        }
+
+        private void CreateDefaultAdmin()
+        {
+            var id = ObjectId.GenerateNewId();
+            _usersCollection.InsertOne(
+                new User
+                {
+                    Id = id,
+                    UserName = "Administrator",
+                    Password = "AdminToermalien".Hash(id),
+                    UserType = EUserType.SysAdmin
+                });
+        }
 
         #endregion METHODS
     }

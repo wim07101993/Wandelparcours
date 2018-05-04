@@ -171,7 +171,13 @@ namespace WebService.Controllers
         [Authorize(EUserType.SysAdmin, EUserType.Nurse)]
         [HttpPost(Routes.RestBase.Create)]
         public override Task<string> CreateAsync([FromBody] Resident item)
-            => base.CreateAsync(item);
+        {
+            if (item == null)
+                throw new ArgumentNullException(nameof(item));
+
+            item.Room = item.Room?.ToUpper();
+            return base.CreateAsync(item);
+        }
 
         [Authorize(EUserType.SysAdmin, EUserType.Nurse, EUserType.User)]
         [HttpPost(Routes.Residents.AddMusicData)]
@@ -409,6 +415,10 @@ namespace WebService.Controllers
         public override async Task UpdateAsync([FromBody] Resident item, [FromQuery] string[] properties)
         {
             await CanWriteDataToResidentAsync(item.Id);
+
+            if (properties.Any(x => x.EqualsWithCamelCasing(nameof(Resident.Room))))
+                item.Room = item.Room?.ToUpper();
+
             await base.UpdateAsync(item, properties);
         }
 

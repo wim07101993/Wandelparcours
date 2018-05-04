@@ -14,6 +14,8 @@ using WebService.Models;
 using WebService.Models.Bases;
 using WebService.Services.Data;
 using WebService.Services.Logging;
+using ArgumentException = WebService.Helpers.Exceptions.ArgumentException;
+using ArgumentNullException = WebService.Helpers.Exceptions.ArgumentNullException;
 
 namespace WebService.Controllers
 {
@@ -70,6 +72,10 @@ namespace WebService.Controllers
         [HttpPost(Routes.RestBase.Create)]
         public override async Task<string> CreateAsync([FromBody] User item)
         {
+            if (item == null)
+                throw new ArgumentNullException(nameof(item));
+
+            item.Group = item.Group?.ToUpper();
             return await base.CreateAsync(item);
         }
 
@@ -157,6 +163,9 @@ namespace WebService.Controllers
                 && item.UserType > currentUserType)
                 throw new UnauthorizedException(item.UserType);
 
+            if (properties.Any(x => x.EqualsWithCamelCasing(nameof(Models.User.Group))))
+                item.Group = item.Group?.ToUpper();
+
             if (properties.All(x => !x.EqualsWithCamelCasing(nameof(Models.User.Password))))
             {
                 await base.UpdateAsync(item, properties);
@@ -216,6 +225,9 @@ namespace WebService.Controllers
         {
             if (!ObjectId.TryParse(id, out var objectId))
                 throw new NotFoundException<User>(nameof(IModelWithID.Id), id);
+
+            if (objectId == UserId)
+                throw new ArgumentException("You cannot delete yourself", nameof(id));
 
             var currentUserType = await GetPropertyOfCurrentUser(x => x.UserType);
             var userTypeToEdit = await _usersService.GetPropertyAsync(objectId, x => x.UserType);

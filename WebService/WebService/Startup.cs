@@ -38,6 +38,7 @@ namespace WebService
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, IDatabaseManager databaseManager)
         {
+            databaseManager.ConfigureDB();
             databaseManager.ScheduleCleanup(TimeSpan.FromDays(1));
 
             if (env.IsDevelopment())
