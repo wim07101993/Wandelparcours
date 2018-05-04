@@ -62,34 +62,34 @@
 
 			<div class="row">
 				<div class="input-field col s6">
-					<input id="firstname" type="text" class="validate" ngModel name="firstname" required>
-					<label for="firstname">Voornaam<sup style="color:#ff2200;">*</sup></label>
+					<input id="userName" type="text" class="validate" ngModel name="userName" required>
+					<label for="userName">Gebruikersnaam<sup style="color:#ff2200;">*</sup></label>
 				</div>
-				<div class="input-field col s6">
-					<input id="lastname" type="text" class="validate" ngModel name="lastname" required>
-					<label for="lastname">Familienaam<sup style="color:#ff2200;">*</sup></label>
-				</div>
-			</div>
-
-			<div class="row">
 				<div class="input-field col s6">
 					<input id="email" type="email" class="validate" ngModel name="email" required>
 					<label for="email">Email<sup style="color:#ff2200;">*</sup></label>
 				</div>
+			</div>
+			<div class="row">
 				<div class="input-field col s6">
-					<select>
+					<input title="1 - 2 - 3" id="userType" type="number" class="validate" min="0" step="1" max="2" ngModel name="userType" required>
+					<label for="userType">ToegangsLevel<sup style="color: #ff2200;">*</sup></label>
+					<!--<select name="userTypeUser1">
 						<option value="" disabled selected>Kies gebruikerstype</option>
 						<option value="0">Admininstrator</option>
 						<option value="1">Zorgkundige</option>
 						<option value="2">Aandachtspersoon</option>
 						<option value="2">Familielid</option>
-					</select>
+					</select>-->
+				</div>
+				<div class="input-field col s6">
+					<ol><li>ADMIN = 0</li><li>ZORGKUNDIGE = 1</li><li>AANDACHTSPERSOON/FAMILIELID = 2</li></ol>
 				</div>
 			</div>
 
 			<div class="row">
 				<div class="input-field col s6">
-					<input id="password" type="password" class="validate" [(ngModel)]="password" name="password" required>
+					<input id="password" type="password" class="validate" [(ngModel)]="password" name="password1" required>
 					<label for="password">Wachtwoord<sup style="color:#ff2200;">*</sup></label>
 				</div>
 				<div class="input-field col s6">

@@ -26,11 +26,14 @@ export class UsersComponent implements OnInit {
 
     createUser(form: NgForm) {
         const data = {
-            firstName: form.value.firstname,
-        };
+            userName: form.value.userName,
+            email: form.value.email,
+            userType: form.value.userType,
+            userPassword: form.value.password1
+    };
 
-        console.log("firstname" + data.firstName);
-        //this.service.createUser("","","");
+        console.log(data);
+        this.service.createUser(data.userName,data.userPassword,data.userType,data.email);
     }
 
     password: string;

@@ -307,9 +307,9 @@ export class RestServiceService {
     /////////
     //Users//
     /////////
-    async createUser(userName,password,userType){
+    async createUser(userName,password,userType, email){
         try {
-            let login =await this.login.axios.post("/api/v1/users",{"userName":userName,"password":password,"userType":userType});
+            let login =await this.login.axios.post("/api/v1/users",{"userName":userName,"password":password,"userType":userType, "email": email});
             return true;
         } catch (error) {
             return false;
