@@ -8,6 +8,10 @@ namespace WebService.Models
         [BsonElement("mac")]
         public string Mac { get; set; }
 
+
+        [BsonElement("name")]
+        public string Name{get;set;}
+
         [BsonElement("position")]
         public Point Position { get; set; }
 

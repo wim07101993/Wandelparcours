@@ -323,4 +323,6 @@ export class ResidentsComponent implements OnInit {
   navigateTo(resident: Resident) {
     this.router.navigate(['/resident/' + resident.id]);
   }
+
+      
 }

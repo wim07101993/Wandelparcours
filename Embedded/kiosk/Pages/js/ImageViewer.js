@@ -20,7 +20,7 @@ class ImageViewer extends AbstractViewer{
             return;
         }else{
             console.log("beacon loaded");
-            this.http.get(`${this.url}/API/v1/residents/bytag/${this.beacon}/images`).then((request) => {
+            this.axios().get(`${this.url}/API/v1/residents/bytag/${this.beacon}/images`).then((request) => {
                 console.log("request done");
                 this.images = request.data;
                 this.images=this.shuffle(this.images);
@@ -54,7 +54,7 @@ class ImageViewer extends AbstractViewer{
             this.nextLoop.then(()=>{this.createLoop()});
             this.fixSize(img)
         };
-        img.src = `${this.url}/api/v1/media/${this.images[this.index].id}/file`;
+        img.src = `${this.url}/api/v1/media/${this.images[this.index].id}/file?token=${this.token}`;
         this.index++;
 
         if (this.index > this.images.length - 1) {
