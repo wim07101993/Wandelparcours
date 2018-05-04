@@ -84,16 +84,14 @@ namespace WebService.Controllers
         public override async Task<StatusCodeResult> AddItemToListAsync(string id, string propertyName,
             [FromBody] string jsonValue)
         {
-            if (propertyName?.EqualsWithCamelCasing(nameof(Models.User.Residents)) == true)
-            {
-                var residentId = jsonValue.ToObjectId();
-                var userId = id.ToObjectId();
+            if (propertyName?.EqualsWithCamelCasing(nameof(Models.User.Residents)) != true)
+                return await base.AddItemToListAsync(id, propertyName, jsonValue);
 
-                await DataService.AddItemToListProperty(userId, x => x.Residents, residentId);
-                return StatusCode((int) HttpStatusCode.Created);
-            }
+            var residentId = jsonValue.ToObjectId();
+            var userId = id.ToObjectId();
 
-            return await base.AddItemToListAsync(id, propertyName, jsonValue);
+            await DataService.AddItemToListProperty(userId, x => x.Residents, residentId);
+            return StatusCode((int) HttpStatusCode.Created);
         }
 
         #endregion create
@@ -109,11 +107,15 @@ namespace WebService.Controllers
         [HttpGet(Routes.RestBase.GetOne)]
         public override async Task<User> GetOneAsync(string id, string[] propertiesToInclude)
         {
-            var userId = id.ToObjectId();
-
-            var userType = await GetPropertyOfCurrentUser(x => x.UserType);
-            if (userType != EUserType.SysAdmin && userId != UserId)
-                throw new NotFoundException<User>(nameof(Models.User.Id), id);
+            switch (await GetPropertyOfCurrentUser(x => x.UserType))
+            {
+                case EUserType.SysAdmin:
+                    break;
+                default:
+                    if (id.ToObjectId() != UserId)
+                        throw new NotFoundException<User>(nameof(Models.User.Id), id);
+                    break;
+            }
 
             return await base.GetOneAsync(id, propertiesToInclude);
         }
@@ -122,11 +124,15 @@ namespace WebService.Controllers
         [HttpGet(Routes.RestBase.GetProperty)]
         public override async Task<object> GetPropertyAsync(string id, string propertyName)
         {
-            var userId = id.ToObjectId();
-
-            var userType = await GetPropertyOfCurrentUser(x => x.UserType);
-            if (userType != EUserType.SysAdmin && userId != UserId)
-                throw new NotFoundException<User>(nameof(Models.User.Id), id);
+            switch (await GetPropertyOfCurrentUser(x => x.UserType))
+            {
+                case EUserType.SysAdmin:
+                    break;
+                default:
+                    if (id.ToObjectId() != UserId)
+                        throw new NotFoundException<User>(nameof(Models.User.Id), id);
+                    break;
+            }
 
             return await base.GetPropertyAsync(id, propertyName);
         }
@@ -142,8 +148,15 @@ namespace WebService.Controllers
                     x => x.UserType
                 });
 
-            if (user.UserType != EUserType.SysAdmin && user.UserName != userName)
-                throw new NotFoundException<User>(nameof(Models.User.UserName), userName);
+            switch (user.UserType)
+            {
+                case EUserType.SysAdmin:
+                    break;
+                default:
+                    if (user.UserName != userName)
+                        throw new NotFoundException<User>(nameof(Models.User.UserName), userName);
+                    break;
+            }
 
             var selectors = !EnumerableExtensions.IsNullOrEmpty(propertiesToInclude)
                 ? ConvertStringsToSelectors(propertiesToInclude)
@@ -158,8 +171,15 @@ namespace WebService.Controllers
         {
             var user = await GetCurrentUser();
 
-            if (user.UserType != EUserType.SysAdmin && user.UserName != userName)
-                throw new NotFoundException<User>(nameof(user.UserName), userName);
+            switch (user.UserType)
+            {
+                case EUserType.SysAdmin:
+                    break;
+                default:
+                    if (user.UserName != userName)
+                        throw new NotFoundException<User>(nameof(user.UserName), userName);
+                    break;
+            }
 
             if (!typeof(User).GetProperties().Any(x => x.Name.EqualsWithCamelCasing(propertyName)))
                 throw new PropertyNotFoundException<User>(propertyName);
@@ -176,16 +196,17 @@ namespace WebService.Controllers
         [HttpPut(Routes.RestBase.Update)]
         public override async Task UpdateAsync([FromBody] User item, [FromQuery] string[] properties)
         {
-            var currentUserType = await GetPropertyOfCurrentUser(x => x.UserType);
-
-            if (currentUserType != EUserType.SysAdmin)
+            switch (await GetPropertyOfCurrentUser(x => x.UserType))
             {
-                if (UserId != item.Id)
-                    throw new NotFoundException<User>(nameof(Models.User.Id), item.Id.ToString());
-                if (properties.Any(x => x.EqualsWithCamelCasing(nameof(Models.User.UserType))))
-                    throw new UnauthorizedException(EUserType.SysAdmin);
+                case EUserType.SysAdmin:
+                    break;
+                default:
+                    if (UserId != item.Id)
+                        throw new NotFoundException<User>(nameof(Models.User.Id), item.Id.ToString());
+                    if (properties.Any(x => x.EqualsWithCamelCasing(nameof(Models.User.UserType))))
+                        throw new UnauthorizedException(EUserType.SysAdmin);
+                    break;
             }
-
 
             if (properties.Any(x => x.EqualsWithCamelCasing(nameof(Models.User.Group))))
                 item.Group = item.Group?.ToUpper();
@@ -216,14 +237,16 @@ namespace WebService.Controllers
             if (!ObjectId.TryParse(id, out var objectId))
                 throw new NotFoundException<User>(nameof(IModelWithID.Id), id);
 
-            var currentUserType = await GetPropertyOfCurrentUser(x => x.UserType);
-
-            if (currentUserType != EUserType.SysAdmin)
+            switch (await GetPropertyOfCurrentUser(x => x.UserType))
             {
-                if (UserId != objectId)
-                    throw new NotFoundException<User>(nameof(Models.User.Id), objectId.ToString());
-                if (propertyName.EqualsWithCamelCasing(nameof(Models.User.UserType)))
-                    throw new UnauthorizedException(EUserType.SysAdmin);
+                case EUserType.SysAdmin:
+                    break;
+                default:
+                    if (UserId != objectId)
+                        throw new NotFoundException<User>(nameof(Models.User.Id), objectId.ToString());
+                    if (propertyName.EqualsWithCamelCasing(nameof(Models.User.UserType)))
+                        throw new UnauthorizedException(EUserType.SysAdmin);
+                    break;
             }
 
             if (!propertyName.EqualsWithCamelCasing(nameof(Models.User.Password)))
