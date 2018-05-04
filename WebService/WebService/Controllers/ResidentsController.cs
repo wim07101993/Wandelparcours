@@ -330,7 +330,6 @@ namespace WebService.Controllers
 
         [Authorize(EUserType.SysAdmin, EUserType.Nurse, EUserType.Module)]
         [HttpGet(Routes.Residents.GetByTag)]
-        [HttpGet(Routes.Residents.GetByTagOld)]
         public async Task<Resident> GetByTagAsync(int tag, [FromQuery] string[] propertiesToInclude)
         {
             var selectors = !EnumerableExtensions.IsNullOrEmpty(propertiesToInclude)
@@ -350,7 +349,6 @@ namespace WebService.Controllers
 
         [Authorize(EUserType.SysAdmin, EUserType.Nurse, EUserType.Module)]
         [HttpGet(Routes.Residents.GetRandomElementFromProperty)]
-        [HttpGet(Routes.Residents.GetRandomElementFromPropertyOld)]
         public async Task<object> GetRandomElementFromPropertyAsync(int tag, string propertyName)
         {
             if (!await CanGetDataFromResidentAsync(tag))
@@ -389,7 +387,6 @@ namespace WebService.Controllers
 
         [Authorize(EUserType.SysAdmin, EUserType.Nurse, EUserType.Module)]
         [HttpGet(Routes.Residents.GetPropertyByTag)]
-        [HttpGet(Routes.Residents.GetPropertyByTagOld)]
         public async Task<object> GetPropertyAsync(int tag, string propertyName)
         {
             if (!typeof(Resident).GetProperties().Any(x => x.Name.EqualsWithCamelCasing(propertyName)))

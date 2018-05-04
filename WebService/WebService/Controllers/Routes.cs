@@ -82,21 +82,6 @@ namespace WebService.Controllers
             public const string RemoveColor = ById + "/Colors";
 
             public const string RemoveTag = ById + "/{tag}";
-
-            [Obsolete]
-            private const string ByTagOld = "byTag/" + ByTag;
-
-            [Obsolete]
-            private const string PropertyByTagOld = ByTagOld + "/" + PropertyName;
-
-            [Obsolete]
-            public const string GetByTagOld = ByTagOld;
-
-            [Obsolete]
-            public const string GetRandomElementFromPropertyOld = PropertyByTagOld + "/random";
-
-            [Obsolete]
-            public const string GetPropertyByTagOld = PropertyByTagOld;
         }
 
         public static class Tokens
