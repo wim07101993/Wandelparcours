@@ -6,7 +6,7 @@ import { Router } from '@angular/router';
 export class LoginService {
 
   public token:string;
-  private username:string;
+  public username:string;
   private password:string;
   public level:number;
   private refreshTokenInterval:NodeJS.Timer;
