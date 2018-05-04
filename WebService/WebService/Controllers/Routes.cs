@@ -76,7 +76,7 @@ namespace WebService.Controllers
             public const string GetPropertyByTag = PropertyByTag;
 
             public const string UpdatePicture = ById + "/picture";
-            public const string UpdateLastRecordedPosition = ByTag + "/lastRecordedLocation";
+            public const string UpdateLastRecordedPosition = ByTag + "/lastRecordedPosition";
 
             public const string RemoveMusic = ById + "/Music/{musicId}";
             public const string RemoveVideo = ById + "/Videos/{videoId}";

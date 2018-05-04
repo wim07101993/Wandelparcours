@@ -487,10 +487,11 @@ namespace WebService.Controllers
         public async Task UpdateLastRecordedLocation(int tag, [FromBody] ResidentLocation location)
         {
             location.Id = ObjectId.GenerateNewId();
+            var id = await ((IResidentsService) DataService).GetPropertyAsync(tag, x => x.Id);
+            location.ResidentId = id;
             await _locationsService.CreateAsync(location);
             await ((IResidentsService) DataService)
                 .UpdatePropertyAsync(tag, x => x.LastRecordedPosition, location);
-            var id = await ((IResidentsService) DataService).GetPropertyAsync(tag, x => x.Id);
             await DataService.AddItemToListProperty(id, x => x.Locations, location.Id);
         }
 
