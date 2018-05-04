@@ -464,7 +464,7 @@ namespace WebService.Controllers
         }
 
         [Authorize(EUserType.SysAdmin, EUserType.Module)]
-        [HttpPut(Routes.RestBase.UpdateProperty)]
+        [HttpPut(Routes.Residents.UpdatePropertyByTag)]
         public async Task UpdatePropertyByTagAsync(int tag, string propertyName, [FromBody] string jsonValue)
         {
             await CanWriteDataToResidentAsync(tag);

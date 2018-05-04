@@ -74,7 +74,9 @@ namespace WebService.Controllers
 
             public const string GetRandomElementFromProperty = PropertyByTag + "/random";
             public const string GetPropertyByTag = PropertyByTag;
+
             public const string UpdatePicture = ById + "/picture";
+            public const string UpdatePropertyByTag = PropertyByTag;
 
             public const string RemoveMusic = ById + "/Music/{musicId}";
             public const string RemoveVideo = ById + "/Videos/{videoId}";
