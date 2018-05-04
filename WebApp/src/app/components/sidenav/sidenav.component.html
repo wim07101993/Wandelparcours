@@ -1,8 +1,10 @@
 <!-- These are the menu-items of the side-navigation -->
 <ul id="slide-out" class="side-nav">
-    <li *ngFor="let link of listUrlForAcl" [routerLinkActive]="['link-active']"  (click)="closeSideNav()" [routerLink]="link.url"><i class="material-icons">{{link.icon}}</i>
-      {{link.text}}
+    <li *ngFor="let link of listUrlForAcl" [routerLinkActive]="['link-active']"  (click)="closeSideNav()" ><a [routerLink]="link.url"><i class="material-icons">{{link.icon}}</i>  
+      {{link.text}}</a>
     </li>
+  
+    <hr>
 
   
     <li (click)="logOut()"><a ><i class="material-icons">keyboard_backspace</i>Uitloggen</a></li>
