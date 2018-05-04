@@ -122,19 +122,29 @@
 	</div>
   
 	<div class="inputGroup inputGroup1">
-	  <label for="email1">Email</label>
+	  <label for="email1">Gebruikersnaam</label>
 	  <input type="text" id="email" name="email" [(ngModel)]="email" class="email" maxlength="256" required/>
-	  <p class="helper helper1">email@domain.com</p>
+	  <!-- <p class="helper helper1">Gebruikersnaam</p> -->
 	  <span class="indicator"></span>
 	</div>
 	<div class="inputGroup inputGroup2">
-	  <label for="password">Password</label>
+	  <label for="password">Wachtwoord</label>
 	  <input type="password" id="password" name="password" [(ngModel)]="password" class="password" required/>
 	</div>
 		<p>
 			<label>
-				<input type="checkbox" [(ngModel)]="rememberMe" name="remember" style="opacity:1;" />
-				<span>Onthoud mij</span>
+				<table>
+					<tr id="rememberMeRow">
+						<td>
+								<input type="checkbox" [(ngModel)]="rememberMe" name="remember" style="opacity:1;margin-right: 20px;" />			
+						</td>
+						<td>
+								<span>Onthoud mij</span>
+						</td>
+					</tr>	
+				</table>
+				
+				
 			</label>
 		</p>
 		

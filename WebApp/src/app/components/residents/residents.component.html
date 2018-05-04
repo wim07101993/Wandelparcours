@@ -315,7 +315,7 @@
 
 <!-- Modal Trigger -->
 <!-- This will pop up the form to add a resident -->
-<div class="fixed-action-btn">
+<div class="fixed-action-btn" *ngIf="login.level==0">
   <a class="btn-floating btn-large red" (click)="openResidentAddModal()">
     <i class="large material-icons">person_add</i>
   </a>

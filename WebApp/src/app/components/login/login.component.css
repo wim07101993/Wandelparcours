@@ -178,3 +178,8 @@ form {
   .waitingForLogin > div {
     margin: 23% 47%;
   }
+  #rememberMeRow td{
+    vertical-align: top;
+    padding: 0;
+    padding-right: 7px;
+  }
