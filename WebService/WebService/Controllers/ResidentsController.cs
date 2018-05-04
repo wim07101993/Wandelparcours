@@ -457,70 +457,7 @@ namespace WebService.Controllers
         public override async Task UpdatePropertyAsync(string id, string propertyName, [FromBody] string jsonValue)
         {
             await CanWriteDataToResidentAsync(id);
-            if (propertyName == nameof(Resident.LastRecordedPosition))
-                await UpdateLastRecordedPosition(id.ToObjectId(), jsonValue);
-            else
-                await base.UpdatePropertyAsync(id, propertyName, jsonValue);
-        }
-
-        [Authorize(EUserType.SysAdmin, EUserType.Module)]
-        [HttpPut(Routes.Residents.UpdatePropertyByTag)]
-        public async Task UpdatePropertyByTagAsync(int tag, string propertyName, [FromBody] string jsonValue)
-        {
-            await CanWriteDataToResidentAsync(tag);
-            if (await GetPropertyOfCurrentUser(x => x.UserType) == EUserType.Module
-                && propertyName != nameof(Resident.LastRecordedPosition))
-                throw new UnauthorizedException(EUserType.SysAdmin);
-
-            if (propertyName == nameof(Resident.LastRecordedPosition))
-            {
-                var id = await ((IResidentsService) DataService).GetPropertyAsync(tag, x => x.Id);
-                await UpdateLastRecordedPosition(id, jsonValue);
-            }
-            else
-            {
-                var property = typeof(Resident)
-                    .GetProperties()
-                    .FirstOrDefault(propertyInfo => propertyInfo.Name.EqualsWithCamelCasing(propertyName));
-
-                if (property == null)
-                    throw new PropertyNotFoundException<Resident>(nameof(propertyName));
-
-                object value;
-                try
-                {
-                    // try to convert the jsonValue to the type of the property       
-                    value = typeof(string) == property.PropertyType
-                        ? jsonValue
-                        : JsonConvert.DeserializeObject(jsonValue, property.PropertyType);
-                }
-                catch (JsonException)
-                {
-                    throw new WrongArgumentTypeException(jsonValue, property.PropertyType);
-                }
-
-                await ((IResidentsService) DataService)
-                    .UpdatePropertyAsync(tag, PropertySelectors[propertyName.ToUpperCamelCase()], value);
-            }
-        }
-
-        private async Task UpdateLastRecordedPosition(ObjectId id, string jsonValue)
-        {
-            ResidentLocation value;
-            try
-            {
-                value = jsonValue.Deserialize<ResidentLocation>();
-            }
-            catch (JsonException)
-            {
-                throw new WrongArgumentTypeException(jsonValue, typeof(ResidentLocation));
-            }
-
-            value.Id = ObjectId.GenerateNewId();
-            await _locationsService.CreateAsync(value);
-            await ((IResidentsService) DataService)
-                .UpdatePropertyAsync(id, x => x.LastRecordedPosition, value);
-            await DataService.AddItemToListProperty(id, x => x.Locations, value.Id);
+            await base.UpdatePropertyAsync(id, propertyName, jsonValue);
         }
 
         [Authorize(EUserType.SysAdmin, EUserType.Nurse, EUserType.User)]
@@ -543,6 +480,18 @@ namespace WebService.Controllers
             {
                 throw new FileToLargeException(maxFileSize);
             }
+        }
+
+        [Authorize(EUserType.SysAdmin, EUserType.Module)]
+        [HttpPut(Routes.Residents.UpdatePropertyByTag)]
+        public async Task UpdateLastRecordedLocation(int tag, [FromBody] ResidentLocation location)
+        {
+            location.Id = ObjectId.GenerateNewId();
+            await _locationsService.CreateAsync(location);
+            await ((IResidentsService) DataService)
+                .UpdatePropertyAsync(tag, x => x.LastRecordedPosition, location);
+            var id = await ((IResidentsService) DataService).GetPropertyAsync(tag, x => x.Id);
+            await DataService.AddItemToListProperty(id, x => x.Locations, location.Id);
         }
 
         #endregion put (update)
