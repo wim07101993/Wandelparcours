@@ -9,6 +9,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Bson;
+using Newtonsoft.Json;
 using WebService.Controllers.Bases;
 using WebService.Helpers.Attributes;
 using WebService.Helpers.Exceptions;
@@ -27,11 +28,15 @@ namespace WebService.Controllers
     [SuppressMessage("ReSharper", "SpecifyACultureInStringConversionExplicitly")]
     public class ResidentsController : ARestControllerBase<Resident>, IResidentsController
     {
+        private readonly ILocationsService _locationsService;
+
         #region CONSTRUCTOR
 
-        public ResidentsController(IResidentsService dataService, ILogger logger, IUsersService usersService)
+        public ResidentsController(ILocationsService locationsService, IResidentsService dataService, ILogger logger,
+            IUsersService usersService)
             : base(dataService, logger, usersService)
         {
+            _locationsService = locationsService;
         }
 
         #endregion CONSTRUCTOR
@@ -161,6 +166,31 @@ namespace WebService.Controllers
                 default:
                     throw new ArgumentOutOfRangeException();
             }
+        }
+
+        private async Task<bool> CanWriteDataToResidentAsync(int tag)
+        {
+            var properties = new Expression<Func<User, object>>[] {x => x.Residents, x => x.UserType, x => x.Group};
+            var user = await GetCurrentUser(properties);
+            var isResponsible = false;
+            switch (user.UserType)
+            {
+                case EUserType.SysAdmin:
+                    isResponsible = true;
+                    break;
+                case EUserType.Nurse:
+                    var residentRoom = await ((IResidentsService) DataService).GetPropertyAsync(tag, x => x.Room);
+                    isResponsible = new Regex($@"^{residentRoom}[0-9]*$").IsMatch(user.Group);
+                    break;
+                case EUserType.User:
+                case EUserType.Guest:
+                case EUserType.Module:
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+
+            return isResponsible;
         }
 
         #endregion auth
@@ -450,6 +480,20 @@ namespace WebService.Controllers
             {
                 throw new FileToLargeException(maxFileSize);
             }
+        }
+
+        [Authorize(EUserType.SysAdmin, EUserType.Module)]
+        [HttpPut(Routes.Residents.UpdateLastRecordedPosition)]
+        public async Task UpdateLastRecordedLocation(int tag, [FromBody] ResidentLocation location)
+        {
+            location.Id = ObjectId.GenerateNewId();
+            var id = await ((IResidentsService) DataService).GetPropertyAsync(tag, x => x.Id);
+            location.ResidentId = id;
+            location.TimeStamp = DateTime.Now;
+            await _locationsService.CreateAsync(location);
+            await ((IResidentsService) DataService)
+                .UpdatePropertyAsync(tag, x => x.LastRecordedPosition, location);
+            await DataService.AddItemToListProperty(id, x => x.Locations, location.Id);
         }
 
         #endregion put (update)

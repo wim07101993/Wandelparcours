@@ -225,7 +225,7 @@ export class RestServiceService {
       }
   }
 
-  async LoadStations(parent: StationmanagementComponent) {
+  async LoadStations(parent: any) {
       if (parent.stations != undefined) {
           parent.stations.clear();
       }
@@ -244,9 +244,11 @@ export class RestServiceService {
                       if (station == undefined) {
                           continue;
                       }
-                      parent.stationMacAdresses.push(station.mac);
-                      parent.stations.set(station.mac, station.position);
-                      parent.stationsIds.set(station.mac, station.id);
+
+                      //change name to mac for location based tracking
+                      parent.stationMacAdresses.push(station.name);
+                      parent.stations.set(station.name, station.position);
+                      parent.stationsIds.set(station.name, station.id);
                   }
               }
               return true;

@@ -55,9 +55,9 @@ export class Renderer {
     this.Clear();
     this.app.stage.addChild(this.parentComponent.renderBuffer.map);
     this.app.stage.addChild(this.parentComponent.renderBuffer.cursorStation);
+    this.parentComponent.renderBuffer.cursorStation.tint=111111
     this.parentComponent.renderBuffer.buffer.forEach((sprite: Sprite, key: any, map: any) => {
       this.app.stage.addChild(sprite);
-      sprite.tint = 111111;
       sprite.interactive = true;
       sprite.buttonMode = true;
       sprite.on("pointerdown", (e: any) => {

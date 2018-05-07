@@ -42,6 +42,8 @@ namespace WebService.Controllers.Bases
 
         Task UpdatePictureAsync(string id, MultiPartFile picture);
 
+        Task UpdateLastRecordedLocation(int tag, ResidentLocation location);
+        
         #endregion UPDATE
 
 
