@@ -58,7 +58,7 @@ namespace WebService.Services.Data.Mongo
             IEnumerable<Expression<Func<Resident, object>>> propertiesToInclude = null)
         {
             var filter = Builders<Resident>.Filter
-                .Regex(x => x.Room, new BsonRegularExpression(new Regex($@"^{group}? [0-9]*? [A-z]*$")));
+                .Regex(x => x.Room, new BsonRegularExpression(new Regex($@"^{group} ?[0-9]+ ?[A-z]*$")));
 
             return group == null
                 ? null

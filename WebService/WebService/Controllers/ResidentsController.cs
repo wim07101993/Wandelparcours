@@ -100,7 +100,7 @@ namespace WebService.Controllers
                     break;
                 case EUserType.Nurse:
                     var residentRoom = await DataService.GetPropertyAsync(id, x => x.Room);
-                    isResponsible = new Regex($@"^{user.Group}? [0-9]*? [A-z]*$").IsMatch(residentRoom);
+                    isResponsible = new Regex($@"^{user.Group}? [0-9]+ ?[A-z]*$").IsMatch(residentRoom);
                     break;
                 case EUserType.User:
                     isResponsible = user.Residents.Contains(id);
@@ -130,7 +130,7 @@ namespace WebService.Controllers
                     break;
                 case EUserType.Nurse:
                     var residentRoom = await DataService.GetPropertyAsync(residentObjectId, x => x.Room);
-                    isResponsible = new Regex($@"^{user.Group}[0-9]*$").IsMatch(residentRoom);
+                    isResponsible = new Regex($@"^{user.Group}? [0-9]+ ?[A-z]*$").IsMatch(residentRoom);
                     break;
                 case EUserType.User:
                     isResponsible = user.Residents.Contains(residentObjectId);
@@ -157,7 +157,7 @@ namespace WebService.Controllers
                     return true;
                 case EUserType.Nurse:
                     var residentRoom = await ((IResidentsService) DataService).GetPropertyAsync(tag, x => x.Room);
-                    return new Regex($@"^{user.Group}? [0-9]*? [A-z]*$").IsMatch(residentRoom);
+                    return new Regex($@"^{user.Group}? [0-9]+ ?[A-z]*$").IsMatch(residentRoom);
                 case EUserType.User:
                     var id = await ((IResidentsService) DataService).GetPropertyAsync(tag, x => x.Id);
                     return user.Residents.Contains(id);
@@ -180,7 +180,7 @@ namespace WebService.Controllers
                     break;
                 case EUserType.Nurse:
                     var residentRoom = await ((IResidentsService) DataService).GetPropertyAsync(tag, x => x.Room);
-                    isResponsible = new Regex($@"^{user.Group}? [0-9]*? [A-z]*$").IsMatch(residentRoom);
+                    isResponsible = new Regex($@"^{user.Group}? [0-9]+ ?[A-z]*$").IsMatch(residentRoom);
                     break;
                 case EUserType.User:
                 case EUserType.Guest:
