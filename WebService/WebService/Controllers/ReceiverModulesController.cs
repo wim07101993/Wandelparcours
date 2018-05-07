@@ -67,7 +67,7 @@ namespace WebService.Controllers
 
         #region get (read)
 
-        [Authorize(EUserType.SysAdmin)]
+        [Authorize(EUserType.SysAdmin, EUserType.Module)]
         [HttpGet(Routes.RestBase.GetAll)]
         public override Task<IEnumerable<ReceiverModule>> GetAllAsync(string[] propertiesToInclude)
             => base.GetAllAsync(propertiesToInclude);

@@ -7,9 +7,10 @@ socket.on('connect', function(){console.log("connect in eval")});
 
 socket.on("scan", async ()=>{
     console.log("startscan");
-    var scanned = await scanner.scan();
+    var scanned = await scan();
     console.log(scanned);
-    socket.emit("scanned",{beacons:scanned,mac:mac()}); 
+    console.log("testing");
+    socket.emit("scanned",{beacons:scanned,mac:mac(),name:settings.name}); 
 })
 
 

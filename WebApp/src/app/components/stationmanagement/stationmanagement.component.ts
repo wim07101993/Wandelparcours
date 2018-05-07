@@ -174,7 +174,7 @@ export class StationmanagementComponent extends ARenderComponent implements OnIn
       let y = position.y - width;
       let station = this.renderBuffer.buffer.get(key);
       if (station == undefined) {
-        station = this.renderBuffer.AddSpriteToBufferById(key, Sprites.marker);
+        station = this.renderBuffer.AddTextById(key);
         refreshNeeded = true;
       }
       if (station != undefined) {
