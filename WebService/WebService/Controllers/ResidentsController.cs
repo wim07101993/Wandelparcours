@@ -100,7 +100,7 @@ namespace WebService.Controllers
                     break;
                 case EUserType.Nurse:
                     var residentRoom = await DataService.GetPropertyAsync(id, x => x.Room);
-                    isResponsible = new Regex($@"^{residentRoom}[0-9]*$").IsMatch(user.Group);
+                    isResponsible = new Regex($@"^{user.Group}? [0-9]*? [A-z]*$").IsMatch(residentRoom);
                     break;
                 case EUserType.User:
                     isResponsible = user.Residents.Contains(id);
@@ -130,7 +130,7 @@ namespace WebService.Controllers
                     break;
                 case EUserType.Nurse:
                     var residentRoom = await DataService.GetPropertyAsync(residentObjectId, x => x.Room);
-                    isResponsible = new Regex($@"^{residentRoom}[0-9]*$").IsMatch(user.Group);
+                    isResponsible = new Regex($@"^{user.Group}[0-9]*$").IsMatch(residentRoom);
                     break;
                 case EUserType.User:
                     isResponsible = user.Residents.Contains(residentObjectId);
@@ -157,7 +157,7 @@ namespace WebService.Controllers
                     return true;
                 case EUserType.Nurse:
                     var residentRoom = await ((IResidentsService) DataService).GetPropertyAsync(tag, x => x.Room);
-                    return new Regex($@"^{residentRoom}[0-9]*$").IsMatch(user.Group);
+                    return new Regex($@"^{user.Group}? [0-9]*? [A-z]*$").IsMatch(residentRoom);
                 case EUserType.User:
                     var id = await ((IResidentsService) DataService).GetPropertyAsync(tag, x => x.Id);
                     return user.Residents.Contains(id);
@@ -180,7 +180,7 @@ namespace WebService.Controllers
                     break;
                 case EUserType.Nurse:
                     var residentRoom = await ((IResidentsService) DataService).GetPropertyAsync(tag, x => x.Room);
-                    isResponsible = new Regex($@"^{residentRoom}[0-9]*$").IsMatch(user.Group);
+                    isResponsible = new Regex($@"^{user.Group}? [0-9]*? [A-z]*$").IsMatch(residentRoom);
                     break;
                 case EUserType.User:
                 case EUserType.Guest:
@@ -327,9 +327,9 @@ namespace WebService.Controllers
                 case EUserType.SysAdmin:
                     return await DataService.GetAsync(selectors);
                 case EUserType.Nurse:
-                    return await ((ResidentsService) DataService).GetAllInGroup(user.Group, selectors);
+                    return await ((IResidentsService) DataService).GetAllInGroup(user.Group, selectors);
                 case EUserType.User:
-                    return await ((ResidentsService) DataService).GetMany(user.Residents, selectors);
+                    return await ((IResidentsService) DataService).GetMany(user.Residents, selectors);
                 default:
                     throw new UnauthorizedException(EUserType.SysAdmin, EUserType.Nurse, EUserType.User);
             }

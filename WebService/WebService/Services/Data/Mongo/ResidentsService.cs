@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using MongoDB.Bson;
@@ -56,10 +57,13 @@ namespace WebService.Services.Data.Mongo
         public async Task<IEnumerable<Resident>> GetAllInGroup(string group,
             IEnumerable<Expression<Func<Resident, object>>> propertiesToInclude = null)
         {
+            var filter = Builders<Resident>.Filter
+                .Regex(x => x.Room, new BsonRegularExpression(new Regex($@"^{group}? [0-9]*? [A-z]*$")));
+
             return group == null
                 ? null
                 : await MongoCollection
-                    .Find(x => x.Room.StartsWith(group))
+                    .Find(filter)
                     .Select(propertiesToInclude)
                     .ToListAsync();
         }
