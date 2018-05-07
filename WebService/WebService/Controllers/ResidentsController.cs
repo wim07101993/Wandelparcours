@@ -99,9 +99,6 @@ namespace WebService.Controllers
                     isResponsible = true;
                     break;
                 case EUserType.Nurse:
-                    var residentRoom = await DataService.GetPropertyAsync(id, x => x.Room);
-                    isResponsible = new Regex($@"^{user.Group}? [0-9]+ ?[A-z]*$").IsMatch(residentRoom);
-                    break;
                 case EUserType.User:
                     isResponsible = user.Residents.Contains(id);
                     break;
@@ -129,9 +126,6 @@ namespace WebService.Controllers
                     isResponsible = true;
                     break;
                 case EUserType.Nurse:
-                    var residentRoom = await DataService.GetPropertyAsync(residentObjectId, x => x.Room);
-                    isResponsible = new Regex($@"^{user.Group}? [0-9]+ ?[A-z]*$").IsMatch(residentRoom);
-                    break;
                 case EUserType.User:
                     isResponsible = user.Residents.Contains(residentObjectId);
                     break;
@@ -156,8 +150,6 @@ namespace WebService.Controllers
                 case EUserType.Module:
                     return true;
                 case EUserType.Nurse:
-                    var residentRoom = await ((IResidentsService) DataService).GetPropertyAsync(tag, x => x.Room);
-                    return new Regex($@"^{user.Group}? [0-9]+ ?[A-z]*$").IsMatch(residentRoom);
                 case EUserType.User:
                     var id = await ((IResidentsService) DataService).GetPropertyAsync(tag, x => x.Id);
                     return user.Residents.Contains(id);
@@ -166,31 +158,6 @@ namespace WebService.Controllers
                 default:
                     throw new ArgumentOutOfRangeException();
             }
-        }
-
-        private async Task<bool> CanWriteDataToResidentAsync(int tag)
-        {
-            var properties = new Expression<Func<User, object>>[] {x => x.Residents, x => x.UserType, x => x.Group};
-            var user = await GetCurrentUser(properties);
-            var isResponsible = false;
-            switch (user.UserType)
-            {
-                case EUserType.SysAdmin:
-                    isResponsible = true;
-                    break;
-                case EUserType.Nurse:
-                    var residentRoom = await ((IResidentsService) DataService).GetPropertyAsync(tag, x => x.Room);
-                    isResponsible = new Regex($@"^{user.Group}? [0-9]+ ?[A-z]*$").IsMatch(residentRoom);
-                    break;
-                case EUserType.User:
-                case EUserType.Guest:
-                case EUserType.Module:
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
-
-            return isResponsible;
         }
 
         #endregion auth
@@ -327,7 +294,6 @@ namespace WebService.Controllers
                 case EUserType.SysAdmin:
                     return await DataService.GetAsync(selectors);
                 case EUserType.Nurse:
-                    return await ((IResidentsService) DataService).GetAllInGroup(user.Group, selectors);
                 case EUserType.User:
                     return await ((IResidentsService) DataService).GetMany(user.Residents, selectors);
                 default:
