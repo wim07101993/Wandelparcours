@@ -17,6 +17,7 @@ export class UploadComponent implements OnInit {
   loading: string = "";
   addPicture: string = "/images/data";
   addVideo: string = "/videos/data";
+  addMusic: string = "/music/data";
   @Output() reload = new EventEmitter();
 
   constructor(private restService: RestServiceService, private route: ActivatedRoute) {}
@@ -29,6 +30,7 @@ export class UploadComponent implements OnInit {
    */
   onFileSelected(event: any) {
     this.selectedFile = <any>event.target.files;
+    console.log(this.selectedFile);
     for (let i = 0; i < this.selectedFile.length; i++) {
       if (event.target.files && event.target.files[i]) {
         let reader = new FileReader();
@@ -59,6 +61,9 @@ export class UploadComponent implements OnInit {
         }
         else if (this.selectedFile[index].type.indexOf("video") != -1) {
           await this.restService.addCorrectMediaToDatabase(this.id, fd, this.addVideo);
+        }
+        else if(this.selectedFile[index].type.indexOf("audio")!=-1){
+          await this.restService.addCorrectMediaToDatabase(this.id, fd, this.addMusic);
         }
         else{
           alert("Kan geen media uploaden! Probeer later nog eens!");
