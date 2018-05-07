@@ -73,19 +73,18 @@ namespace WebService.Controllers
             => base.GetAllAsync(propertiesToInclude);
 
         [Authorize(EUserType.SysAdmin)]
-        [HttpGet(Routes.ReceiverModules.GetOneByMac)]
-        [HttpGet(Routes.ReceiverModules.GetOneByMacOld)]
-        public async Task<ReceiverModule> GetOneByMacAsync(string mac, [FromQuery] string[] propertiesToInclude)
+        [HttpGet(Routes.ReceiverModules.GetOneByName)]
+        public async Task<ReceiverModule> GetOneByMacAsync(string name, [FromQuery] string[] propertiesToInclude)
         {
-            if (mac == null)
+            if (name == null)
                 throw new NotFoundException<ReceiverModule>(nameof(ReceiverModule.Mac), null);
 
             var selectors = !EnumerableExtensions.IsNullOrEmpty(propertiesToInclude)
                 ? ConvertStringsToSelectors(propertiesToInclude)
                 : new Expression<Func<ReceiverModule, object>>[0];
 
-            return await ((IReceiverModulesService) DataService).GetOneAsync(mac, selectors)
-                   ?? throw new NotFoundException<ReceiverModule>(nameof(ReceiverModule.Mac), mac);
+            return await ((IReceiverModulesService) DataService).GetOneAsync(name, selectors)
+                   ?? throw new NotFoundException<ReceiverModule>(nameof(ReceiverModule.Mac), name);
         }
 
         [Authorize(EUserType.SysAdmin)]
@@ -98,10 +97,9 @@ namespace WebService.Controllers
         #region delete
 
         [Authorize(EUserType.SysAdmin)]
-        [HttpDelete(Routes.ReceiverModules.DeleteByMacOld)]
-        [HttpDelete(Routes.ReceiverModules.DeleteByMac)]
-        public Task DeleteByMacAsync(string mac)
-            => ((IReceiverModulesService) DataService).RemoveAsync(mac);
+        [HttpDelete(Routes.ReceiverModules.DeleteByName)]
+        public Task DeleteByMacAsync(string name)
+            => ((IReceiverModulesService) DataService).RemoveAsync(name);
 
         [Authorize(EUserType.SysAdmin)]
         [HttpDelete(Routes.RestBase.Delete)]

@@ -77,7 +77,7 @@ namespace WebService.Middleware
                 throw new UnauthorizedException(allowedUserTypes);
 
             if (context.Controller is IController controller)
-                controller.UserId = userId;
+                controller.CurrentUserId = userId;
 
             await next();
         }

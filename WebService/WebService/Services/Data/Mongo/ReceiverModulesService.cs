@@ -18,11 +18,11 @@ namespace WebService.Services.Data.Mongo
         }
 
 
-        public async Task<ReceiverModule> GetOneAsync(string mac,
+        public async Task<ReceiverModule> GetOneAsync(string name,
             IEnumerable<Expression<Func<ReceiverModule, object>>> propertiesToInclude = null)
-            => await GetByAsync(x => x.Mac == mac);
+            => await GetByAsync(x => x.Name == name);
 
-        public async Task RemoveAsync(string mac)
-            => await RemoveByAsync(x => x.Mac == mac);
+        public async Task RemoveAsync(string name)
+            => await RemoveByAsync(x => x.Name == name);
     }
 }

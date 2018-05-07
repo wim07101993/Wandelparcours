@@ -41,17 +41,14 @@ namespace WebService.Controllers
 
         public static class ReceiverModules
         {
+            // unused
             private const string MacAddressRegex = @"^([[A-f0-9]]{{2}}[[:-\\.]]){{5}}[[A-f0-9]]{{2}}$";
+            // unused
             private const string ByMac = "{mac:regex(" + MacAddressRegex + ")}";
+            private const string ByName = "bytName/{name}";
 
-            public const string GetOneByMac = ByMac;
-            public const string DeleteByMac = ByMac;
-
-            [Obsolete]
-            public const string DeleteByMacOld = "bymac/" + ByMac;
-
-            [Obsolete]
-            public const string GetOneByMacOld = "bymac/" + ByMac;
+            public const string GetOneByName = ByName;
+            public const string DeleteByName = ByName;
         }
 
         public static class Residents
