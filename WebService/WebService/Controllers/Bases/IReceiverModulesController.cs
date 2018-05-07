@@ -6,7 +6,7 @@ namespace WebService.Controllers.Bases
 {
     public interface IReceiverModulesController : IRestController<ReceiverModule>
     {
-        Task<ReceiverModule> GetOneByMacAsync(string mac, [FromQuery] string[] propertiesToInclude);
-        Task DeleteByMacAsync(string mac);
+        Task<ReceiverModule> GetOneByMacAsync(string name, [FromQuery] string[] propertiesToInclude);
+        Task DeleteByMacAsync(string name);
     }
 }
