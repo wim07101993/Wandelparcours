@@ -76,8 +76,8 @@
               "js": {
                 "AbstractViewer.js": {
                   "type": "-",
-                  "size": 2514,
-                  "lmtime": 1525346998324,
+                  "size": 2587,
+                  "lmtime": 1525430268499,
                   "modified": false
                 },
                 "ImageViewer.js": {
@@ -170,9 +170,92 @@
               "modified": false
             }
           },
-          "library": {},
+          "library": {
+            "loader.js": {
+              "type": "-",
+              "size": 204,
+              "lmtime": 0,
+              "modified": false
+            },
+            "mac.js": {
+              "type": "-",
+              "size": 226,
+              "lmtime": 0,
+              "modified": false
+            },
+            "node_modules": {},
+            "package-lock.json": {
+              "type": "-",
+              "size": 37712,
+              "lmtime": 0,
+              "modified": false
+            },
+            "package.json": {
+              "type": "-",
+              "size": 280,
+              "lmtime": 0,
+              "modified": false
+            },
+            "scanner.js": {
+              "type": "-",
+              "size": 1616,
+              "lmtime": 1525428874677,
+              "modified": false
+            },
+            "wificonnect.js": {
+              "type": "-",
+              "size": 1300,
+              "lmtime": 0,
+              "modified": false
+            }
+          },
           "path": {},
-          "scanstation": {},
+          "scanstation": {
+            ".index.js.swp": {
+              "type": "-",
+              "size": 12288,
+              "lmtime": 0,
+              "modified": false
+            },
+            "etc": {},
+            "index.js": {
+              "type": "-",
+              "size": 749,
+              "lmtime": 1525428461056,
+              "modified": false
+            },
+            "node_modules": {},
+            "package-lock.json": {
+              "type": "-",
+              "size": 392036,
+              "lmtime": 0,
+              "modified": false
+            },
+            "package.json": {
+              "type": "-",
+              "size": 664,
+              "lmtime": 0,
+              "modified": false
+            },
+            "testloader.js": {
+              "type": "-",
+              "size": 81,
+              "lmtime": 0,
+              "modified": false
+            },
+            "testmac.js": {
+              "type": "-",
+              "size": 45,
+              "lmtime": 0,
+              "modified": false
+            },
+            "testscan.js": {
+              "type": "-",
+              "size": 120,
+              "lmtime": 0,
+              "modified": false
+            }
+          },
           "startup.sh": {
             "type": "-",
             "size": 74,

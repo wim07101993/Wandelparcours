@@ -18,9 +18,28 @@
 </div>
 
 
+<div id="residentModal" class="modal" *ngIf="id==undefined">
+  <div class="modal-content center-align">
+    <h4>{{currentResident.firstName}} {{currentResident.lastName}}</h4>
+    <img class="residentImage"
+         src="/api/v1/residents/{{currentResident.id}}/picture"
+         alt="Geen foto gevonden"
+         onError="this.onerror=null;this.src='assets/images/residents.jpg';"/>
+    <hr>
+    <a class="modal-action modal-close waves-effect waves-orange btn-flat" (click)="navigateTo(currentResident)">
+      Personalia
+    </a>
+    <a class="modal-action modal-close waves-effect waves-teal btn-flat" (click)="navigateToTracking(currentResident)">
+      Personalia
+      Tracking
+    </a>
+    <a class="modal-action modal-close waves-effect waves-green btn-flat">Sluiten</a>
+  </div>
+</div>
+
 
 <!-- Modal Structure vanuit footer; toont lijst met personen te tracken -->
-<!-- <div id="modal1" class="modal bottom-sheet">
+<div id="modal1" class="modal bottom-sheet">
   <div class="modal-content">
     <h4>Bewoners</h4>
     <div id="sidebar" *ngIf="id==undefined">
@@ -35,4 +54,4 @@
   <div class="modal-footer" style="background-color: grey;">
     <a class="modal-action modal-close waves-effect waves-green btn-flat white-text">Sluiten</a>
   </div>
-</div> -->
+</div>

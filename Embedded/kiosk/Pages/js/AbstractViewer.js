@@ -6,8 +6,8 @@ class AbstractViewer{
         this.store = new Store();
         this.url = this.store.get("resturl");
         this.debugTimeout=0;
-        this.username='module';
-        this.password="kiosktoermalien"
+        this.username='Modul3';
+        this.password="KioskTo3rmali3n"
         this.token=null;
         this.login();
         this.scanBeacon();
@@ -16,13 +16,13 @@ class AbstractViewer{
         const http = this.http.create({
           headers: {'userName': this.username,"password":this.password}
         });
-        this.http.post(`${this.url}/api/v1/tokens`).then((result)=>{
+        http.post(`${this.url}/api/v1/tokens`).then((result)=>{
           this.token=result.data.token;
           this.level=result.data.user.userType;
         }).catch(()=>{
           setTimeout(()=>{
             this.refreshToken();
-          },60*1000);
+          },10*60*1000);
         });
           
       }
@@ -42,6 +42,8 @@ class AbstractViewer{
               this.token = token.data.token;
               this.level= token.data.user.userType;
               this.refreshTokenInterval =setInterval(()=>{this.refreshToken()},10*60*1000);
+          }).catch((e)=>{
+            setTimeout(()=>{this.login()},2000);
           });
         }catch(ex){
             setTimeout(()=>{this.login()},2000);
