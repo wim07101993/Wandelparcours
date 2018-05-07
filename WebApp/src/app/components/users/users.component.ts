@@ -19,6 +19,7 @@ export class UsersComponent implements OnInit {
 
     constructor(private service: RestServiceService) {
         this.userModal = <user>{};
+        this.getUsers()
     }
 
     async getUsers() {
@@ -27,7 +28,7 @@ export class UsersComponent implements OnInit {
     }
 
     async deleteUser(userId: string) {
-            await this.service.deleteUser(userId);
+        await this.service.deleteUser(userId);
         this.getUsers();
     }
 
@@ -41,13 +42,19 @@ export class UsersComponent implements OnInit {
 
         console.log(data);
         this.service.createUser(data.userName,data.userPassword,data.userType,data.email);
+        form.reset();
+        // close modal/form and 'reload' page
+        setTimeout(() => {
+            $('#add-user-modal').modal('close');
+        }, 200);
+        this.getUsers();
     }
 
     password: string;
     passwordcheck: string;
 
     ngOnInit() {
-        this.getUsers()
+
         $('select').material_select();
     }
 
@@ -84,7 +91,6 @@ export class UsersComponent implements OnInit {
         setTimeout(() => {
             $('#focusToInput').focus();
         }, 200);
-
     }
 
     /**
