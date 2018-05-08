@@ -38,7 +38,7 @@ export class UsersComponent implements OnInit {
         const data = {
             userName: form.value.userName,
             email: form.value.email,
-            userType: form.value.userTypeUser1,
+            userType: form.value.userType,
             userPassword: form.value.password1
     };
 
