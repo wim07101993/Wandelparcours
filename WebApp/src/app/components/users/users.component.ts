@@ -16,7 +16,15 @@ export class UsersComponent implements OnInit {
     term: any = null;
     search = false;
     userModal: user;
+    userTypes = [
+        {"id":0,"itemName":"Admininstrator"},
+        {"id":1,"itemName":"Zorgkundige"},
+        {"id":2,"itemName":"Gebruiker"}
+      ];
+      createUserModel=new formUser();
 
+      createUserType=[];
+      settings =  {singleSelection: true, text:"ToegangsLevel"};
     constructor(private service: RestServiceService) {
         this.userModal = <user>{};
         this.getUsers()
@@ -32,17 +40,35 @@ export class UsersComponent implements OnInit {
         this.getUsers();
     }
 
-    createUser(form: NgForm) {
-        const data = {
-            userName: form.value.userName,
-            email: form.value.email,
-            userType: form.value.userType,
-            userPassword: form.value.password1
-    };
-
-        console.log(data);
-        this.service.createUser(data.userName,data.userPassword,data.userType,data.email);
-        form.reset();
+    SelectCreateType(event){
+        this.createUserModel.userType=event.id;
+    }
+    createUser() {
+        console.log(this.createUserModel);
+        if(this.createUserModel.userName==""){
+            Materialize.toast('Vul Gebruikersnaam in!', 3000);
+            return;
+        }
+        if(this.createUserModel.email==""){
+            Materialize.toast('Vul Email in!', 3000);
+            return;
+        }
+        if(this.createUserModel.userType==99){
+            Materialize.toast('Selecteer gebruikers type!', 3000);
+            return;
+        }
+        if(this.createUserModel.userPassword==""){
+            Materialize.toast('Vul Wachtwoord in!', 3000);
+            return;
+        }
+        if(this.createUserModel.userPassword!=this.createUserModel.verPassword){
+            Materialize.toast('Wachtwoorden komen niet overeen!', 3000);
+            return;
+        }
+        
+        this.service.createUser(this.createUserModel.userName,this.createUserModel.userPassword,this.createUserModel.userType,this.createUserModel.email);
+        this.createUserModel= new formUser();
+        
         // close modal/form and 'reload' page
         setTimeout(() => {
             $('#add-user-modal').modal('close');
@@ -112,3 +138,20 @@ export class UsersComponent implements OnInit {
 
 }
 
+
+class formUser{
+        userName="";
+        email="";
+        userType=99;
+        userPassword= "";
+        verPassword= "";
+        userTypeModel=[];
+    constructor(){
+        this.userName="";
+        this.email="";
+        this.userType=99;
+        this.userPassword= "";
+        this.verPassword= "";
+        this.userTypeModel=[];
+    }
+}

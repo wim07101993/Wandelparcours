@@ -8,7 +8,7 @@ import {RestServiceService} from '../../../service/rest-service.service';
 })
 export class TrackingComponent implements OnInit {
   loaded:any;
-  userText="Bewoner kan niet getracked worden.";
+  userText="Bewoner bevindt zich momenteel in een niet-detecteerbaar zone.";
   id:any;
   constructor(private service: RestServiceService,private route:ActivatedRoute) { }
 
@@ -21,7 +21,20 @@ export class TrackingComponent implements OnInit {
   
   async loadResidentLocation(){
     this.loaded = await this.service.getOneResidentWithAKnownLastLocation(this.id);
-    this.userText=`Bewoner bevind zich in zone: ${this.loaded.lastRecordedPosition.name}`;
+    var today = new Date();
+    console.log(this.loaded.lastRecordedPosition);
+    let scanned =new Date(Date.parse(this.loaded.lastRecordedPosition.timeStamp));
+    
+    var diffMs = (today.getTime()-scanned.getTime() ); // milliseconds between now & Christmas
+    var diffMins = Math.round(diffMs / 60000); // minutes
+    if(diffMins==0){
+      diffMins=1;
+    }
+    if(diffMins>60){
+      this.userText="Bewoner bevindt zich momenteel in een niet-detecteerbaar zone.";
+    }else{
+      this.userText=`Bewoner werd ${diffMins}min geleden gedetecteerd in zone: ${this.loaded.lastRecordedPosition.name}`;
+    }
   }
 
 }
