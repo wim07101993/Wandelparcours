@@ -92,6 +92,8 @@ namespace WebService.Controllers
         {
             public const string GetByName = "{userName}";
             public const string GetPropertyByName = "{userName}/{propertyName}";
+
+            public const string RemoveResident = ById + "/Residents/{residentId}";
         }
     }
 }
