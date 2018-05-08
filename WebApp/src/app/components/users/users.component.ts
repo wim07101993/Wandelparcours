@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import {RestServiceService} from '../../service/rest-service.service';
 import {NgForm} from '@angular/forms';
+import {user} from '../../models/user';
+import {Resident} from '../../models/resident';
 declare var $: any;
 declare var Materialize: any;
 
@@ -10,13 +12,19 @@ declare var Materialize: any;
   styleUrls: ['./users.component.css']
 })
 export class UsersComponent implements OnInit {
+    users : user;
+    term: any = null;
+    search = false;
+    userModal: user;
 
     constructor(private service: RestServiceService) {
+        this.userModal = <user>{};
+        this.getUsers()
     }
 
     async getUsers() {
-        const users = await this.service.getUsers();
-        console.log(users);
+        this.users = await this.service.getUsers();
+        console.log(this.users);
     }
 
     async deleteUser(userId: string) {
@@ -34,13 +42,19 @@ export class UsersComponent implements OnInit {
 
         console.log(data);
         this.service.createUser(data.userName,data.userPassword,data.userType,data.email);
+        form.reset();
+        // close modal/form and 'reload' page
+        setTimeout(() => {
+            $('#add-user-modal').modal('close');
+        }, 200);
+        this.getUsers();
     }
 
     password: string;
     passwordcheck: string;
 
     ngOnInit() {
-        this.getUsers()
+
         $('select').material_select();
     }
 
@@ -68,6 +82,32 @@ export class UsersComponent implements OnInit {
         else {
             alert('Wachtwoorden komen wel overeen!')
         }
+    }
+
+    /**
+     * Focus to input for the searchbar --> input will be active if event 'button' has been pressed
+     */
+    focusInput() {
+        setTimeout(() => {
+            $('#focusToInput').focus();
+        }, 200);
+    }
+
+    /**
+     * Opens modal
+     * @param modalResident
+     */
+    openModal(user: user) {
+        this.userModal = user;
+        $('#deleteModalUser').modal();
+        $('#deleteModalUser').modal('open');
+    }
+
+    /**
+     * Close modal
+     */
+    closeModal() {
+        $().modal('close');
     }
 
 }

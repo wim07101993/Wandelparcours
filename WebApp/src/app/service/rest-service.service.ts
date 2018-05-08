@@ -259,30 +259,6 @@ export class RestServiceService {
       } catch (e) {
           console.log('Errormessage: ' + e.toString());
       }
-      /*return new Promise<boolean>(resolve => {
-        this.http.get(this.restUrl + 'api/v1/receivermodules').subscribe(response => {
-
-            const tryParse = <Array<any>>(response.json());
-
-            let station: any;
-            if (tryParse != undefined) {
-              for (station of tryParse) {
-                if (station == undefined) {
-                  continue;
-                }
-                parent.stationMacAdresses.push(station.mac);
-                parent.stations.set(station.mac, station.position);
-                parent.stationsIds.set(station.mac, station.id);
-              }
-            }
-            resolve(true);
-          },
-          error => {
-            console.log('can\'t load stations');
-            console.log(error);
-            resolve(false);
-          });
-      });*/
     }
 
     ///////////////////

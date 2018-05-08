@@ -19,19 +19,31 @@
 
 <!--Switch to cardview-->
 <div class="row">
-	<!-- <div class="col s12 m6 l4" *ngFor="let resident of residents | filter:term"> -->
+	<div class="col s12 m6 l4" *ngFor="let user of users | filter:term">
 	<div class="col s12 m6 l4">
 		<!-- resident's personal content on cardview -->
 		<div id="content" class="card">
 		<img class="z-depth-2"/>
 		<table>
 			<tr>
-				<td>voornaam</td>
-				<td>achternaam</td>
+				<th>Gebruikersnaam:</th>
+				<td>{{user.userName}}</td>
 			</tr>
 			<tr>
-				<td>email</td>
-				<td>type</td>
+				<th>Email:</th>
+				<td>{{user.email}}</td>
+			</tr>
+			<tr>
+				<th>Niveau</th>
+				<th>{{user.userType}}</th>
+			</tr>
+			<tr>
+				<th>Bewoner(s)</th>
+				<td>{{user.resident}}</td>
+			</tr>
+			<tr>
+				<th>Groep</th>
+				<td>{{user.group}}</td>
 			</tr>
 		</table>
 
@@ -44,7 +56,7 @@
 				<i class="material-icons red-text pointer">group</i>
 			</div>
 			<div class="col s4 center">
-				<i class="material-icons red-text pointer">delete</i>
+				<td class="center"><i class="material-icons red-text pointer" (click)="openModal(user)">delete</i></td>
 			</div>
 			</div>
 		</div>
@@ -146,4 +158,30 @@
 	<a class="btn-floating btn-large red" (click)="openAddUserModal()">
 		<i class="large material-icons">person_add</i>
 	</a>
+</div>
+
+
+<div id="deleteModalUser" class="modal">
+	<div class="modal-content">
+		<h5 class="valign-wrapper" style="color:crimson"><i class="material-icons red-text pointer">warning</i>Waarschuwing
+		</h5>
+		<p>
+			<strong>Let op!</strong> U staat op het punt <strong class="attention">{{userModal.userName}}
+			</strong> te verwijderen!<br>
+			Bent u zeker?
+		</p>
+	</div>
+	<div class="modal-footer">
+		<button class="btn modal-action modal-close waves-effect waves-red btn-flat red lighten-1 white-text"
+				(click)="deleteUser(userModal.id)">
+			Verwijder
+			<i class="material-icons red lighten-1 white-text right">remove_circle</i>
+		</button>
+		<button class="btn modal-action modal-close waves-effect waves-green btn-flat blue lighten-1 white-text"
+				(click)="closeModal()">
+			Annuleer
+			<i class="material-icons right">cancel</i>
+		</button>
+	</div>
+</div>
 </div>

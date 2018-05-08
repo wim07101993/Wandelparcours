@@ -10,6 +10,7 @@ export class Resident {
   doctor: Doctor
   images: Images
   videos: Videos
+  music: Music
   tags: number[]=new Array();
   lastRecordedPosition: Position = new Position();
   constructor() {
@@ -23,6 +24,8 @@ export class Resident {
     this.birthday = new Date();
     this.doctor = new Doctor();
     this.videos = new Videos();
+    this.music = new Music();
+
   }
 }
 
@@ -45,6 +48,20 @@ export class Images {
     this.url = "";
     this.name = "";
   }
+}
+
+export class Music {
+    id: string;
+    url: string;
+    title: string;
+    extension: string;
+
+    constructor() {
+        this.id = "";
+        this.url = "";
+        this.title = "";
+        this.extension = "";
+    }
 }
 
 export class Videos {
