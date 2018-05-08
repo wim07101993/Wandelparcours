@@ -38,7 +38,14 @@ namespace WebService.Services.Data.Mongo
                 throw new ArgumentNullException(nameof(data));
 
             var mediaId = ObjectId.GenerateNewId();
-            await _mediaService.CreateAsync(new MediaData {Id = mediaId, Data = data, Extension = extension});
+            await _mediaService.CreateAsync(
+                new MediaData
+                {
+                    Id = mediaId,
+                    Data = data,
+                    Extension = extension,
+                    OwnerId = residentId
+                });
 
             await AddMediaAsync(
                 residentId,

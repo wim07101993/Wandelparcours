@@ -75,9 +75,6 @@ namespace WebService.Controllers
                     isResponsible = true;
                     break;
                 case EUserType.Nurse:
-                    var residentRoom = await _residentsService.GetPropertyAsync(residentId, x => x.Room);
-                    isResponsible = new Regex($@"^{residentRoom}[0-9]*$").IsMatch(user.Group);
-                    break;
                 case EUserType.User:
                     isResponsible = user.Residents.Contains(residentId);
                     break;
