@@ -151,11 +151,14 @@ export class RestServiceService {
    * Returns true or false or updates error message
    */
   async addCorrectMediaToDatabase(uniqueIdentifier: any, media: any, addMedia: string) {
+
     try {
         return (await this.login.axios.post('/api/v1/residents/' + uniqueIdentifier + addMedia, media)).data;
     }catch (e) {
         console.log('Errormessage: ' + e.toString());
+        return;
     }
+
   }
 
   /**
