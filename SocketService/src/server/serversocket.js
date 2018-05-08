@@ -120,11 +120,11 @@ export class ChatServer {
                 if (this.beacons.has(element.id)) {
                     let beacon = this.beacons.get(element.id);
                     
-                    beacon.set(name, element.beacon.accuracy);
+                    beacon.set(name, Math.abs(element.rssi));
                     this.beacons.set(element.id, beacon);
                 } else {
                     var beacon = new Map();
-                    beacon.set(name, element.beacon.accuracy);
+                    beacon.set(name, Math.abs(element.rssi));
                     this.beacons.set(element.id, beacon)
                 }
             } catch (error) {

@@ -31,6 +31,11 @@
     <br>
     <a id="zoomOutMap" class="btn-floating waves-effect waves-light orange" (click)="ZoomOut()"><i
       class="material-icons"> zoom_out</i></a>
+      <br>
+      <a id="zoomOutMap" class="btn-floating waves-effect waves-light blue" (click)="Reset()">
+          <i class="material-icons">refresh</i>
+        </a>
+        <br>
   </div>
 
   <div #myCanvas id="map">
@@ -42,8 +47,8 @@
       <div class="row">
 
         <div class="input-field col s12">
-          <input id="mac" placeholder="xx:xx:xx:xx:xx:xx" type="text" [(ngModel)]="saveStation.mac">
-          <label data-error="wrong" data-success="right" class="active">Station Adres</label>
+          <input id="mac"  type="text" [(ngModel)]="saveStation.name">
+          <label data-error="wrong" data-success="right" class="active">Station naam</label>
         </div>
 
       </div>

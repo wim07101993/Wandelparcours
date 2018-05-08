@@ -1,4 +1,4 @@
-import {Component, OnInit, ElementRef} from '@angular/core';
+import {Component, OnInit, ElementRef,OnDestroy} from '@angular/core';
 import {Point} from "../../helpers/MouseEvents"
 import {Station} from "../../models/station"
 import {Sprites} from "../../helpers/Sprites"
@@ -17,7 +17,7 @@ declare var Materialize: any;
 
 
 /** Class representing stationmanagement page. */
-export class StationmanagementComponent extends ARenderComponent implements OnInit {
+export class StationmanagementComponent extends ARenderComponent implements OnInit , OnDestroy{
   position: Point;
   collidingElement: any;
   saveStation: Station = new Station();
@@ -36,6 +36,10 @@ export class StationmanagementComponent extends ARenderComponent implements OnIn
   constructor(private service: RestServiceService, protected elRef: ElementRef) {
     super();
     this.hostElement = this.elRef
+  }
+
+  ngOnDestroy(){
+    clearInterval(this.tickInterval);
   }
 
   get markerUrl() {
@@ -195,7 +199,9 @@ export class StationmanagementComponent extends ARenderComponent implements OnIn
   *   This function will send request to the rest to delete station
   */
   async DeleteCurrentStation() {
+    
     await this.service.DeleteStation(this.collidingElement);
+    
     await this.service.LoadStations(this);
     setTimeout(()=>{
         $("#deleteModal").modal("close");
@@ -208,20 +214,16 @@ export class StationmanagementComponent extends ARenderComponent implements OnIn
   async SaveNewStation() {
     let mac = this.saveStation.mac;
     let length = mac.length;
-    if (length > 15 && length < 20 && mac.split(":").length == 6) {
-      await this.service.SaveStationToDatabase(this.saveStation);
-      await this.service.LoadStations(this);
-      this.saveStation = new Station();
-      $("#markerModel").modal("close");
-      this.adMarker = false;
-    } else {
-      Materialize.toast('Station adres verkeerd', 4000);
-    }
+    await this.service.SaveStationToDatabase(this.saveStation);
+    await this.service.LoadStations(this);
+    this.saveStation = new Station();
+    $("#markerModel").modal("close");
+    this.adMarker = false;
 
   }
 
   ShowEditBox() {
     this.editmac = (' ' + this.collidingElement).slice(1);
-    this.editing = !this.editing
+    this.editing = !this.editing;
   }
 }
