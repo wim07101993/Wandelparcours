@@ -3,6 +3,7 @@ import {RestServiceService} from '../../service/rest-service.service';
 import {NgForm} from '@angular/forms';
 import {user} from '../../models/user';
 import {Resident} from '../../models/resident';
+
 declare var $: any;
 declare var Materialize: any;
 
@@ -29,6 +30,7 @@ export class UsersComponent implements OnInit {
         this.userModal = <user>{};
         this.getUsers()
     }
+
 
     async getUsers() {
         this.users = await this.service.getUsers();

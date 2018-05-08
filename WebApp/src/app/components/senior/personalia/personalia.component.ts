@@ -21,8 +21,9 @@ export class PersonaliaComponent implements OnInit {
   tag: any;
   id: string = this.route.snapshot.params['id'];
   resident: Resident;
-  countI = 0;
-  countV = 0;
+  countI: string;
+  countV: string;
+  countX: string;
 
   constructor(private service: RestServiceService, private media: MediaService, private route: ActivatedRoute, private router: Router,private login:LoginService) {
       this.src2 = "/api/v1/residents/" + this.id + "/picture?token="+this.login.token;
@@ -56,8 +57,10 @@ export class PersonaliaComponent implements OnInit {
   async getImageCount() {
     const count = await this.media.getMedia(this.id, '/images');
     const count2 = await this.media.getMedia(this.id, '/videos');
+    const count3 = await this.media.getMedia(this.id, '/music');
     this.countV = count2.length;
     this.countI = count.length;
+    this.countX = count3.length;
   }
 
   /*
