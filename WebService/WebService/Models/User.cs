@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
+using Newtonsoft.Json;
+using WebService.Helpers.JsonConverters;
 using WebService.Models.Bases;
 
 namespace WebService.Models
@@ -20,6 +22,7 @@ namespace WebService.Models
         public EUserType UserType { get; set; } = EUserType.Guest;
 
         [BsonElement("residents")]
+        [JsonConverter(typeof(ObjectIdListConverter))]
         public IEnumerable<ObjectId> Residents { get; set; } = new List<ObjectId>();
 
         [BsonElement("group")]
