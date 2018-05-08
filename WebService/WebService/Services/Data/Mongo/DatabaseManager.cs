@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using MongoDB.Bson;
@@ -65,18 +67,76 @@ namespace WebService.Services.Data.Mongo
 
         public async Task RemoveUnresolvableRelations()
         {
-            RemoveMediaWithNonExistingResident();
+            await RemoveMediaWithNonExistingResident();
+            await RemoveUnKnownMedia();
         }
 
-        private void RemoveMediaWithNonExistingResident()
+        private async Task RemoveMediaWithNonExistingResident()
         {
             var residentIds = _residentsCollection
                 .Find(FilterDefinition<Resident>.Empty)
                 .Project(x => x.Id)
                 .ToList();
 
-            var ownerExistsFilter = Builders<MediaData>.Filter.In(x => x.OwnerId, residentIds);
-            _mediaCollection.DistinctAsync(x => x.OwnerId, ownerExistsFilter);
+            
+            
+            var ownerExistsFilter = Builders<MediaData>.Filter.Nin(x => x.OwnerId, residentIds);
+            await _mediaCollection.DeleteManyAsync(ownerExistsFilter);
+        }
+
+        private async Task RemoveUnKnownMedia()
+        {
+            var fields = new Expression<Func<Resident, object>>[]
+            {
+                x => x.Music,
+                x => x.Images,
+                x => x.Videos
+            };
+
+            var residents = await _residentsCollection
+                .Find(FilterDefinition<Resident>.Empty)
+                .Select(fields)
+                .ToListAsync();
+
+            var musicField = new ExpressionFieldDefinition<Resident>(fields[0]);
+            var imageField = new ExpressionFieldDefinition<Resident>(fields[1]);
+            var videoField = new ExpressionFieldDefinition<Resident>(fields[2]);
+
+            foreach (var resident in residents)
+            {
+                foreach (var mediaUrl in resident.Music)
+                    await RemoveMediaUrlIfThereIsNodata(mediaUrl, musicField, resident.Id);
+
+                foreach (var mediaUrl in resident.Images)
+                    await RemoveMediaUrlIfThereIsNodata(mediaUrl, imageField, resident.Id);
+
+                foreach (var mediaUrl in resident.Videos)
+                    await RemoveMediaUrlIfThereIsNodata(mediaUrl, videoField, resident.Id);
+            }
+        }
+
+        private async Task RemoveMediaUrlIfThereIsNodata(MediaUrl mediaUrl, FieldDefinition<Resident> field,
+            ObjectId residentId)
+        {
+            if (mediaUrl.Url != null)
+                return;
+
+            var exists = await _mediaCollection
+                .Find(x => x.Id == mediaUrl.Id)
+                .AnyAsync();
+
+            if (!exists)
+            {
+                var mediaFilter = Builders<MediaUrl>
+                    .Filter
+                    .Eq(x => x.Id, mediaUrl.Id);
+                var updater = Builders<Resident>
+                    .Update
+                    .PullFilter(field, mediaFilter);
+
+                await _residentsCollection
+                    .FindOneAndUpdateAsync(x => x.Id == residentId, updater);
+            }
         }
 
         #endregion RemoveUnresolvableRelations
