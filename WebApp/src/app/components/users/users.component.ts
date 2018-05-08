@@ -34,7 +34,7 @@ export class UsersComponent implements OnInit {
         this.getUsers();
     }
 
-    createUser(form: NgForm) {
+    async createUser(form: NgForm) {
         const data = {
             userName: form.value.userName,
             email: form.value.email,
@@ -42,8 +42,7 @@ export class UsersComponent implements OnInit {
             userPassword: form.value.password1
     };
 
-        console.log(data);
-        this.service.createUser(data.userName,data.userPassword,data.userType,data.email);
+        await this.service.createUser(data.userName,data.userPassword,data.userType,data.email);
         form.reset();
         // close modal/form and 'reload' page
         setTimeout(() => {
@@ -56,7 +55,6 @@ export class UsersComponent implements OnInit {
     passwordcheck: string;
 
     ngOnInit() {
-
         $('select').material_select();
     }
 
@@ -75,7 +73,6 @@ export class UsersComponent implements OnInit {
     }
 
     validatePassword() {
-
         console.log(this.password);
         console.log(this.passwordcheck);
         if (this.password !== this.passwordcheck) {
@@ -104,7 +101,6 @@ export class UsersComponent implements OnInit {
         $('#deleteModalUser').modal();
         $('#deleteModalUser').modal('open');
     }
-
     /**
      * Close modal
      */
