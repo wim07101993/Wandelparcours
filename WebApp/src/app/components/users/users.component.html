@@ -20,49 +20,46 @@
 <!--Switch to cardview-->
 <div class="row">
 	<div class="col s12 m6 l4" *ngFor="let user of users | filter:term">
-	<div class="col s12 m6 l4">
 		<!-- resident's personal content on cardview -->
 		<div id="content" class="card">
-		<img class="z-depth-2"/>
-		<table>
-			<tr>
-				<th>Gebruikersnaam:</th>
-				<td>{{user.userName}}</td>
-			</tr>
-			<tr>
-				<th>Email:</th>
-				<td>{{user.email}}</td>
-			</tr>
-			<tr>
-				<th>Niveau</th>
-				<th>{{user.userType}}</th>
-			</tr>
-			<tr>
-				<th>Bewoner(s)</th>
-				<td>{{user.resident}}</td>
-			</tr>
-			<tr>
-				<th>Groep</th>
-				<td>{{user.group}}</td>
-			</tr>
-		</table>
+			<table>
+				<tr>
+					<th>Gebruikersnaam:</th>
+					<td>{{user.userName}}</td>
+				</tr>
+				<tr>
+					<th>Email:</th>
+					<td>{{user.email}}</td>
+				</tr>
+				<tr>
+					<th>Niveau</th>
+					<th>{{user.userType}}</th>
+				</tr>
+				<tr>
+					<th>Bewoner(s)</th>
+					<td>{{user.resident}}</td>
+				</tr>
+				<tr>
+					<th>Groep</th>
+					<td>{{user.group}}</td>
+				</tr>
+			</table>
 
-		<!-- action buttons per resident-card -->
-		<div class="row">
-			<div class="col s4 center">
-				<i class="material-icons blue-text pointer">edit</i>
-			</div>
-			<div class="col s4 center" title="Toegewezen bewoners bekijken">
-				<i class="material-icons red-text pointer">group</i>
-			</div>
-			<div class="col s4 center">
-				<td class="center"><i class="material-icons red-text pointer" (click)="openModal(user)">delete</i></td>
-			</div>
+			<!-- action buttons per resident-card -->
+			<div class="row">
+				<div class="col s4 center">
+					<i class="material-icons blue-text pointer">edit</i>
+				</div>
+				<div class="col s4 center" title="Toegewezen bewoners bekijken">
+					<i class="material-icons red-text pointer">group</i>
+				</div>
+				<div class="col s4 center">
+					<td class="center"><i class="material-icons red-text pointer" (click)="openModal(user)">delete</i></td>
+				</div>
 			</div>
 		</div>
 	</div>
 </div>
-
 
 
 <!-- Form to add user -->
@@ -83,19 +80,15 @@
 				</div>
 			</div>
 			<div class="row">
-				<div class="input-field col s6">
+				<div class="col s12">
+						<!--<input name="group1" type="radio" id="test1" checked/>
+						<label for="test1">Admin</label>
+						<input name="group1" type="radio" id="test2" />
+						<label for="test2">Zorgkundige</label>
+						<input class="with-gap" name="group1" type="radio" id="test3"  />
+						<label for="test3">Aandachtspersoon of familielid</label> -->
 					<input title="1 - 2 - 3" id="userType" type="number" class="validate" min="0" step="1" max="2" ngModel name="userType" required>
 					<label for="userType">ToegangsLevel<sup style="color: #ff2200;">*</sup></label>
-					<!--<select name="userTypeUser1">
-						<option value="" disabled selected>Kies gebruikerstype</option>
-						<option value="0">Admininstrator</option>
-						<option value="1">Zorgkundige</option>
-						<option value="2">Aandachtspersoon</option>
-						<option value="2">Familielid</option>
-					</select>-->
-				</div>
-				<div class="input-field col s6">
-					<ol><li>ADMIN = 0</li><li>ZORGKUNDIGE = 1</li><li>AANDACHTSPERSOON/FAMILIELID = 2</li></ol>
 				</div>
 			</div>
 
@@ -183,5 +176,4 @@
 			<i class="material-icons right">cancel</i>
 		</button>
 	</div>
-</div>
 </div>

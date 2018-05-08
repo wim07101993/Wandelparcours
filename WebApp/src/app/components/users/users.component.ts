@@ -3,6 +3,7 @@ import {RestServiceService} from '../../service/rest-service.service';
 import {NgForm} from '@angular/forms';
 import {user} from '../../models/user';
 import {Resident} from '../../models/resident';
+
 declare var $: any;
 declare var Materialize: any;
 
@@ -22,6 +23,7 @@ export class UsersComponent implements OnInit {
         this.getUsers()
     }
 
+
     async getUsers() {
         this.users = await this.service.getUsers();
         console.log(this.users);
@@ -36,7 +38,7 @@ export class UsersComponent implements OnInit {
         const data = {
             userName: form.value.userName,
             email: form.value.email,
-            userType: form.value.userType,
+            userType: form.value.userTypeUser1,
             userPassword: form.value.password1
     };
 
