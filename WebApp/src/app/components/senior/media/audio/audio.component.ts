@@ -54,4 +54,14 @@ export class AudioComponent implements OnInit {
         $("#deleteModal").modal();
         $("#deleteModal").modal("open");
     }
+
+    /**
+     * Opens modal
+     * @param modalResident
+     */
+    openModal(modalResident: Resident) {
+        this.deleteResidentMusic = modalResident;
+        $('#deleteModalResident').modal();
+        $('#deleteModalResident').modal('open');
+    }
 }
