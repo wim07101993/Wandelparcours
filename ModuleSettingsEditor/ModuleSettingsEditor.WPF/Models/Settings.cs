@@ -16,6 +16,7 @@ namespace ModuleSettingsEditor.WPF.Models
         private string _kioskType;
         private double _timePerSlide;
         private byte[] _backgroundColor;
+        private string _name;
 
         #endregion FIELDS
 
@@ -85,6 +86,12 @@ namespace ModuleSettingsEditor.WPF.Models
                 ? Colors.Black
                 : Color.FromRgb(BackgroundColor[0], BackgroundColor[1], BackgroundColor[2]);
             set => BackgroundColor = new[] {value.R, value.G, value.B};
+        }
+
+        public string Name
+        {
+            get => _name;
+            set => SetProperty(ref _name , value);
         }
     }
 }

@@ -1,3 +1,24 @@
+<div  class="users" style="position:relative">
+  <div *ngIf="id==undefined" id="menuButton" (click)="menu=!menu;">
+    <a class="btn-floating waves-effect indigo lighten-4  z-depth-3">
+      <i class="large material-icons " *ngIf="!menu">menu</i>
+      <i class="large material-icons " *ngIf="menu">close</i>
+    </a>
+  </div>
+  <div   id="sideBar" *ngIf="menu && id==undefined" class="indigo lighten-4  z-depth-3">
+    <div>
+      <ul>
+        <li *ngFor="let zone of zones">
+            <h4> Zone {{zone}}</h4>
+            <ul>
+              <li *ngFor="let resident of aResidents[zone]">{{resident.firstName}}</li>
+            </ul>
+        </li>
+
+      </ul>
+    </div>
+  </div>
+
 <div style="position:relative; max-height:100%;">
   <div id="mapButtonHolder">
     <br>
@@ -9,9 +30,10 @@
       <i class="material-icons"> zoom_out</i>
     </a>
     <br>
-    <!-- Modal Trigger -->
-    <a *ngIf="id ==undefined" class="btn-floating waves-effect waves-light blue" (click)="openListModal()">
-      <i class="material-icons"> group</i></a>
+    <a id="zoomOutMap" class="btn-floating waves-effect waves-light blue" (click)="Reset()">
+        <i class="material-icons">refresh</i>
+      </a>
+      <br>
   </div>
   <div #myCanvas id="map">
   </div>
@@ -36,3 +58,4 @@
     <a class="modal-action modal-close waves-effect waves-green btn-flat white-text">Sluiten</a>
   </div>
 </div> -->
+</div>

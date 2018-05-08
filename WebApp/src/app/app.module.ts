@@ -23,6 +23,7 @@ import { TrackingComponent } from './components/senior/tracking/tracking.compone
 import { GlobaltrackingComponent } from './components/globaltracking/globaltracking.component';
 import { LoginComponent } from './components/login/login.component';
 import { UsersComponent } from './components/users/users.component';
+import { AngularMultiSelectModule } from 'angular2-multiselect-dropdown/angular2-multiselect-dropdown';
 
 const appRoutes: Routes = [
       { path: '', redirectTo: 'residents', pathMatch: 'full' },
@@ -64,7 +65,8 @@ const appRoutes: Routes = [
     Ng2SearchPipeModule,
     FormsModule,
     RouterModule.forRoot(appRoutes),
-    BrowserModule
+    BrowserModule,
+    AngularMultiSelectModule
   ],
   providers: [LoginService, StoreService],
   bootstrap: [AppComponent]

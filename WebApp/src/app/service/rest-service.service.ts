@@ -35,6 +35,9 @@ export class RestServiceService {
           console.log('Errormessage: ' + e.toString());
       }
   }
+
+
+
   /**
    * get one resident and only the needed properties
    * @param uniqueIdentifier unique id of resident
@@ -191,7 +194,7 @@ export class RestServiceService {
 
   async SaveStationToDatabase(station: Station) {
       try {
-          await this.login.axios.post('/api/v1/receivermodules',station);
+          await this.login.axios.post('/api/v1/receivermodules/',station);
       }catch (e) {
           console.log('Errormessage: ' + e.toString());
       }
@@ -199,7 +202,7 @@ export class RestServiceService {
 
   async DeleteStation(mac: string) {
       try {
-          this.login.axios.delete('/api/v1/receivermodules/bymac/' + mac)
+          this.login.axios.delete('/api/v1/receivermodules/byname/' + mac)
       }catch (e) {
           console.log('Errormessage: ' + e.toString())
       }
@@ -207,7 +210,7 @@ export class RestServiceService {
 
   async UpdateStation(id: string, newMac: string) {
       try {
-          const resp = await this.login.axios.put('/api/v1/receivermodules/'+ id + '/Mac', "'" + newMac + "'", {
+          const resp = await this.login.axios.put(`api/v1/receivermodules/${id}/name`,JSON.stringify(newMac), {
               headers: {
                   'Content-type' : 'application/json'
               }
@@ -256,30 +259,6 @@ export class RestServiceService {
       } catch (e) {
           console.log('Errormessage: ' + e.toString());
       }
-      /*return new Promise<boolean>(resolve => {
-        this.http.get(this.restUrl + 'api/v1/receivermodules').subscribe(response => {
-
-            const tryParse = <Array<any>>(response.json());
-
-            let station: any;
-            if (tryParse != undefined) {
-              for (station of tryParse) {
-                if (station == undefined) {
-                  continue;
-                }
-                parent.stationMacAdresses.push(station.mac);
-                parent.stations.set(station.mac, station.position);
-                parent.stationsIds.set(station.mac, station.id);
-              }
-            }
-            resolve(true);
-          },
-          error => {
-            console.log('can\'t load stations');
-            console.log(error);
-            resolve(false);
-          });
-      });*/
     }
 
     ///////////////////
@@ -288,8 +267,19 @@ export class RestServiceService {
 
     async getAllResidentsWithAKnownLastLocation(){
       try {
-          const resp = (await this.login.axios.get('/api/v1/location/residents/lastlocation')).data;
-          return resp;
+        let query="?propertiesToInclude=lastRecordedPosition&propertiesToInclude=firstName&propertiesToInclude=lastName";
+        const resp = (await this.login.axios.get(`/api/v1/residents/${query}`)).data;
+        let retValue=[];
+        var compareMinutesAgo = new Date( Date.now() - 15000 * 60 );
+        for(const r of resp){
+            if(r.lastRecordedPosition!=null){
+                let timestamp = new Date(r.lastRecordedPosition.timeStamp);
+                if(timestamp.getTime() > compareMinutesAgo.getTime()){
+                    retValue.push(r);
+                }
+            }
+        }
+        return retValue;
       }catch (e) {
           console.log('Errormessage: '+ e.toString());
       }

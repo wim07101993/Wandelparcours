@@ -19,38 +19,47 @@
 
 <!--Switch to cardview-->
 <div class="row">
-	<!-- <div class="col s12 m6 l4" *ngFor="let resident of residents | filter:term"> -->
-	<div class="col s12 m6 l4">
+	<div class="col s12 m6 l4" *ngFor="let user of users | filter:term">
 		<!-- resident's personal content on cardview -->
 		<div id="content" class="card">
-		<img class="z-depth-2"/>
-		<table>
-			<tr>
-				<td>voornaam</td>
-				<td>achternaam</td>
-			</tr>
-			<tr>
-				<td>email</td>
-				<td>type</td>
-			</tr>
-		</table>
+			<table>
+				<tr>
+					<th>Gebruikersnaam:</th>
+					<td>{{user.userName}}</td>
+				</tr>
+				<tr>
+					<th>Email:</th>
+					<td>{{user.email}}</td>
+				</tr>
+				<tr>
+					<th>Niveau</th>
+					<th>{{user.userType}}</th>
+				</tr>
+				<tr>
+					<th>Bewoner(s)</th>
+					<td>{{user.resident}}</td>
+				</tr>
+				<tr>
+					<th>Groep</th>
+					<td>{{user.group}}</td>
+				</tr>
+			</table>
 
-		<!-- action buttons per resident-card -->
-		<div class="row">
-			<div class="col s4 center">
-				<i class="material-icons blue-text pointer">edit</i>
-			</div>
-			<div class="col s4 center" title="Toegewezen bewoners bekijken">
-				<i class="material-icons red-text pointer">group</i>
-			</div>
-			<div class="col s4 center">
-				<i class="material-icons red-text pointer">delete</i>
-			</div>
+			<!-- action buttons per resident-card -->
+			<div class="row">
+				<div class="col s4 center">
+					<i class="material-icons blue-text pointer">edit</i>
+				</div>
+				<div class="col s4 center" title="Toegewezen bewoners bekijken">
+					<i class="material-icons red-text pointer">group</i>
+				</div>
+				<div class="col s4 center">
+					<td class="center"><i class="material-icons red-text pointer" (click)="openModal(user)">delete</i></td>
+				</div>
 			</div>
 		</div>
 	</div>
 </div>
-
 
 
 <!-- Form to add user -->
@@ -58,42 +67,38 @@
 	<div class="modal-content">
 		<h5>Een nieuw gebruiker toevoegen</h5>
 
-		<form class="col s12" (ngSubmit)="createUser(f)" #f="ngForm">
+		<div class="col s12">
 
 			<div class="row">
 				<div class="input-field col s6">
-					<input id="userName" type="text" class="validate" ngModel name="userName" required>
+					<input id="userName" [(ngModel)]="createUserModel.userName"  type="text" class="validate"  name="userName" required>
 					<label for="userName">Gebruikersnaam<sup style="color:#ff2200;">*</sup></label>
 				</div>
 				<div class="input-field col s6">
-					<input id="email" type="email" class="validate" ngModel name="email" required>
+					<input id="email" [(ngModel)]="createUserModel.email" type="email" class="validate"  name="email" required>
 					<label for="email">Email<sup style="color:#ff2200;">*</sup></label>
 				</div>
 			</div>
 			<div class="row">
-				<div class="input-field col s6">
-					<input title="1 - 2 - 3" id="userType" type="number" class="validate" min="0" step="1" max="2" ngModel name="userType" required>
-					<label for="userType">ToegangsLevel<sup style="color: #ff2200;">*</sup></label>
-					<!--<select name="userTypeUser1">
-						<option value="" disabled selected>Kies gebruikerstype</option>
-						<option value="0">Admininstrator</option>
-						<option value="1">Zorgkundige</option>
-						<option value="2">Aandachtspersoon</option>
-						<option value="2">Familielid</option>
-					</select>-->
+				<div class="input-field col s12">
+					
+					<angular2-multiselect [data]="userTypes" 
+					[(ngModel)]="createUserModel.usertypeModel"
+					(onSelect)="SelectCreateType($event)"
+
+                      [settings]="settings" >
+					</angular2-multiselect>
 				</div>
-				<div class="input-field col s6">
-					<ol><li>ADMIN = 0</li><li>ZORGKUNDIGE = 1</li><li>AANDACHTSPERSOON/FAMILIELID = 2</li></ol>
-				</div>
+				
 			</div>
 
 			<div class="row">
 				<div class="input-field col s6">
-					<input id="password" type="password" class="validate" [(ngModel)]="password" name="password1" required>
+					<input [(ngModel)]="createUserModel.userPassword" id="password" type="password" class="validate" [(ngModel)]="password" name="password1" required>
 					<label for="password">Wachtwoord<sup style="color:#ff2200;">*</sup></label>
 				</div>
 				<div class="input-field col s6">
-					<input id="password-check" type="password" class="validate" [(ngModel)]="passwordcheck" name="password-check" required>
+					<input id="password-check" [(ngModel)]="createUserModel.verPassword" type="password" class="validate" [(ngModel)]="passwordcheck" name="password-check" required>
 					<label for="password-check">Wachtwoord<sup style="color:#ff2200;">*</sup></label>
 				</div>
 			</div>
@@ -125,18 +130,18 @@
 				<button class="btn waves-effect waves-light green lighten-1"
 				type="submit"
 				name="action"
-				[disabled]="!f.valid" (click)="validatePassword()">
+				(click)="createUser()">
 				Toevoegen
 				<i class="material-icons right">send</i>
 				</button>
-				<a (click)="resetForm(f)"
+				<a (click)="resetForm()"
 				class="btn waves-effect waves-light red lighten-1 modal-action modal-close">
 				Annuleren
 				<i class="material-icons right">cancel</i>
 				</a>
 			</div>
 
-		</form>
+		</div>
 	</div>
 </div>
 
@@ -146,4 +151,29 @@
 	<a class="btn-floating btn-large red" (click)="openAddUserModal()">
 		<i class="large material-icons">person_add</i>
 	</a>
+</div>
+
+
+<div id="deleteModalUser" class="modal">
+	<div class="modal-content">
+		<h5 class="valign-wrapper" style="color:crimson"><i class="material-icons red-text pointer">warning</i>Waarschuwing
+		</h5>
+		<p>
+			<strong>Let op!</strong> U staat op het punt <strong class="attention">{{userModal.userName}}
+			</strong> te verwijderen!<br>
+			Bent u zeker?
+		</p>
+	</div>
+	<div class="modal-footer">
+		<button class="btn modal-action modal-close waves-effect waves-red btn-flat red lighten-1 white-text"
+				(click)="deleteUser(userModal.id)">
+			Verwijder
+			<i class="material-icons red lighten-1 white-text right">remove_circle</i>
+		</button>
+		<button class="btn modal-action modal-close waves-effect waves-green btn-flat blue lighten-1 white-text"
+				(click)="closeModal()">
+			Annuleer
+			<i class="material-icons right">cancel</i>
+		</button>
+	</div>
 </div>

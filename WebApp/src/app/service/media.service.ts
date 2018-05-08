@@ -24,6 +24,7 @@ export class MediaService {
     let mediaType = await this.service.getCorrectMediaOfResidentBasedOnId(id, media);
     for (const a of mediaType) {
       const url2 = this.url + a.id + '/file';
+      const url3 = this.url + a.id + '/file';
       const fullLinks = new Resident();
 
       if (media === '/images') {
@@ -33,6 +34,13 @@ export class MediaService {
       } else if (media === '/videos') {
         fullLinks.videos.id = a.id;
         fullLinks.videos.url = url2;
+        this.fullLinks.push(fullLinks);
+      }
+      else if(media === '/music'){
+        fullLinks.music.id = a.id;
+        fullLinks.music.url = url3 + "." + a.extension;
+        fullLinks.music.extension = a.extension;
+        fullLinks.music.title = a.title;
         this.fullLinks.push(fullLinks);
       }
     }

@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ContentModelStore">
+    <e p="C:\Users\sanli\.Rider2017.3\system\resharper-host\local\Transient\ReSharperHost\v11\SolutionCaches\_ModuleSettingsEditor.257949536.00" t="ExcludeRecursive" />
+    <e p="C:\Users\sanli\Documents\Wandelparcours\ModuleSettingsEditor" t="IncludeFlat">
+      <e p="ModuleSettingsEditor\ModuleSettingsEditor.csproj" t="IncludeRecursive" />
+      <e p="ModuleSettingsEditor.sln" t="IncludeFlat" />
+      <e p="ModuleSettingsEditor.WPF" t="IncludeRecursive">
+        <e p="App.config" t="Include" />
+        <e p="App.xaml" t="Include" />
+        <e p="App.xaml.cs" t="Include" />
+        <e p="bin" t="ExcludeRecursive" />
+        <e p="Bootstrapper.cs" t="Include" />
+        <e p="CustomStyles.xaml" t="Include" />
+        <e p="Helpers" t="Include">
+          <e p="ColorUtilities.cs" t="Include" />
+          <e p="Converters" t="Include">
+            <e p="ColorToSolidColorBrushConverter.cs" t="Include" />
+            <e p="MinusConverter.cs" t="Include" />
+          </e>
+          <e p="Events" t="Include">
+            <e p="CloseDialogEvent.cs" t="Include" />
+          </e>
+          <e p="Extensions" t="Include">
+            <e p="ObjectExtensions.cs" t="Include" />
+            <e p="StringExtensions.cs" t="Include" />
+          </e>
+          <e p="HsvColor.cs" t="Include" />
+          <e p="IPValidationRule.cs" t="Include" />
+        </e>
+        <e p="icon.ico" t="Include" />
+        <e p="MaterialDesign.xaml" t="Include" />
+        <e p="Models" t="Include">
+          <e p="Settings.cs" t="Include" />
+        </e>
+        <e p="ModuleSettingsEditor.WPF.csproj" t="IncludeRecursive" />
+        <e p="obj" t="ExcludeRecursive" />
+        <e p="packages.config" t="Include" />
+        <e p="Properties" t="Include">
+          <e p="AssemblyInfo.cs" t="Include" />
+          <e p="Resources.Designer.cs" t="Include" />
+          <e p="Resources.resx" t="Include" />
+          <e p="Settings.Designer.cs" t="Include" />
+          <e p="Settings.settings" t="Include" />
+        </e>
+        <e p="Services" t="Include">
+          <e p="FileService.cs" t="Include" />
+          <e p="IFileService.cs" t="Include" />
+        </e>
+        <e p="ViewModelInterfaces" t="Include">
+          <e p="IMainWindowViewModel.cs" t="Include" />
+          <e p="ISelectDriveViewModel.cs" t="Include" />
+        </e>
+        <e p="ViewModels" t="Include">
+          <e p="MainWindowViewModel.cs" t="Include" />
+          <e p="SelectDriveViewModel.cs" t="Include" />
+        </e>
+        <e p="Views" t="Include">
+          <e p="ColorPicker" t="Include">
+            <e p="ColorPicker.cs" t="Include" />
+            <e p="ColorSpectrumSlider.cs" t="Include" />
+          </e>
+          <e p="MainWindow.xaml" t="Include" />
+          <e p="MainWindow.xaml.cs" t="Include" />
+          <e p="NumericTextBox" t="Include">
+            <e p="NumericTextBox.cs" t="Include" />
+            <e p="NumericTextBoxChangedRoutedEventArgs.cs" t="Include" />
+            <e p="NumericTextBoxChangedRoutedEventHandler.cs" t="Include" />
+          </e>
+          <e p="SelectDrive.xaml" t="Include" />
+          <e p="SelectDrive.xaml.cs" t="Include" />
+          <e p="Styles" t="Include">
+            <e p="ColorPicker.xaml" t="Include" />
+            <e p="ColorSpectrumSlidere.xaml" t="Include" />
+            <e p="NumericTextBox.xaml" t="Include" />
+            <e p="TextBlockStyles.xaml" t="Include" />
+          </e>
+        </e>
+      </e>
+      <e p="packages" t="ExcludeRecursive" />
+    </e>
+  </component>
+</project>
