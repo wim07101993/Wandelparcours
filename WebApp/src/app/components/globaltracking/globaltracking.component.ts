@@ -1,4 +1,4 @@
-import {Component, OnInit, ElementRef} from '@angular/core';
+import {Component, OnInit, ElementRef, OnDestroy} from '@angular/core';
 import {Point} from "../../helpers/MouseEvents"
 import {Station} from "../../models/station"
 import {Sprites} from "../../helpers/Sprites"
@@ -6,6 +6,7 @@ import {RestServiceService} from "../../service/rest-service.service"
 import {ARenderComponent} from "../../helpers/ARenderComponent"
 import {getBaseUrl} from "../../app.module.browser";
 import {Resident} from '../../models/resident';
+import {ActivatedRoute} from '@angular/router';
 declare var $: any;
 declare var Materialize: any;
 
@@ -16,7 +17,7 @@ declare var $: any;
   templateUrl: './globaltracking.component.html',
   styleUrls: ['./globaltracking.component.css']
 })
-export class GlobaltrackingComponent extends ARenderComponent implements OnInit {
+export class GlobaltrackingComponent extends ARenderComponent implements OnInit,OnDestroy {
 
   position: Point;
   collidingElement: any;
@@ -32,11 +33,13 @@ export class GlobaltrackingComponent extends ARenderComponent implements OnInit 
   residents = new Map<string, Resident>();
   aResidents = new Array();
   zones= new Array();
+
+  loadResidentsInterval:any;
   /**
    * Creating stationmanagement page.
    * @param {RestServiceService} service  - A constructer injected service holding the service for rest connection
    */
-  constructor(private service: RestServiceService, protected elRef: ElementRef) {
+  constructor(private service: RestServiceService, protected elRef: ElementRef,private route: ActivatedRoute) {
     super();
     this.hostElement = this.elRef
   }
@@ -46,19 +49,37 @@ export class GlobaltrackingComponent extends ARenderComponent implements OnInit 
   }
 
   async ngOnInit() {
+    
     super.ngOnInit();
     await setTimeout(async () => {
       await this.service.LoadStations(this);
     }, 100);
+    this.checkId();
+    console.log("id "+this.id);
     await this.loadResidents();
     //this.markerscale = 50;
-    setInterval(() => {
+    this.loadResidentsInterval= setInterval(() => {
       this.loadResidents();
     }, 5000);
   }
+
+  checkId(){
+    try {
+      this.id=this.route.snapshot.params['id'];
+    } catch (error) {
+      
+    }
+  }
+
+  ngOnDestroy(){
+    clearInterval(this.loadResidentsInterval);
+    clearInterval(this.tickInterval);
+    this.id=undefined;
+  }
+
   async loadResidents() {
     let loaded: any;
-    if (this.id == undefined) {
+    if (window.location.pathname.indexOf("resident")==-1) {
       loaded = await this.service.getAllResidentsWithAKnownLastLocation();
     } else {
       loaded = await this.service.getOneResidentWithAKnownLastLocation(this.id);
@@ -87,12 +108,12 @@ export class GlobaltrackingComponent extends ARenderComponent implements OnInit 
             this.aResidents[zone].push(resident);
 
         });
-        console.log(this.aResidents);
+        
       } catch (e) {
       }
 
     }
-    console.log(this.residents);
+
   }
   async Tick() {
     super.Tick();
@@ -100,6 +121,7 @@ export class GlobaltrackingComponent extends ARenderComponent implements OnInit 
       await this.RecalculateStations();
     } catch (ex) {
       console.log(ex);
+
     }
   }
 
@@ -129,6 +151,7 @@ export class GlobaltrackingComponent extends ARenderComponent implements OnInit 
       this.renderBuffer.cursorStation.x = -99999;
       this.renderBuffer.cursorStation.y = -99999;
       console.log(this.renderBuffer.cursorStation);
+
       return true;
     } catch (e) {
       return false;

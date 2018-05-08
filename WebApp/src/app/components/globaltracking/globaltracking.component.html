@@ -1,11 +1,11 @@
 <div  class="users" style="position:relative">
-  <div id="menuButton" (click)="menu=!menu;">
+  <div *ngIf="id==undefined" id="menuButton" (click)="menu=!menu;">
     <a class="btn-floating waves-effect indigo lighten-4  z-depth-3">
       <i class="large material-icons " *ngIf="!menu">menu</i>
       <i class="large material-icons " *ngIf="menu">close</i>
     </a>
   </div>
-  <div id="sideBar" *ngIf="menu" class="indigo lighten-4  z-depth-3">
+  <div   id="sideBar" *ngIf="menu && id==undefined" class="indigo lighten-4  z-depth-3">
     <div>
       <ul>
         <li *ngFor="let zone of zones">

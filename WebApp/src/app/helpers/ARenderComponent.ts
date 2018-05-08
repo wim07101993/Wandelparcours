@@ -19,7 +19,7 @@ export abstract class ARenderComponent {
   private _width: number;
   private _height: number;
   private amountSizeCalculations = 0;
-
+  tickInterval:any;
   public abstract LoadComponent(): Promise<boolean>;
 
   public abstract spriteClicked(id?: string): Promise<boolean>;
@@ -49,7 +49,7 @@ export abstract class ARenderComponent {
     await this.LoadComponent();
     await this.renderer.CleanAndUpdateRenderBuffer();
     //load marker
-    setInterval(() => {
+    this.tickInterval= setInterval(() => {
       this.Tick()
     }, 1000 / this.framerate);
   }

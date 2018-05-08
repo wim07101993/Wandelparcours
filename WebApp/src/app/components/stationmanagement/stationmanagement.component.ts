@@ -1,4 +1,4 @@
-import {Component, OnInit, ElementRef} from '@angular/core';
+import {Component, OnInit, ElementRef,OnDestroy} from '@angular/core';
 import {Point} from "../../helpers/MouseEvents"
 import {Station} from "../../models/station"
 import {Sprites} from "../../helpers/Sprites"
@@ -17,7 +17,7 @@ declare var Materialize: any;
 
 
 /** Class representing stationmanagement page. */
-export class StationmanagementComponent extends ARenderComponent implements OnInit {
+export class StationmanagementComponent extends ARenderComponent implements OnInit , OnDestroy{
   position: Point;
   collidingElement: any;
   saveStation: Station = new Station();
@@ -36,6 +36,10 @@ export class StationmanagementComponent extends ARenderComponent implements OnIn
   constructor(private service: RestServiceService, protected elRef: ElementRef) {
     super();
     this.hostElement = this.elRef
+  }
+
+  ngOnDestroy(){
+    clearInterval(this.tickInterval);
   }
 
   get markerUrl() {

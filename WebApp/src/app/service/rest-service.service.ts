@@ -279,7 +279,6 @@ export class RestServiceService {
                 }
             }
         }
-        console.log(retValue);
         return retValue;
       }catch (e) {
           console.log('Errormessage: '+ e.toString());
