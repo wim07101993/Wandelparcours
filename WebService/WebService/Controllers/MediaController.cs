@@ -75,9 +75,6 @@ namespace WebService.Controllers
                     isResponsible = true;
                     break;
                 case EUserType.Nurse:
-                    var residentRoom = await _residentsService.GetPropertyAsync(residentId, x => x.Room);
-                    isResponsible = new Regex($@"^{residentRoom}[0-9]*$").IsMatch(user.Group);
-                    break;
                 case EUserType.User:
                     isResponsible = user.Residents.Contains(residentId);
                     break;
@@ -97,7 +94,7 @@ namespace WebService.Controllers
 
         #region read
 
-        [Authorize(EUserType.Module, EUserType.SysAdmin, EUserType.User, EUserType.User)]
+        [Authorize(EUserType.Module, EUserType.SysAdmin, EUserType.Nurse, EUserType.User)]
         [HttpGet(Routes.Media.GetOneFileWithExtension)]
         public async Task<FileContentResult> GetOneAsync(string id, string extension, [FromQuery] string token)
         {
@@ -114,7 +111,7 @@ namespace WebService.Controllers
             return File(data, $"{mediaType.ToString().ToLower()}/{extension}");
         }
 
-        [Authorize(EUserType.Module, EUserType.SysAdmin, EUserType.User, EUserType.User)]
+        [Authorize(EUserType.Module, EUserType.SysAdmin, EUserType.Nurse, EUserType.User)]
         [HttpGet(Routes.Media.GetFile)]
         public async Task<FileContentResult> GetFileAsync(string id, [FromQuery] string token)
         {

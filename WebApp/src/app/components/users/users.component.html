@@ -67,38 +67,38 @@
 	<div class="modal-content">
 		<h5>Een nieuw gebruiker toevoegen</h5>
 
-		<form class="col s12" (ngSubmit)="createUser(f)" #f="ngForm">
+		<div class="col s12">
 
 			<div class="row">
 				<div class="input-field col s6">
-					<input id="userName" type="text" class="validate" ngModel name="userName" required>
+					<input id="userName" [(ngModel)]="createUserModel.userName"  type="text" class="validate"  name="userName" required>
 					<label for="userName">Gebruikersnaam<sup style="color:#ff2200;">*</sup></label>
 				</div>
 				<div class="input-field col s6">
-					<input id="email" type="email" class="validate" ngModel name="email" required>
+					<input id="email" [(ngModel)]="createUserModel.email" type="email" class="validate"  name="email" required>
 					<label for="email">Email<sup style="color:#ff2200;">*</sup></label>
 				</div>
 			</div>
 			<div class="row">
-				<div class="col s12">
-						<!--<input name="group1" type="radio" id="test1" checked/>
-						<label for="test1">Admin</label>
-						<input name="group1" type="radio" id="test2" />
-						<label for="test2">Zorgkundige</label>
-						<input class="with-gap" name="group1" type="radio" id="test3"  />
-						<label for="test3">Aandachtspersoon of familielid</label> -->
-					<input title="1 - 2 - 3" id="userType" type="number" class="validate" min="0" step="1" max="2" ngModel name="userType" required>
-					<label for="userType">ToegangsLevel<sup style="color: #ff2200;">*</sup></label>
+				<div class="input-field col s12">
+					
+					<angular2-multiselect [data]="userTypes" 
+					[(ngModel)]="createUserModel.usertypeModel"
+					(onSelect)="SelectCreateType($event)"
+
+                      [settings]="settings" >
+					</angular2-multiselect>
 				</div>
+				
 			</div>
 
 			<div class="row">
 				<div class="input-field col s6">
-					<input id="password" type="password" class="validate" [(ngModel)]="password" name="password1" required>
+					<input [(ngModel)]="createUserModel.userPassword" id="password" type="password" class="validate" [(ngModel)]="password" name="password1" required>
 					<label for="password">Wachtwoord<sup style="color:#ff2200;">*</sup></label>
 				</div>
 				<div class="input-field col s6">
-					<input id="password-check" type="password" class="validate" [(ngModel)]="passwordcheck" name="password-check" required>
+					<input id="password-check" [(ngModel)]="createUserModel.verPassword" type="password" class="validate" [(ngModel)]="passwordcheck" name="password-check" required>
 					<label for="password-check">Wachtwoord<sup style="color:#ff2200;">*</sup></label>
 				</div>
 			</div>
@@ -130,18 +130,18 @@
 				<button class="btn waves-effect waves-light green lighten-1"
 				type="submit"
 				name="action"
-				[disabled]="!f.valid" (click)="validatePassword()">
+				(click)="createUser()">
 				Toevoegen
 				<i class="material-icons right">send</i>
 				</button>
-				<a (click)="resetForm(f)"
+				<a (click)="resetForm()"
 				class="btn waves-effect waves-light red lighten-1 modal-action modal-close">
 				Annuleren
 				<i class="material-icons right">cancel</i>
 				</a>
 			</div>
 
-		</form>
+		</div>
 	</div>
 </div>
 

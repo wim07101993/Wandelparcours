@@ -38,7 +38,14 @@ namespace WebService.Services.Data.Mongo
                 throw new ArgumentNullException(nameof(data));
 
             var mediaId = ObjectId.GenerateNewId();
-            await _mediaService.CreateAsync(new MediaData {Id = mediaId, Data = data, Extension = extension});
+            await _mediaService.CreateAsync(
+                new MediaData
+                {
+                    Id = mediaId,
+                    Data = data,
+                    Extension = extension,
+                    OwnerId = residentId
+                });
 
             await AddMediaAsync(
                 residentId,
@@ -54,27 +61,15 @@ namespace WebService.Services.Data.Mongo
             await AddMediaAsync(residentId, new MediaUrl {Id = ObjectId.GenerateNewId(), Url = url}, mediaType);
         }
 
-        public async Task<IEnumerable<Resident>> GetAllInGroup(string group,
-            IEnumerable<Expression<Func<Resident, object>>> propertiesToInclude = null)
-        {
-            var filter = Builders<Resident>.Filter
-                .Regex(x => x.Room, new BsonRegularExpression(new Regex($@"^{group} ?[0-9]+ ?[A-z]*$")));
-
-            return group == null
-                ? null
-                : await MongoCollection
-                    .Find(filter)
-                    .Select(propertiesToInclude)
-                    .ToListAsync();
-        }
-
         public async Task<IEnumerable<Resident>> GetMany(IEnumerable<ObjectId> objectIds,
             IEnumerable<Expression<Func<Resident, object>>> propertiesToInclude = null)
         {
+            var filter = Builders<Resident>.Filter.In(x => x.Id, objectIds);
+
             return objectIds == null
                 ? null
                 : await MongoCollection
-                    .Find(x => objectIds.Any(y => y == x.Id))
+                    .Find(filter)
                     .Select(propertiesToInclude)
                     .ToListAsync();
         }
