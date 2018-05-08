@@ -45,7 +45,7 @@ namespace WebService.Controllers
             private const string MacAddressRegex = @"^([[A-f0-9]]{{2}}[[:-\\.]]){{5}}[[A-f0-9]]{{2}}$";
             // unused
             private const string ByMac = "{mac:regex(" + MacAddressRegex + ")}";
-            private const string ByName = "bytName/{name}";
+            private const string ByName = "byName/{name}";
 
             public const string GetOneByName = ByName;
             public const string DeleteByName = ByName;

@@ -5,7 +5,7 @@ import {Sprites} from "../../helpers/Sprites"
 import {RestServiceService} from "../../service/rest-service.service"
 import {ARenderComponent} from "../../helpers/ARenderComponent"
 import {getBaseUrl} from "../../app.module.browser";
-
+import {Resident} from '../../models/resident';
 declare var $: any;
 declare var Materialize: any;
 
@@ -21,14 +21,17 @@ export class GlobaltrackingComponent extends ARenderComponent implements OnInit 
   position: Point;
   collidingElement: any;
   saveStation: Station = new Station();
-  menu: boolean = false;
+  menu: boolean = true;
   stations = new Map<string, Point>();
   stationsIds = new Map<string, string>();
   stationMacAdresses: string[] = [];
 
   editing = false;
   editmac: string;
-
+  id: string;
+  residents = new Map<string, Resident>();
+  aResidents = new Array();
+  zones= new Array();
   /**
    * Creating stationmanagement page.
    * @param {RestServiceService} service  - A constructer injected service holding the service for rest connection
@@ -47,8 +50,50 @@ export class GlobaltrackingComponent extends ARenderComponent implements OnInit 
     await setTimeout(async () => {
       await this.service.LoadStations(this);
     }, 100);
+    await this.loadResidents();
+    //this.markerscale = 50;
+    setInterval(() => {
+      this.loadResidents();
+    }, 5000);
   }
+  async loadResidents() {
+    let loaded: any;
+    if (this.id == undefined) {
+      loaded = await this.service.getAllResidentsWithAKnownLastLocation();
+    } else {
+      loaded = await this.service.getOneResidentWithAKnownLastLocation(this.id);
+      if (typeof loaded === 'boolean') {
+        return;
+  
+        } else {
+          loaded=[loaded];
+        }
+      }
+    if (typeof loaded === 'boolean') {
+      return;
 
+    } else {
+      try {
+        let control: string[] = new Array();
+        this.aResidents = [];
+        this.zones=[];
+        loaded.forEach((resident: Resident) => {
+          let zone =resident.lastRecordedPosition.name;
+          if(this.aResidents[zone]==undefined){
+            this.aResidents[zone]=new Array();
+            this.zones.push(zone);
+          }
+            
+            this.aResidents[zone].push(resident);
+
+        });
+        console.log(this.aResidents);
+      } catch (e) {
+      }
+
+    }
+    console.log(this.residents);
+  }
   async Tick() {
     super.Tick();
     try {

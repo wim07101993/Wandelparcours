@@ -10,7 +10,7 @@ socket.on("scan", async ()=>{
     var scanned = await scan();
     console.log(scanned);
     console.log("testing");
-    socket.emit("scanned",{beacons:scanned,mac:mac(),name:settings.name}); 
+    socket.emit("scanned",{beacons:scanned,mac:mac(),name:settings.Name}); 
 })
 
 

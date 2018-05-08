@@ -111,6 +111,12 @@ export abstract class ARenderComponent {
   }
 
 
+  async Reset(){
+    this.mouseEvents.position.x=0;
+    this.mouseEvents.position.y=0;
+    this.zoomFactor=1;
+  }
+
   /*
    *   this function is needed to zoomin
    */

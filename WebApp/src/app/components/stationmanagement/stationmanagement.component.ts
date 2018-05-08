@@ -195,7 +195,9 @@ export class StationmanagementComponent extends ARenderComponent implements OnIn
   *   This function will send request to the rest to delete station
   */
   async DeleteCurrentStation() {
+    
     await this.service.DeleteStation(this.collidingElement);
+    
     await this.service.LoadStations(this);
     setTimeout(()=>{
         $("#deleteModal").modal("close");
@@ -208,20 +210,16 @@ export class StationmanagementComponent extends ARenderComponent implements OnIn
   async SaveNewStation() {
     let mac = this.saveStation.mac;
     let length = mac.length;
-    if (length > 15 && length < 20 && mac.split(":").length == 6) {
-      await this.service.SaveStationToDatabase(this.saveStation);
-      await this.service.LoadStations(this);
-      this.saveStation = new Station();
-      $("#markerModel").modal("close");
-      this.adMarker = false;
-    } else {
-      Materialize.toast('Station adres verkeerd', 4000);
-    }
+    await this.service.SaveStationToDatabase(this.saveStation);
+    await this.service.LoadStations(this);
+    this.saveStation = new Station();
+    $("#markerModel").modal("close");
+    this.adMarker = false;
 
   }
 
   ShowEditBox() {
     this.editmac = (' ' + this.collidingElement).slice(1);
-    this.editing = !this.editing
+    this.editing = !this.editing;
   }
 }

@@ -39,6 +39,7 @@ namespace WebService.Controllers
                 {nameof(ReceiverModule.Id), x => x.Id},
                 {nameof(ReceiverModule.IsActive), x => x.IsActive},
                 {nameof(ReceiverModule.Position), x => x.Position},
+                {nameof(ReceiverModule.Name), x => x.Name}
             };
 
         #endregion PROPERTIES
