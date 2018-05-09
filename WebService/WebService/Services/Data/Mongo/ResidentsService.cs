@@ -212,10 +212,10 @@ namespace WebService.Services.Data.Mongo
             return resident;
         }
 
-        public async Task RemoveSubItemAsync(ObjectId residentId,
-            Expression<Func<Resident, IEnumerable<object>>> selector, object item)
+        public async Task RemoveColor(ObjectId residentId, Color color)
         {
-            var updater = Builders<Resident>.Update.PullFilter(selector, x => x == item);
+            var updater = Builders<Resident>.Update
+                .PullFilter(x => x.Colors, x => x.R == color.R && x.G == color.G && x.B == color.B);
             var resident = await MongoCollection.FindOneAndUpdateAsync(x => x.Id == residentId, updater);
 
             if (resident == null)

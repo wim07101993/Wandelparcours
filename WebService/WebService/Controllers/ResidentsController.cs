@@ -424,7 +424,7 @@ namespace WebService.Controllers
         {
             if (propertyName == nameof(Resident.LastRecordedPosition))
                 throw new NotFoundException();
-            
+
             await CanWriteDataToResidentAsync(id);
             await base.UpdatePropertyAsync(id, propertyName, jsonValue);
         }
@@ -505,8 +505,7 @@ namespace WebService.Controllers
         {
             var residentObjectId = await CanWriteDataToResidentAsync(id);
 
-            await ((IResidentsService) DataService)
-                .RemoveSubItemAsync(residentObjectId, x => x.Colors, color);
+            await ((IResidentsService) DataService).RemoveColor(residentObjectId, color);
         }
 
         [Authorize(EUserType.Nurse)]
