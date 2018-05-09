@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Serialization;
 using WebService.Helpers.Extensions;
+using WebService.Helpers.JsonConverters;
 using WebService.Middleware;
 using WebService.Services.Data;
 
@@ -31,6 +32,8 @@ namespace WebService
                 .AddJsonOptions(
                     options =>
                     {
+                        options.SerializerSettings.Converters.Add(new ObjectIdConverter());
+                        options.SerializerSettings.Converters.Add(new ObjectIdListConverter());
                         options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
                     });
         }
