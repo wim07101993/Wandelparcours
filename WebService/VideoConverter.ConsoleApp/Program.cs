@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 
 namespace VideoConverter.ConsoleApp
 {
@@ -10,27 +9,38 @@ namespace VideoConverter.ConsoleApp
 
         private static void Main(string[] param)
         {
-            new VideoConverter().ConvertToWebm(
-                File.Open("/home/wim/Downloads/mp4/small.mp4", FileMode.Open, FileAccess.Read), "mp4");
-            Environment.Exit(0);
-            
             ConvertParams(param);
 
-            if (_programParameters != null && _programParameters.ContainsKey("help"))
+//            using (var video = new VideoConverter()
+//                .ConvertToWebm(new Video("/home/wim/Downloads/mp4/small.mp4")))
+//            {
+//                video.WriteToFile("/home/wim/Downloads/mp4/small.webm");
+//            }
+//
+//            Environment.Exit(0);
+
+            ConvertVideo();
+        }
+
+        private static void ConvertVideo()
+        {
+            if (_programParameters == null)
+            {
+                Console.WriteLine("Please enter an input and output");
+                return;
+            }
+
+            if (_programParameters.ContainsKey("help"))
                 PrintHelp();
 
-            var converter = _programParameters == null
-                ? new Converter()
-                : new Converter
-                {
-                    InputPath = _programParameters["input"],
-                    OutputPath = _programParameters["output"],
-                    InputExtension = _programParameters.ContainsKey("extension")
-                        ? _programParameters["extension"]
-                        : null
-                };
-
-            converter.Convert();
+            if (!_programParameters.ContainsKey("input"))
+                Console.WriteLine("Please specify an input");
+            else if (!_programParameters.ContainsKey("output"))
+                Console.WriteLine("Please specify an output. For help type -h or --help");
+            else
+                new VideoConverter()
+                    .ConvertToWebm(new Video(_programParameters["input"]), _programParameters["output"])
+                    .Dispose();
         }
 
         private static void ConvertParams(IReadOnlyList<string> param)
@@ -40,7 +50,9 @@ namespace VideoConverter.ConsoleApp
                 _programParameters = null;
                 return;
             }
-
+            
+            _programParameters = new Dictionary<string, string>();
+            
             for (var i = 0; i < param.Count; i++)
             {
                 if (param[i][0] != '-' || param[i].Length < 2)
@@ -59,9 +71,6 @@ namespace VideoConverter.ConsoleApp
         {
             switch (param)
             {
-                case "-e":
-                case "-extension":
-                    return "extension";
                 case "-h":
                 case "-help":
                     return "help";
@@ -83,8 +92,7 @@ namespace VideoConverter.ConsoleApp
         private static void PrintHelp()
         {
             Console.WriteLine(
-                "-e\t--extension\tThe extension of the input file\n"
-                + "-h\t--help\tPrint help\n"
+                "-h\t--help\tPrint help\n"
                 + "-i\t--input\tThe input file\n"
                 + "-o\t--output\tThe output file");
         }

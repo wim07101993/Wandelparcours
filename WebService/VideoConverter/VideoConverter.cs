@@ -9,41 +9,74 @@ namespace VideoConverter
         private const string FilesDirectory = "files_to_convert";
 
 
-        public Stream ConvertToWebm(Stream input, string extension)
+        public Video ConvertToWebm(Video input, string outputPath = null)
         {
-            if (extension == "webm")
-                return input;
+            if (string.IsNullOrWhiteSpace(outputPath))
+                return Convert(input, "webm");
 
-            if (!Directory.Exists(FilesDirectory))
-                Directory.CreateDirectory(FilesDirectory);
+            var newFilePath = outputPath.EndsWith(".webm")
+                ? outputPath
+                : $"{outputPath}.webm";
+            return ConvertToFile(input, newFilePath);
+        }
 
-            var now = DateTime.Now;
-            var fileName = $"{now.Year}.{now.Month}.{now.Day}.{now.Hour}.{now.Minute}.{now.Second}.{now.Millisecond}";
-            var oldFilePath = $"{FilesDirectory}/{fileName}.{extension}";
-            var newFilePath = $"{FilesDirectory}/{fileName}.webm";
+        public Video ConvertToFile(Video input, string outputPath)
+        {
+            Convert(GetVideoPath(input), outputPath);
 
-            var oldFileStream = File.Create(oldFilePath);
-            using (input)
-            using (oldFileStream)
+            return new Video(outputPath);
+        }
+
+        public Video Convert(Video input, string extension)
+        {
+            CreateFilesDirectoryIfNotExists();
+            var newFilePath = $"{FilesDirectory}/{GenerateFileName()}.{extension}";
+
+            Convert(GetVideoPath(input), newFilePath);
+
+            return new Video(newFilePath) {DeleteOnDispose = true};
+        }
+
+        private static string GetVideoPath(Video video)
+        {
+            var fileName = GenerateFileName();
+
+            using (video)
             {
-                input.CopyTo(oldFileStream);
-            }
+                if (video.FilePath != null)
+                    return video.FilePath;
 
-            var vlcProcess = new Process
+                CreateFilesDirectoryIfNotExists();
+                var path = $"{FilesDirectory}/{fileName}";
+                video.WriteToFile(path);
+                return path;
+            }
+        }
+
+        private static void Convert(string source, string destination)
+        {
+            var process = new Process
             {
                 StartInfo = new ProcessStartInfo
                 {
                     FileName = "ffmpeg",
-                    Arguments = $"-i \"{oldFilePath}\" \"{newFilePath}\""
+                    Arguments = $"-i \"{source}\" \"{destination}\""
                 }
             };
+            process.Start();
+            process.WaitForExit();
+        }
 
-            vlcProcess.Start();
-            vlcProcess.WaitForExit();
+        private static string GenerateFileName()
+        {
+            var now = DateTime.Now;
+            return $"{now.Year}.{now.Month}.{now.Day}.{now.Hour}.{now.Minute}.{now.Second}.{now.Millisecond}";
+        }
 
-            File.Delete(oldFilePath);
-            
-            return File.OpenRead(newFilePath);
+        private static void CreateFilesDirectoryIfNotExists()
+        {
+            if (!Directory.Exists(FilesDirectory))
+                Directory.CreateDirectory(FilesDirectory);
         }
     }
 }
