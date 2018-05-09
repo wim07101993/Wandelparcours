@@ -135,7 +135,7 @@ export class UsersComponent implements OnInit {
 
     /**
      * Opens modal
-     * @param modalResident
+     * @param modalUser
      */
     openModal(user: user) {
         this.userModal = user;
@@ -174,7 +174,18 @@ export class UsersComponent implements OnInit {
         this.getUsers();
     }
 
+    /**
+     * Opens residentToUsermodal
+     */
+    openResToUserModal(){
+        $('#residentToUserModal').modal();
+        $('#residentToUserModal').modal('open');
+    }
+
 }
+
+
+
 
 
 class formUser{
