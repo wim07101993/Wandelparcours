@@ -111,7 +111,7 @@ namespace WebService.Services.Data.Mongo
 
         public async Task<Resident> GetOneAsync(int tag,
             IEnumerable<Expression<Func<Resident, object>>> propertiesToInclude = null)
-            => await GetByAsync(x => x.Tags != null && x.Tags.Contains(tag));
+            => await GetByAsync(x => x.Tags != null && x.Tags.Contains(tag), propertiesToInclude);
 
         public virtual async Task<TValue> GetPropertyAsync<TValue>(int tag,
             Expression<Func<Resident, TValue>> propertyToSelect)
