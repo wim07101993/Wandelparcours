@@ -285,7 +285,7 @@ namespace WebService.Controllers
             if (!ObjectId.TryParse(residentId, out var residentobjectId))
                 throw new NotFoundException<Resident>(nameof(IModelWithID.Id), residentId);
 
-            await ((IUsersService) DataService).RemoveItemFromList(objectId, x => x.Residents, residentobjectId);
+            await DataService.RemoveItemFromList(objectId, x => x.Residents, residentobjectId);
         }
 
         #endregion delete

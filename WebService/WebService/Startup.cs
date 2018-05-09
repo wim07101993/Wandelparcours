@@ -44,11 +44,6 @@ namespace WebService
             databaseManager.ConfigureDB();
             databaseManager.ScheduleCleanup(TimeSpan.FromDays(1));
 
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-            }
-
             app.UseCors(option => option.AllowAnyOrigin().AllowAnyMethod().AllowAnyOrigin().AllowAnyHeader())
                 .UseStaticFiles()
                 .UseExceptionMiddelware()
