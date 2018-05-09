@@ -197,6 +197,9 @@ namespace WebService.Controllers
         [HttpPut(Routes.RestBase.Update)]
         public override async Task UpdateAsync([FromBody] User item, [FromQuery] string[] properties)
         {
+            if (item == null)
+                throw new ArgumentException("the item to update cannot be null");
+            
             switch (await GetPropertyOfCurrentUser(x => x.UserType))
             {
                 case EUserType.SysAdmin:
@@ -223,11 +226,11 @@ namespace WebService.Controllers
                 var propertyList = properties.ToList();
                 propertyList.Remove(x => x.EqualsWithCamelCasing(nameof(Models.User.Password)));
 
-                await base.UpdateAsync(item, properties);
+                await base.UpdateAsync(item, propertyList.ToArray());
             }
 
             var user = await DataService.GetOneAsync(item.Id, PropertiesToSendOnGetAll);
-            user.Password = item.Password;
+            user.Password = item.Password.Hash(user.Id);
             await DataService.UpdatePropertyAsync(user.Id, x => x.Password, user.Password);
         }
 
