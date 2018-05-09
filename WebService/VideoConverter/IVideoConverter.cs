@@ -4,6 +4,6 @@ namespace VideoConverter
 {
     public interface IVideoConverter
     {
-        Stream ConvertToMp4(Stream input, string extension);
+        Stream ConvertToWebm(Stream input, string extension);
     }
 }

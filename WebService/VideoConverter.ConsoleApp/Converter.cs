@@ -123,7 +123,7 @@ namespace VideoConverter.ConsoleApp
                 return;
             }
 
-            var convertedVideo = _videoConverter.ConvertToMp4(input, InputExtension);
+            var convertedVideo = _videoConverter.ConvertToWebm(input, InputExtension);
 
             using (convertedVideo)
             using (output)

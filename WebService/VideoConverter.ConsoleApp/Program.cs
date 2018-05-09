@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 
 namespace VideoConverter.ConsoleApp
 {
@@ -9,6 +10,10 @@ namespace VideoConverter.ConsoleApp
 
         private static void Main(string[] param)
         {
+            new VideoConverter().ConvertToWebm(
+                File.Open("/home/wim/Downloads/mp4/small.mp4", FileMode.Open, FileAccess.Read), "mp4");
+            Environment.Exit(0);
+            
             ConvertParams(param);
 
             if (_programParameters != null && _programParameters.ContainsKey("help"))
