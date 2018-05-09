@@ -165,7 +165,7 @@ namespace WebService.Controllers
 
         #region post (create)
 
-        [Authorize(EUserType.Nurse)]
+        [Authorize(EUserType.SysAdmin)]
         [HttpPost(Routes.RestBase.Create)]
         public override Task<string> CreateAsync([FromBody] Resident item)
         {
