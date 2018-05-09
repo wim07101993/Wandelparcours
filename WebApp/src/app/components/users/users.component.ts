@@ -161,8 +161,7 @@ export class UsersComponent implements OnInit {
         changedProperties.splice((changedProperties.length -1));
         const updateData = this.updateUser;
         delete updateData['usertypeModal'];
-        delete updateData['verPassword'];
-        delete changedProperties['verPassword'];
+
 
         await this.service.updateUser(updateData, changedProperties);
         this.updateUser = <user>{};
