@@ -475,17 +475,17 @@ namespace WebService.Controllers
         public override Task DeleteAsync(string id)
             => base.DeleteAsync(id);
 
-        [Authorize(EUserType.Nurse, EUserType.Module, EUserType.User)]
+        [Authorize(EUserType.Nurse, EUserType.User)]
         [HttpDelete(Routes.Residents.RemoveMusic)]
         public Task RemoveMusicAsync(string id, string musicId)
             => RemoveMediaAsync(id, musicId, EMediaType.Audio);
 
-        [Authorize(EUserType.Nurse, EUserType.Module, EUserType.User)]
+        [Authorize(EUserType.Nurse, EUserType.User)]
         [HttpDelete(Routes.Residents.RemoveVideo)]
         public Task RemoveVideoAsync(string id, string videoId)
             => RemoveMediaAsync(id, videoId, EMediaType.Video);
 
-        [Authorize(EUserType.Nurse, EUserType.Module, EUserType.User)]
+        [Authorize(EUserType.Nurse, EUserType.User)]
         [HttpDelete(Routes.Residents.RemoveImage)]
         public Task RemoveImageAsync(string id, string imageId)
             => RemoveMediaAsync(id, imageId, EMediaType.Image);
@@ -499,7 +499,7 @@ namespace WebService.Controllers
         }
 
 
-        [Authorize(EUserType.Nurse, EUserType.Module, EUserType.User)]
+        [Authorize(EUserType.Nurse, EUserType.User)]
         [HttpDelete(Routes.Residents.RemoveColor)]
         public async Task RemoveColorAsync(string id, [FromBody] Color color)
         {

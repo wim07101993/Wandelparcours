@@ -194,7 +194,14 @@ namespace WebService.Services.Data.Mongo
         private async Task<Resident> RemoveMediaAsync(ObjectId residentId,
             Expression<Func<Resident, IEnumerable<MediaUrl>>> selector, ObjectId mediaId)
         {
-            await _mediaService.RemoveAsync(mediaId);
+            try
+            {
+                await _mediaService.RemoveAsync(mediaId);
+            }
+            catch (NotFoundException)
+            {
+                // IGNORED
+            }
 
             var updater = Builders<Resident>.Update.PullFilter(selector, x => x.Id == mediaId);
             var resident = await MongoCollection.FindOneAndUpdateAsync(x => x.Id == residentId, updater);
