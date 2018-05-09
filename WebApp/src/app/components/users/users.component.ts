@@ -82,7 +82,6 @@ export class UsersComponent implements OnInit {
     passwordcheck: string;
 
     ngOnInit() {
-
         $('select').material_select();
     }
 
@@ -101,7 +100,6 @@ export class UsersComponent implements OnInit {
     }
 
     validatePassword() {
-
         console.log(this.password);
         console.log(this.passwordcheck);
         if (this.password !== this.passwordcheck) {
@@ -130,7 +128,6 @@ export class UsersComponent implements OnInit {
         $('#deleteModalUser').modal();
         $('#deleteModalUser').modal('open');
     }
-
     /**
      * Close modal
      */

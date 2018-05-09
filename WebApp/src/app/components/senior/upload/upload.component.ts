@@ -18,6 +18,8 @@ export class UploadComponent implements OnInit {
   addPicture: string = "/images/data";
   addVideo: string = "/videos/data";
   addMusic: string = "/music/data";
+
+  showLoading: boolean = false;
   @Output() reload = new EventEmitter();
 
   constructor(private restService: RestServiceService, private route: ActivatedRoute) {}
@@ -50,6 +52,8 @@ export class UploadComponent implements OnInit {
    *
    */
   async onUpload() {
+    this.showLoading = true;
+      console.log("Begin")
     for (const file in this.selectedFile) {
       const index = parseInt(file);
       if (!isNaN(index)) {
@@ -68,9 +72,12 @@ export class UploadComponent implements OnInit {
         else{
           alert("Kan geen media uploaden! Probeer later nog eens!");
         }
+
       }
       $("#addMedia").modal("close");
     }
+      console.log("einde");
+      this.showLoading = false;
     //clear selected files
     this.selectedFile = null;
     this.reload.emit();

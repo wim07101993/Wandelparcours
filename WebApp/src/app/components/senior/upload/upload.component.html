@@ -18,6 +18,24 @@
   </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
 
+<!--- loading -->
+<div *ngIf="showLoading" style="background: black; background: rgba(0,0,0,0.5);  position:fixed; z-index: 99999999999; top:0;bottom:0;left:0; right: 0;">
+  <div style="width:100%; font-size:2em; margin-top: 33%; text-align: center; color:white;">Even geduld je media wordt geüpload!!</div>
+  <div style="position: fixed; top:50%; left: 50%; transform: translate(-50%,-50%);">
+    <div class="preloader-wrapper big active">
+      <div class="spinner-layer spinner-blue-only">
+        <div class="circle-clipper left">
+          <div class="circle"></div>
+        </div><div class="gap-patch">
+        <div class="circle"></div>
+      </div><div class="circle-clipper right">
+        <div class="circle"></div>
+      </div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- This will pop up the form to add a resident -->
 <div class="fixed-action-btn">
   <a class="btn-floating btn-large red" (click)="addModal()">

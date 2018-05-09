@@ -273,6 +273,18 @@ namespace WebService.Controllers
             await base.DeleteAsync(id);
         }
 
+        [Authorize(EUserType.SysAdmin)]
+        [HttpDelete(Routes.Users.RemoveResident)]
+        public async Task RemoveResident(string id, string residentId)
+        {
+            if (!ObjectId.TryParse(id, out var objectId))
+                throw new NotFoundException<User>(nameof(IModelWithID.Id), id);
+            if (!ObjectId.TryParse(residentId, out var residentobjectId))
+                throw new NotFoundException<Resident>(nameof(IModelWithID.Id), residentId);
+
+            await ((IUsersService) DataService).RemoveItemFromList(objectId, x => x.Residents, residentobjectId);
+        }
+
         #endregion delete
 
         #endregion METHODS

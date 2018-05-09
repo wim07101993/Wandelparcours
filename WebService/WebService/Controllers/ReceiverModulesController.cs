@@ -45,7 +45,7 @@ namespace WebService.Controllers
         #endregion PROPERTIES
 
 
-        #region METHODS
+        #region METHODS    
 
         #region post (create)
 
@@ -66,6 +66,7 @@ namespace WebService.Controllers
 
         #endregion post (create)
 
+        
         #region get (read)
 
         [Authorize(EUserType.SysAdmin, EUserType.Module, EUserType.Nurse,EUserType.User)]
@@ -75,7 +76,7 @@ namespace WebService.Controllers
 
         [Authorize(EUserType.SysAdmin)]
         [HttpGet(Routes.ReceiverModules.GetOneByName)]
-        public async Task<ReceiverModule> GetOneByMacAsync(string name, [FromQuery] string[] propertiesToInclude)
+        public async Task<ReceiverModule> GetOneByNameAsync(string name, [FromQuery] string[] propertiesToInclude)
         {
             if (name == null)
                 throw new NotFoundException<ReceiverModule>(nameof(ReceiverModule.Mac), null);
@@ -95,11 +96,24 @@ namespace WebService.Controllers
 
         #endregion get (read)
 
+        
+        #region update
+        
+        [Authorize(EUserType.SysAdmin)]
+        [HttpPut(Routes.RestBase.UpdateProperty)]
+        public override Task UpdatePropertyAsync(string id, string propertyName, [FromBody] string jsonValue)
+        {
+            return base.UpdatePropertyAsync(id, propertyName, jsonValue);
+        }
+
+        #endregion update
+        
+        
         #region delete
 
         [Authorize(EUserType.SysAdmin)]
         [HttpDelete(Routes.ReceiverModules.DeleteByName)]
-        public Task DeleteByMacAsync(string name)
+        public Task DeleteByNameAsync(string name)
             => ((IReceiverModulesService) DataService).RemoveAsync(name);
 
         [Authorize(EUserType.SysAdmin)]
@@ -108,13 +122,6 @@ namespace WebService.Controllers
             => base.DeleteAsync(id);
 
         #endregion delete
-
-        [Authorize(EUserType.SysAdmin)]
-        [HttpPut(Routes.RestBase.UpdateProperty)]
-        public override Task UpdatePropertyAsync(string id, string propertyName, [FromBody] string jsonValue)
-        {
-            return base.UpdatePropertyAsync(id, propertyName, jsonValue);
-        }
 
         #endregion METHODS
     }

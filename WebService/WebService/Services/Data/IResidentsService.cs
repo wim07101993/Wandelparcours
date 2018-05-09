@@ -30,7 +30,6 @@ namespace WebService.Services.Data
 
         Task RemoveMediaAsync(ObjectId residentId, ObjectId mediaId, EMediaType mediaType);
 
-        Task RemoveSubItemAsync(ObjectId residentId, Expression<Func<Resident, IEnumerable<object>>> selector,
-            object item);
+        Task RemoveColor(ObjectId residentId, Color color);
     }
 }
