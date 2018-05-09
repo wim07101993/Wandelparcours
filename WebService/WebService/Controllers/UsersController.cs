@@ -193,7 +193,7 @@ namespace WebService.Controllers
 
         #region update
 
-        [Authorize(EUserType.SysAdmin, EUserType.Nurse, EUserType.User)]
+        [Authorize(EUserType.Nurse, EUserType.User)]
         [HttpPut(Routes.RestBase.Update)]
         public override async Task UpdateAsync([FromBody] User item, [FromQuery] string[] properties)
         {
@@ -231,7 +231,7 @@ namespace WebService.Controllers
             await DataService.UpdatePropertyAsync(user.Id, x => x.Password, user.Password);
         }
 
-        [Authorize(EUserType.SysAdmin, EUserType.Nurse, EUserType.User)]
+        [Authorize(EUserType.Nurse, EUserType.User)]
         [HttpPut(Routes.RestBase.UpdateProperty)]
         public override async Task UpdatePropertyAsync(string id, string propertyName, [FromQuery] string jsonValue)
         {
