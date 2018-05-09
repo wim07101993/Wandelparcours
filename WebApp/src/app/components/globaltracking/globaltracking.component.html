@@ -11,7 +11,7 @@
         <li *ngFor="let zone of zones">
             <h4> Zone {{zone}}</h4>
             <ul>
-              <li *ngFor="let resident of aResidents[zone]">{{resident.firstName}}</li>
+              <li *ngFor="let resident of aResidents[zone]">{{resident.firstName}} {{resident.lastName}}</li>
             </ul>
         </li>
 
