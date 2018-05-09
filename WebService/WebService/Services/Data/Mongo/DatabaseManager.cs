@@ -69,6 +69,7 @@ namespace WebService.Services.Data.Mongo
         {
             await RemoveMediaWithNonExistingResident();
             await RemoveUnKnownMedia();
+            await RemoveNonExistingResidentsFromUsers();
         }
 
         private async Task RemoveMediaWithNonExistingResident()
@@ -78,8 +79,6 @@ namespace WebService.Services.Data.Mongo
                 .Project(x => x.Id)
                 .ToList();
 
-            
-            
             var ownerExistsFilter = Builders<MediaData>.Filter.Nin(x => x.OwnerId, residentIds);
             await _mediaCollection.DeleteManyAsync(ownerExistsFilter);
         }
@@ -127,15 +126,44 @@ namespace WebService.Services.Data.Mongo
 
             if (!exists)
             {
-                var mediaFilter = Builders<MediaUrl>
-                    .Filter
+                var mediaFilter = Builders<MediaUrl>.Filter
                     .Eq(x => x.Id, mediaUrl.Id);
-                var updater = Builders<Resident>
-                    .Update
+                var updater = Builders<Resident>.Update
                     .PullFilter(field, mediaFilter);
 
                 await _residentsCollection
-                    .FindOneAndUpdateAsync(x => x.Id == residentId, updater);
+                    .UpdateOneAsync(x => x.Id == residentId, updater);
+            }
+        }
+
+        private async Task RemoveNonExistingResidentsFromUsers()
+        {
+            var residentsField = new Expression<Func<User, object>>[] {x => x.Id, x => x.Residents};
+
+            var users = await _usersCollection
+                .Find(FilterDefinition<User>.Empty)
+                .Select(residentsField)
+                .ToListAsync();
+
+            foreach (var user in users)
+            {
+                if (EnumerableExtensions.IsNullOrEmpty(user.Residents))
+                    continue;
+
+                foreach (var residentId in user.Residents)
+                {
+                    var exists = await _residentsCollection
+                        .Find(x => x.Id == residentId)
+                        .AnyAsync();
+
+                    if (!exists)
+                    {
+                        var updater = Builders<User>.Update
+                            .Pull(x => x.Residents, residentId);
+
+                        await _usersCollection.UpdateOneAsync(x => x.Id == user.Id, updater);
+                    }
+                }
             }
         }
 

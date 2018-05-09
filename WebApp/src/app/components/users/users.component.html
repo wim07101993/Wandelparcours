@@ -17,7 +17,6 @@
 	Loading Residents...
 </ng-template>
 
-<!--Switch to cardview-->
 <div class="row">
 	<div class="col s12 m6 l4" *ngFor="let user of users | filter:term">
 		<!-- resident's personal content on cardview -->
@@ -47,7 +46,7 @@
 
 			<!-- action buttons per resident-card -->
 			<div class="row">
-				<div class="col s4 center">
+				<div class="col s4 center" (click)="editUserModal(user)">
 					<i class="material-icons blue-text pointer">edit</i>
 				</div>
 				<div class="col s4 center" title="Toegewezen bewoners bekijken">
@@ -81,11 +80,9 @@
 			</div>
 			<div class="row">
 				<div class="input-field col s12">
-					
 					<angular2-multiselect [data]="userTypes" 
 					[(ngModel)]="createUserModel.usertypeModel"
 					(onSelect)="SelectCreateType($event)"
-
                       [settings]="settings" >
 					</angular2-multiselect>
 				</div>
@@ -94,7 +91,7 @@
 
 			<div class="row">
 				<div class="input-field col s6">
-					<input [(ngModel)]="createUserModel.userPassword" id="password" type="password" class="validate" [(ngModel)]="password" name="password1" required>
+					<input [(ngModel)]="createUserModel.password" id="password" type="password" class="validate" [(ngModel)]="password" name="password1" required>
 					<label for="password">Wachtwoord<sup style="color:#ff2200;">*</sup></label>
 				</div>
 				<div class="input-field col s6">
@@ -102,30 +99,6 @@
 					<label for="password-check">Wachtwoord<sup style="color:#ff2200;">*</sup></label>
 				</div>
 			</div>
-			<!-- <div class="row">
-				<div class="input-field col s12">
-					<select>
-						<option value="" disabled selected>Kies wooneenheid</option>
-						<option value="0">Amber WU1</option>
-						<option value="1">Amber WU2</option>
-						<option value="2">Amber WU3</option>
-						<option value="3">Amber WU4</option>
-						<option value="0">Amethis WU1</option>
-						<option value="1">Amethis WU2</option>
-						<option value="2">Amethis WU3</option>
-						<option value="3">Amethis WU4</option>
-						<option value="4">Aquamarijn WU1</option>
-						<option value="5">Aquamarijn WU2</option>
-						<option value="6">Aquamarijn WU3</option>
-						<option value="7">Aquamarijn WU4</option>
-						<option value="4">Saffier WU1</option>
-						<option value="5">Saffier WU2</option>
-						<option value="6">Saffier WU3</option>
-						<option value="7">Saffier WU4</option>
-					</select>
-				</div>
-			</div> -->
-
 			<div class="modal-footer">
 				<button class="btn waves-effect waves-light green lighten-1"
 				type="submit"
@@ -145,6 +118,59 @@
 	</div>
 </div>
 
+<!-- Form to edit user -->
+<div id="edit-user-modal" class="modal">
+	<div class="modal-content">
+		<h5>Een gebruiker bewerken</h5>
+
+		<div class="col s12">
+
+			<div class="row">
+				<div class="input-field col s6">
+					<input id="userNameEdit" [(ngModel)]="editUserModel.userName"  type="text" class="validate"  name="userName" required placeholder="{{editUserModel.userName}}">
+					<label for="userNameEdit">Gebruikersnaam<sup style="color:#ff2200;">*</sup></label>
+				</div>
+				<div class="input-field col s6">
+					<input id="emailEdit" [(ngModel)]="editUserModel.email" type="email" class="validate"  name="email" required placeholder="{{editUserModel.email}}">
+					<label for="emailEdit">Email<sup style="color:#ff2200;">*</sup></label>
+				</div>
+			</div>
+			<div class="row">
+				<div class="input-field col s12">
+					<angular2-multiselect [data]="userTypes"
+										  [(ngModel)]="editUserModel.usertypeModel"
+										  (onSelect)="SelectEditType($event)"
+										  [settings]="settings" >
+					</angular2-multiselect>
+				</div>
+
+			</div>
+
+			<div class="row">
+				<div class="input-field col s6">
+					<input [(ngModel)]="editUserModel.password" id="passwordEdit" type="password" class="validate" [(ngModel)]="password" name="password1" required>
+					<label for="passwordEdit">Wachtwoord<sup style="color:#ff2200;">*</sup></label>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button class="btn waves-effect waves-light green lighten-1"
+						type="submit"
+						name="action"
+						(click)="editUser(editUserModel)">
+					Toevoegen
+					<i class="material-icons right">send</i>
+				</button>
+				<a (click)="resetForm()"
+				   class="btn waves-effect waves-light red lighten-1 modal-action modal-close">
+					Annuleren
+					<i class="material-icons right">cancel</i>
+				</a>
+			</div>
+
+		</div>
+	</div>
+</div>
+
 <!-- Modal Trigger -->
 <!-- This will pop up the form to add a resident -->
 <div class="fixed-action-btn">
@@ -152,7 +178,6 @@
 		<i class="large material-icons">person_add</i>
 	</a>
 </div>
-
 
 <div id="deleteModalUser" class="modal">
 	<div class="modal-content">

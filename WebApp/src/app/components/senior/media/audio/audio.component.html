@@ -3,7 +3,7 @@
     <li class="collection-header"><h4>Muziek</h4></li>
     <li *ngFor="let link of fullLinks" class="collection-item">
         <div>{{link.music.title}}
-            <i class="material-icons red-text pointer" style="cursor: pointer" (click)="deleteModal(link)">delete</i>
+            <i class="material-icons red-text pointer right" style="cursor: pointer" (click)="deleteModal(link)">delete</i>
         </div>
     </li>
 </ul>
