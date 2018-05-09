@@ -22,10 +22,11 @@ export class UsersComponent implements OnInit {
         {"id":1,"itemName":"Zorgkundige"},
         {"id":2,"itemName":"Gebruiker"}
       ];
-      createUserModel=new formUser();
-
-      createUserType=[];
-      settings =  {singleSelection: true, text:"ToegangsLevel"};
+    createUserModel=new formUser();
+    editUserModel=new formUser();
+    createUserType=[];
+    settings =  {singleSelection: true, text:"ToegangsLevel"};
+    updateUser: user;
     constructor(private service: RestServiceService) {
         this.userModal = <user>{};
         this.getUsers()
@@ -45,6 +46,19 @@ export class UsersComponent implements OnInit {
     SelectCreateType(event){
         this.createUserModel.userType=event.id;
     }
+    SelectEditType(event){
+        this.editUserModel.userType=event.id;
+    }
+
+    editUserModal(users:user){
+        this.editUserModel.id=users.id;
+        this.editUserModel.email=users.email;
+        this.editUserModel.userType=users.userType;
+        this.editUserModel.userName=users.userName;
+        $('#edit-user-modal').modal();
+        $('#edit-user-modal').modal('open');
+    }
+
     createUser() {
         console.log(this.createUserModel);
         if(this.createUserModel.userName==""){
@@ -55,20 +69,20 @@ export class UsersComponent implements OnInit {
             Materialize.toast('Vul Email in!', 3000);
             return;
         }
-        if(this.createUserModel.userType==99){
+        if(this.createUserModel.userType=="99"){
             Materialize.toast('Selecteer gebruikers type!', 3000);
             return;
         }
-        if(this.createUserModel.userPassword==""){
+        if(this.createUserModel.password==""){
             Materialize.toast('Vul Wachtwoord in!', 3000);
             return;
         }
-        if(this.createUserModel.userPassword!=this.createUserModel.verPassword){
+        if(this.createUserModel.password!=this.createUserModel.verPassword){
             Materialize.toast('Wachtwoorden komen niet overeen!', 3000);
             return;
         }
         
-        this.service.createUser(this.createUserModel.userName,this.createUserModel.userPassword,this.createUserModel.userType,this.createUserModel.email);
+        this.service.createUser(this.createUserModel.userName,this.createUserModel.password,this.createUserModel.userType,this.createUserModel.email);
         this.createUserModel= new formUser();
         
         // close modal/form and 'reload' page
@@ -89,8 +103,8 @@ export class UsersComponent implements OnInit {
      * Reset the form on close
      * @param form of type NgForm
      */
-    resetForm(form: NgForm) {
-        form.reset();
+    resetForm() {
+        console.log("Test");
     }
 
 
@@ -135,22 +149,48 @@ export class UsersComponent implements OnInit {
         $().modal('close');
     }
 
+    async editUser(userData: user){
+        this.updateUser=userData;
+        //this.updateUser.id = userData.id;
+        const changedProperties = [];
+        for (const prop in this.updateUser) {
+            if (this.updateUser[prop] != null && this.updateUser[prop] !== '' && (this.updateUser[prop] != 'usertypeModel')) {
+                changedProperties.push(prop);
+            }
+        }
+        changedProperties.splice((changedProperties.length -1));
+        const updateData = this.updateUser;
+        delete updateData['usertypeModal'];
+        delete updateData['verPassword'];
+        delete changedProperties['verPassword'];
+
+        await this.service.updateUser(updateData, changedProperties);
+        this.updateUser = <user>{};
+
+
+         setTimeout(() => {
+            $('#edit-user-modal').modal('close');
+        }, 200);
+        // get all users again after updating
+        this.getUsers();
+    }
+
 }
 
 
 class formUser{
+        id="";
         userName="";
         email="";
-        userType=99;
-        userPassword= "";
+        userType="99";
+        password= "";
         verPassword= "";
-        userTypeModel=[];
     constructor(){
+        this.id="";
         this.userName="";
         this.email="";
-        this.userType=99;
-        this.userPassword= "";
+        this.userType="99";
+        this.password= "";
         this.verPassword= "";
-        this.userTypeModel=[];
     }
 }

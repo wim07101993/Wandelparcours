@@ -5,6 +5,7 @@ export class user{
     email: string
     group: string
     resident: any;
+    password: any;
 
     constructor(){
         this.id="";
@@ -13,5 +14,6 @@ export class user{
         this.email="";
         this.group="";
         this.resident={};
+        this.password="";
     }
 }
