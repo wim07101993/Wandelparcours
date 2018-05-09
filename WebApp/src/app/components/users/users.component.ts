@@ -40,6 +40,7 @@ export class UsersComponent implements OnInit {
 
     async deleteUser(userId: string) {
         await this.service.deleteUser(userId);
+        Materialize.toast('User succesvol verwijderd!',5000);
         this.getUsers();
     }
 
@@ -84,7 +85,7 @@ export class UsersComponent implements OnInit {
         
         this.service.createUser(this.createUserModel.userName,this.createUserModel.password,this.createUserModel.userType,this.createUserModel.email);
         this.createUserModel= new formUser();
-        
+        Materialize.toast('User succesvol toegevoegd!',5000);
         // close modal/form and 'reload' page
         setTimeout(() => {
             $('#add-user-modal').modal('close');
@@ -170,6 +171,7 @@ export class UsersComponent implements OnInit {
          setTimeout(() => {
             $('#edit-user-modal').modal('close');
         }, 200);
+        Materialize.toast('User succesvol geüpdate!',5000);
         // get all users again after updating
         this.getUsers();
     }

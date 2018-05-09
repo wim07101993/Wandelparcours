@@ -146,6 +146,7 @@ export class ResidentsComponent implements OnInit {
    */
   async deleteResident(uniqueIdentifier: string) {
     await this.service.deleteResidentByUniqueId(uniqueIdentifier);
+      Materialize.toast('Bewoner succesvol verwijderd!',5000);
     this.showAllResidents();
   }
 
@@ -212,6 +213,7 @@ export class ResidentsComponent implements OnInit {
     setTimeout(() => {
       $('#editModalResident').modal('close');
     }, 200);
+    Materialize.toast('Bewoner succesvol geüpdate!',5000);
     // get all residents again after updating
     await this.showAllResidents();
   }

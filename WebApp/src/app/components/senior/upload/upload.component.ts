@@ -1,7 +1,7 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {RestServiceService} from '../../../service/rest-service.service';
 import {ActivatedRoute, Router} from '@angular/router';
-
+declare var Materialize: any;
 declare var $: any;
 
 @Component({
@@ -76,6 +76,7 @@ export class UploadComponent implements OnInit {
       }
       $("#addMedia").modal("close");
     }
+      Materialize.toast('Media succesvol geüpload!!',5000);
       console.log("einde");
       this.showLoading = false;
     //clear selected files
