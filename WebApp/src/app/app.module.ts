@@ -24,6 +24,7 @@ import { GlobaltrackingComponent } from './components/globaltracking/globaltrack
 import { LoginComponent } from './components/login/login.component';
 import { UsersComponent } from './components/users/users.component';
 import { AngularMultiSelectModule } from 'angular2-multiselect-dropdown/angular2-multiselect-dropdown';
+import { RadioComponent } from './components/senior/media/radio/radio.component';
 
 const appRoutes: Routes = [
       { path: '', redirectTo: 'residents', pathMatch: 'full' },
@@ -34,6 +35,7 @@ const appRoutes: Routes = [
       { path: 'resident/:id/video', component: VideoComponent },
       { path: 'resident/:id/audio', component: AudioComponent },
       { path: 'resident/:id/game', component: GameComponent },
+      { path: 'resident/:id/radio', component: RadioComponent },
       { path: 'resident/:id/tracking', component: TrackingComponent },
       { path: 'modules', component: StationmanagementComponent },
       { path: 'tracking', component: GlobaltrackingComponent },
@@ -59,6 +61,7 @@ const appRoutes: Routes = [
     GlobaltrackingComponent,
     LoginComponent,
     UsersComponent,
+    RadioComponent,
   ],
   imports: [
     CommonModule,
