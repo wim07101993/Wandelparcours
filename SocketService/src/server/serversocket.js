@@ -9,7 +9,7 @@ import * as axios from "axios";
 export class ChatServer {
 
     port = 3000;
-    scanSpeed = 15000;
+    scanSpeed = 5000;
     scanned = false;
     beacons = new Map();
     stations = new Map();

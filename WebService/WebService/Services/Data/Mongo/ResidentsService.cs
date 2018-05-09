@@ -111,7 +111,7 @@ namespace WebService.Services.Data.Mongo
 
         public async Task<Resident> GetOneAsync(int tag,
             IEnumerable<Expression<Func<Resident, object>>> propertiesToInclude = null)
-            => await GetByAsync(x => x.Tags != null && x.Tags.Contains(tag));
+            => await GetByAsync(x => x.Tags != null && x.Tags.Contains(tag), propertiesToInclude);
 
         public virtual async Task<TValue> GetPropertyAsync<TValue>(int tag,
             Expression<Func<Resident, TValue>> propertyToSelect)
@@ -194,7 +194,14 @@ namespace WebService.Services.Data.Mongo
         private async Task<Resident> RemoveMediaAsync(ObjectId residentId,
             Expression<Func<Resident, IEnumerable<MediaUrl>>> selector, ObjectId mediaId)
         {
-            await _mediaService.RemoveAsync(mediaId);
+            try
+            {
+                await _mediaService.RemoveAsync(mediaId);
+            }
+            catch (NotFoundException)
+            {
+                // IGNORED
+            }
 
             var updater = Builders<Resident>.Update.PullFilter(selector, x => x.Id == mediaId);
             var resident = await MongoCollection.FindOneAndUpdateAsync(x => x.Id == residentId, updater);
@@ -205,10 +212,10 @@ namespace WebService.Services.Data.Mongo
             return resident;
         }
 
-        public async Task RemoveSubItemAsync(ObjectId residentId,
-            Expression<Func<Resident, IEnumerable<object>>> selector, object item)
+        public async Task RemoveColor(ObjectId residentId, Color color)
         {
-            var updater = Builders<Resident>.Update.PullFilter(selector, x => x == item);
+            var updater = Builders<Resident>.Update
+                .PullFilter(x => x.Colors, x => x.R == color.R && x.G == color.G && x.B == color.B);
             var resident = await MongoCollection.FindOneAndUpdateAsync(x => x.Id == residentId, updater);
 
             if (resident == null)

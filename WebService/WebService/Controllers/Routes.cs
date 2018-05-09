@@ -80,6 +80,7 @@ namespace WebService.Controllers
             public const string RemoveImage = ById + "/Images/{imageId}";
             public const string RemoveColor = ById + "/Colors";
 
+            // TODO check with Kerim for this route
             public const string RemoveTag = ById + "/{tag}";
         }
 
@@ -92,6 +93,8 @@ namespace WebService.Controllers
         {
             public const string GetByName = "{userName}";
             public const string GetPropertyByName = "{userName}/{propertyName}";
+
+            public const string RemoveResident = ById + "/Residents/{residentId}";
         }
     }
 }
