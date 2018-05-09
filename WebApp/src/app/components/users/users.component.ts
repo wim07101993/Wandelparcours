@@ -3,6 +3,7 @@ import {RestServiceService} from '../../service/rest-service.service';
 import {NgForm} from '@angular/forms';
 import {user} from '../../models/user';
 import {Resident} from '../../models/resident';
+import { forEach } from '@angular/router/src/utils/collection';
 
 declare var $: any;
 declare var Materialize: any;
@@ -13,6 +14,7 @@ declare var Materialize: any;
   styleUrls: ['./users.component.css']
 })
 export class UsersComponent implements OnInit {
+    residents: any =  Resident;
     users : user;
     term: any = null;
     search = false;
@@ -22,14 +24,20 @@ export class UsersComponent implements OnInit {
         {"id":1,"itemName":"Zorgkundige"},
         {"id":2,"itemName":"Gebruiker"}
       ];
+    
+    residentsList = [];
+    settingsResident =  {singleSelection: false, text:"Bewoner(s) selecteren"};
+
+    
     createUserModel=new formUser();
     editUserModel=new formUser();
     createUserType=[];
     settings =  {singleSelection: true, text:"ToegangsLevel"};
     updateUser: user;
+
     constructor(private service: RestServiceService) {
         this.userModal = <user>{};
-        this.getUsers()
+        this.getUsers() 
     }
 
 
@@ -93,11 +101,30 @@ export class UsersComponent implements OnInit {
         this.getUsers();
     }
 
+     /**
+     * get all residents async from service
+     */
+    async showAllResidents() {
+        const residents: any = await this.service.getAllResidents();
+        this.residentsList = [];
+        console.log(residents);
+        console.log(residents[0].firstName)
+
+        for (let resident of residents){
+            // TODO Sorteren per category=wooneenheid 
+            let listObject = {id:resident.id,itemName:resident.firstName+' '+resident.lastName, sortObject:""};
+            this.residentsList.push(listObject);
+        }
+
+    }
+
+
     password: string;
     passwordcheck: string;
 
     ngOnInit() {
         $('select').material_select();
+        this.showAllResidents();
     }
 
     /**

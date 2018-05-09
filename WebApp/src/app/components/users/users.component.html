@@ -46,14 +46,14 @@
 
 					</th>
 				</tr>
-				<tr>
+				<!-- <tr>
 					<th>Bewoner(s)</th>
 					<td>{{user.resident}}</td>
 				</tr>
 				<tr>
 					<th>Groep</th>
 					<td>{{user.group}}</td>
-				</tr>
+				</tr> -->
 			</table>
 
 			<!-- action buttons per user-card -->
@@ -219,8 +219,13 @@
 <!-- add residents our residents group to user modal -->
 <div id="residentToUserModal" class="modal modal-fixed-footer">
 	<div class="modal-content">
-		<h4>Bewoner of Groep koppelen aan gebruiker...</h4>
-		<p>A bunch of text</p>
+		<h5>Bewoner of Groep koppelen aan gebruiker...</h5>
+		<angular2-multiselect [data]="residentsList" 
+                      [(ngModel)]="selectedItems" 
+                      [settings]="settingsResident" 
+                      (onSelect)="onItemSelect($event)"
+                      (onDeSelect)="OnItemDeSelect($event)">
+		</angular2-multiselect>
 	</div>
 	<div class="modal-footer">
 		<a class="modal-action modal-close waves-effect waves-green btn-flat ">Bevestigen</a>
