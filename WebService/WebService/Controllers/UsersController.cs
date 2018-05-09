@@ -193,7 +193,7 @@ namespace WebService.Controllers
 
         #region update
 
-        [Authorize(EUserType.SysAdmin, EUserType.Nurse, EUserType.User)]
+        [Authorize(EUserType.Nurse, EUserType.User)]
         [HttpPut(Routes.RestBase.Update)]
         public override async Task UpdateAsync([FromBody] User item, [FromQuery] string[] properties)
         {
@@ -231,7 +231,7 @@ namespace WebService.Controllers
             await DataService.UpdatePropertyAsync(user.Id, x => x.Password, user.Password);
         }
 
-        [Authorize(EUserType.SysAdmin, EUserType.Nurse, EUserType.User)]
+        [Authorize(EUserType.Nurse, EUserType.User)]
         [HttpPut(Routes.RestBase.UpdateProperty)]
         public override async Task UpdatePropertyAsync(string id, string propertyName, [FromQuery] string jsonValue)
         {
@@ -271,6 +271,18 @@ namespace WebService.Controllers
                 throw new ArgumentException("You cannot delete yourself", nameof(id));
 
             await base.DeleteAsync(id);
+        }
+
+        [Authorize(EUserType.SysAdmin)]
+        [HttpDelete(Routes.Users.RemoveResident)]
+        public async Task RemoveResident(string id, string residentId)
+        {
+            if (!ObjectId.TryParse(id, out var objectId))
+                throw new NotFoundException<User>(nameof(IModelWithID.Id), id);
+            if (!ObjectId.TryParse(residentId, out var residentobjectId))
+                throw new NotFoundException<Resident>(nameof(IModelWithID.Id), residentId);
+
+            await ((IUsersService) DataService).RemoveItemFromList(objectId, x => x.Residents, residentobjectId);
         }
 
         #endregion delete

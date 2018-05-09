@@ -17,13 +17,13 @@ namespace WebService.Controllers.Bases
         /// <param name="name">The name of the module</param>
         /// <param name="propertiesToInclude">The properties that should be passed with the result</param>
         /// <returns>The receiver module with the asked name</returns>
-        Task<ReceiverModule> GetOneByMacAsync(string name, [FromQuery] string[] propertiesToInclude);
+        Task<ReceiverModule> GetOneByNameAsync(string name, [FromQuery] string[] propertiesToInclude);
         
         /// <summary>
         /// Deletes the asked receiver module from the database.
         /// </summary>
         /// <param name="name">The name of the module</param>
         /// <returns></returns>
-        Task DeleteByMacAsync(string name);
+        Task DeleteByNameAsync(string name);
     }
 }
