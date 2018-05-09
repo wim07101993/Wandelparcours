@@ -4,7 +4,7 @@ import {Resident} from '../../../../models/resident';
 import {MediaService} from '../../../../service/media.service';
 import { LoginService } from '../../../../service/login-service.service';
 declare var $: any;
-
+declare var Materialize: any;
 @Component({
   selector: 'app-video',
   templateUrl: './video.component.html',
@@ -52,6 +52,7 @@ export class VideoComponent implements OnInit {
    */
   async deleteResidentMediaByUniqueId(uniqueVideoId: string) {
       await this.media.deleteMedia(this.id, uniqueVideoId, this.video);
+      Materialize.toast('Media succesvol verwijderd!',5000);
       setTimeout(() => {
           $("#deleteModalVideo").modal("close");
       }, 200)

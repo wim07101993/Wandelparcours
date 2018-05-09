@@ -4,7 +4,7 @@ import {LoginService} from '../../../../service/login-service.service';
 import {MediaService} from '../../../../service/media.service';
 import {Resident} from '../../../../models/resident';
 declare var $: any;
-
+declare var Materialize: any;
 @Component({
   selector: 'app-audio',
   templateUrl: './audio.component.html',
@@ -36,6 +36,7 @@ export class AudioComponent implements OnInit {
 
     async deleteResidentMediaByUniqueId(uniqueAudioID: string) {
         await this.media.deleteMedia(this.id, uniqueAudioID, this.music);
+        Materialize.toast('Media succesvol verwijderd!',5000);
         setTimeout(()=>{
             $("#deleteModal").modal("close");
         }, 200)
