@@ -5,3 +5,7 @@ li > a.active {
 .tabs {
   box-shadow: 0 1px 1px 0 #bbb;
 }
+
+.row .col.s12 {
+  margin-top: 10px;
+}

@@ -1,3 +1,4 @@
+<!-- Searchicon and bar -->
 <div class="row">
 	<div class="col s1 offsetsearchButton">
 		<a class="btn-floating btn-large waves-effect waves-light amber darken-2" *ngIf="!search" (click)="search=!search;focusInput()">
@@ -17,15 +18,14 @@
 	Loading Residents...
 </ng-template>
 
-<!--Switch to cardview-->
+<!-- Cards with user -->
 <div class="row">
 	<div class="col s12 m6 l4" *ngFor="let user of users | filter:term">
-		<!-- resident's personal content on cardview -->
 		<div id="content" class="card">
 			<table>
 				<tr>
 					<th>Gebruikersnaam:</th>
-					<td>{{user.userName}}</td>
+					<td class="text-uppercase">{{user.userName}}</td>
 				</tr>
 				<tr>
 					<th>Email:</th>
@@ -33,28 +33,39 @@
 				</tr>
 				<tr>
 					<th>Niveau</th>
-					<th>{{user.userType}}</th>
+					<th>
+						<span *ngIf="user.userType==0">
+							Admin
+						</span>
+						<span *ngIf="user.userType==1">
+							Zorgkundige
+						</span>
+						<span *ngIf="user.userType==2">
+							Gebruiker
+						</span>
+
+					</th>
 				</tr>
-				<tr>
+				<!-- <tr>
 					<th>Bewoner(s)</th>
 					<td>{{user.resident}}</td>
 				</tr>
 				<tr>
 					<th>Groep</th>
 					<td>{{user.group}}</td>
-				</tr>
+				</tr> -->
 			</table>
 
-			<!-- action buttons per resident-card -->
-			<div class="row">
-				<div class="col s4 center">
+			<!-- action buttons per user-card -->
+			<div class="row" style="padding-bottom: 10px">
+				<div class="col s4 center" (click)="editUserModal(user)">
 					<i class="material-icons blue-text pointer">edit</i>
 				</div>
 				<div class="col s4 center" title="Toegewezen bewoners bekijken">
-					<i class="material-icons red-text pointer">group</i>
+					<i class="material-icons red-text pointer" (click)="openResToUserModal()">group</i>
 				</div>
 				<div class="col s4 center">
-					<td class="center"><i class="material-icons red-text pointer" (click)="openModal(user)">delete</i></td>
+					<i class="material-icons red-text pointer" (click)="openModal(user)">delete</i>
 				</div>
 			</div>
 		</div>
@@ -71,73 +82,100 @@
 
 			<div class="row">
 				<div class="input-field col s6">
-					<input id="userName" [(ngModel)]="createUserModel.userName"  type="text" class="validate"  name="userName" required>
-					<label for="userName">Gebruikersnaam<sup style="color:#ff2200;">*</sup></label>
+					<input id="userName" [(ngModel)]="createUserModel.userName" type="text" class="validate" name="userName" required>
+					<label for="userName">Gebruikersnaam
+						<sup style="color:#ff2200;">*</sup>
+					</label>
 				</div>
 				<div class="input-field col s6">
-					<input id="email" [(ngModel)]="createUserModel.email" type="email" class="validate"  name="email" required>
-					<label for="email">Email<sup style="color:#ff2200;">*</sup></label>
+					<input id="email" [(ngModel)]="createUserModel.email" type="email" class="validate" name="email" required>
+					<label for="email">Email
+						<sup style="color:#ff2200;">*</sup>
+					</label>
 				</div>
 			</div>
 			<div class="row">
 				<div class="input-field col s12">
-					
-					<angular2-multiselect [data]="userTypes" 
-					[(ngModel)]="createUserModel.usertypeModel"
-					(onSelect)="SelectCreateType($event)"
-
-                      [settings]="settings" >
+					<angular2-multiselect [data]="userTypes" [(ngModel)]="createUserModel.usertypeModel" (onSelect)="SelectCreateType($event)"
+					    [settings]="settings">
 					</angular2-multiselect>
 				</div>
-				
+
 			</div>
 
 			<div class="row">
 				<div class="input-field col s6">
-					<input [(ngModel)]="createUserModel.userPassword" id="password" type="password" class="validate" [(ngModel)]="password" name="password1" required>
-					<label for="password">Wachtwoord<sup style="color:#ff2200;">*</sup></label>
+					<input [(ngModel)]="createUserModel.password" id="password" type="password" class="validate" [(ngModel)]="password" name="password1"
+					    required>
+					<label for="password">Wachtwoord
+						<sup style="color:#ff2200;">*</sup>
+					</label>
 				</div>
 				<div class="input-field col s6">
-					<input id="password-check" [(ngModel)]="createUserModel.verPassword" type="password" class="validate" [(ngModel)]="passwordcheck" name="password-check" required>
-					<label for="password-check">Wachtwoord<sup style="color:#ff2200;">*</sup></label>
+					<input id="password-check" [(ngModel)]="createUserModel.verPassword" type="password" class="validate" [(ngModel)]="passwordcheck"
+					    name="password-check" required>
+					<label for="password-check">Wachtwoord
+						<sup style="color:#ff2200;">*</sup>
+					</label>
 				</div>
 			</div>
-			<!-- <div class="row">
-				<div class="input-field col s12">
-					<select>
-						<option value="" disabled selected>Kies wooneenheid</option>
-						<option value="0">Amber WU1</option>
-						<option value="1">Amber WU2</option>
-						<option value="2">Amber WU3</option>
-						<option value="3">Amber WU4</option>
-						<option value="0">Amethis WU1</option>
-						<option value="1">Amethis WU2</option>
-						<option value="2">Amethis WU3</option>
-						<option value="3">Amethis WU4</option>
-						<option value="4">Aquamarijn WU1</option>
-						<option value="5">Aquamarijn WU2</option>
-						<option value="6">Aquamarijn WU3</option>
-						<option value="7">Aquamarijn WU4</option>
-						<option value="4">Saffier WU1</option>
-						<option value="5">Saffier WU2</option>
-						<option value="6">Saffier WU3</option>
-						<option value="7">Saffier WU4</option>
-					</select>
-				</div>
-			</div> -->
-
 			<div class="modal-footer">
-				<button class="btn waves-effect waves-light green lighten-1"
-				type="submit"
-				name="action"
-				(click)="createUser()">
-				Toevoegen
-				<i class="material-icons right">send</i>
+				<button class="btn waves-effect waves-light green lighten-1" type="submit" name="action" (click)="createUser()">
+					Toevoegen
+					<i class="material-icons right">send</i>
 				</button>
-				<a (click)="resetForm()"
-				class="btn waves-effect waves-light red lighten-1 modal-action modal-close">
-				Annuleren
-				<i class="material-icons right">cancel</i>
+				<a (click)="resetForm()" class="btn waves-effect waves-light red lighten-1 modal-action modal-close">
+					Annuleren
+					<i class="material-icons right">cancel</i>
+				</a>
+			</div>
+
+		</div>
+	</div>
+</div>
+
+<!-- Form to edit user -->
+<div id="edit-user-modal" class="modal">
+	<div class="modal-content">
+		<h5>Een gebruiker bewerken</h5>
+
+		<div class="col s12">
+
+			<div class="row">
+				<div class="input-field col s6">
+					<input id="userNameEdit" [(ngModel)]="editUserModel.userName" type="text" class="validate" name="userName" required placeholder="{{editUserModel.userName}}">
+					<label for="userNameEdit" class="active">Gebruikersnaam
+						<sup style="color:#ff2200;">*</sup>
+					</label>
+				</div>
+				<div class="input-field col s6">
+					<input id="emailEdit" [(ngModel)]="editUserModel.email" type="email" class="validate" name="email" required placeholder="{{editUserModel.email}}">
+					<label for="emailEdit" class="active">Email
+						<sup style="color:#ff2200;">*</sup>
+					</label>
+				</div>
+			</div>
+			<div class="row">
+				<div class="input-field col s6">
+					<angular2-multiselect [data]="userTypes" [(ngModel)]="editUserModel.usertypeModel" (onSelect)="SelectEditType($event)" [settings]="settings">
+					</angular2-multiselect>
+				</div>
+				<div class="input-field col s6">
+					<input [(ngModel)]="editUserModel.password" id="passwordEdit" type="password" class="validate" [(ngModel)]="password" name="password1"
+					    required>
+					<label for="passwordEdit">Wachtwoord
+						<sup style="color:#ff2200;">*</sup>
+					</label>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button class="btn waves-effect waves-light green lighten-1" type="submit" name="action" (click)="editUser(editUserModel)">
+					Toevoegen
+					<i class="material-icons right">send</i>
+				</button>
+				<a (click)="resetForm()" class="btn waves-effect waves-light red lighten-1 modal-action modal-close">
+					Annuleren
+					<i class="material-icons right">cancel</i>
 				</a>
 			</div>
 
@@ -146,34 +184,51 @@
 </div>
 
 <!-- Modal Trigger -->
-<!-- This will pop up the form to add a resident -->
+<!-- This will pop up the form to add a user -->
 <div class="fixed-action-btn">
 	<a class="btn-floating btn-large red" (click)="openAddUserModal()">
 		<i class="large material-icons">person_add</i>
 	</a>
 </div>
 
-
+<!-- This will pop up the form to delete a user -->
 <div id="deleteModalUser" class="modal">
 	<div class="modal-content">
-		<h5 class="valign-wrapper" style="color:crimson"><i class="material-icons red-text pointer">warning</i>Waarschuwing
+		<h5 class="valign-wrapper" style="color:crimson">
+			<i class="material-icons red-text pointer">warning</i>Waarschuwing
 		</h5>
 		<p>
-			<strong>Let op!</strong> U staat op het punt <strong class="attention">{{userModal.userName}}
-			</strong> te verwijderen!<br>
-			Bent u zeker?
+			<strong>Let op!</strong> U staat op het punt
+			<strong class="attention">{{userModal.userName}}
+			</strong> te verwijderen!
+			<br> Bent u zeker?
 		</p>
 	</div>
 	<div class="modal-footer">
-		<button class="btn modal-action modal-close waves-effect waves-red btn-flat red lighten-1 white-text"
-				(click)="deleteUser(userModal.id)">
+		<button class="btn modal-action modal-close waves-effect waves-red btn-flat red lighten-1 white-text" (click)="deleteUser(userModal.id)">
 			Verwijder
 			<i class="material-icons red lighten-1 white-text right">remove_circle</i>
 		</button>
-		<button class="btn modal-action modal-close waves-effect waves-green btn-flat blue lighten-1 white-text"
-				(click)="closeModal()">
+		<button class="btn modal-action modal-close waves-effect waves-green btn-flat blue lighten-1 white-text" (click)="closeModal()">
 			Annuleer
 			<i class="material-icons right">cancel</i>
 		</button>
+	</div>
+</div>
+
+<!-- add residents our residents group to user modal -->
+<div id="residentToUserModal" class="modal modal-fixed-footer">
+	<div class="modal-content">
+		<h5>Bewoner of Groep koppelen aan gebruiker...</h5>
+		<angular2-multiselect [data]="residentsList" 
+                      [(ngModel)]="selectedItems" 
+                      [settings]="settingsResident" 
+                      (onSelect)="onItemSelect($event)"
+                      (onDeSelect)="OnItemDeSelect($event)">
+		</angular2-multiselect>
+	</div>
+	<div class="modal-footer">
+		<a class="modal-action modal-close waves-effect waves-green btn-flat ">Bevestigen</a>
+		<a class="modal-action modal-close waves-effect waves-red btn-flat ">Annuleren</a>
 	</div>
 </div>
