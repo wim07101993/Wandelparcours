@@ -53,7 +53,7 @@ namespace WebService.Controllers
 
         public static class Residents
         {
-            private const string ByTag = "{tag}";
+            private const string ByTag = "bytag/{tag}";
             private const string PropertyByTag = ByTag + "/" + PropertyName;
 
             public const string AddMusicData = ById + "/Music/data";

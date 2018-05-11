@@ -217,7 +217,7 @@ export class ChatServer {
         try{
             let loc=location.position;
             loc.name=location.name;
-            this.axios().put(`${this.restUrl}/api/v1/residents/${tag}/lastRecordedPosition`,loc).then(()=>{
+            this.axios().put(`${this.restUrl}/api/v1/residents/bytag/${tag}/lastRecordedPosition`,loc).then(()=>{
                 console.log(`position saved for tag ${tag}`)
             }).catch(()=>{console.log(`no user found for tag${tag}`)});
             

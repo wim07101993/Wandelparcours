@@ -4,10 +4,10 @@ exports.scanClosest = function () {
             let el=null;
             scannedData.forEach(element => {
                 if(el==null){
-                    el={id:element.minor,dist:element.accuracy};
+                    el={id:element.minor,dist:element.rssi};
                 }
-                if(element.accuracy < el.accuracy){
-                    el={id:element.minor,dist:element.dist};
+                if(element.rssi > el.rssi){
+                    el={id:element.minor,dist:element.rssi};
                 }
             });
             if(el!=null){
