@@ -80,6 +80,7 @@ export class UploadComponent implements OnInit {
       console.log("einde");
       this.showLoading = false;
     //clear selected files
+    $("#file").val('');
     this.selectedFile = null;
     this.reload.emit();
   }
