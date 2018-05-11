@@ -25,5 +25,11 @@
         /// <param name="extension">the new extension for the video</param>
         /// <returns>the converted video</returns>
         Video Convert(Video input, string extension);
+
+        /// <summary>
+        /// Checks whether the needed dependencies are installed.
+        /// </summary>
+        /// <returns></returns>
+        bool CheckDependencies();
     }
 }

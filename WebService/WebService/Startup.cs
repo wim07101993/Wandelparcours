@@ -43,7 +43,7 @@ namespace WebService
         {
             databaseManager.ConfigureDB();
             databaseManager.ScheduleCleanup(TimeSpan.FromDays(1));
-
+            
             app.UseCors(option => option.AllowAnyOrigin().AllowAnyMethod().AllowAnyOrigin().AllowAnyHeader())
                 .UseStaticFiles()
                 .UseExceptionMiddelware()

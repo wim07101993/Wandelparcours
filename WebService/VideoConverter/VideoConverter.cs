@@ -37,6 +37,19 @@ namespace VideoConverter
             return new Video(newFilePath) {DeleteOnDispose = true};
         }
 
+        public bool CheckDependencies()
+        {
+            try
+            {
+                Convert("", "");
+                return true;
+            }
+            catch (Exception e)
+            {
+                return false;
+            }
+        }
+
         private static string GetVideoPath(Video video)
         {
             var fileName = GenerateFileName();

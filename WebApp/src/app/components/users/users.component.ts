@@ -214,9 +214,6 @@ export class UsersComponent implements OnInit {
 }
 
 
-
-
-
 class formUser{
         id="";
         userName="";

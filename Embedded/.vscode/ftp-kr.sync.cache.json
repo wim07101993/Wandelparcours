@@ -61,29 +61,23 @@
               },
               "css": {},
               "images": {},
-              "scanBeacons.py": {
-                "type": "-",
-                "size": 995,
-                "lmtime": 0,
-                "modified": false
-              },
-              "scanBeaconsMockup.py": {
-                "type": "-",
-                "size": 318,
-                "lmtime": 0,
-                "modified": false
-              },
               "js": {
                 "AbstractViewer.js": {
                   "type": "-",
-                  "size": 2587,
-                  "lmtime": 1525430268499,
+                  "size": 2807,
+                  "lmtime": 1525868846667,
                   "modified": false
                 },
                 "ImageViewer.js": {
                   "type": "-",
                   "size": 2901,
                   "lmtime": 1525347083269,
+                  "modified": false
+                },
+                "Music.js": {
+                  "type": "-",
+                  "size": 1658,
+                  "lmtime": 1526022280777,
                   "modified": false
                 },
                 "VideoViewer.js": {
@@ -106,10 +100,28 @@
                 },
                 "scanClosest.js": {
                   "type": "-",
-                  "size": 1872,
-                  "lmtime": 1525266898106,
+                  "size": 1860,
+                  "lmtime": 1525867080805,
                   "modified": false
                 }
+              },
+              "scanBeacons.py": {
+                "type": "-",
+                "size": 995,
+                "lmtime": 0,
+                "modified": false
+              },
+              "scanBeaconsMockup.py": {
+                "type": "-",
+                "size": 318,
+                "lmtime": 0,
+                "modified": false
+              },
+              "Music.html": {
+                "type": "-",
+                "size": 690,
+                "lmtime": 1525864493417,
+                "modified": false
               }
             },
             "README.md": {
@@ -121,8 +133,8 @@
             "etc": {},
             "index.html": {
               "type": "-",
-              "size": 1008,
-              "lmtime": 1525267397681,
+              "size": 1009,
+              "lmtime": 1525864422165,
               "modified": false
             },
             "jquery": {},

@@ -31,6 +31,7 @@ namespace WebService.Controllers
     {
         private readonly ILocationsService _locationsService;
         private readonly IVideoConverter _videoConverter;
+        private static readonly bool CanConvert;
 
         #region CONSTRUCTOR
 
@@ -40,6 +41,11 @@ namespace WebService.Controllers
         {
             _locationsService = locationsService;
             _videoConverter = videoConverter;
+        }
+
+        static ResidentsController()
+        {
+            CanConvert = new VideoConverter.VideoConverter().CheckDependencies();
         }
 
         #endregion CONSTRUCTOR
@@ -201,23 +207,41 @@ namespace WebService.Controllers
                 throw new ArgumentNullException(nameof(data));
 
             var residentObjectId = await CanWriteDataToResidentAsync(id);
-
-            byte[] bytes;
-            switch (mediaType)
-            {
-                case EMediaType.Video:
-                    var video = new Video(data.File.OpenReadStream());
-                    bytes = _videoConverter.ConvertToWebm(video).Stream.ToBytes(maxFileSize);
-                    break;
-                default:
-                    bytes = data.File.OpenReadStream().ToBytes(maxFileSize);
-                    break;
-            }
-
+            var bytes = GetBytes(data, mediaType, maxFileSize);
             var title = data.File.FileName;
             await ((IResidentsService) DataService)
                 .AddMediaAsync(residentObjectId, title, bytes, mediaType, data.File.ContentType.Split('/')[1]);
             return StatusCode((int) HttpStatusCode.Created);
+        }
+
+        private byte[] GetBytes(MultiPartFile data, EMediaType mediaType, int maxFileSize)
+        {
+            switch (mediaType)
+            {
+                case EMediaType.Video:
+                    if (!CanConvert)
+                    {
+                        var contentType = data.File.ContentType;
+                        switch (contentType)
+                        {
+                            case "video/ogg":
+                            case "video/mp4":
+                            case "video/webm":
+                                return data.File.OpenReadStream().ToBytes(maxFileSize);
+                            default:
+                                throw new BadMediaException($"Videos with the type {contentType} are not allowed");
+                        }
+                    }
+                    else
+                    {
+                        var video = new Video(data.File.OpenReadStream());
+                        return _videoConverter
+                            .ConvertToWebm(video)
+                            .Stream.ToBytes(maxFileSize);
+                    }
+                default:
+                    return data.File.OpenReadStream().ToBytes(maxFileSize);
+            }
         }
 
         [Authorize(EUserType.Nurse, EUserType.User)]
