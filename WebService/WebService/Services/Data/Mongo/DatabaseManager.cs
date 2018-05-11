@@ -22,6 +22,8 @@ namespace WebService.Services.Data.Mongo
         private readonly IMongoCollection<MediaData> _mediaCollection;
         private readonly IMongoCollection<User> _usersCollection;
 
+        private readonly IConfiguration _configuration;
+
         #endregion FIELDS
 
 
@@ -29,14 +31,15 @@ namespace WebService.Services.Data.Mongo
 
         public DatabaseManager(IConfiguration config)
         {
-            var database = new MongoClient(config["Database:ConnectionString"])
-                .GetDatabase(config["Database:DatabaseName"]);
+            _configuration = config;
+            var database = new MongoClient(_configuration["Database:ConnectionString"])
+                .GetDatabase(_configuration["Database:DatabaseName"]);
 
-            _residentsCollection = database.GetCollection<Resident>(config["Database:ResidentsCollectionName"]);
+            _residentsCollection = database.GetCollection<Resident>(_configuration["Database:ResidentsCollectionName"]);
             _receiverModulesCollection =
-                database.GetCollection<ReceiverModule>(config["Database:ReceiverModulesCollectionName"]);
-            _mediaCollection = database.GetCollection<MediaData>(config["Database:MediaCollectionName"]);
-            _usersCollection = database.GetCollection<User>(config["Database:UsersCollectionName"]);
+                database.GetCollection<ReceiverModule>(_configuration["Database:ReceiverModulesCollectionName"]);
+            _mediaCollection = database.GetCollection<MediaData>(_configuration["Database:MediaCollectionName"]);
+            _usersCollection = database.GetCollection<User>(_configuration["Database:UsersCollectionName"]);
         }
 
         #endregion CONSTRUCTOR
@@ -225,8 +228,8 @@ namespace WebService.Services.Data.Mongo
                 new User
                 {
                     Id = id,
-                    UserName = "Modul3",
-                    Password = "KioskTo3rmali3n".Hash(id),
+                    UserName = _configuration["Users:Module:UserName"],
+                    Password = _configuration["Users:Module:Password"].Hash(id),
                     UserType = EUserType.Module
                 });
         }
@@ -238,8 +241,8 @@ namespace WebService.Services.Data.Mongo
                 new User
                 {
                     Id = id,
-                    UserName = "Administrator",
-                    Password = "AdminToermalien".Hash(id),
+                    UserName = _configuration["Users:Administrator:UserName"],
+                    Password = _configuration["Users:Adninistrator:Password"].Hash(id),
                     UserType = EUserType.SysAdmin
                 });
         }
