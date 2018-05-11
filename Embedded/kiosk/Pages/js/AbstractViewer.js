@@ -32,6 +32,13 @@ class AbstractViewer{
         });
         return instance;
       }
+      axiosBlob(){
+        const instance = this.http.create({   
+          responseType: 'blob',
+          headers: {'token': this.token,'Content-type' : 'application/json'}
+        });
+        return instance;
+      }
     login(){
         
         const http = this.http.create({
