@@ -14,14 +14,13 @@ namespace WebService.Helpers.JsonConverters
         {
             var jsonList = ((IEnumerable<ObjectId>)value)?.Select(x => x.ToString());
             
-            serializer.Serialize(writer, jsonList.Serialize());
+            serializer.Serialize(writer, jsonList);
         }
 
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue,
             JsonSerializer serializer)
         {
-            var str = JToken.Load(reader).ToObject<string>();
-            var list = str.Deserialize<List<string>>();
+            var list = JToken.Load(reader).ToObject<List<string>>();
             return list.Select(x => new ObjectId(x));
         }
 

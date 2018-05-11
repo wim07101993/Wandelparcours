@@ -19,9 +19,9 @@ namespace WebService.Tests.HelperTests.JsonConverters
         [TestMethod]
         public void Serialize()
         {
-            var id1 = ObjectId.GenerateNewId();
-            var id2 = ObjectId.GenerateNewId();
-            var id3 = ObjectId.GenerateNewId();
+            var id1 = new ObjectId("5af5426acbe1a920c0f6b507");
+            var id2 = new ObjectId("5af5426acbe1a920c0f6b508");
+            var id3 = new ObjectId("5af5426acbe1a920c0f6b509");
 
             var obj = new TestClass {ObjectIds = new[] {id1, id2, id3}};
 
