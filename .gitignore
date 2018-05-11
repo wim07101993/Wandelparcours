@@ -34,6 +34,16 @@ WebService/.idea/
 WebService/WebService/.vscode/
 WebService/WebService.Tests/.vscode/
 
+WebService/VideoConverter/bin/
+WebService/VideoConverter/Bin/
+WebService/VideoConverter/obj/
+WebService/VideoConverter/Obj/
+WebService/VideoConverter.ConsoleApp/bin
+WebService/VideoConverter.ConsoleApp/Bin
+WebService/VideoConverter.ConsoleApp/obj
+WebService/VideoConverter.ConsoleApp/Obj
+WebService/WebService/files_to_convert/
+
 # NuGet Packages
 WebService/WebService/*.nupkg
 *.nupkg

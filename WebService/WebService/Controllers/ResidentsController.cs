@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Bson;
 using Newtonsoft.Json;
+using VideoConverter;
 using WebService.Controllers.Bases;
 using WebService.Helpers.Attributes;
 using WebService.Helpers.Exceptions;
@@ -29,14 +30,16 @@ namespace WebService.Controllers
     public class ResidentsController : ARestControllerBase<Resident>, IResidentsController
     {
         private readonly ILocationsService _locationsService;
+        private readonly IVideoConverter _videoConverter;
 
         #region CONSTRUCTOR
 
         public ResidentsController(ILocationsService locationsService, IResidentsService dataService, ILogger logger,
-            IUsersService usersService)
+            IUsersService usersService, IVideoConverter videoConverter)
             : base(dataService, logger, usersService)
         {
             _locationsService = locationsService;
+            _videoConverter = videoConverter;
         }
 
         #endregion CONSTRUCTOR
@@ -165,7 +168,7 @@ namespace WebService.Controllers
 
         #region post (create)
 
-        [Authorize(EUserType.Nurse)]
+        [Authorize(EUserType.SysAdmin)]
         [HttpPost(Routes.RestBase.Create)]
         public override Task<string> CreateAsync([FromBody] Resident item)
         {
@@ -199,18 +202,22 @@ namespace WebService.Controllers
 
             var residentObjectId = await CanWriteDataToResidentAsync(id);
 
-            try
+            byte[] bytes;
+            switch (mediaType)
             {
-                var bytes = data.ConvertToBytes(maxFileSize);
-                var title = data.File.FileName;
-                await ((IResidentsService) DataService)
-                    .AddMediaAsync(residentObjectId, title, bytes, mediaType, data.File.ContentType.Split('/')[1]);
-                return StatusCode((int) HttpStatusCode.Created);
+                case EMediaType.Video:
+                    var video = new Video(data.File.OpenReadStream());
+                    bytes = _videoConverter.ConvertToWebm(video).Stream.ToBytes(maxFileSize);
+                    break;
+                default:
+                    bytes = data.File.OpenReadStream().ToBytes(maxFileSize);
+                    break;
             }
-            catch (FileToLargeException)
-            {
-                throw new FileToLargeException(maxFileSize);
-            }
+
+            var title = data.File.FileName;
+            await ((IResidentsService) DataService)
+                .AddMediaAsync(residentObjectId, title, bytes, mediaType, data.File.ContentType.Split('/')[1]);
+            return StatusCode((int) HttpStatusCode.Created);
         }
 
         [Authorize(EUserType.Nurse, EUserType.User)]

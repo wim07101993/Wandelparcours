@@ -193,10 +193,13 @@ namespace WebService.Controllers
 
         #region update
 
-        [Authorize(EUserType.SysAdmin, EUserType.Nurse, EUserType.User)]
+        [Authorize(EUserType.Nurse, EUserType.User)]
         [HttpPut(Routes.RestBase.Update)]
         public override async Task UpdateAsync([FromBody] User item, [FromQuery] string[] properties)
         {
+            if (item == null)
+                throw new ArgumentException("the item to update cannot be null");
+            
             switch (await GetPropertyOfCurrentUser(x => x.UserType))
             {
                 case EUserType.SysAdmin:
@@ -223,15 +226,15 @@ namespace WebService.Controllers
                 var propertyList = properties.ToList();
                 propertyList.Remove(x => x.EqualsWithCamelCasing(nameof(Models.User.Password)));
 
-                await base.UpdateAsync(item, properties);
+                await base.UpdateAsync(item, propertyList.ToArray());
             }
 
             var user = await DataService.GetOneAsync(item.Id, PropertiesToSendOnGetAll);
-            user.Password = item.Password;
+            user.Password = item.Password.Hash(user.Id);
             await DataService.UpdatePropertyAsync(user.Id, x => x.Password, user.Password);
         }
 
-        [Authorize(EUserType.SysAdmin, EUserType.Nurse, EUserType.User)]
+        [Authorize(EUserType.Nurse, EUserType.User)]
         [HttpPut(Routes.RestBase.UpdateProperty)]
         public override async Task UpdatePropertyAsync(string id, string propertyName, [FromQuery] string jsonValue)
         {
@@ -282,7 +285,7 @@ namespace WebService.Controllers
             if (!ObjectId.TryParse(residentId, out var residentobjectId))
                 throw new NotFoundException<Resident>(nameof(IModelWithID.Id), residentId);
 
-            await ((IUsersService) DataService).RemoveItemFromList(objectId, x => x.Residents, residentobjectId);
+            await DataService.RemoveItemFromList(objectId, x => x.Residents, residentobjectId);
         }
 
         #endregion delete

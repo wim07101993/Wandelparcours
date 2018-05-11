@@ -22,6 +22,8 @@ namespace WebService.Services.Data.Mongo
         private readonly IMongoCollection<MediaData> _mediaCollection;
         private readonly IMongoCollection<User> _usersCollection;
 
+        private readonly IConfiguration _configuration;
+
         #endregion FIELDS
 
 
@@ -29,14 +31,15 @@ namespace WebService.Services.Data.Mongo
 
         public DatabaseManager(IConfiguration config)
         {
-            var database = new MongoClient(config["Database:ConnectionString"])
-                .GetDatabase(config["Database:DatabaseName"]);
+            _configuration = config;
+            var database = new MongoClient(_configuration["Database:ConnectionString"])
+                .GetDatabase(_configuration["Database:DatabaseName"]);
 
-            _residentsCollection = database.GetCollection<Resident>(config["Database:ResidentsCollectionName"]);
+            _residentsCollection = database.GetCollection<Resident>(_configuration["Database:ResidentsCollectionName"]);
             _receiverModulesCollection =
-                database.GetCollection<ReceiverModule>(config["Database:ReceiverModulesCollectionName"]);
-            _mediaCollection = database.GetCollection<MediaData>(config["Database:MediaCollectionName"]);
-            _usersCollection = database.GetCollection<User>(config["Database:UsersCollectionName"]);
+                database.GetCollection<ReceiverModule>(_configuration["Database:ReceiverModulesCollectionName"]);
+            _mediaCollection = database.GetCollection<MediaData>(_configuration["Database:MediaCollectionName"]);
+            _usersCollection = database.GetCollection<User>(_configuration["Database:UsersCollectionName"]);
         }
 
         #endregion CONSTRUCTOR
@@ -69,6 +72,7 @@ namespace WebService.Services.Data.Mongo
         {
             await RemoveMediaWithNonExistingResident();
             await RemoveUnKnownMedia();
+            await RemoveNonExistingResidentsFromUsers();
         }
 
         private async Task RemoveMediaWithNonExistingResident()
@@ -78,8 +82,6 @@ namespace WebService.Services.Data.Mongo
                 .Project(x => x.Id)
                 .ToList();
 
-            
-            
             var ownerExistsFilter = Builders<MediaData>.Filter.Nin(x => x.OwnerId, residentIds);
             await _mediaCollection.DeleteManyAsync(ownerExistsFilter);
         }
@@ -127,15 +129,44 @@ namespace WebService.Services.Data.Mongo
 
             if (!exists)
             {
-                var mediaFilter = Builders<MediaUrl>
-                    .Filter
+                var mediaFilter = Builders<MediaUrl>.Filter
                     .Eq(x => x.Id, mediaUrl.Id);
-                var updater = Builders<Resident>
-                    .Update
+                var updater = Builders<Resident>.Update
                     .PullFilter(field, mediaFilter);
 
                 await _residentsCollection
-                    .FindOneAndUpdateAsync(x => x.Id == residentId, updater);
+                    .UpdateOneAsync(x => x.Id == residentId, updater);
+            }
+        }
+
+        private async Task RemoveNonExistingResidentsFromUsers()
+        {
+            var residentsField = new Expression<Func<User, object>>[] {x => x.Id, x => x.Residents};
+
+            var users = await _usersCollection
+                .Find(FilterDefinition<User>.Empty)
+                .Select(residentsField)
+                .ToListAsync();
+
+            foreach (var user in users)
+            {
+                if (EnumerableExtensions.IsNullOrEmpty(user.Residents))
+                    continue;
+
+                foreach (var residentId in user.Residents)
+                {
+                    var exists = await _residentsCollection
+                        .Find(x => x.Id == residentId)
+                        .AnyAsync();
+
+                    if (!exists)
+                    {
+                        var updater = Builders<User>.Update
+                            .Pull(x => x.Residents, residentId);
+
+                        await _usersCollection.UpdateOneAsync(x => x.Id == user.Id, updater);
+                    }
+                }
             }
         }
 
@@ -197,21 +228,24 @@ namespace WebService.Services.Data.Mongo
                 new User
                 {
                     Id = id,
-                    UserName = "Modul3",
-                    Password = "KioskTo3rmali3n".Hash(id),
+                    UserName = _configuration["Users:Module:UserName"],
+                    Password = _configuration["Users:Module:Password"].Hash(id),
                     UserType = EUserType.Module
                 });
         }
 
         private void CreateDefaultAdmin()
         {
+            var userName = _configuration["Users:Administrator:UserName"];
+            var password = _configuration["Users:Administrator:Password"];
+
             var id = ObjectId.GenerateNewId();
             _usersCollection.InsertOne(
                 new User
                 {
                     Id = id,
-                    UserName = "Administrator",
-                    Password = "AdminToermalien".Hash(id),
+                    UserName = userName,
+                    Password = password.Hash(id),
                     UserType = EUserType.SysAdmin
                 });
         }

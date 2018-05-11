@@ -5,7 +5,7 @@ import {MediaService} from '../../../../service/media.service';
 import { LoginService } from '../../../../service/login-service.service';
 
 declare var $: any;
-
+declare var Materialize: any;
 
 @Component({
   selector: 'app-picture',
@@ -52,6 +52,7 @@ export class PictureComponent implements OnInit {
    */
   async deleteResidentMediaByUniqueId(uniquePictureID: string) {
     await this.media.deleteMedia(this.id, uniquePictureID, this.picture);
+      Materialize.toast('Media succesvol verwijderd!',5000);
     setTimeout(()=>{
         $("#deleteModal").modal("close");
     }, 200)

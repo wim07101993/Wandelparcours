@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using VideoConverter;
 using WebService.Services.Authorization;
 using WebService.Services.Data;
 using WebService.Services.Data.Mongo;
@@ -19,6 +20,7 @@ namespace WebService.Helpers.Extensions
                 .AddSingleton<IUsersService, UsersService>()
                 .AddSingleton<ITokensService, TokensService>()
                 .AddSingleton<ILocationsService, LocationsService>()
-                .AddSingleton<IDatabaseManager, DatabaseManager>();
+                .AddSingleton<IDatabaseManager, DatabaseManager>()
+                .AddSingleton<IVideoConverter, VideoConverter.VideoConverter>();
     }
 }

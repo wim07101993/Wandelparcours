@@ -22,7 +22,6 @@ namespace WebService.Models
         public EUserType UserType { get; set; } = EUserType.Guest;
 
         [BsonElement("residents")]
-        [JsonConverter(typeof(ObjectIdListConverter))]
         public IEnumerable<ObjectId> Residents { get; set; } = new List<ObjectId>();
 
         [BsonElement("group")]
