@@ -236,13 +236,16 @@ namespace WebService.Services.Data.Mongo
 
         private void CreateDefaultAdmin()
         {
+            var userName = _configuration["Users:Administrator:UserName"];
+            var password = _configuration["Users:Administrator:Password"];
+
             var id = ObjectId.GenerateNewId();
             _usersCollection.InsertOne(
                 new User
                 {
                     Id = id,
-                    UserName = _configuration["Users:Administrator:UserName"],
-                    Password = _configuration["Users:Adninistrator:Password"].Hash(id),
+                    UserName = userName,
+                    Password = password.Hash(id),
                     UserType = EUserType.SysAdmin
                 });
         }
