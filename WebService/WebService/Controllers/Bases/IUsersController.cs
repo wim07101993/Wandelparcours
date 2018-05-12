@@ -8,5 +8,7 @@ namespace WebService.Controllers.Bases
         Task<User> GetByNameAsync(string userName, string[] propertiesToInclude);
 
         Task<object> GetPropertyByNameAsync(string userName, string propertyName);
+
+        Task ClearResidents(string id);
     }
 }

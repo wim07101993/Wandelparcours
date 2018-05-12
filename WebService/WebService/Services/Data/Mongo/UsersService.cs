@@ -4,6 +4,7 @@ using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using MongoDB.Bson;
+using MongoDB.Driver;
 using WebService.Helpers.Extensions;
 using WebService.Models;
 using ArgumentNullException = System.ArgumentNullException;

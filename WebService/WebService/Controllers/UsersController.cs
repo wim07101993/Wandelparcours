@@ -288,6 +288,16 @@ namespace WebService.Controllers
             await DataService.RemoveItemFromList(objectId, x => x.Residents, residentobjectId);
         }
 
+        [Authorize(EUserType.SysAdmin)]
+        [HttpDelete(Routes.Users.ClearResidents)]
+        public async Task ClearResidents(string id)
+        {
+            if (!ObjectId.TryParse(id, out var objectId))
+                throw new NotFoundException<User>(nameof(IModelWithID.Id), id);
+
+            await DataService.UpdatePropertyAsync(objectId, x => x.Residents, new List<ObjectId>());
+        }
+
         #endregion delete
 
         #endregion METHODS

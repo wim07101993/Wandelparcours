@@ -43,6 +43,7 @@ namespace WebService.Controllers
         {
             // unused
             private const string MacAddressRegex = @"^([[A-f0-9]]{{2}}[[:-\\.]]){{5}}[[A-f0-9]]{{2}}$";
+
             // unused
             private const string ByMac = "{mac:regex(" + MacAddressRegex + ")}";
             private const string ByName = "byName/{name}";
@@ -95,6 +96,7 @@ namespace WebService.Controllers
             public const string GetPropertyByName = "{userName}/{propertyName}";
 
             public const string RemoveResident = ById + "/Residents/{residentId}";
+            public const string ClearResidents = ById + "/Residents/clear";
         }
     }
 }
