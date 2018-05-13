@@ -21,7 +21,7 @@ export class LoginService {
     this.level=null;
     clearInterval(this.refreshTokenInterval);
     this.deleteAllCookies();
-    this.router.navigate(["/login"]);
+    document.location.href = "/login";
   }
 
 
@@ -54,6 +54,7 @@ export class LoginService {
     if(this.router.url!="/login"&& this.token ==null){
       this.surfUrl= this._window.location.pathname;
       this.router.navigate(["/login"]);
+      
     }
   }
 
