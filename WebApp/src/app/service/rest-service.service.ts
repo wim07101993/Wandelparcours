@@ -339,4 +339,22 @@ export class RestServiceService {
           console.log('Errormessage: ' + e.toString());
       }
     }
+    async linkResidentToUser(userId,residentId){
+        try{
+            const resp = (await this.login.axios.post(`/api/v1/users/${userId}/residents`,JSON.stringify(residentId))).data;
+            return true;
+        }catch(e){
+            return false;
+        }
+        
+    }
+    async clearResidentsFromUser(userId){
+        try{
+            const resp = (await this.login.axios.delete(`/api/v1/users/${userId}/residents/clear`)).data;
+            return true;
+        }catch(e){
+            return false;
+        }
+        
+    }
 }

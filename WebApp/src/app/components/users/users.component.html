@@ -1,4 +1,17 @@
 <!-- Searchicon and bar -->
+<div 
+  *ngIf="loading==true" 
+  style="background: black;
+    background: rgba(0, 0,0,0.7);
+    position: fixed;
+    top:0;
+    bottom:0;
+    left:0;
+    right: 0;
+    color:white;
+    z-index: 99999999999999999999;
+  "></div>
+
 <div class="row">
 	<div class="col s1 offsetsearchButton">
 		<a class="btn-floating btn-large waves-effect waves-light amber darken-2" *ngIf="!search" (click)="search=!search;focusInput()">
@@ -62,7 +75,7 @@
 					<i class="material-icons blue-text pointer">edit</i>
 				</div>
 				<div class="col s4 center" title="Toegewezen bewoners bekijken">
-					<i class="material-icons red-text pointer" (click)="openResToUserModal()">group</i>
+					<i class="material-icons red-text pointer" (click)="openResToUserModal(user)">group</i>
 				</div>
 				<div class="col s4 center">
 					<i class="material-icons red-text pointer" (click)="openModal(user)">delete</i>
@@ -223,12 +236,14 @@
 		<angular2-multiselect [data]="residentsList" 
                       [(ngModel)]="selectedItems" 
                       [settings]="settingsResident" 
-                      (onSelect)="onItemSelect($event)"
-                      (onDeSelect)="OnItemDeSelect($event)">
+					  (onSelect)="OnResidentSelect($event)"
+					  (onSelectAll)="onSelectAllResidents($event)"
+					  (onDeSelectAll)="onDeSelectAllResidents($event)"
+                      (onDeSelect)="OnResidentDeSelect($event)">
 		</angular2-multiselect>
 	</div>
 	<div class="modal-footer">
-		<a class="modal-action modal-close waves-effect waves-green btn-flat ">Bevestigen</a>
+		<a class="modal-action modal-close waves-effect waves-green btn-flat" (click)="linkUsersToResident()" >Bevestigen</a>
 		<a class="modal-action modal-close waves-effect waves-red btn-flat ">Annuleren</a>
 	</div>
 </div>

@@ -23,27 +23,44 @@ export class UsersComponent implements OnInit {
         {"id":0,"itemName":"Admininstrator"},
         {"id":1,"itemName":"Zorgkundige"},
         {"id":2,"itemName":"Gebruiker"}
-      ];
-    
+    ];
     residentsList = [];
     settingsResident =  {singleSelection: false, text:"Bewoner(s) selecteren"};
-
+    selectedItems=[];
     
     createUserModel=new formUser();
     editUserModel=new formUser();
     createUserType=[];
     settings =  {singleSelection: true, text:"ToegangsLevel"};
     updateUser: user;
-
+    
+    residentToUserId="";
+    residentToUserList=new Map<string,string>();
+    loading=false;
+    password: string;
+    passwordcheck: string;
     constructor(private service: RestServiceService) {
         this.userModal = <user>{};
-        this.getUsers() 
+        
     }
+    
+    
 
-
+    async ngOnInit() {
+        this.loading=true;
+        try{
+            await this.getUsers();
+            $('select').material_select();
+            await this.showAllResidents();
+            this.loading=false;
+        }catch(ex){
+            console.log(ex);
+            this.loading=false;
+        }
+        this.loading=false;
+    }
     async getUsers() {
         this.users = await this.service.getUsers();
-        console.log(this.users);
     }
 
     async deleteUser(userId: string) {
@@ -119,13 +136,6 @@ export class UsersComponent implements OnInit {
     }
 
 
-    password: string;
-    passwordcheck: string;
-
-    ngOnInit() {
-        $('select').material_select();
-        this.showAllResidents();
-    }
 
     /**
      * Reset the form on close
@@ -206,9 +216,53 @@ export class UsersComponent implements OnInit {
     /**
      * Opens residentToUsermodal
      */
-    openResToUserModal(){
+    openResToUserModal(user){
+        this.residentToUserId=user.id;
+        
+        this.updateUserList(user);
         $('#residentToUserModal').modal();
         $('#residentToUserModal').modal('open');
+    }
+    updateUserList(user){
+        this.residentToUserList.clear();
+        this.selectedItems=[];
+        console.log(user);
+        //TODO: fill model
+        return;
+    }
+    OnResidentSelect(event){
+        this.residentToUserList.set(event.id,event);
+    }
+    OnResidentDeSelect(event){
+        this.residentToUserList.delete(event.id);
+    }
+    async linkUsersToResident(){
+        try{
+        let usersIds=  Array.from(this.residentToUserList.keys());
+        let cleared=false;
+        while(cleared==false){
+            cleared=await this.service.clearResidentsFromUser(this.residentToUserId);
+        }
+        await usersIds.forEach( async (resId)=>{
+            let result=false;
+            while(result==false){
+                result = await this.service.linkResidentToUser(this.residentToUserId,resId);
+            }
+            
+            
+        });
+        }catch(ex){
+        }
+        this.ngOnInit();
+    }
+    onSelectAllResidents(event){
+        console.log(event);
+        event.forEach((resident)=>{
+            this.residentToUserList.set(resident.id,resident);
+        })
+    }
+    onDeSelectAllResidents(){
+        this.residentToUserList.clear();
     }
 
 }
