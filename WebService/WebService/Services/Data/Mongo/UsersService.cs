@@ -28,7 +28,21 @@ namespace WebService.Services.Data.Mongo
                 throw new ArgumentNullException(nameof(user));
 
             user.Id = ObjectId.GenerateNewId();
-            user.Password = user.Password.Hash(user.Id);
+            switch (user.UserType)
+            {
+                case EUserType.SysAdmin:
+                    user.Password = user.Password.Hash(user.Id);
+                    break;
+                case EUserType.Nurse:
+                case EUserType.User:
+                case EUserType.Module:
+                case EUserType.Guest:
+                    user.Password = user.Password.Hash(user.Id, usePepper: false);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+
 
             await CreateAsync(user, false);
         }
