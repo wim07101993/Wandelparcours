@@ -7,6 +7,10 @@ using WebService.Models.Bases;
 
 namespace WebService.Services.Data
 {
+    /// <summary>
+    /// Interface that describes a class that provides basic CRUD operations for a database.
+    /// </summary>
+    /// <typeparam name="T">Type of the item to preform the CRUD operation on.</typeparam>
     public interface IDataService<T>
         where T : IModelWithID
     {

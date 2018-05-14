@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 namespace WebService.Services.Data
 {
     /// <summary>
-    /// An interface that describes the methods to keep the database clean.
+    /// An interface that describes the a class to keep the database clean.
     /// </summary>
     public interface IDatabaseManager
     {
