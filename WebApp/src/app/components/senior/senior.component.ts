@@ -16,8 +16,6 @@ export class SeniorComponent implements OnInit {
 
   ngOnInit() {
     this.route.url.subscribe(resolve => {
-
-      console.log(resolve.length);
       if (resolve.length === 2) {
         this.type = 'personalia';
       } else {
