@@ -36,25 +36,17 @@ export class ResidentsComponent implements OnInit {
    */
   constructor(private service: RestServiceService, private router: Router,private login:LoginService) {}
 
-    ngOnInit(): void {
-        this.showAllResidents();
-        this.residents = [];
-        this.profilePic = [];
+  ngOnInit(): void {
+    this.showAllResidents();
+    this.residents = [];
+    this.profilePic = [];
 
-        /*Creates empty modals to avoid collision with previous existing modals should they not be deleted*/
-        this.modalResident = <Resident>{
-            firstName: '',
-            lastName: '',
-            room: '',
-            id: '',
-            birthday: new Date(),
-            doctor: {name: '', phoneNumber: ''},
-            pictureUrl: ''
-        };
+    /*Creates empty modals to avoid collision with previous existing modals should they not be deleted*/
+      this.modalResident = <Resident>{
+        firstName: '', lastName: '', room: '', id: '', birthday: new Date(), doctor: {name: '', phoneNumber: ''}, pictureUrl: ''};
         this.updateResident = {
             firstName: '', lastName: '', room: '', id: '', birthday: '', doctor: {name: '', phoneNumber: ''}
         };
-
     }
 
   /**
@@ -90,7 +82,7 @@ export class ResidentsComponent implements OnInit {
   }
 
   /**
-   * Opens modal
+   * Opens modal with selected Resident
    * @param modalResident
    */
   openModal(modalResident: Resident) {

@@ -5,6 +5,9 @@ declare var Materialize: any;
 import { LoginService } from "../../service/login-service.service";
 import axios from 'axios';
 import { Router } from '@angular/router';
+/**
+ * @ignore
+ */
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
@@ -38,7 +41,9 @@ export class LoginComponent implements OnInit {
   }
 
   
-
+  /**
+   * this function is called to log in
+   */
   login(){
     this.waitingResponse=true;
     this.loginService.login(this.email,this.password).then((result)=>
@@ -60,6 +65,12 @@ export class LoginComponent implements OnInit {
     ).catch(()=>{this.waitingResponse=false});
   }
 
+  /**
+   * save cookie
+   * @param name this is the key for the cookie
+   * @param value this is the value you want to save
+   * @param days this is the value for how long you want the cookie to be saved
+   */
  setCookie(name,value,days) {
     var expires = "";
     if (days) {
@@ -69,6 +80,10 @@ export class LoginComponent implements OnInit {
     }
     document.cookie = name + "=" + (value || "")  + expires + "; path=/";
 }
+/**
+ * this loads the saved value for a key
+ * @param name the key to get the cookie
+ */
 getCookie(name) {
     var nameEQ = name + "=";
     var ca = document.cookie.split(';');
@@ -80,7 +95,9 @@ getCookie(name) {
     return null;
 }
 
-
+  /**
+   * @ignore
+   */
   cancelFormEvent(empForm: any, event: Event) {
     event.preventDefault();
     this.login();

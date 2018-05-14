@@ -4,7 +4,9 @@ var socket = require('socket.io-client')(serverurl);
 socket.on('connect', function(){console.log("connect in eval")});
 
 
-
+/**
+ * scan all the beacons in the envirenment and send it to the server
+ */
 socket.on("scan", async ()=>{
     console.log("startscan");
     var scanned = await scan();

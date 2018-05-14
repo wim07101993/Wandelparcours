@@ -25,6 +25,14 @@ export class PersonaliaComponent implements OnInit {
   countV: string;
   countX: string;
 
+    /**
+     * Injectable
+     * @param {RestServiceService} service
+     * @param {MediaService} media
+     * @param {ActivatedRoute} route
+     * @param {Router} router
+     * @param {LoginService} login
+     */
   constructor(private service: RestServiceService, private media: MediaService, private route: ActivatedRoute, private router: Router,private login:LoginService) {
       this.src2 = "/api/v1/residents/" + this.id + "/picture?token="+this.login.token;
   }
@@ -39,6 +47,10 @@ export class PersonaliaComponent implements OnInit {
     return document.getElementsByTagName('base')[0].href;
   }
 
+    /**
+     * Show one resident on the page
+     * @returns {Promise<void>}
+     */
   async showOneResident() {
     const resident: any = await this.service.getResidentBasedOnId(this.id);
     if (resident !== undefined) {
@@ -48,12 +60,22 @@ export class PersonaliaComponent implements OnInit {
     }
   }
 
+    /**
+     * Delete a residents tag
+     * @param tag beaconTagID
+     * @returns {Promise<void>}
+     */
   async deleteTag(tag: any) {
     await this.service.deleteTagFromResident(this.id, tag);
     this.showOneResident();
     $('#deleteTagModal').modal('close');
   }
 
+    /**
+     * Get Media Count, how many urls etc there are to show how much there is for each
+     * UnderRevision
+     * @returns {Promise<void>} numbers for displaying amount
+     */
   async getImageCount() {
     const count = await this.media.getMedia(this.id, '/images');
     const count2 = await this.media.getMedia(this.id, '/videos');
@@ -63,16 +85,18 @@ export class PersonaliaComponent implements OnInit {
     this.countX = count3.length;
   }
 
-  /*
-  *   Closes the modal to delete a tag/beacon
-  */
+    /**
+     * Closes delete modal
+     * @constructor
+     */
   CloseModal() {
     $('#deleteTagModal').modal('close');
   }
 
-  /*
-  *   Opens modal to delete a tag
-  */
+    /**
+     * Open modal to delete tag
+     * @param tag
+     */
   deleteTagModal(tag: any) {
     this.tag = tag;
     $('#deleteTagModal').modal();
@@ -80,19 +104,27 @@ export class PersonaliaComponent implements OnInit {
 
   }
 
+    /**
+     * Open Add beacon modal only accepts integers
+     */
   openAddBeaconModal() {
     $('#add-beacon-modal').modal();
     $('#add-beacon-modal').modal('open');
   }
 
-  /**
-   * Reset the form on close
-   * @param form of type NgForm
-   */
+    /**
+     * Reset the form
+     * @param {NgForm} form
+     */
   resetForm(form: NgForm) {
     form.reset();
   }
 
+    /**
+     * Add a beacon to a resident
+     * @param {NgForm} form
+     * @returns {Promise<void>}
+     */
   async addBeaconTag(form: NgForm) {
     const beaconMinorNumber = {
       beaconNumber: form.value.aBeaconMinorNumber

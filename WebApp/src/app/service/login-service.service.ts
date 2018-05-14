@@ -13,7 +13,9 @@ export class LoginService {
   surfUrl:string="/";
   constructor(private router: Router) { }
   
-
+/**
+ * this function logs u out of the system
+ */
   logout(){
     this.token=null;
     this.username=null;
@@ -24,7 +26,9 @@ export class LoginService {
     document.location.href = "/login";
   }
 
-
+/**
+ * @ignore
+ */
   deleteAllCookies() {
     var cookies = document.cookie.split(";");
     for (var i = 0; i < cookies.length; i++) {
@@ -34,6 +38,11 @@ export class LoginService {
         document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT";
     }
   }
+  /**
+   * This function is to ask the server a token for the given user
+   * @param username 
+   * @param password 
+   */
   async login(username:string,password:string){
     this.username=username;
     this.password=password;
@@ -49,7 +58,9 @@ export class LoginService {
     }catch(ex){return false}
 
   }
-
+  /**
+   * this functin check's if your loged in
+   */
   checkLogin(){
     if(this.router.url!="/login"&& this.token ==null){
       this.surfUrl= this._window.location.pathname;
@@ -58,15 +69,22 @@ export class LoginService {
     }
   }
 
-
+/**
+ * @ignore
+ */
   checkCookies(){
     
   }
-
+/**
+ * @ignore
+ */
   get _window ():any{
     return window;
   }
 
+/**
+ * this function refreshes the token every 20 min
+ */
   refreshToken(){
     const http = axios.create({
       headers: {'userName': this.username,"password":this.password}
@@ -82,7 +100,9 @@ export class LoginService {
       
   }
 
-
+  /**
+   * this getter returns an axios instance with a login token
+   */
   get axios(){
     const instance = axios.create({
       headers: {'token': this.token,'Content-type' : 'application/json'}

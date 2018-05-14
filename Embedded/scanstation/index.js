@@ -11,7 +11,9 @@ var socket = require('socket.io-client')(serverurl);
     
 socket.on('connect', function(){console.log("connect")});
 
-
+/**
+ * load the js code from the sserver and run it
+ */
 socket.on('clientcode', function(data){
     try {
         

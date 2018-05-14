@@ -54,7 +54,9 @@ export abstract class ARenderComponent {
     }, 1000 / this.framerate);
   }
 
-
+  /**
+   * this function loads the image for the map
+   */
   async LoadMap() {
 
     //download the map
@@ -69,7 +71,9 @@ export abstract class ARenderComponent {
 
 
   }
-
+  /**
+   * this function gets called every frame
+   */
   async Tick() {
     try {
       await this.renderer.FixCanvas();
@@ -80,7 +84,7 @@ export abstract class ARenderComponent {
     }
   }
 
-  /*
+  /**
   *    Getter calculates relative the width of the image
   */
   get width() {
@@ -92,7 +96,7 @@ export abstract class ARenderComponent {
     return this._width;
   }
 
-  /*
+  /**
   *    Getter calculates relative the height of the image
   */
   get height() {
@@ -105,19 +109,23 @@ export abstract class ARenderComponent {
     return this._height;
   }
 
-
+/**
+ * @ignore
+ */
   SaveStationToDatabaseModal(mouseposition: { x: number; y: number }) {
 
   }
 
-
+  /**
+   * this function resets the position of the map
+   */
   async Reset(){
     this.mouseEvents.position.x=0;
     this.mouseEvents.position.y=0;
     this.zoomFactor=1;
   }
 
-  /*
+  /**
    *   this function is needed to zoomin
    */
   async ZoomIn() {
@@ -126,7 +134,7 @@ export abstract class ARenderComponent {
     await this.Tick();
   }
 
-  /*
+  /**
   *    this function is needed to zoomout
   */
   async ZoomOut() {
@@ -135,7 +143,7 @@ export abstract class ARenderComponent {
     await this.Tick();
   }
 
-  /*
+  /**
   * Recalculates location and size of the image
   */
   async RecalculateMap() {

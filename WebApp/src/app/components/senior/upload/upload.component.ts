@@ -26,10 +26,10 @@ export class UploadComponent implements OnInit {
 
   ngOnInit() {}
 
-  /**
-   * Observer event if anything changes
-   * @param event
-   */
+    /**
+     * Observer to check if event changes
+     * @param event
+     */
   onFileSelected(event: any) {
     this.selectedFile = <any>event.target.files;
     console.log(this.selectedFile);
@@ -87,15 +87,16 @@ export class UploadComponent implements OnInit {
 
 
   /**
-   *
    * Open modal in edit mode and fill modal with resident
-   *
    */
   addModal() {
     $("#addMedia").modal();
     $("#addMedia").modal("open");
   }
 
+    /**
+     * closed Modal
+     */
     closeModal() {
         $("#addMedia").modal('close');
     }

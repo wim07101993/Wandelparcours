@@ -3,7 +3,9 @@ class AudioObject extends AbstractViewer{
     constructor(){
         super();
     }
-    
+    /**
+     * downloads image to stream
+     */
     loadData(){
         if(this.beacon==null|| this.beacon == undefined){
             this.scanBeacon();
