@@ -1,16 +1,5 @@
 <!-- Searchicon and bar -->
-<div 
-  *ngIf="loading==true" 
-  style="background: black;
-    background: rgba(0, 0,0,0.7);
-    position: fixed;
-    top:0;
-    bottom:0;
-    left:0;
-    right: 0;
-    color:white;
-    z-index: 99999999999999999999;
-  "></div>
+
 
 <div class="row">
 	<div class="col s1 offsetsearchButton">
@@ -247,3 +236,20 @@
 		<a class="modal-action modal-close waves-effect waves-red btn-flat ">Annuleren</a>
 	</div>
 </div>
+
+
+<div 
+  *ngIf="loadingOverlay"
+  style="background: black;
+    background: rgba(0, 0,0,0.7);
+    position: fixed;
+    top:0;
+    bottom:0;
+    left:0;
+	right: 0;
+	display:block;
+	width: 100%;
+	height: 100%;
+    color:white;
+    z-index: 99999999999999999999;
+  "></div>
