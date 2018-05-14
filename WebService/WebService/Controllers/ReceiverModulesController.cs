@@ -30,8 +30,6 @@ namespace WebService.Controllers
 
         #region PROPERTIES
 
-        protected override IEnumerable<Expression<Func<ReceiverModule, object>>> PropertiesToSendOnGetAll => null;
-
         protected override IDictionary<string, Expression<Func<ReceiverModule, object>>> PropertySelectors { get; } =
             new Dictionary<string, Expression<Func<ReceiverModule, object>>>
             {
@@ -83,7 +81,7 @@ namespace WebService.Controllers
 
             var selectors = !EnumerableExtensions.IsNullOrEmpty(propertiesToInclude)
                 ? ConvertStringsToSelectors(propertiesToInclude)
-                : new Expression<Func<ReceiverModule, object>>[0];
+                : null;
 
             return await ((IReceiverModulesService) DataService).GetOneAsync(name, selectors)
                    ?? throw new NotFoundException<ReceiverModule>(nameof(ReceiverModule.Mac), name);

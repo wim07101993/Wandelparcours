@@ -42,15 +42,6 @@ namespace WebService.Controllers
 
         #region PROPERTIES
 
-        protected override IEnumerable<Expression<Func<User, object>>> PropertiesToSendOnGetAll { get; } =
-            new Expression<Func<User, object>>[]
-            {
-                x => x.Id,
-                x => x.UserName,
-                x => x.Email,
-                x => x.UserType
-            };
-
         protected override IDictionary<string, Expression<Func<User, object>>> PropertySelectors { get; } =
             new Dictionary<string, Expression<Func<User, object>>>
             {
@@ -161,7 +152,7 @@ namespace WebService.Controllers
 
             var selectors = !EnumerableExtensions.IsNullOrEmpty(propertiesToInclude)
                 ? ConvertStringsToSelectors(propertiesToInclude)
-                : PropertiesToSendOnGetAll;
+                : null;
 
             return await _usersService.GetByNameAsync(userName, selectors);
         }
@@ -229,7 +220,7 @@ namespace WebService.Controllers
                 await base.UpdateAsync(item, propertyList.ToArray());
             }
 
-            var user = await DataService.GetOneAsync(item.Id, PropertiesToSendOnGetAll);
+            var user = await DataService.GetOneAsync(item.Id);
             user.Password = item.Password.Hash(user.Id);
             await DataService.UpdatePropertyAsync(user.Id, x => x.Password, user.Password);
         }

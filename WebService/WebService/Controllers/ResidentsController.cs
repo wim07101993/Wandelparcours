@@ -53,16 +53,6 @@ namespace WebService.Controllers
 
         #region PROPERTIES
 
-        protected override IEnumerable<Expression<Func<Resident, object>>> PropertiesToSendOnGetAll { get; }
-            = new Expression<Func<Resident, object>>[]
-            {
-                x => x.FirstName,
-                x => x.LastName,
-                x => x.Room,
-                x => x.Birthday,
-                x => x.Doctor,
-            };
-
         protected override IDictionary<string, Expression<Func<Resident, object>>> PropertySelectors { get; } =
             new Dictionary<string, Expression<Func<Resident, object>>>
             {
@@ -318,7 +308,7 @@ namespace WebService.Controllers
 
             var selectors = !EnumerableExtensions.IsNullOrEmpty(propertiesToInclude)
                 ? ConvertStringsToSelectors(propertiesToInclude)
-                : PropertiesToSendOnGetAll;
+                : null;
 
             switch (user.UserType)
             {

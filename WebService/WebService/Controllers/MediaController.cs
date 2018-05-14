@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Bson;
@@ -41,8 +40,6 @@ namespace WebService.Controllers
 
 
         #region PROPERTIES
-
-        protected override IEnumerable<Expression<Func<MediaData, object>>> PropertiesToSendOnGetAll => null;
 
         protected override IDictionary<string, Expression<Func<MediaData, object>>> PropertySelectors { get; } =
             new Dictionary<string, Expression<Func<MediaData, object>>>
