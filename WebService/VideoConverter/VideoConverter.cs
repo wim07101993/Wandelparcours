@@ -6,7 +6,7 @@ namespace VideoConverter
 {
     public class VideoConverter : IVideoConverter
     {
-        private const string FilesDirectory = "files_to_convert";
+        public const string FilesDirectory = "files_to_convert";
 
 
         public Video ConvertToWebm(Video input, string outputPath = null)

@@ -250,7 +250,7 @@ namespace WebService.Controllers
                     extension = GetExtensionFromContentType(data.File.ContentType);
                     break;
             }
-
+            
             return new Tuple<Stream, string>(stream, extension);
         }
 

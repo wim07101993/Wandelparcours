@@ -123,9 +123,8 @@ namespace WebService.Services.Data.Mongo
             {
                 using (var memoryStream = new MemoryStream())
                 {
-                    await _mediaService.GetOneAsync(mediaUrl.Id, memoryStream);                    
+                    await _mediaService.GetOneAsync(mediaUrl.Id, memoryStream);
                 }
-                
             }
             catch (Exception)
             {
@@ -186,6 +185,8 @@ namespace WebService.Services.Data.Mongo
         {
             IsWorking = true;
 
+            if (Directory.Exists(VideoConverter.VideoConverter.FilesDirectory))
+                Directory.Delete(VideoConverter.VideoConverter.FilesDirectory);
             await RemoveUnresolvableRelationsAsync();
             await RemoveRedundantDataAsync();
             await FillMissingFieldsAsync();

@@ -3,6 +3,7 @@
     <TargetFramework>netcoreapp2.0</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
+    <Folder Include="files_to_convert" />
     <Folder Include="wwwroot" />
   </ItemGroup>
   <ItemGroup>
