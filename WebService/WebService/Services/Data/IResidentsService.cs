@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using MongoDB.Bson;
@@ -21,7 +22,7 @@ namespace WebService.Services.Data
         /// <param name="data">Data of the media to add</param>
         /// <param name="mediaType">Type of media to add</param>
         /// <param name="extension">Extension of the data to add</param>
-        Task AddMediaAsync(ObjectId residentId, string title, byte[] data, EMediaType mediaType,
+        Task AddMediaAsync(ObjectId residentId, string title, Stream data, EMediaType mediaType,
             string extension = null);
 
         /// <summary>

@@ -15,71 +15,72 @@ namespace WebService.Services.Data
         where T : IModelWithID
     {
         /// <summary>
-        /// Creates an item of type T in the database.
+        /// Creates a new <see cref="T"/> in the database.
         /// </summary>
-        /// <param name="item">The item to create in the database</param>
+        /// <param name="item">The <see cref="T"/> to create in the database</param>
         Task CreateAsync(T item);
 
         /// <summary>
-        /// Adds an item to a nested list in an item to the database.
+        /// Adds a new <see cref="TValue"/> to a nested list in a <see cref="T"/> to the database.
         /// </summary>
-        /// <param name="id">Id of the item to add the nested item to</param>
-        /// <param name="propertyToAddItemTo">Property to add the nested item to</param>
-        /// <param name="itemToAdd">Item to add to the nested list</param>
+        /// <param name="id">Id of the <see cref="T"/> to add the <see cref="TValue"/> to</param>
+        /// <param name="propertyToAddItemTo">Property to add the <see cref="TValue"/> to</param>
+        /// <param name="itemToAdd"><see cref="TValue"/> to add to the nested list</param>
         /// <typeparam name="TValue">The type of the nested item</typeparam>
         Task AddItemToListProperty<TValue>(ObjectId id, Expression<Func<T, IEnumerable<TValue>>> propertyToAddItemTo,
             TValue itemToAdd);
 
         
         /// <summary>
-        /// Gets a property from a specific item in the database.
+        /// Gets a property from a specific <see cref="T"/> in the database.
         /// </summary>
-        /// <param name="id">Id of the item to get the property from</param>
-        /// <param name="propertyToSelect">The property to get from the item</param>
+        /// <param name="id">Id of the <see cref="T"/> to get the property from</param>
+        /// <param name="propertyToSelect">The property to get from the <see cref="T"/></param>
         /// <typeparam name="TOut">The type of the property to get</typeparam>
-        /// <returns>The property from the item with id <see cref="id"/></returns>
+        /// <returns>The property from the <see cref="T"/> with id <see cref="id"/></returns>
         Task<TOut> GetPropertyAsync<TOut>(ObjectId id, Expression<Func<T, TOut>> propertyToSelect);
 
         /// <summary>
-        /// Gets a single entity from the database by id.
+        /// Gets a single <see cref="T"/> from the database by id.
         /// </summary>
-        /// <param name="id">Id of the item to get</param>
+        /// <param name="id">Id of the <see cref="T"/> to get</param>
         /// <param name="propertiesToInclude">
         /// The properties to include in the query (if it is null, all properties are passed).
         /// </param>
-        /// <returns>The entity with the given id</returns>
+        /// <returns>The <see cref="T"/> with the given id</returns>
         Task<T> GetOneAsync(ObjectId id, IEnumerable<Expression<Func<T, object>>> propertiesToInclude = null);
 
         /// <summary>
-        /// Gets all entities from the database.
+        /// Gets all <see cref="T"/>s from the database.
         /// </summary>
         /// <param name="propertiesToInclude">
         /// The properties to include in the query (if it is null, all properties are passed).
         /// </param>
-        /// <returns>All entities in the database</returns>
+        /// <returns>All <see cref="T"/>s in the database</returns>
         Task<IEnumerable<T>> GetAsync(IEnumerable<Expression<Func<T, object>>> propertiesToInclude = null);
 
 
         /// <summary>
-        /// Updates an entity by selecting the properties passed in <see cref="propertiesToUpdate"/>
-        /// and replace the old properties in the database. The item to update is selected by comparing the id of
-        /// <see cref="newItem"/>.
+        /// Updates a <see cref="T"/> by selecting the properties passed in <see cref="propertiesToUpdate"/>
+        /// and replace the old properties in the database. The <see cref="T"/> to update is selected by comparing
+        /// the id of <see cref="newItem"/>.
         /// </summary>
-        /// <param name="newItem">The new item to get the to update properties from</param>
+        /// <param name="newItem">The new <see cref="T"/> to get the to update properties from</param>
         /// <param name="propertiesToUpdate">The properties to update</param>
         Task UpdateAsync(T newItem, IEnumerable<Expression<Func<T, object>>> propertiesToUpdate = null);
 
         /// <summary>
-        /// Replaces an item in the databse. The item to replace is selected by comparing the id of <see cref="newItem"/>
+        /// Replaces a <see cref="T"/> in the databse. The <see cref="T"/> to replace is selected by comparing the
+        /// id of <see cref="newItem"/>
         /// </summary>
-        /// <param name="newItem">Item to replace the old one with.</param>
+        /// <param name="newItem"><see cref="T"/> to replace the old one with.</param>
         /// <returns></returns>
         Task ReplaceAsync(T newItem);
 
         /// <summary>
-        /// Updates a property of an item.
+        /// Updates a property of a <see cref="T"/>.
         /// </summary>
-        /// <param name="id">Id of the item to update the property of.</param>
+        /// <param name="id">Id of the <see cref="T"/> to update the property of.</param>
         /// <param name="propertyToUpdate">The property of to update.</param>
         /// <param name="value">The value to update the property to.</param>
         /// <typeparam name="TValue">The type of the property to update</typeparam>
@@ -87,17 +88,17 @@ namespace WebService.Services.Data
 
 
         /// <summary>
-        /// Removes an item in the database by id.
+        /// Removes a <see cref="T"/> in the database by id.
         /// </summary>
-        /// <param name="id">Id of the item to remove.</param>
+        /// <param name="id">Id of the <see cref="T"/> to remove.</param>
         Task RemoveAsync(ObjectId id);
 
         /// <summary>
-        /// Removes an item from a nested list of a specific item in the database.
+        /// Removes a <see cref="TValue"/> from a nested list of a specific <see cref="T"/> in the database.
         /// </summary>
-        /// <param name="id">Id of the item to remove the nested item from</param>
-        /// <param name="popertyToRemoveItemFrom">Property to remove the nested item from</param>
-        /// <param name="itemToRemove">Item to remove from the nested list</param>
+        /// <param name="id">Id of the <see cref="T"/> to remove the <see cref="TValue"/> from</param>
+        /// <param name="popertyToRemoveItemFrom">Property to remove the <see cref="TValue"/> from</param>
+        /// <param name="itemToRemove"><see cref="TValue"/> to remove from the nested list</param>
         /// <typeparam name="TValue">Type of the nested item</typeparam>
         Task RemoveItemFromList<TValue>(ObjectId id, Expression<Func<T, IEnumerable<TValue>>> popertyToRemoveItemFrom,
             TValue itemToRemove);

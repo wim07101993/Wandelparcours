@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
@@ -18,27 +20,24 @@ namespace WebService.Services.Data.Mongo
         private volatile bool _isSchedulerRunning;
 
         private readonly IMongoCollection<Resident> _residentsCollection;
-        private readonly IMongoCollection<ReceiverModule> _receiverModulesCollection;
-        private readonly IMongoCollection<MediaData> _mediaCollection;
         private readonly IMongoCollection<User> _usersCollection;
 
         private readonly IConfiguration _configuration;
+        private readonly IMediaService _mediaService;
 
         #endregion FIELDS
 
 
         #region CONSTRUCTOR
 
-        public DatabaseManager(IConfiguration config)
+        public DatabaseManager(IConfiguration config, IMediaService mediaService)
         {
             _configuration = config;
+            _mediaService = mediaService;
             var database = new MongoClient(_configuration["Database:ConnectionString"])
                 .GetDatabase(_configuration["Database:DatabaseName"]);
 
             _residentsCollection = database.GetCollection<Resident>(_configuration["Database:ResidentsCollectionName"]);
-            _receiverModulesCollection =
-                database.GetCollection<ReceiverModule>(_configuration["Database:ReceiverModulesCollectionName"]);
-            _mediaCollection = database.GetCollection<MediaData>(_configuration["Database:MediaCollectionName"]);
             _usersCollection = database.GetCollection<User>(_configuration["Database:UsersCollectionName"]);
         }
 
@@ -77,13 +76,10 @@ namespace WebService.Services.Data.Mongo
 
         private async Task RemoveMediaWithNonExistingResident()
         {
-            var residentIds = _residentsCollection
-                .Find(FilterDefinition<Resident>.Empty)
-                .Project(x => x.Id)
-                .ToList();
-
-            var ownerExistsFilter = Builders<MediaData>.Filter.Nin(x => x.OwnerId, residentIds);
-            await _mediaCollection.DeleteManyAsync(ownerExistsFilter);
+//            
+//            var owner = _mediaService.GetOwner()
+//            var ownerExistsFilter = Builders<MediaData>.Filter.Nin(x => x.OwnerId, residentIds);
+//            await _mediaCollection.DeleteManyAsync(ownerExistsFilter);
         }
 
         private async Task RemoveUnKnownMedia()
@@ -123,11 +119,15 @@ namespace WebService.Services.Data.Mongo
             if (mediaUrl.Url != null)
                 return;
 
-            var exists = await _mediaCollection
-                .Find(x => x.Id == mediaUrl.Id)
-                .AnyAsync();
-
-            if (!exists)
+            try
+            {
+                using (var memoryStream = new MemoryStream())
+                {
+                    await _mediaService.GetOneAsync(mediaUrl.Id, memoryStream);                    
+                }
+                
+            }
+            catch (Exception)
             {
                 var mediaFilter = Builders<MediaUrl>.Filter
                     .Eq(x => x.Id, mediaUrl.Id);

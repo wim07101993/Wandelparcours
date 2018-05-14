@@ -202,8 +202,13 @@ namespace WebService.Controllers
             var residentObjectId = await CanWriteDataToResidentAsync(id);
             var convertedMedia = GetConvertedMedia(data, mediaType, maxFileSize);
             var title = data.File.FileName;
-            await ((IResidentsService) DataService)
-                .AddMediaAsync(residentObjectId, title, convertedMedia.Item1, mediaType, convertedMedia.Item2);
+
+            using (var stream = data.File.OpenReadStream())
+            {
+                await ((IResidentsService) DataService)
+                    .AddMediaAsync(residentObjectId, title, stream, mediaType, convertedMedia.Item2);                
+            }
+            
             return StatusCode((int) HttpStatusCode.Created);
         }
 
