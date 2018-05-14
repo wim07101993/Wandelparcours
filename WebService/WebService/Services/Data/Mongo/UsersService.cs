@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
@@ -51,6 +52,19 @@ namespace WebService.Services.Data.Mongo
         {
             var userPassword = await GetPropertyAsync(id, x => x.Password);
             return password.EqualsToHash(id, userPassword);
+        }
+
+        public override async Task<IEnumerable<User>> GetAsync(
+            IEnumerable<Expression<Func<User, object>>> propertiesToInclude = null)
+        {
+            if (propertiesToInclude != null)
+                return await base.GetAsync(propertiesToInclude);
+            
+            var excludor = Builders<User>.Projection.Exclude(x => x.Password);
+            return await MongoCollection
+                .Find(FilterDefinition<User>.Empty)
+                .Project<User>(excludor)
+                .ToListAsync();
         }
 
         public async Task UpdatePasswordAsync(ObjectId id, string password)
