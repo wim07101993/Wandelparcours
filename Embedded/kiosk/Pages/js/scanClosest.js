@@ -1,3 +1,6 @@
+/**
+ * scans all the beacons and returns the closest beacon
+ */
 exports.scanClosest = function () {
     return new Promise(function (resolve) {
         scanner().then(function (scannedData) {
@@ -21,7 +24,9 @@ exports.scanClosest = function () {
 
     });
 }
-
+/**
+ * scans all beacons
+ */
 function scanner() {
     return new Promise((resolve) => {
         try {

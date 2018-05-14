@@ -8,7 +8,9 @@ import {getBaseUrl} from "../../app.module.browser";
 
 declare var $: any;
 declare var Materialize: any;
-
+/**
+ * @ignore
+ */
 @Component({
   selector: 'app-stationmanagement',
   templateUrl: './stationmanagement.component.html',
@@ -16,7 +18,9 @@ declare var Materialize: any;
 })
 
 
-/** Class representing stationmanagement page. */
+/** 
+ * Class representing stationmanagement page. 
+ */
 export class StationmanagementComponent extends ARenderComponent implements OnInit , OnDestroy{
   position: Point;
   collidingElement: any;
@@ -42,6 +46,10 @@ export class StationmanagementComponent extends ARenderComponent implements OnIn
     clearInterval(this.tickInterval);
   }
 
+/**
+ * Get url for the image belonging to the marker 
+ * @returns string of url
+ */
   get markerUrl() {
     return getBaseUrl() + "assets/images/station.png";
   }
@@ -52,7 +60,9 @@ export class StationmanagementComponent extends ARenderComponent implements OnIn
       await this.service.LoadStations(this);
     }, 100);
   }
-
+/**
+ * Function that gets called every frame
+ */
   async Tick() {
     super.Tick();
     try {
@@ -62,6 +72,9 @@ export class StationmanagementComponent extends ARenderComponent implements OnIn
       console.log(ex);
     }
   }
+  /**
+   * Update station name
+   */
   async UpdateStation() {
     try {
       let id = this.stationsIds.get(this.collidingElement);
@@ -91,6 +104,7 @@ export class StationmanagementComponent extends ARenderComponent implements OnIn
   }
 
   /*
+  *   Function that's called when someone clicks on a sprite
   *   Opens modal to delete a station
   */
   async spriteClicked(id?: string) {
@@ -135,7 +149,7 @@ export class StationmanagementComponent extends ARenderComponent implements OnIn
     }
   }
 
-  /*
+  /** 
   *   This function opens a modal to create a station
   */
   async SaveStationToDatabaseModal(stationPosition: Point) {
@@ -146,7 +160,7 @@ export class StationmanagementComponent extends ARenderComponent implements OnIn
   }
 
 
-  /*
+  /**
   *  load marker;
   */
   public async LoadComponent() {
@@ -165,7 +179,7 @@ export class StationmanagementComponent extends ARenderComponent implements OnIn
   }
 
 
-  /*
+  /**
   * Recalculates location and size of all stations on the map
   */
   async RecalculateStations() {
@@ -195,7 +209,7 @@ export class StationmanagementComponent extends ARenderComponent implements OnIn
   }
 
 
-  /*
+  /**
   *   This function will send request to the rest to delete station
   */
   async DeleteCurrentStation() {
@@ -208,7 +222,7 @@ export class StationmanagementComponent extends ARenderComponent implements OnIn
     }, 200);
   }
 
-  /*
+  /**
   *   This function will send request to the rest to save station
   */
   async SaveNewStation() {
@@ -222,6 +236,9 @@ export class StationmanagementComponent extends ARenderComponent implements OnIn
 
   }
 
+  /**
+   * Opens modal to edit mac adress
+   */
   ShowEditBox() {
     this.editmac = (' ' + this.collidingElement).slice(1);
     this.editing = !this.editing;

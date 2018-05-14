@@ -31,6 +31,9 @@ export class ChatServer {
             console.log("constructor");
         }
     }
+    /**
+     * this function handle's the login
+     */
     login(){
         
         const http = axios.create({
@@ -48,6 +51,9 @@ export class ChatServer {
         }
     
       }
+      /**
+       * this function logs in every 10 minute, to make sure the token isn't invalid
+       */
       refreshToken(){
         const http = axios.create({
           headers: {'userName': this.username,"password":this.password}
@@ -62,12 +68,18 @@ export class ChatServer {
         });
           
       }
+      /**
+       * returns a axios instance with the login token
+       */
       axios(){
         const instance = axios.create({
           headers: {'token': this.token,'Content-type' : 'application/json'}
         });
         return instance;
       }
+      /**
+       * this function loads the positions of the stations into a maparray
+       */
     stationsLocationObservable() {
         let doRequest=()=>{
             console.log("intervalled");
@@ -87,6 +99,9 @@ export class ChatServer {
           doRequest();
         }, 10 * 60 * 1000);
     }
+    /**
+     * this function creates a listenner for the server
+     */
     createServer() {
         try {
             this.server = require('http').createServer();
@@ -98,7 +113,10 @@ export class ChatServer {
             console.log(error);
         }
     }
-
+    /**
+     * this functions returns the position of a station by it's mac/name
+     * @param {string} mac this is the mac or name of the station
+     */
     getPositionForMac(mac) {
         try {
             var position= this.stations.get(mac);
@@ -111,7 +129,11 @@ export class ChatServer {
             return "";
         }
     }
-
+    /**
+     * this function adds the beacon read by the station by a key
+     * @param  beacons the read value by the station
+     * @param {*} name the key for beacon
+     */
     addBeaconsToList(beacons, name) {
 
         beacons.forEach(element => {
@@ -134,6 +156,10 @@ export class ChatServer {
         });
     }
 
+    /**
+     * Converts a maparray to a json object, and sorts the stations by distance
+     * @param map a mapparray of beacons and stations for every beacon
+     */
     sortAndConvertMapToJson(map) {
 
         var scans = [];
@@ -162,6 +188,9 @@ export class ChatServer {
         }
 
     }
+    /**
+     * converts maparray with beacons and keys to a json object
+     */
     convertBeaconsMapToJson() {
         var jsonBeacons = {};
 
@@ -178,7 +207,9 @@ export class ChatServer {
         console.log(jsonBeacons);
         return jsonBeacons;
     }
-
+    /**
+     * @ignore
+     */
     getTrillaterationObject(beacon) {
         try {
             var pos = beacon.position;
@@ -189,7 +220,9 @@ export class ChatServer {
             return "";
         }
     }
-
+    /**
+     * validate position of resident and call save position function
+     */
     saveResidentPosition() {
         try {
             if (!this.scanned) {
@@ -211,7 +244,11 @@ export class ChatServer {
             console.log("calculateAndSavePosition");
         }
     }
-
+    /**
+     * save the position of the resident to the database
+     * @param tag the scanned beacon id
+     * @param location  name of the location
+     */
     savePositionToDatabase(tag, location) {
         console.log("saveposition")
         try{
@@ -231,6 +268,9 @@ export class ChatServer {
 
     }
 
+    /**
+     * add listeners to the socket server
+     */
     listen() {
         try {
             this.server.listen(this.port, () => {

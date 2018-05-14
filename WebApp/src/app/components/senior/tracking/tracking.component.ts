@@ -1,6 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import {RestServiceService} from '../../../service/rest-service.service';
+/**
+ * @ignore
+ */
 @Component({
   selector: 'app-tracking',
   templateUrl: './tracking.component.html',
@@ -19,6 +22,9 @@ export class TrackingComponent implements OnInit {
   }
   
   
+  /**
+   * Load location for current resident.
+   */
   async loadResidentLocation(){
     this.loaded = await this.service.getOneResidentWithAKnownLastLocation(this.id);
     var today = new Date();

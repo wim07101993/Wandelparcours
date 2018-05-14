@@ -11,7 +11,9 @@ export class Renderer {
   parentComponent: ARenderComponent;
   images = new Map<string, string>();
 
-
+  /**
+   * @ignore
+   */
   get width() {
     let width = 1;
     let map = this.CreateSprite(Sprites.map);
@@ -27,7 +29,7 @@ export class Renderer {
     return width;
   }
 
-  /*
+  /**
   *    Getter calculates relative the height of the image
   */
   get height() {
@@ -51,6 +53,9 @@ export class Renderer {
     this.Clear();
   }
 
+  /**
+   * this function clear and redraws the renderbuffer to the canvas
+   */
   CleanAndUpdateRenderBuffer() {
     this.Clear();
     this.app.stage.addChild(this.parentComponent.renderBuffer.map);
@@ -65,13 +70,20 @@ export class Renderer {
       });
     });
   }
-
+  /**
+   * this function creates a sprite
+   * @param key the key given for the created sprite
+   */
   CreateSprite(key: string) {
     let imageuri: string = <string>this.images.get(key);
     if (imageuri == null) throw "couldn't find image";
     return new Sprite(PIXI.loader.resources[imageuri].texture);
   }
-
+  /**
+   * load an url image to an maparray
+   * @param image the url to the image
+   * @param key the key to save in the maparray
+   */
   async LoadImages(image: string, key: string) {
     return new Promise(resolve => {
       try {
@@ -87,13 +99,18 @@ export class Renderer {
 
   }
 
+  /**
+   * this function clears the canvas
+   */
   Clear() {
     while (this.app.stage.children[0]) {
       this.app.stage.removeChild(this.app.stage.children[0]);
     }
   }
 
-
+  /**
+   * this function fixes the size of the canvas
+   */
   async FixCanvas() {
 
     this.app.renderer.resize(this.width, this.height);

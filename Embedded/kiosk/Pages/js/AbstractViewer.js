@@ -1,3 +1,4 @@
+
 class AbstractViewer{
     constructor(){
         var Store = require("electron-store");
@@ -12,6 +13,9 @@ class AbstractViewer{
         this.login();
         this.scanBeacon();
     }
+    /**
+   * log in every 10 min to refresh the token 
+   */
     refreshToken(){
         const http = this.http.create({
           headers: {'userName': this.username,"password":this.password}
@@ -26,6 +30,9 @@ class AbstractViewer{
         });
           
       }
+      /**
+       * returns an axios instance with a valid token
+       */
      axios(){
         const instance = this.http.create({
           headers: {'token': this.token,'Content-type' : 'application/json'}
@@ -39,6 +46,9 @@ class AbstractViewer{
         });
         return instance;
       }
+      /**
+       * logs in the station in the system
+       */
     login(){
         
         const http = this.http.create({
@@ -58,7 +68,9 @@ class AbstractViewer{
     
       }
     loadData(){}
-
+      /**
+       * this function loads and returns the closest beacon
+       */
     scanBeacon(){
         this.scanClosest().then((beacon)=>{
                 this.beacon=beacon;
@@ -66,7 +78,10 @@ class AbstractViewer{
             
         });
     }
-
+    /**
+     * this is a promise based timer
+     * @param {*} delay how much you want to delay
+     */
     timeOut(delay){
         
         this.debugTimeout++;

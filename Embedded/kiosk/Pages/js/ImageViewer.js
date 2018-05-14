@@ -12,7 +12,9 @@ class ImageViewer extends AbstractViewer{
         this.loopspeed = 6;
 
     }
-    
+    /**
+     * loads the images for the tag
+     */
     loadData(){
         
         if(this.beacon==null|| this.beacon == undefined){
@@ -47,6 +49,9 @@ class ImageViewer extends AbstractViewer{
             });
         }
     }
+    /**
+     * creates a carousel for the images
+     */
     createLoop() {
         var img = new Image()
         img.onload = ()=> { 
@@ -63,6 +68,10 @@ class ImageViewer extends AbstractViewer{
         
 
     }
+    /**
+     * fixes the aspect ratio for full screen for image
+     * @param {*} img source image
+     */
     fixSize(img) {
         $("#images").fadeOut(500,()=>{
             $("#images").empty();
@@ -84,6 +93,9 @@ class ImageViewer extends AbstractViewer{
         });
         
     }
+    /**
+     * shuffle's the list of images
+     */
     shuffle(a) {
         for (var i = a.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));

@@ -3,7 +3,9 @@ class VideoViewer extends AbstractViewer{
     constructor(){
         super();
     }
-    
+    /**
+     * steams the video
+     */
     loadData(){
         if(this.beacon==null|| this.beacon == undefined){
             this.scanBeacon();

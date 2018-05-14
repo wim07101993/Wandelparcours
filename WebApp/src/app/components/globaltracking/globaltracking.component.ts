@@ -11,7 +11,9 @@ declare var $: any;
 declare var Materialize: any;
 
 declare var $: any;
-
+/**
+ * @ignore
+ */
 @Component({
   selector: 'app-globaltracking',
   templateUrl: './globaltracking.component.html',
@@ -44,6 +46,9 @@ export class GlobaltrackingComponent extends ARenderComponent implements OnInit,
     this.hostElement = this.elRef
   }
 
+  /**
+  * returns string of url to the marker image
+  */
   get markerUrl() {
     return getBaseUrl() + "assets/images/station.png";
   }
@@ -62,7 +67,9 @@ export class GlobaltrackingComponent extends ARenderComponent implements OnInit,
       this.loadResidents();
     }, 5000);
   }
-
+  /**
+   * get id from the url
+   */
   checkId(){
     try {
       this.id=this.route.snapshot.params['id'];
@@ -77,6 +84,9 @@ export class GlobaltrackingComponent extends ARenderComponent implements OnInit,
     this.id=undefined;
   }
 
+  /**
+   * Load residents from the rest service
+   */
   async loadResidents() {
     let loaded: any;
     if (window.location.pathname.indexOf("resident")==-1) {
@@ -115,6 +125,9 @@ export class GlobaltrackingComponent extends ARenderComponent implements OnInit,
     }
 
   }
+  /**
+   * This function gets called every frame
+   */
   async Tick() {
     super.Tick();
     try {
@@ -127,7 +140,7 @@ export class GlobaltrackingComponent extends ARenderComponent implements OnInit,
 
 
 
-  /*
+  /**
   *   Opens modal to delete a station
   */
   async spriteClicked(id?: string) {
@@ -139,7 +152,7 @@ export class GlobaltrackingComponent extends ARenderComponent implements OnInit,
 
 
 
-  /*
+  /**
   *  load marker;
   */
   public async LoadComponent() {
@@ -159,7 +172,7 @@ export class GlobaltrackingComponent extends ARenderComponent implements OnInit,
   }
 
 
-  /*
+  /**
   * Recalculates location and size of all stations on the map
   */
   async RecalculateStations() {
