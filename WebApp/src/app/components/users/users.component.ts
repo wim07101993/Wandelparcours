@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, NgZone } from '@angular/core';
 import {RestServiceService} from '../../service/rest-service.service';
 import {NgForm} from '@angular/forms';
 import {user} from '../../models/user';
@@ -36,10 +36,10 @@ export class UsersComponent implements OnInit {
     
     residentToUserId="";
     residentToUserList=new Map<string,string>();
-    loading=false;
+    loadingOverlay : boolean=false;
     password: string;
     passwordcheck: string;
-    constructor(private service: RestServiceService) {
+    constructor(private service: RestServiceService,private app: NgZone) {
         this.userModal = <user>{};
         
     }
@@ -47,17 +47,18 @@ export class UsersComponent implements OnInit {
     
 
     async ngOnInit() {
-        this.loading=true;
+        this.loadingOverlay=true;
         try{
             await this.getUsers();
             $('select').material_select();
             await this.showAllResidents();
-            this.loading=false;
+            this.loadingOverlay=false;
         }catch(ex){
             console.log(ex);
-            this.loading=false;
+            this.loadingOverlay=false;
         }
-        this.loading=false;
+
+        this.loadingOverlay=false;
     }
     async getUsers() {
         this.users = await this.service.getUsers();
@@ -85,7 +86,7 @@ export class UsersComponent implements OnInit {
         $('#edit-user-modal').modal('open');
     }
 
-    createUser() {
+    async createUser() {
         console.log(this.createUserModel);
         if(this.createUserModel.userName==""){
             Materialize.toast('Vul Gebruikersnaam in!', 3000);
@@ -108,14 +109,15 @@ export class UsersComponent implements OnInit {
             return;
         }
         
-        this.service.createUser(this.createUserModel.userName,this.createUserModel.password,this.createUserModel.userType,this.createUserModel.email);
+        await this.service.createUser(this.createUserModel.userName,this.createUserModel.password,this.createUserModel.userType,this.createUserModel.email);
         this.createUserModel= new formUser();
         Materialize.toast('User succesvol toegevoegd!',5000);
         // close modal/form and 'reload' page
         setTimeout(() => {
             $('#add-user-modal').modal('close');
         }, 200);
-        this.getUsers();
+
+        this.ngOnInit();
     }
 
      /**
@@ -226,8 +228,13 @@ export class UsersComponent implements OnInit {
     updateUserList(user){
         this.residentToUserList.clear();
         this.selectedItems=[];
-        console.log(user);
-        //TODO: fill model
+        user.residents.forEach((residentId)=>{
+            let resident = this.residentsList.find((x)=>{return x.id==residentId});
+            this.selectedItems.push(resident);
+            this.residentToUserList.set(residentId,resident);
+        });
+
+        
         return;
     }
     OnResidentSelect(event){
@@ -237,6 +244,7 @@ export class UsersComponent implements OnInit {
         this.residentToUserList.delete(event.id);
     }
     async linkUsersToResident(){
+        this.loadingOverlay=true;
         try{
         let usersIds=  Array.from(this.residentToUserList.keys());
         let cleared=false;
@@ -252,6 +260,7 @@ export class UsersComponent implements OnInit {
             
         });
         }catch(ex){
+            this.loadingOverlay=false;
         }
         this.ngOnInit();
     }

@@ -36,7 +36,7 @@ const appRoutes: Routes = [
       { path: 'resident/:id/audio', component: AudioComponent },
       { path: 'resident/:id/game', component: GameComponent },
       { path: 'resident/:id/radio', component: RadioComponent },
-      { path: 'resident/:id/tracking', component: TrackingComponent },
+      { path: 'resident/:id/track', component: TrackingComponent },
       { path: 'modules', component: StationmanagementComponent },
       { path: 'tracking', component: GlobaltrackingComponent },
       { path: 'users', component: UsersComponent },

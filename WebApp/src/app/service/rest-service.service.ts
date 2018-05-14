@@ -36,8 +36,6 @@ export class RestServiceService {
       }
   }
 
-
-
   /**
    * get one resident and only the needed properties
    * @param uniqueIdentifier unique id of resident
@@ -51,6 +49,7 @@ export class RestServiceService {
         console.log(e.toString());
     }
   }
+
   /**
    * delete resident from database based on id
    * @param uniqueIdentifier unique id of resident
@@ -63,6 +62,7 @@ export class RestServiceService {
         console.log(e.toString());
     }
   }
+
   /**
    * Edit resident in database based on Resident object with properties and only the properties that have been changed
    * @param dataToUpdate Object Resident with all properties
@@ -80,6 +80,7 @@ export class RestServiceService {
         console.log("Error Message: "+ e.toString())
     }
   }
+
   /**
    * Add resident to database
    * @param data Object resident with all saved properties
@@ -92,6 +93,7 @@ export class RestServiceService {
         console.log(e.toString());
     }
   }
+
   /**
      * Profilepicture will always be null when a resident is created
      * When a picture is selected null -> picture (param)
@@ -108,11 +110,11 @@ export class RestServiceService {
   ////////
 
   /**
-     * Add a beaconTag to a resident
-     * @param {string} uniqueIdentifier
-     * @param beaconMinorNumber
-     * @returns {Promise<any>}
-     */
+   * Add a beaconTag to a resident
+   * @param {string} uniqueIdentifier
+   * @param beaconMinorNumber
+   * @returns {Promise<any>}
+   */
   async addTagToResident(uniqueIdentifier: string, beaconMinorNumber: any){
     try {
         return (await this.login.axios.post('/api/v1/residents/' + uniqueIdentifier + '/tags', beaconMinorNumber, {
@@ -126,11 +128,11 @@ export class RestServiceService {
   }
 
   /**
-     * Delete a beaconTag from a resident
-     * @param {string} uniqueIdentifier
-     * @param {string} uniqueTagId
-     * @returns {Promise<any>}
-     */
+   * Delete a beaconTag from a resident
+   * @param {string} uniqueIdentifier
+   * @param {string} uniqueTagId
+   * @returns {Promise<any>}
+   */
   async deleteTagFromResident(uniqueIdentifier: string, uniqueTagId: string) {
     try {
         await this.login.axios.delete('/api/v1/residents/' + uniqueIdentifier + '/' + uniqueTagId);
@@ -302,6 +304,15 @@ export class RestServiceService {
     /////////
     //Users//
     /////////
+
+    /**
+     *  Create new User
+     * @param userName
+     * @param password
+     * @param userType -3 levels of usertype --> admin etc...
+     * @param email
+     * @returns {Promise<boolean>}
+     */
     async createUser(userName,password,userType, email){
         try {
             let login =await this.login.axios.post("/api/v1/users",{"userName":userName,"password":password,"userType":userType, "email": email});
@@ -311,6 +322,12 @@ export class RestServiceService {
         }
     }
 
+    /**
+     * Update user data
+     * @param dataToUpdate
+     * @param changedProperties
+     * @returns {Promise<any>}
+     */
     async updateUser(dataToUpdate: any, changedProperties: any){
         let url: string = '?properties=' + changedProperties[0];
         for (let _i = 1; _i < changedProperties.length; _i++) {
@@ -323,6 +340,11 @@ export class RestServiceService {
         }
     }
 
+    /**
+     *  Delete user based on uniqueIdentifier
+     * @param {string} uniqueIdentifier
+     * @returns {Promise<void>}
+     */
     async deleteUser(uniqueIdentifier: string){
         try{
             await this.login.axios.delete('/api/v1/users/' + uniqueIdentifier)
@@ -331,6 +353,10 @@ export class RestServiceService {
         }
     }
 
+    /**
+     *
+     * @returns {Promise<any>}
+     */
     async getUsers(){
       try{
           const resp = (await this.login.axios.get('/api/v1/users')).data;
@@ -339,6 +365,13 @@ export class RestServiceService {
           console.log('Errormessage: ' + e.toString());
       }
     }
+
+    /**
+     * Links one or multiple residents to a specefic user
+     * @param userId
+     * @param residentId
+     * @returns {Promise<boolean>}
+     */
     async linkResidentToUser(userId,residentId){
         try{
             const resp = (await this.login.axios.post(`/api/v1/users/${userId}/residents`,JSON.stringify(residentId))).data;
@@ -346,8 +379,13 @@ export class RestServiceService {
         }catch(e){
             return false;
         }
-        
     }
+
+    /**
+     * Delete a resident or residents from a specefic user
+     * @param userId
+     * @returns {Promise<boolean>}
+     */
     async clearResidentsFromUser(userId){
         try{
             const resp = (await this.login.axios.delete(`/api/v1/users/${userId}/residents/clear`)).data;
