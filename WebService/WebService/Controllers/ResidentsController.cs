@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Net;
@@ -203,53 +204,54 @@ namespace WebService.Controllers
             var convertedMedia = GetConvertedMedia(data, mediaType, maxFileSize);
             var title = data.File.FileName;
 
-            using (var stream = data.File.OpenReadStream())
+            using (var stream = convertedMedia.Item1)
             {
                 await ((IResidentsService) DataService)
-                    .AddMediaAsync(residentObjectId, title, stream, mediaType, convertedMedia.Item2);                
+                    .AddMediaAsync(residentObjectId, title, stream, mediaType, convertedMedia.Item2);
             }
-            
+
             return StatusCode((int) HttpStatusCode.Created);
         }
 
-        private Tuple<byte[], string> GetConvertedMedia(MultiPartFile data, EMediaType mediaType, int maxFileSize)
+        private Tuple<Stream, string> GetConvertedMedia(MultiPartFile data, EMediaType mediaType, int maxFileSize)
         {
-            byte[] bytes;
+            Stream stream;
             string extension;
 
             switch (mediaType)
             {
                 case EMediaType.Video:
-                    if (!CanConvert)
+
+                    var contentType = data.File.ContentType;
+                    switch (contentType)
                     {
-                        var contentType = data.File.ContentType;
-                        switch (contentType)
-                        {
-                            case "video/ogg":
-                            case "video/mp4":
-                            case "video/webm":
-                                bytes = data.File.OpenReadStream().ToBytes(maxFileSize);
-                                extension = GetExtensionFromContentType(contentType);
-                                break;
-                            default:
+                        case "video/ogg":
+                        case "video/mp4":
+                        case "video/webm":
+                            stream = data.File.OpenReadStream();
+                            extension = GetExtensionFromContentType(contentType);
+                            break;
+                        default:
+                            if (!CanConvert)
                                 throw new BadMediaException($"Videos with the type {contentType} are not allowed");
-                        }
-                    }
-                    else
-                    {
-                        var video = new Video(data.File.OpenReadStream());
-                        bytes = _videoConverter.ConvertToWebm(video).Stream.ToBytes(maxFileSize);
-                        extension = "webm";
+                            else
+                            {
+                                var video = new Video(data.File.OpenReadStream());
+                                stream = _videoConverter.ConvertToWebm(video).Stream;
+                                extension = "webm";
+                            }
+
+                            break;
                     }
 
                     break;
                 default:
-                    bytes = data.File.OpenReadStream().ToBytes(maxFileSize);
+                    stream = data.File.OpenReadStream();
                     extension = GetExtensionFromContentType(data.File.ContentType);
                     break;
             }
 
-            return new Tuple<byte[], string>(bytes, extension);
+            return new Tuple<Stream, string>(stream, extension);
         }
 
         private string GetExtensionFromContentType(string contentType)

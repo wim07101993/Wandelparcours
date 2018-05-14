@@ -50,7 +50,15 @@ namespace WebService.Services.Data.Mongo
         public virtual async Task CreateAsync(T item)
             => await CreateAsync(item, true);
 
-        /// <inheritdoc />
+        /// <summary>
+        /// Creates a new <see cref="T"/> in the database.
+        /// </summary>
+        /// <param name="item">The <see cref="T"/> to create in the database</param>
+        /// <param name="generateNewId">
+        /// Boolean to indicate whether a new id should be generated for the <see cref="T"/>
+        /// </param>
+        /// <exception cref="ArgumentNullException">If <see cref="item"/> is null, it can't be created</exception>
+        /// <exception cref="DatabaseException">Throws when the database throws an exception.</exception>
         protected virtual async Task CreateAsync(T item, bool generateNewId)
         {
             if (item == null)
@@ -70,6 +78,10 @@ namespace WebService.Services.Data.Mongo
         }
 
         /// <inheritdoc />
+        /// <exception cref="ArgumentNullException">If <see cref="itemToAdd"/> is null, it can't be added</exception>
+        /// <exception cref="NotFoundException{T}">
+        /// If there is no item with the id <see cref="id"/>, it cant'be modified.
+        /// </exception>
         public virtual async Task AddItemToListProperty<TValue>(ObjectId id,
             Expression<Func<T, IEnumerable<TValue>>> propertyToAddItemTo, TValue itemToAdd)
         {
@@ -108,39 +120,82 @@ namespace WebService.Services.Data.Mongo
         public virtual async Task<TOut> GetPropertyAsync<TOut>(ObjectId id, Expression<Func<T, TOut>> propertyToSelect)
             => await GetPropertyByAsync(x => x.Id == id, propertyToSelect);
 
-
-        /// <inheritdoc />
+        /// <summary>
+        /// Gets a <see cref="T"/> from the database if a condition is met.
+        /// </summary>
+        /// <param name="condition">The condition that needs to be fullfilled to return the <see cref="T"/></param>
+        /// <param name="propertiesToInclude">
+        /// The properties to include in the query (if it is null, all properties are passed).
+        /// </param>
+        /// <returns>The item for which the condition returns true</returns>
+        /// <exception cref="NotFoundException{T}">
+        /// Throws if there is no <see cref="T"/> for which the condition returns true.
+        /// </exception>
+        /// <exception cref="DatabaseException">Throws when the database throws an exception.</exception>
         protected async Task<T> GetByAsync(Expression<Func<T, bool>> condition,
             IEnumerable<Expression<Func<T, object>>> propertiesToInclude = null)
         {
-            var find = MongoCollection.Find(condition);
+            try
+            {
+                var find = MongoCollection.Find(condition);
 
-            if (!find.Any())
-                throw new NotFoundException<T>();
+                if (!find.Any())
+                    throw new NotFoundException<T>();
 
-            return await find
-                .Select(propertiesToInclude)
-                .FirstOrDefaultAsync();
+                return await find
+                    .Select(propertiesToInclude)
+                    .FirstOrDefaultAsync();
+            }
+            catch (NotFoundException)
+            {
+                throw;
+            }
+            catch (Exception e)
+            {
+                throw new DatabaseException(EDatabaseMethod.Read, e);
+            }
         }
 
-        /// <inheritdoc />
+        /// <summary>
+        /// Gets a property of a <see cref="T"/> from the database if a condition is met.
+        /// </summary>
+        /// <param name="condition">The condition that needs to be fullfilled to return the <see cref="T"/></param>
+        /// <param name="propertyToSelect">The property to get the value of</param>
+        /// <typeparam name="TOut">Type of the value to get.</typeparam>
+        /// <returns>The property of the item for which the condition returns true.</returns>
+        /// <exception cref="ArgumentNullException">If the propertyToSelect is null, nothing can't be returned.</exception>
+        /// <exception cref="NotFoundException{T}">
+        /// Throws if there is no <see cref="T"/> for which the condition returns true.
+        /// </exception>
+        /// <exception cref="DatabaseException">Throws when the database throws an exception.</exception>
         protected async Task<TOut> GetPropertyByAsync<TOut>(Expression<Func<T, bool>> condition,
             Expression<Func<T, TOut>> propertyToSelect)
         {
             if (propertyToSelect == null)
                 throw new ArgumentNullException(nameof(propertyToSelect));
 
-            var find = MongoCollection.Find(condition);
+            try
+            {
+                var find = MongoCollection.Find(condition);
 
-            if (!find.Any())
-                throw new NotFoundException<T>();
+                if (!find.Any())
+                    throw new NotFoundException<T>();
 
-            // build a query to get the single property
-            var projector = Builders<T>.Projection.Expression(propertyToSelect);
+                // build a query to get the single property
+                var projector = Builders<T>.Projection.Expression(propertyToSelect);
 
-            return await find
-                .Project(projector)
-                .FirstOrDefaultAsync();
+                return await find
+                    .Project(projector)
+                    .FirstOrDefaultAsync();
+            }
+            catch (NotFoundException)
+            {
+                throw;
+            }
+            catch (Exception e)
+            {
+                throw new DatabaseException(EDatabaseMethod.Read, e);
+            }
         }
 
         #endregion read
@@ -149,6 +204,11 @@ namespace WebService.Services.Data.Mongo
         #region update
 
         /// <inheritdoc />
+        /// <exception cref="ArgumentNullException">If the new item is null, there is no id to compare to.</exception>
+        /// <exception cref="NotFoundException{T}">
+        /// Throws if there is no <see cref="T"/> with the same id as <see cref="newItem"/>
+        /// </exception>
+        /// <exception cref="DatabaseException">Throws when the database throws an exception.</exception>
         public virtual async Task UpdateAsync(T newItem,
             IEnumerable<Expression<Func<T, object>>> propertiesToUpdate = null)
         {
@@ -160,7 +220,7 @@ namespace WebService.Services.Data.Mongo
 
             if (newItem == null)
                 throw new ArgumentNullException(nameof(newItem));
-            
+
             // build a query to update only the properties in propertiesToUpdate in the item
             var update = Builders<T>.Update.Set(x => x.Id, newItem.Id);
             update = propertiesToUpdate.Aggregate(
@@ -175,6 +235,11 @@ namespace WebService.Services.Data.Mongo
         }
 
         /// <inheritdoc />
+        /// <exception cref="ArgumentNullException">If the new item is null, there is no id to compare to.</exception>
+        /// <exception cref="NotFoundException{T}">
+        /// Throws if there is no <see cref="T"/> with the same id as <see cref="newItem"/>
+        /// </exception>
+        /// <exception cref="DatabaseException">Throws when the database throws an exception.</exception>
         public virtual async Task ReplaceAsync(T newItem)
         {
             if (newItem == null)
