@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
@@ -51,7 +50,8 @@ namespace WebService.Services.Data.Mongo
         public async Task<bool> CheckCredentialsAsync(ObjectId id, string password)
         {
             var userPassword = await GetPropertyAsync(id, x => x.Password);
-            return password.EqualsToHash(id, userPassword);
+
+            return password.EqualsToHash(id, userPassword, usePepper: false) || password.EqualsToHash(id, userPassword);
         }
 
         public override async Task<IEnumerable<User>> GetAsync(
@@ -59,7 +59,7 @@ namespace WebService.Services.Data.Mongo
         {
             if (propertiesToInclude != null)
                 return await base.GetAsync(propertiesToInclude);
-            
+
             var excludor = Builders<User>.Projection.Exclude(x => x.Password);
             return await MongoCollection
                 .Find(FilterDefinition<User>.Empty)
