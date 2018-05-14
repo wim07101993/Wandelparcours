@@ -177,16 +177,19 @@ namespace WebService.Controllers
 
         [Authorize(EUserType.Nurse, EUserType.User)]
         [HttpPost(Routes.Residents.AddMusicData)]
+        [RequestSizeLimit(20_000_000)]
         public Task<StatusCodeResult> AddMusicAsync(string id, [FromForm] MultiPartFile musicData)
             => AddMediaAsync(id, musicData, EMediaType.Audio, (int) 20e6);
 
         [Authorize(EUserType.Nurse, EUserType.User)]
         [HttpPost(Routes.Residents.AddVideoData)]
+        [RequestSizeLimit(1_000_000_000)]
         public Task<StatusCodeResult> AddVideoAsync(string id, [FromForm] MultiPartFile videoData)
             => AddMediaAsync(id, videoData, EMediaType.Video, (int) 1e9);
 
         [Authorize(EUserType.Nurse, EUserType.User)]
         [HttpPost(Routes.Residents.AddImageData)]
+        [RequestSizeLimit(20_000_000)]
         public Task<StatusCodeResult> AddImageAsync(string id, [FromForm] MultiPartFile imageData)
             => AddMediaAsync(id, imageData, EMediaType.Image, (int) 20e6);
 
