@@ -68,7 +68,7 @@ namespace WebService.Services.Data.Mongo
 
         #region RemoveUnresolvableRelations
 
-        public async Task RemoveUnresolvableRelations()
+        public async Task RemoveUnresolvableRelationsAsync()
         {
             await RemoveMediaWithNonExistingResident();
             await RemoveUnKnownMedia();
@@ -173,11 +173,11 @@ namespace WebService.Services.Data.Mongo
         #endregion RemoveUnresolvableRelations
 
 
-        public async Task RemoveRedundantData()
+        public async Task RemoveRedundantDataAsync()
         {
         }
 
-        public async Task FillMissingFields()
+        public async Task FillMissingFieldsAsync()
         {
         }
 
@@ -186,9 +186,9 @@ namespace WebService.Services.Data.Mongo
         {
             IsWorking = true;
 
-            await RemoveUnresolvableRelations();
-            await RemoveRedundantData();
-            await FillMissingFields();
+            await RemoveUnresolvableRelationsAsync();
+            await RemoveRedundantDataAsync();
+            await FillMissingFieldsAsync();
 
             IsWorking = false;
         }

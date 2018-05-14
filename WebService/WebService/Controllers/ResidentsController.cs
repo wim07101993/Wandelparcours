@@ -197,15 +197,18 @@ namespace WebService.Controllers
                 throw new ArgumentNullException(nameof(data));
 
             var residentObjectId = await CanWriteDataToResidentAsync(id);
-            var bytes = GetBytes(data, mediaType, maxFileSize);
+            var convertedMedia = GetConvertedMedia(data, mediaType, maxFileSize);
             var title = data.File.FileName;
             await ((IResidentsService) DataService)
-                .AddMediaAsync(residentObjectId, title, bytes, mediaType, data.File.ContentType.Split('/')[1]);
+                .AddMediaAsync(residentObjectId, title, convertedMedia.Item1, mediaType, convertedMedia.Item2);
             return StatusCode((int) HttpStatusCode.Created);
         }
 
-        private byte[] GetBytes(MultiPartFile data, EMediaType mediaType, int maxFileSize)
+        private Tuple<byte[], string> GetConvertedMedia(MultiPartFile data, EMediaType mediaType, int maxFileSize)
         {
+            byte[] bytes;
+            string extension;
+
             switch (mediaType)
             {
                 case EMediaType.Video:
@@ -217,7 +220,9 @@ namespace WebService.Controllers
                             case "video/ogg":
                             case "video/mp4":
                             case "video/webm":
-                                return data.File.OpenReadStream().ToBytes(maxFileSize);
+                                bytes = data.File.OpenReadStream().ToBytes(maxFileSize);
+                                extension = GetExtensionFromContentType(contentType);
+                                break;
                             default:
                                 throw new BadMediaException($"Videos with the type {contentType} are not allowed");
                         }
@@ -225,14 +230,22 @@ namespace WebService.Controllers
                     else
                     {
                         var video = new Video(data.File.OpenReadStream());
-                        return _videoConverter
-                            .ConvertToWebm(video)
-                            .Stream.ToBytes(maxFileSize);
+                        bytes = _videoConverter.ConvertToWebm(video).Stream.ToBytes(maxFileSize);
+                        extension = "webm";
                     }
+
+                    break;
                 default:
-                    return data.File.OpenReadStream().ToBytes(maxFileSize);
+                    bytes = data.File.OpenReadStream().ToBytes(maxFileSize);
+                    extension = GetExtensionFromContentType(data.File.ContentType);
+                    break;
             }
+
+            return new Tuple<byte[], string>(bytes, extension);
         }
+
+        private string GetExtensionFromContentType(string contentType)
+            => contentType.Split('/')[1];
 
         [Authorize(EUserType.Nurse, EUserType.User)]
         [HttpPost(Routes.Residents.AddMusicUrl)]

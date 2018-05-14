@@ -28,7 +28,21 @@ namespace WebService.Services.Data.Mongo
                 throw new ArgumentNullException(nameof(user));
 
             user.Id = ObjectId.GenerateNewId();
-            user.Password = user.Password.Hash(user.Id);
+            switch (user.UserType)
+            {
+                case EUserType.SysAdmin:
+                    user.Password = user.Password.Hash(user.Id);
+                    break;
+                case EUserType.Nurse:
+                case EUserType.User:
+                case EUserType.Module:
+                case EUserType.Guest:
+                    user.Password = user.Password.Hash(user.Id, usePepper: false);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+
 
             await CreateAsync(user, false);
         }
@@ -36,7 +50,21 @@ namespace WebService.Services.Data.Mongo
         public async Task<bool> CheckCredentialsAsync(ObjectId id, string password)
         {
             var userPassword = await GetPropertyAsync(id, x => x.Password);
-            return password.EqualsToHash(id, userPassword);
+
+            return password.EqualsToHash(id, userPassword, usePepper: false) || password.EqualsToHash(id, userPassword);
+        }
+
+        public override async Task<IEnumerable<User>> GetAsync(
+            IEnumerable<Expression<Func<User, object>>> propertiesToInclude = null)
+        {
+            if (propertiesToInclude != null)
+                return await base.GetAsync(propertiesToInclude);
+
+            var excludor = Builders<User>.Projection.Exclude(x => x.Password);
+            return await MongoCollection
+                .Find(FilterDefinition<User>.Empty)
+                .Project<User>(excludor)
+                .ToListAsync();
         }
 
         public async Task UpdatePasswordAsync(ObjectId id, string password)

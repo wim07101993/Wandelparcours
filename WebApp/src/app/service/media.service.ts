@@ -7,8 +7,8 @@ export class MediaService {
   fullLinks: any = [];
 
   get url(): string {
-    return 'http://localhost:5000/api/v1/media/';
-    // return document.getElementsByTagName('base')[0].href + 'api/v1/media/';
+    //return 'http://localhost:5000/api/v1/media/';
+     return document.getElementsByTagName('base')[0].href + 'api/v1/media/';
   }
 
   constructor(private service: RestServiceService) {}
