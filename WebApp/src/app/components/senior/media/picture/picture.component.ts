@@ -23,23 +23,23 @@ export class PictureComponent implements OnInit {
 
   constructor(private route: ActivatedRoute, private media: MediaService,private login:LoginService) {}
 
-
-
   ngOnInit() {
     this.getAllImages();
     this.typeOfMedia = "image/*";
     this.deleteResidentImage = <Resident>{images: {}};
   }
-  /**
-   * reload page
-   */
+
+    /**
+     * Reloads the page
+     */
   reload() {
     this.getAllImages();
   }
 
-  /**
-   * Gets all urls for images
-   */
+    /**
+     * Gets all the URLS for the images
+     * @returns {Promise<void>}
+     */
   async getAllImages() {
     this.fullLinks = [];
     this.fullLinks = await this.media.getMedia(this.id, this.picture);
@@ -59,16 +59,17 @@ export class PictureComponent implements OnInit {
     this.getAllImages();
   }
 
-  /*
-  *   Closes the modal to delete a picture
+  /**
+  *  Closes the modal to delete a picture
   */
   CloseModal() {
     $("#deleteModal").modal("close");
   }
 
-  /*
-  *   Opens modal to delete a picture
-  */
+    /**
+     * open modal with resident media to delete a picture
+     * @param {Resident} resident
+     */
   deleteModal(resident: Resident) {
     this.deleteResidentImage = resident;
     $("#deleteModal").modal();

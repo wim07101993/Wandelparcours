@@ -16,6 +16,13 @@ export class AudioComponent implements OnInit {
     id: string = this.route.snapshot.params['id'];
     music: string = "/music";
     deleteResidentMusic: Resident;
+
+    /**
+     * Injectable params in constructor
+     * @param {ActivatedRoute} route
+     * @param {MediaService} media
+     * @param {LoginService} login
+     */
   constructor(private route: ActivatedRoute, private media: MediaService,private login:LoginService) { }
 
   ngOnInit() {
@@ -24,16 +31,28 @@ export class AudioComponent implements OnInit {
       this.deleteResidentMusic = <Resident>{music: {}};
   }
 
+    /**
+     * Reload page after adding a audio file
+     */
     reload() {
         this.getAllMusic();
     }
 
+    /**
+     * Get all URLS for music --> music will not be displayed only titles etc
+     * for further implementation see thesis for future references
+     * @returns {Promise<void>}
+     */
     async getAllMusic(){
         this.fullLinks = [];
         this.fullLinks = await this.media.getMedia(this.id, this.music);
-        console.log(this.fullLinks);
     }
 
+    /**
+     * Delete the media of the resident based on ID of media
+     * @param {string} uniqueAudioID
+     * @returns {Promise<void>}
+     */
     async deleteResidentMediaByUniqueId(uniqueAudioID: string) {
         await this.media.deleteMedia(this.id, uniqueAudioID, this.music);
         Materialize.toast('Media succesvol verwijderd!',5000);
@@ -43,13 +62,18 @@ export class AudioComponent implements OnInit {
         this.getAllMusic();
     }
 
+    /**
+     * Closes modal
+     * @constructor
+     */
     CloseModal() {
         $("#deleteModal").modal("close");
     }
 
-    /*
-    *   Opens modal to delete a picture
-    */
+    /**
+     * Delete Audio with modal popup
+     * @param {Resident} resident
+     */
     deleteModal(resident: Resident) {
         this.deleteResidentMusic = resident;
         $("#deleteModal").modal();
@@ -57,7 +81,7 @@ export class AudioComponent implements OnInit {
     }
 
     /**
-     * Opens modal
+     * Opens modal this doesnt do anything just yet
      * @param modalResident
      */
     openModal(modalResident: Resident) {

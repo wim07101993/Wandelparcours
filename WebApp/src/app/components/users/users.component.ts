@@ -43,8 +43,6 @@ export class UsersComponent implements OnInit {
         this.userModal = <user>{};
         
     }
-    
-    
 
     async ngOnInit() {
         this.loadingOverlay=true;
@@ -60,23 +58,48 @@ export class UsersComponent implements OnInit {
 
         this.loadingOverlay=false;
     }
+
+    /**
+     * Get all users
+     * @returns {Promise<void>}
+     */
     async getUsers() {
         this.users = await this.service.getUsers();
     }
 
+    /**
+     * Delete a user based on id
+     * @param {string} userId
+     * @returns {Promise<void>}
+     */
     async deleteUser(userId: string) {
         await this.service.deleteUser(userId);
         Materialize.toast('User succesvol verwijderd!',5000);
         this.getUsers();
     }
 
+    /**
+     * Select a type (admin,...°
+     * @param event
+     * @constructor
+     */
     SelectCreateType(event){
         this.createUserModel.userType=event.id;
     }
+
+    /**
+     * Select to edit type
+     * @param event
+     * @constructor
+     */
     SelectEditType(event){
         this.editUserModel.userType=event.id;
     }
 
+    /**
+     * Opens user edit modal with user
+     * @param {user} users
+     */
     editUserModal(users:user){
         this.editUserModel.id=users.id;
         this.editUserModel.email=users.email;
@@ -86,6 +109,10 @@ export class UsersComponent implements OnInit {
         $('#edit-user-modal').modal('open');
     }
 
+    /**
+     * Create a new user with certain privileges
+     * @returns {Promise<void>}
+     */
     async createUser() {
         console.log(this.createUserModel);
         if(this.createUserModel.userName==""){
@@ -137,25 +164,25 @@ export class UsersComponent implements OnInit {
 
     }
 
-
-
     /**
-     * Reset the form on close
-     * @param form of type NgForm
+     * Reset the form
      */
     resetForm() {
         console.log("Test");
     }
 
-
+    /**
+     * Opens the add user modal
+     */
     openAddUserModal() {
         $('#add-user-modal').modal();
         $('#add-user-modal').modal('open');
     }
 
+    /**
+     * Validate password  with the form
+     */
     validatePassword() {
-        console.log(this.password);
-        console.log(this.passwordcheck);
         if (this.password !== this.passwordcheck) {
             alert('Wachtwoorden komen niet overeen!')
         }
@@ -165,7 +192,7 @@ export class UsersComponent implements OnInit {
     }
 
     /**
-     * Focus to input for the searchbar --> input will be active if event 'button' has been pressed
+     * focusInput to searchbar
      */
     focusInput() {
         setTimeout(() => {
@@ -174,21 +201,27 @@ export class UsersComponent implements OnInit {
     }
 
     /**
-     * Opens modal
-     * @param modalUser
+     * Opens modal with user
+     * @param {user} user
      */
     openModal(user: user) {
         this.userModal = user;
         $('#deleteModalUser').modal();
         $('#deleteModalUser').modal('open');
     }
+
     /**
-     * Close modal
+     * Closes modal
      */
     closeModal() {
         $().modal('close');
     }
 
+    /**
+     * Edit the user
+     * @param {user} userData
+     * @returns {Promise<void>}
+     */
     async editUser(userData: user){
         this.updateUser=userData;
         //this.updateUser.id = userData.id;
@@ -216,7 +249,8 @@ export class UsersComponent implements OnInit {
     }
 
     /**
-     * Opens residentToUsermodal
+     * Opens the add residents to user modal
+     * @param user
      */
     openResToUserModal(user){
         this.residentToUserId=user.id;
@@ -225,6 +259,11 @@ export class UsersComponent implements OnInit {
         $('#residentToUserModal').modal();
         $('#residentToUserModal').modal('open');
     }
+
+    /**
+     * Updates user user list
+     * @param user
+     */
     updateUserList(user){
         this.residentToUserList.clear();
         this.selectedItems=[];
@@ -237,12 +276,29 @@ export class UsersComponent implements OnInit {
         
         return;
     }
+
+    /**
+     * Observer checks changes in selected resident
+     * @param event
+     * @constructor
+     */
     OnResidentSelect(event){
         this.residentToUserList.set(event.id,event);
     }
+
+    /**
+     * Observer checks changes in selected resident
+     * @param event
+     * @constructor
+     */
     OnResidentDeSelect(event){
         this.residentToUserList.delete(event.id);
     }
+
+    /**
+     * Link a user to a resident <--> link resident to a user
+     * @returns {Promise<void>}
+     */
     async linkUsersToResident(){
         this.loadingOverlay=true;
         try{
@@ -264,12 +320,21 @@ export class UsersComponent implements OnInit {
         }
         this.ngOnInit();
     }
+
+    /**
+     * Selects all residents
+     * @param event
+     */
     onSelectAllResidents(event){
         console.log(event);
         event.forEach((resident)=>{
             this.residentToUserList.set(resident.id,resident);
         })
     }
+
+    /**
+     * Deselect all residents
+     */
     onDeSelectAllResidents(){
         this.residentToUserList.clear();
     }

@@ -61,19 +61,6 @@ namespace WebService.Services.Data.Mongo
             await AddMediaAsync(residentId, new MediaUrl {Id = ObjectId.GenerateNewId(), Url = url}, mediaType);
         }
 
-        public async Task<IEnumerable<Resident>> GetMany(IEnumerable<ObjectId> objectIds,
-            IEnumerable<Expression<Func<Resident, object>>> propertiesToInclude = null)
-        {
-            var filter = Builders<Resident>.Filter.In(x => x.Id, objectIds);
-
-            return objectIds == null
-                ? null
-                : await MongoCollection
-                    .Find(filter)
-                    .Select(propertiesToInclude)
-                    .ToListAsync();
-        }
-
         private async Task AddMediaAsync(ObjectId residentId, MediaUrl mediaUrl, EMediaType mediaType)
         {
             switch (mediaType)
@@ -113,6 +100,20 @@ namespace WebService.Services.Data.Mongo
             IEnumerable<Expression<Func<Resident, object>>> propertiesToInclude = null)
             => await GetByAsync(x => x.Tags != null && x.Tags.Contains(tag), propertiesToInclude);
 
+        public async Task<IEnumerable<Resident>> GetMany(IEnumerable<ObjectId> objectIds,
+            IEnumerable<Expression<Func<Resident, object>>> propertiesToInclude = null)
+        {
+            var filter = Builders<Resident>.Filter.In(x => x.Id, objectIds);
+
+            return objectIds == null
+                ? null
+                : await MongoCollection
+                    .Find(filter)
+                    .Select(propertiesToInclude)
+                    .ToListAsync();
+        }
+
+        
         public virtual async Task<TValue> GetPropertyAsync<TValue>(int tag,
             Expression<Func<Resident, TValue>> propertyToSelect)
             => await GetPropertyByAsync(x => x.Tags.Contains(tag), propertyToSelect);
