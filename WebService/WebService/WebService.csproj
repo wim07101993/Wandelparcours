@@ -3,7 +3,6 @@
     <TargetFramework>netcoreapp2.0</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
-    <Folder Include="files_to_convert" />
     <Folder Include="wwwroot" />
   </ItemGroup>
   <ItemGroup>
@@ -18,5 +17,14 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\VideoConverter\VideoConverter.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Remove="files_to_convert\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Remove="files_to_convert\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Remove="files_to_convert\**" />
   </ItemGroup>
 </Project>

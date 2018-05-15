@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using MongoDB.Bson;
 using MongoDB.Driver;
+using MongoDB.Driver.GridFS;
 using WebService.Helpers.Extensions;
 using WebService.Models;
 
@@ -24,6 +25,7 @@ namespace WebService.Services.Data.Mongo
 
         private readonly IConfiguration _configuration;
         private readonly IMediaService _mediaService;
+        private readonly GridFSBucket _mediaBucket;
 
         #endregion FIELDS
 
@@ -39,6 +41,13 @@ namespace WebService.Services.Data.Mongo
 
             _residentsCollection = database.GetCollection<Resident>(_configuration["Database:ResidentsCollectionName"]);
             _usersCollection = database.GetCollection<User>(_configuration["Database:UsersCollectionName"]);
+
+            _mediaBucket = new GridFSBucket(
+                database, new GridFSBucketOptions
+                {
+                    BucketName = config["Database:MediaBucket"],
+                    ChunkSizeBytes = MediaService.ChunkSize,
+                });
         }
 
         #endregion CONSTRUCTOR
@@ -76,10 +85,38 @@ namespace WebService.Services.Data.Mongo
 
         private async Task RemoveMediaWithNonExistingResident()
         {
-//            
-//            var owner = _mediaService.GetOwner()
-//            var ownerExistsFilter = Builders<MediaData>.Filter.Nin(x => x.OwnerId, residentIds);
-//            await _mediaCollection.DeleteManyAsync(ownerExistsFilter);
+            var mediaFields = new Expression<Func<Resident, object>>[]
+            {
+                x => x.Music,
+                x => x.Images,
+                x => x.Videos
+            };
+
+            var residents = await _residentsCollection
+                .Find(FilterDefinition<Resident>.Empty)
+                .Select(mediaFields)
+                .ToListAsync();
+
+            var residentMediaIds = new List<ObjectId>();
+            foreach (var resident in residents)
+            {
+                residentMediaIds.AddRange(resident.Images.Select(x => x.Id));
+                residentMediaIds.AddRange(resident.Videos.Select(x => x.Id));
+                residentMediaIds.AddRange(resident.Music.Select(x => x.Id));
+            }
+
+            var mediaIdsToRemove = new List<ObjectId>();
+            using (var result = await _mediaBucket.FindAsync(FilterDefinition<GridFSFileInfo>.Empty))
+            {
+                var ids = result
+                    .ToEnumerable()
+                    .Where(x => !residentMediaIds.Any())
+                    .Select(x => x.Id);
+                mediaIdsToRemove.AddRange(ids);
+            }
+
+            foreach (var id in mediaIdsToRemove)
+                await _mediaBucket.DeleteAsync(id);
         }
 
         private async Task RemoveUnKnownMedia()

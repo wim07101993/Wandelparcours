@@ -17,6 +17,8 @@ namespace WebService.Services.Data.Mongo
         private readonly GridFSBucket _mediaBucket;
         private readonly IMongoCollection<Resident> _residentsCollection;
 
+        public const int ChunkSize = 1048576;
+        
 
         public MediaService(IConfiguration config)
         {
@@ -27,7 +29,7 @@ namespace WebService.Services.Data.Mongo
                 database, new GridFSBucketOptions
                 {
                     BucketName = config["Database:MediaBucket"],
-                    ChunkSizeBytes = 1048576,
+                    ChunkSizeBytes = ChunkSize,
                 });
 
             _residentsCollection = database.GetCollection<Resident>(config["Database:ResidentsCollectionName"]);
