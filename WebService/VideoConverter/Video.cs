@@ -3,7 +3,7 @@ using System.IO;
 
 namespace VideoConverter
 {
-    public class Video : IDisposable
+    public class Video
     {
         public Video(Stream input)
         {
@@ -20,18 +20,7 @@ namespace VideoConverter
 
         public Stream Stream { get; }
 
-        public string FilePath { get; }
-
-        public bool DeleteOnDispose { get; set; }
-
-        public void Dispose()
-        {
-            Stream.Close();
-            Stream.Dispose();
-
-            if (DeleteOnDispose && FilePath != null && File.Exists(FilePath))
-                File.Delete(FilePath);
-        }
+        public string FilePath { get; private set; }
 
         public void WriteToFile(string filePath)
         {
@@ -39,6 +28,14 @@ namespace VideoConverter
             {
                 Stream.CopyTo(newFileStream);
             }
+
+            FilePath = filePath;
+        }
+
+        public void Delete()
+        {
+            if (!string.IsNullOrWhiteSpace(FilePath) && File.Exists(FilePath))
+                File.Delete(FilePath);
         }
     }
 }

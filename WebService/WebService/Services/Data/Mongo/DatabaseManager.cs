@@ -223,7 +223,7 @@ namespace WebService.Services.Data.Mongo
             IsWorking = true;
 
             if (Directory.Exists(VideoConverter.VideoConverter.FilesDirectory))
-                Directory.Delete(VideoConverter.VideoConverter.FilesDirectory);
+                Directory.Delete(VideoConverter.VideoConverter.FilesDirectory, true);
             await RemoveUnresolvableRelationsAsync();
             await RemoveRedundantDataAsync();
             await FillMissingFieldsAsync();

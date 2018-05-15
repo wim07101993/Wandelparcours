@@ -22,7 +22,9 @@ namespace VideoConverter
 
         public Video ConvertToFile(Video input, string outputPath)
         {
-            Convert(GetVideoPath(input), outputPath);
+            GiveVideoPathIfItHasNone(input);
+            Convert(input.FilePath, outputPath);
+            input.Delete();
 
             return new Video(outputPath);
         }
@@ -32,9 +34,15 @@ namespace VideoConverter
             CreateFilesDirectoryIfNotExists();
             var newFilePath = $"{FilesDirectory}/{GenerateFileName()}.{extension}";
 
-            Convert(GetVideoPath(input), newFilePath);
+            GiveVideoPathIfItHasNone(input);
+            Convert(input.FilePath, newFilePath);
+            input.Delete();
+            
+            var data = File.ReadAllBytes(newFilePath);
+            var stream = new MemoryStream(data);
+            File.Delete(newFilePath);
 
-            return new Video(newFilePath) {DeleteOnDispose = true};
+            return new Video(stream);
         }
 
         public bool CheckDependencies()
@@ -44,26 +52,21 @@ namespace VideoConverter
                 Convert("", "");
                 return true;
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 return false;
             }
         }
 
-        private static string GetVideoPath(Video video)
+
+        private static void GiveVideoPathIfItHasNone(Video video)
         {
+            CreateFilesDirectoryIfNotExists();
+
             var fileName = GenerateFileName();
+            var path = $"{FilesDirectory}/{fileName}";
 
-            using (video)
-            {
-                if (video.FilePath != null)
-                    return video.FilePath;
-
-                CreateFilesDirectoryIfNotExists();
-                var path = $"{FilesDirectory}/{fileName}";
-                video.WriteToFile(path);
-                return path;
-            }
+            video.WriteToFile(path);
         }
 
         private static void Convert(string source, string destination)
