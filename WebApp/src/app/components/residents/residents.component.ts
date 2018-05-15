@@ -263,7 +263,7 @@ export class ResidentsComponent implements OnInit {
     this.reset();
     // close modal/form and 'reload' page
     setTimeout(() => {
-      $("aProfilePicture");
+      
       $('#add-resident-modal').modal('close');
     }, 200);
 
@@ -309,6 +309,8 @@ export class ResidentsComponent implements OnInit {
   reset() {
     this.myInputVariableEdit.nativeElement.value = '';
     this.myInputVariableAdd.nativeElement.value = '';
+    this.selectedFile=[];
+    this.selectedFileImage=[];
     this.profilePic = '';
   }
 
