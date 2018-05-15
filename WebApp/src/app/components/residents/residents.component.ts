@@ -27,8 +27,8 @@ export class ResidentsComponent implements OnInit {
   reader: any;
   selectedFileImage: any = [];
   fd: any;
-  @ViewChild('myInput') myInputVariable: any;
-
+  @ViewChild('myInputAdd') myInputVariableAdd: any;
+  @ViewChild('myInputEdit') myInputVariableEdit: any;
   /**
    * Injects the service and router
    * @param service Restservice
@@ -208,6 +208,7 @@ export class ResidentsComponent implements OnInit {
     Materialize.toast('Bewoner succesvol geüpdate!',5000);
     // get all residents again after updating
     await this.showAllResidents();
+    this.ngOnInit();
   }
 
   /**
@@ -262,6 +263,7 @@ export class ResidentsComponent implements OnInit {
     this.reset();
     // close modal/form and 'reload' page
     setTimeout(() => {
+      $("aProfilePicture");
       $('#add-resident-modal').modal('close');
     }, 200);
 
@@ -305,7 +307,8 @@ export class ResidentsComponent implements OnInit {
      * Does this function do anything usefull?
      */
   reset() {
-    this.myInputVariable.nativeElement.value = '';
+    this.myInputVariableEdit.nativeElement.value = '';
+    this.myInputVariableAdd.nativeElement.value = '';
     this.profilePic = '';
   }
 
