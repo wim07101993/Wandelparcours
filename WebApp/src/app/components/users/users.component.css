@@ -2,8 +2,8 @@ table{
     margin: 16px;
 }
 
-#content {
-    position: relative;
+td, th {
+    padding: 8px 5px;
 }
 
 .card{
@@ -14,11 +14,14 @@ table{
     cursor: pointer;
 }
 
-.modal .modal-content{
-    padding: 48px;
-    padding-top: 24px;
-}
-
 h5{
     margin-bottom: 2%;
+}
+
+.text-uppercase{
+    text-transform: capitalize;
+}
+
+.loading{
+    display: none !important;
 }

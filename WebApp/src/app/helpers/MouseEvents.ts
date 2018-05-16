@@ -3,7 +3,9 @@ import {ARenderComponent} from "./ARenderComponent"
 declare var $: any;
 declare var Hammer: any;
 
-/** Class to track mouse events */
+/** 
+ * Class to track mouse events 
+ * */
 export class MouseEvents {
   aRenderComponent: ARenderComponent;
   canvas: HTMLCanvasElement;
@@ -57,7 +59,7 @@ export class MouseEvents {
     //hammer
   }
 
-  /*
+  /**
   * Stop panning
   *  @param {MouseEvents} parent - mouseevents object is passed trough param because (this) is not available in a es2015 event
   */
@@ -65,7 +67,7 @@ export class MouseEvents {
     parent.panLastPos = {x: 0, y: 0};
   }
 
-  /*
+  /**
   * Panning the canvas
   *  @param {any} e- this is the event that happened on the canvas
   *  @param {MouseEvents} parent - mouseevents object is passed trough param because (this) is not available in a es2015 event
@@ -91,7 +93,7 @@ export class MouseEvents {
 
   }
 
-  /*
+  /**
   *  This function tracks the movement of the mouse on the canves (used to put a station on the cursor)
   *  @param {any} e- this is the event that happened on the canvas
   */
@@ -110,7 +112,7 @@ export class MouseEvents {
 
   }
 
-  /*
+  /**
   *   This function calulates the position of the mouse on the image
   *   @param {Point} mousePos - this is the position of the mouse on the canvas
   *   @return {Point} The position of the mouse relative to the image
@@ -122,7 +124,7 @@ export class MouseEvents {
     return {x: x, y: y};
   }
 
-  /*
+  /**
   * This function calculates the position of te station on the image
   * @param  {Point} this is the location of the station on the image in %, 0,0 being left bottom corner and 1,1 being right top corner
   * @return {Point} this is the location of the station on the canvas on wich it is drawn on.
@@ -135,7 +137,7 @@ export class MouseEvents {
 
   }
 
-  /*
+  /**
    * This function is triggered when click on the mouse, is called when the user wants to put a station on the map
    * @param  {MouseEvent} e - event that the mouse has done
    */

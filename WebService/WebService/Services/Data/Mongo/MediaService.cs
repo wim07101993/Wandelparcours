@@ -1,38 +1,68 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.IO;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using MongoDB.Bson;
 using MongoDB.Driver;
-using WebService.Helpers.Exceptions;
+using MongoDB.Driver.GridFS;
+using WebService.Helpers.Extensions;
 using WebService.Models;
 
 namespace WebService.Services.Data.Mongo
 {
-    public class MediaService : AMongoDataService<MediaData>, IMediaService
+    public class MediaService : IMediaService
     {
+        private readonly GridFSBucket _mediaBucket;
+        private readonly IMongoCollection<Resident> _residentsCollection;
+
+        public const int ChunkSize = 1048576;
+        
+
         public MediaService(IConfiguration config)
-            : base(
-                config["Database:ConnectionString"],
-                config["Database:DatabaseName"],
-                config["Database:MediaCollectionName"])
         {
+            var database = new MongoClient(config["Database:ConnectionString"])
+                .GetDatabase(config["Database:DatabaseName"]);
+
+            _mediaBucket = new GridFSBucket(
+                database, new GridFSBucketOptions
+                {
+                    BucketName = config["Database:MediaBucket"],
+                    ChunkSizeBytes = ChunkSize,
+                });
+
+            _residentsCollection = database.GetCollection<Resident>(config["Database:ResidentsCollectionName"]);
         }
 
 
-        public override async Task CreateAsync(MediaData item)
-            => await CreateAsync(item, false);
+        public async Task<ObjectId> CreateAsync(Stream mediaToAdd, string title)
+            => await _mediaBucket .UploadFromStreamAsync(title, mediaToAdd);
 
-        public async Task<byte[]> GetOneAsync(ObjectId id, string extension)
-            => (await GetByAsync(x => x.Id == id && x.Extension == extension)).Data;
+        public async Task GetOneAsync(ObjectId id, Stream outStream)
+            => await _mediaBucket.DownloadToStreamAsync(id, outStream);
 
-        public async Task RemoveByResident(ObjectId residentId)
+        public async Task RemoveAsync(ObjectId objectId)
+            => await _mediaBucket.DeleteAsync(objectId);
+
+        public async Task<ObjectId> GetOwner(ObjectId mediaId)
         {
-            var deleter = Builders<MediaData>.Filter.Eq(x => x.OwnerId, residentId);
-            var deleteResult = await MongoCollection.DeleteManyAsync(deleter);
+            var residents = await _residentsCollection
+                .Find(FilterDefinition<Resident>.Empty)
+                .Select(new Expression<Func<Resident, object>>[] {x => x.Images, x => x.Videos, x => x.Music})
+                .ToListAsync();
+           
+            foreach (var resident in residents)
+                if (resident .Images.Any(x => x.Id == mediaId))
+                    return resident.Id;
+            foreach (var resident in residents)
+                if (resident .Videos.Any(x => x.Id == mediaId))
+                    return resident.Id;
+            foreach (var resident in residents)
+                if (resident .Music.Any(x => x.Id == mediaId))
+                    return resident.Id;
 
-            if (!deleteResult.IsAcknowledged)
-                throw new DatabaseException(EDatabaseMethod.Delete);
-            if (deleteResult.DeletedCount <= 0)
-                throw new NotFoundException<MediaData>();
+            return default(ObjectId);
         }
     }
 }

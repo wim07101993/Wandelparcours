@@ -1,34 +1,16 @@
 //ist.append(dict(id="1", rssi=random.randint(0, 50)))
 
-
-
-
-if (process.send) {
-    const Bleacon = require('bleacon');
-    var timeout = (process.argv[2]);
-    beacons = [];
-    Bleacon.startScanning();
-    Bleacon.on('discover', function (bleacon) {
-        beacons.push(bleacon)
-    });
-    setTimeout(function(){
-        
-        process.send(beacons);
-
-    },timeout)
-    
-}
-
 exports.scanner = function () {
-    const Bleacon = require('bleacon');
-    var beacons;
-    var scanning= false;
     return new Promise((resolve)=>{
-        this.scan().then((beacons)=>{
+        scan().then((beacons)=>{
             resolve(beacons);
         });
     });
-    this.scan = function () {
+}
+exports.scan = function () {
+        const Bleacon = require('bleacon');
+        var beacons;
+        var scanning= false;
         return new Promise((resolve) => {
             try {
                 
@@ -52,7 +34,7 @@ exports.scanner = function () {
                                 })
                             });
                             presolve(jsonbeacons);
-                        }, 2000);
+                        }, 10000);
     
                     });
                 }
@@ -66,4 +48,3 @@ exports.scanner = function () {
         });
     }
 
-}

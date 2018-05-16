@@ -1,6 +1,6 @@
 try {
-//var scanner =new  (require("../library/scanner").scanner)();
-var scanner = function(){return "";}
+var scan =require("../library/scanner").scan;
+//var scanner = function(){return "";}
 var mac = require("../library/mac").mac;
 let settings = require("../library/loader").loadsettings();
 process.setMaxListeners(99);
@@ -11,7 +11,9 @@ var socket = require('socket.io-client')(serverurl);
     
 socket.on('connect', function(){console.log("connect")});
 
-
+/**
+ * load the js code from the sserver and run it
+ */
 socket.on('clientcode', function(data){
     try {
         

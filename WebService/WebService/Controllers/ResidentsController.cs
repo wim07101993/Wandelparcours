@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Net;
@@ -9,6 +10,8 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Bson;
+using Newtonsoft.Json;
+using VideoConverter;
 using WebService.Controllers.Bases;
 using WebService.Helpers.Attributes;
 using WebService.Helpers.Exceptions;
@@ -27,27 +30,29 @@ namespace WebService.Controllers
     [SuppressMessage("ReSharper", "SpecifyACultureInStringConversionExplicitly")]
     public class ResidentsController : ARestControllerBase<Resident>, IResidentsController
     {
+        private readonly ILocationsService _locationsService;
+        private readonly IVideoConverter _videoConverter;
+        private static readonly bool CanConvert;
+
         #region CONSTRUCTOR
 
-        public ResidentsController(IResidentsService dataService, ILogger logger, IUsersService usersService)
+        public ResidentsController(ILocationsService locationsService, IResidentsService dataService, ILogger logger,
+            IUsersService usersService, IVideoConverter videoConverter)
             : base(dataService, logger, usersService)
         {
+            _locationsService = locationsService;
+            _videoConverter = videoConverter;
+        }
+
+        static ResidentsController()
+        {
+            CanConvert = new VideoConverter.VideoConverter().CheckDependencies();
         }
 
         #endregion CONSTRUCTOR
 
 
         #region PROPERTIES
-
-        protected override IEnumerable<Expression<Func<Resident, object>>> PropertiesToSendOnGetAll { get; }
-            = new Expression<Func<Resident, object>>[]
-            {
-                x => x.FirstName,
-                x => x.LastName,
-                x => x.Room,
-                x => x.Birthday,
-                x => x.Doctor,
-            };
 
         protected override IDictionary<string, Expression<Func<Resident, object>>> PropertySelectors { get; } =
             new Dictionary<string, Expression<Func<Resident, object>>>
@@ -94,9 +99,6 @@ namespace WebService.Controllers
                     isResponsible = true;
                     break;
                 case EUserType.Nurse:
-                    var residentRoom = await DataService.GetPropertyAsync(id, x => x.Room);
-                    isResponsible = new Regex($@"^{residentRoom}[0-9]*$").IsMatch(user.Group);
-                    break;
                 case EUserType.User:
                     isResponsible = user.Residents.Contains(id);
                     break;
@@ -124,9 +126,6 @@ namespace WebService.Controllers
                     isResponsible = true;
                     break;
                 case EUserType.Nurse:
-                    var residentRoom = await DataService.GetPropertyAsync(residentObjectId, x => x.Room);
-                    isResponsible = new Regex($@"^{residentRoom}[0-9]*$").IsMatch(user.Group);
-                    break;
                 case EUserType.User:
                     isResponsible = user.Residents.Contains(residentObjectId);
                     break;
@@ -151,8 +150,6 @@ namespace WebService.Controllers
                 case EUserType.Module:
                     return true;
                 case EUserType.Nurse:
-                    var residentRoom = await ((IResidentsService) DataService).GetPropertyAsync(tag, x => x.Room);
-                    return new Regex($@"^{residentRoom}[0-9]*$").IsMatch(user.Group);
                 case EUserType.User:
                     var id = await ((IResidentsService) DataService).GetPropertyAsync(tag, x => x.Id);
                     return user.Residents.Contains(id);
@@ -168,23 +165,32 @@ namespace WebService.Controllers
 
         #region post (create)
 
-        [Authorize(EUserType.SysAdmin, EUserType.Nurse)]
+        [Authorize(EUserType.SysAdmin)]
         [HttpPost(Routes.RestBase.Create)]
         public override Task<string> CreateAsync([FromBody] Resident item)
-            => base.CreateAsync(item);
+        {
+            if (item == null)
+                throw new ArgumentNullException(nameof(item));
 
-        [Authorize(EUserType.SysAdmin, EUserType.Nurse, EUserType.User)]
+            item.Room = item.Room?.ToUpper();
+            return base.CreateAsync(item);
+        }
+
+        [Authorize(EUserType.Nurse, EUserType.User)]
         [HttpPost(Routes.Residents.AddMusicData)]
+        [RequestSizeLimit(20_000_000)]
         public Task<StatusCodeResult> AddMusicAsync(string id, [FromForm] MultiPartFile musicData)
             => AddMediaAsync(id, musicData, EMediaType.Audio, (int) 20e6);
 
-        [Authorize(EUserType.SysAdmin, EUserType.Nurse, EUserType.User)]
+        [Authorize(EUserType.Nurse, EUserType.User)]
         [HttpPost(Routes.Residents.AddVideoData)]
+        [RequestSizeLimit(1_000_000_000)]
         public Task<StatusCodeResult> AddVideoAsync(string id, [FromForm] MultiPartFile videoData)
             => AddMediaAsync(id, videoData, EMediaType.Video, (int) 1e9);
 
-        [Authorize(EUserType.SysAdmin, EUserType.Nurse, EUserType.User)]
+        [Authorize(EUserType.Nurse, EUserType.User)]
         [HttpPost(Routes.Residents.AddImageData)]
+        [RequestSizeLimit(20_000_000)]
         public Task<StatusCodeResult> AddImageAsync(string id, [FromForm] MultiPartFile imageData)
             => AddMediaAsync(id, imageData, EMediaType.Image, (int) 20e6);
 
@@ -195,32 +201,73 @@ namespace WebService.Controllers
                 throw new ArgumentNullException(nameof(data));
 
             var residentObjectId = await CanWriteDataToResidentAsync(id);
+            var convertedMedia = GetConvertedMedia(data, mediaType, maxFileSize);
+            var title = data.File.FileName;
 
-            try
+            using (var stream = convertedMedia.Item1)
             {
-                var bytes = data.ConvertToBytes(maxFileSize);
-                var title = data.File.FileName;
                 await ((IResidentsService) DataService)
-                    .AddMediaAsync(residentObjectId, title, bytes, mediaType, data.File.ContentType.Split('/')[1]);
-                return StatusCode((int) HttpStatusCode.Created);
+                    .AddMediaAsync(residentObjectId, title, stream, mediaType, convertedMedia.Item2);
             }
-            catch (FileToLargeException)
-            {
-                throw new FileToLargeException(maxFileSize);
-            }
+
+            return StatusCode((int) HttpStatusCode.Created);
         }
 
-        [Authorize(EUserType.SysAdmin, EUserType.Nurse, EUserType.User)]
+        private Tuple<Stream, string> GetConvertedMedia(MultiPartFile data, EMediaType mediaType, int maxFileSize)
+        {
+            Stream stream;
+            string extension;
+
+            switch (mediaType)
+            {
+                case EMediaType.Video:
+
+                    var contentType = data.File.ContentType;
+                    switch (contentType)
+                    {
+                        case "video/ogg":
+                        case "video/mp4":
+                        case "video/webm":
+                            stream = data.File.OpenReadStream();
+                            extension = GetExtensionFromContentType(contentType);
+                            break;
+                        default:
+                            if (!CanConvert)
+                                throw new BadMediaException($"Videos with the type {contentType} are not allowed");
+                            else
+                            {
+                                var video = new Video(data.File.OpenReadStream());
+                                stream = _videoConverter.ConvertToWebm(video).Stream;
+                                extension = "webm";
+                            }
+
+                            break;
+                    }
+
+                    break;
+                default:
+                    stream = data.File.OpenReadStream();
+                    extension = GetExtensionFromContentType(data.File.ContentType);
+                    break;
+            }
+
+            return new Tuple<Stream, string>(stream, extension);
+        }
+
+        private string GetExtensionFromContentType(string contentType)
+            => contentType.Split('/')[1];
+
+        [Authorize(EUserType.Nurse, EUserType.User)]
         [HttpPost(Routes.Residents.AddMusicUrl)]
         public Task<StatusCodeResult> AddMusicAsync(string id, [FromBody] string url)
             => AddMediaAsync(id, url, EMediaType.Audio);
 
-        [Authorize(EUserType.SysAdmin, EUserType.Nurse, EUserType.User)]
+        [Authorize(EUserType.Nurse, EUserType.User)]
         [HttpPost(Routes.Residents.AddVideoUrl)]
         public Task<StatusCodeResult> AddVideoAsync(string id, [FromBody] string url)
             => AddMediaAsync(id, url, EMediaType.Video);
 
-        [Authorize(EUserType.SysAdmin, EUserType.Nurse, EUserType.User)]
+        [Authorize(EUserType.Nurse, EUserType.User)]
         [HttpPost(Routes.Residents.AddImageUrl)]
         public Task<StatusCodeResult> AddImageAsync(string id, [FromBody] string url)
             => AddMediaAsync(id, url, EMediaType.Image);
@@ -234,7 +281,7 @@ namespace WebService.Controllers
         }
 
 
-        [Authorize(EUserType.SysAdmin, EUserType.Nurse, EUserType.User)]
+        [Authorize(EUserType.Nurse, EUserType.User)]
         [HttpPost(Routes.Residents.AddColor)]
         public async Task<StatusCodeResult> AddColorAsync(string id, [FromBody] Color colorData)
         {
@@ -269,7 +316,7 @@ namespace WebService.Controllers
 
         #region get (read)
 
-        [Authorize(EUserType.SysAdmin, EUserType.Nurse, EUserType.Module, EUserType.User)]
+        [Authorize(EUserType.Nurse, EUserType.Module, EUserType.User)]
         [HttpGet(Routes.RestBase.GetAll)]
         public override async Task<IEnumerable<Resident>> GetAllAsync(string[] propertiesToInclude)
         {
@@ -284,22 +331,21 @@ namespace WebService.Controllers
 
             var selectors = !EnumerableExtensions.IsNullOrEmpty(propertiesToInclude)
                 ? ConvertStringsToSelectors(propertiesToInclude)
-                : PropertiesToSendOnGetAll;
+                : null;
 
             switch (user.UserType)
             {
                 case EUserType.SysAdmin:
                     return await DataService.GetAsync(selectors);
                 case EUserType.Nurse:
-                    return await ((ResidentsService) DataService).GetAllInGroup(user.Group, selectors);
                 case EUserType.User:
-                    return await ((ResidentsService) DataService).GetMany(user.Residents, selectors);
+                    return await ((IResidentsService) DataService).GetMany(user.Residents, selectors);
                 default:
                     throw new UnauthorizedException(EUserType.SysAdmin, EUserType.Nurse, EUserType.User);
             }
         }
 
-        [Authorize(EUserType.SysAdmin, EUserType.Nurse, EUserType.Module, EUserType.User)]
+        [Authorize(EUserType.Nurse, EUserType.Module, EUserType.User)]
         [HttpGet(Routes.RestBase.GetOne)]
         public override async Task<Resident> GetOneAsync(string id, string[] propertiesToInclude)
         {
@@ -307,7 +353,7 @@ namespace WebService.Controllers
             return await base.GetOneAsync(id, propertiesToInclude);
         }
 
-        [Authorize(EUserType.SysAdmin, EUserType.Nurse, EUserType.Module, EUserType.User)]
+        [Authorize(EUserType.Nurse, EUserType.Module, EUserType.User)]
         [HttpGet(Routes.RestBase.GetProperty)]
         public override async Task<object> GetPropertyAsync(string id, string propertyName)
         {
@@ -315,7 +361,7 @@ namespace WebService.Controllers
             return await base.GetPropertyAsync(id, propertyName);
         }
 
-        [Authorize(EUserType.SysAdmin, EUserType.Nurse, EUserType.Module, EUserType.User)]
+        [Authorize(EUserType.Nurse, EUserType.Module, EUserType.User)]
         [HttpGet(Routes.Residents.GetPicture)]
         public async Task<FileResult> GetPictureAsync(string id)
         {
@@ -328,9 +374,8 @@ namespace WebService.Controllers
         }
 
 
-        [Authorize(EUserType.SysAdmin, EUserType.Nurse, EUserType.Module)]
+        [Authorize(EUserType.Nurse, EUserType.Module)]
         [HttpGet(Routes.Residents.GetByTag)]
-        [HttpGet(Routes.Residents.GetByTagOld)]
         public async Task<Resident> GetByTagAsync(int tag, [FromQuery] string[] propertiesToInclude)
         {
             var selectors = !EnumerableExtensions.IsNullOrEmpty(propertiesToInclude)
@@ -348,9 +393,8 @@ namespace WebService.Controllers
             return resident;
         }
 
-        [Authorize(EUserType.SysAdmin, EUserType.Nurse, EUserType.Module)]
+        [Authorize(EUserType.Nurse, EUserType.Module)]
         [HttpGet(Routes.Residents.GetRandomElementFromProperty)]
-        [HttpGet(Routes.Residents.GetRandomElementFromPropertyOld)]
         public async Task<object> GetRandomElementFromPropertyAsync(int tag, string propertyName)
         {
             if (!await CanGetDataFromResidentAsync(tag))
@@ -387,9 +431,8 @@ namespace WebService.Controllers
             return data.RandomItem();
         }
 
-        [Authorize(EUserType.SysAdmin, EUserType.Nurse, EUserType.Module)]
+        [Authorize(EUserType.Nurse, EUserType.Module)]
         [HttpGet(Routes.Residents.GetPropertyByTag)]
-        [HttpGet(Routes.Residents.GetPropertyByTagOld)]
         public async Task<object> GetPropertyAsync(int tag, string propertyName)
         {
             if (!typeof(Resident).GetProperties().Any(x => x.Name.EqualsWithCamelCasing(propertyName)))
@@ -407,23 +450,30 @@ namespace WebService.Controllers
 
         #region put (update)
 
-        [Authorize(EUserType.SysAdmin, EUserType.Nurse, EUserType.User)]
+        [Authorize(EUserType.Nurse, EUserType.User)]
         [HttpPut(Routes.RestBase.Update)]
         public override async Task UpdateAsync([FromBody] Resident item, [FromQuery] string[] properties)
         {
             await CanWriteDataToResidentAsync(item.Id);
+
+            if (properties.Any(x => x.EqualsWithCamelCasing(nameof(Resident.Room))))
+                item.Room = item.Room?.ToUpper();
+
             await base.UpdateAsync(item, properties);
         }
 
-        [Authorize(EUserType.SysAdmin, EUserType.Nurse, EUserType.User)]
+        [Authorize(EUserType.Nurse, EUserType.User)]
         [HttpPut(Routes.RestBase.UpdateProperty)]
         public override async Task UpdatePropertyAsync(string id, string propertyName, [FromBody] string jsonValue)
         {
+            if (propertyName == nameof(Resident.LastRecordedPosition))
+                throw new NotFoundException();
+
             await CanWriteDataToResidentAsync(id);
             await base.UpdatePropertyAsync(id, propertyName, jsonValue);
         }
 
-        [Authorize(EUserType.SysAdmin, EUserType.Nurse, EUserType.User)]
+        [Authorize(EUserType.Nurse, EUserType.User)]
         [HttpPut(Routes.Residents.UpdatePicture)]
         public async Task UpdatePictureAsync(string id, [FromForm] MultiPartFile picture)
         {
@@ -445,27 +495,41 @@ namespace WebService.Controllers
             }
         }
 
+        [Authorize(EUserType.Module)]
+        [HttpPut(Routes.Residents.UpdateLastRecordedPosition)]
+        public async Task UpdateLastRecordedLocation(int tag, [FromBody] ResidentLocation location)
+        {
+            location.Id = ObjectId.GenerateNewId();
+            var id = await ((IResidentsService) DataService).GetPropertyAsync(tag, x => x.Id);
+            location.ResidentId = id;
+            location.TimeStamp = DateTime.Now;
+            await _locationsService.CreateAsync(location);
+            await ((IResidentsService) DataService)
+                .UpdatePropertyAsync(tag, x => x.LastRecordedPosition, location);
+            await DataService.AddItemToListProperty(id, x => x.Locations, location.Id);
+        }
+
         #endregion put (update)
 
 
         #region delete
 
-        [Authorize(EUserType.SysAdmin, EUserType.Nurse)]
+        [Authorize(EUserType.Nurse)]
         [HttpDelete(Routes.RestBase.Delete)]
         public override Task DeleteAsync(string id)
             => base.DeleteAsync(id);
 
-        [Authorize(EUserType.SysAdmin, EUserType.Nurse, EUserType.Module, EUserType.User)]
+        [Authorize(EUserType.Nurse, EUserType.User)]
         [HttpDelete(Routes.Residents.RemoveMusic)]
         public Task RemoveMusicAsync(string id, string musicId)
             => RemoveMediaAsync(id, musicId, EMediaType.Audio);
 
-        [Authorize(EUserType.SysAdmin, EUserType.Nurse, EUserType.Module, EUserType.User)]
+        [Authorize(EUserType.Nurse, EUserType.User)]
         [HttpDelete(Routes.Residents.RemoveVideo)]
         public Task RemoveVideoAsync(string id, string videoId)
             => RemoveMediaAsync(id, videoId, EMediaType.Video);
 
-        [Authorize(EUserType.SysAdmin, EUserType.Nurse, EUserType.Module, EUserType.User)]
+        [Authorize(EUserType.Nurse, EUserType.User)]
         [HttpDelete(Routes.Residents.RemoveImage)]
         public Task RemoveImageAsync(string id, string imageId)
             => RemoveMediaAsync(id, imageId, EMediaType.Image);
@@ -479,17 +543,16 @@ namespace WebService.Controllers
         }
 
 
-        [Authorize(EUserType.SysAdmin, EUserType.Nurse, EUserType.Module, EUserType.User)]
+        [Authorize(EUserType.Nurse, EUserType.User)]
         [HttpDelete(Routes.Residents.RemoveColor)]
         public async Task RemoveColorAsync(string id, [FromBody] Color color)
         {
             var residentObjectId = await CanWriteDataToResidentAsync(id);
 
-            await ((IResidentsService) DataService)
-                .RemoveSubItemAsync(residentObjectId, x => x.Colors, color);
+            await ((IResidentsService) DataService).RemoveColor(residentObjectId, color);
         }
 
-        [Authorize(EUserType.SysAdmin, EUserType.Nurse)]
+        [Authorize(EUserType.Nurse)]
         [HttpDelete(Routes.Residents.RemoveTag)]
         public async Task RemoveTag(string id, int tag)
         {

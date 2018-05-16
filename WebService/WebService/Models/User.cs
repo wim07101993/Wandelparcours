@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
+using Newtonsoft.Json;
+using WebService.Helpers.JsonConverters;
 using WebService.Models.Bases;
 
 namespace WebService.Models

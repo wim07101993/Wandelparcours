@@ -31,24 +31,6 @@ namespace WebService.Controllers
         public static class Locations
         {
             public const string GetAllLastLocations = "lastlocations";
-
-            [Obsolete]
-            public const string RouteOld = RestBase.Route + "/location";
-
-            [Obsolete]
-            public const string GetLastLocationOneResident = "residents/{id:length(24)}/lastlocation";
-
-            [Obsolete]
-            public const string GetlastLocationOneResidentByTag = "bytag/residents/{tag}/lastlocation";
-
-            [Obsolete]
-            public const string GetAllLastLocationsOld = "residents/lastlocation";
-
-            [Obsolete]
-            public const string SetLastLocation = "{id:length(24)}/lastlocation";
-
-            [Obsolete]
-            public const string SetlastLocationByTag = "{tag}/lastlocation/bytag";
         }
 
         public static class Media
@@ -59,22 +41,20 @@ namespace WebService.Controllers
 
         public static class ReceiverModules
         {
+            // unused
             private const string MacAddressRegex = @"^([[A-f0-9]]{{2}}[[:-\\.]]){{5}}[[A-f0-9]]{{2}}$";
+
+            // unused
             private const string ByMac = "{mac:regex(" + MacAddressRegex + ")}";
+            private const string ByName = "byName/{name}";
 
-            public const string GetOneByMac = ByMac;
-            public const string DeleteByMac = ByMac;
-
-            [Obsolete]
-            public const string DeleteByMacOld = "bymac/" + ByMac;
-
-            [Obsolete]
-            public const string GetOneByMacOld = "bymac/" + ByMac;
+            public const string GetOneByName = ByName;
+            public const string DeleteByName = ByName;
         }
 
         public static class Residents
         {
-            private const string ByTag = "{tag}";
+            private const string ByTag = "bytag/{tag}";
             private const string PropertyByTag = ByTag + "/" + PropertyName;
 
             public const string AddMusicData = ById + "/Music/data";
@@ -92,29 +72,17 @@ namespace WebService.Controllers
 
             public const string GetRandomElementFromProperty = PropertyByTag + "/random";
             public const string GetPropertyByTag = PropertyByTag;
+
             public const string UpdatePicture = ById + "/picture";
+            public const string UpdateLastRecordedPosition = ByTag + "/lastRecordedPosition";
 
             public const string RemoveMusic = ById + "/Music/{musicId}";
             public const string RemoveVideo = ById + "/Videos/{videoId}";
             public const string RemoveImage = ById + "/Images/{imageId}";
             public const string RemoveColor = ById + "/Colors";
 
+            // TODO check with Kerim for this route
             public const string RemoveTag = ById + "/{tag}";
-
-            [Obsolete]
-            private const string ByTagOld = "byTag/" + ByTag;
-
-            [Obsolete]
-            private const string PropertyByTagOld = ByTagOld + "/" + PropertyName;
-
-            [Obsolete]
-            public const string GetByTagOld = ByTagOld;
-
-            [Obsolete]
-            public const string GetRandomElementFromPropertyOld = PropertyByTagOld + "/random";
-
-            [Obsolete]
-            public const string GetPropertyByTagOld = PropertyByTagOld;
         }
 
         public static class Tokens
@@ -126,6 +94,9 @@ namespace WebService.Controllers
         {
             public const string GetByName = "{userName}";
             public const string GetPropertyByName = "{userName}/{propertyName}";
-        } 
+
+            public const string RemoveResident = ById + "/Residents/{residentId}";
+            public const string ClearResidents = ById + "/Residents/clear";
+        }
     }
 }

@@ -10,8 +10,21 @@
     <PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.5" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.0.2" />
     <PackageReference Include="MongoDB.Driver" Version="2.5.0" />
+    <PackageReference Include="MongoDB.Driver.GridFS" Version="2.5.0" />
   </ItemGroup>
   <ItemGroup>
     <DotNetCliToolReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Tools" Version="2.0.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\VideoConverter\VideoConverter.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Remove="files_to_convert\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Remove="files_to_convert\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Remove="files_to_convert\**" />
   </ItemGroup>
 </Project>

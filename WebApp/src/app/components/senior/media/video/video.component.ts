@@ -4,7 +4,7 @@ import {Resident} from '../../../../models/resident';
 import {MediaService} from '../../../../service/media.service';
 import { LoginService } from '../../../../service/login-service.service';
 declare var $: any;
-
+declare var Materialize: any;
 @Component({
   selector: 'app-video',
   templateUrl: './video.component.html',
@@ -23,7 +23,6 @@ export class VideoComponent implements OnInit {
 
   constructor(private route: ActivatedRoute, private media: MediaService,private login:LoginService) {}
 
-
   ngOnInit() {
       this.typeOfMedia = "video/*";
       this.getAllVideos();
@@ -37,37 +36,42 @@ export class VideoComponent implements OnInit {
   }
 
   /**
-   * gets all urls for videos
-   */
+     * Get all the URLS for videos
+     * @returns {Promise<void>}
+     */
   async getAllVideos() {
     this.fullLinks = [];
     this.fullLinks = await this.media.getMedia(this.id, this.video);
-    console.log(this.fullLinks)
   }
 
   /**
-   * Delete resident media based on uniqueID
-   * @param uniqueVideoId unique videoId
-   * Either reloads the page or sends user to error page
-   */
+     *  Delete resident media based on uniqueID
+     * @param {string} uniqueVideoId  unique videoId
+     * @returns {Promise<void>} reloads the page or sends user
+     */
   async deleteResidentMediaByUniqueId(uniqueVideoId: string) {
       await this.media.deleteMedia(this.id, uniqueVideoId, this.video);
+      Materialize.toast('Media succesvol verwijderd!',5000);
       setTimeout(() => {
           $("#deleteModalVideo").modal("close");
       }, 200)
       this.getAllVideos();
   }
 
-  /*
-  *   Closes the modal to add a station
-  */
+  /**
+     * Closes modal
+     * @returns {Promise<void>}
+     * @constructor
+     */
   async CloseModal() {
     $("#deleteModalVideo").modal("close");
   }
 
-  /*
-  *   Opens modal to delete a station
-  */
+  /**
+     * Open delete modal
+     * @param {Resident} resident
+     * @returns {Promise<void>}
+     */
   async deleteModal(resident: Resident) {
     this.deleteResidentVideo = resident;
     $("#deleteModalVideo").modal();

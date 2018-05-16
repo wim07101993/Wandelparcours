@@ -47,8 +47,6 @@ namespace WebService.Controllers.Bases
 
         #region PROPERTIES
 
-        protected abstract IEnumerable<Expression<Func<T, object>>> PropertiesToSendOnGetAll { get; }
-
         protected abstract IDictionary<string, Expression<Func<T, object>>> PropertySelectors { get; }
 
         #endregion PROPERTIES
@@ -111,21 +109,25 @@ namespace WebService.Controllers.Bases
 
         public virtual async Task<IEnumerable<T>> GetAllAsync(string[] propertiesToInclude)
         {
-            var selectors = !EnumerableExtensions.IsNullOrEmpty(propertiesToInclude)
-                ? ConvertStringsToSelectors(propertiesToInclude)
-                : PropertiesToSendOnGetAll;
-
+            if (EnumerableExtensions.IsNullOrEmpty(propertiesToInclude))
+                return await DataService.GetAsync();
+            
+            var selectors = ConvertStringsToSelectors(propertiesToInclude);
             return await DataService.GetAsync(selectors);
         }
 
         public virtual async Task<T> GetOneAsync(string id, string[] propertiesToInclude)
         {
             var objectId = id.ToObjectId();
-            var selectors = !EnumerableExtensions.IsNullOrEmpty(propertiesToInclude)
-                ? ConvertStringsToSelectors(propertiesToInclude)
-                : null;
 
-            var item = await DataService.GetOneAsync(objectId, selectors);
+            T item;
+            if (EnumerableExtensions.IsNullOrEmpty(propertiesToInclude))
+                item = await DataService.GetOneAsync(objectId);
+            else
+            {
+                var selectors = ConvertStringsToSelectors(propertiesToInclude);
+                item = await DataService.GetOneAsync(objectId, selectors);
+            }
 
             return Equals(item, default(T))
                 ? throw new NotFoundException<T>(nameof(IModelWithID.Id), id)
@@ -138,7 +140,8 @@ namespace WebService.Controllers.Bases
                 throw new PropertyNotFoundException<T>(propertyName);
 
             var objectId = id.ToObjectId();
-            return await DataService.GetPropertyAsync(objectId, PropertySelectors[propertyName.ToUpperCamelCase()]);
+            var selector = PropertySelectors[propertyName.ToUpperCamelCase()];
+            return await DataService.GetPropertyAsync(objectId,selector);
         }
 
         #endregion read
@@ -148,38 +151,40 @@ namespace WebService.Controllers.Bases
 
         public virtual async Task UpdateAsync(T item, string[] properties)
         {
-            var selectors = !EnumerableExtensions.IsNullOrEmpty(properties)
-                ? ConvertStringsToSelectors(properties)
-                : null;
-
-            await DataService.UpdateAsync(item, selectors);
+            if (EnumerableExtensions.IsNullOrEmpty(properties))
+                await DataService.UpdateAsync(item);
+            else
+            {
+                var selectors = ConvertStringsToSelectors(properties);
+                await DataService.UpdateAsync(item, selectors);
+            }
         }
 
         public virtual async Task UpdatePropertyAsync(string id, string propertyName, string jsonValue)
         {
-            var property = typeof(T)
+            var propertyInfo = typeof(T)
                 .GetProperties()
-                .FirstOrDefault(propertyInfo => propertyInfo.Name.EqualsWithCamelCasing(propertyName));
+                .FirstOrDefault(x => x.Name.EqualsWithCamelCasing(propertyName));
 
-            if (property == null)
+            if (propertyInfo == null)
                 throw new PropertyNotFoundException<T>(nameof(propertyName));
 
             object value;
             try
             {
                 // try to convert the jsonValue to the type of the property       
-                value = typeof(string) == property.PropertyType
+                value = typeof(string) == propertyInfo.PropertyType
                     ? jsonValue
-                    : JsonConvert.DeserializeObject(jsonValue, property.PropertyType);
+                    : JsonConvert.DeserializeObject(jsonValue, propertyInfo.PropertyType);
             }
             catch (JsonException)
             {
-                throw new WrongArgumentTypeException(jsonValue, property.PropertyType);
+                throw new WrongArgumentTypeException(jsonValue, propertyInfo.PropertyType);
             }
 
             var objectId = id.ToObjectId();
-
-            await DataService.UpdatePropertyAsync(objectId, PropertySelectors[propertyName.ToUpperCamelCase()], value);
+            var property = PropertySelectors[propertyName.ToUpperCamelCase()];
+            await DataService.UpdatePropertyAsync(objectId, property, value);
         }
 
         #endregion update

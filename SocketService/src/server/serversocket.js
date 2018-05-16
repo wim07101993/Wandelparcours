@@ -9,29 +9,81 @@ import * as axios from "axios";
 export class ChatServer {
 
     port = 3000;
-    scanSpeed = 2500;
+    scanSpeed = 5000;
     scanned = false;
     beacons = new Map();
     stations = new Map();
     restUrl="http://localhost:5000";
+    username='Modul3';
+    password="KioskTo3rmali3n"
     lastlocation = new Map();
     constructor(clientCode) {
         try {
 
             this.clientCode = clientCode;
             this.createServer();
+            this.login();
             this.stationsLocationObservable();
             this.listen();
+            
 
         } catch (error) {
             console.log("constructor");
         }
     }
-
+    /**
+     * this function handle's the login
+     */
+    login(){
+        
+        const http = axios.create({
+          headers: {'userName': this.username,"password":this.password}
+        });
+        try{
+           http.post(`${this.restUrl}/api/v1/tokens`).then((token)=>{
+              this.token = token.data.token;
+              this.refreshTokenInterval =setInterval(()=>{this.refreshToken()},10*60*1000);
+          }).catch((e)=>{
+              console.log(e);
+          });
+        }catch(ex){
+            setTimeout(()=>{this.login()},2000);
+        }
+    
+      }
+      /**
+       * this function logs in every 10 minute, to make sure the token isn't invalid
+       */
+      refreshToken(){
+        const http = axios.create({
+          headers: {'userName': this.username,"password":this.password}
+        });
+        http.post(`${this.restUrl}/api/v1/tokens`).then((result)=>{
+          this.token=result.data.token;
+          this.level=result.data.user.userType;
+        }).catch((e)=>{
+          setTimeout(()=>{
+            this.refreshToken();
+          },10*60*1000);
+        });
+          
+      }
+      /**
+       * returns a axios instance with the login token
+       */
+      axios(){
+        const instance = axios.create({
+          headers: {'token': this.token,'Content-type' : 'application/json'}
+        });
+        return instance;
+      }
+      /**
+       * this function loads the positions of the stations into a maparray
+       */
     stationsLocationObservable() {
         let doRequest=()=>{
             console.log("intervalled");
-            axios.get(`${this.restUrl}/api/v1/receivermodules`).then((resp)=>{
+            this.axios().get(`${this.restUrl}/api/v1/receivermodules`).then((resp)=>{
                 
                 resp.data.forEach((station)=>{
                     this.stations.set(station.name,station.position);
@@ -39,7 +91,7 @@ export class ChatServer {
             }).catch((e)=>{
                 setTimeout(() => {
                     doRequest();
-                }, 50);
+                }, 2000);
             });
         }
         doRequest();
@@ -47,6 +99,9 @@ export class ChatServer {
           doRequest();
         }, 10 * 60 * 1000);
     }
+    /**
+     * this function creates a listenner for the server
+     */
     createServer() {
         try {
             this.server = require('http').createServer();
@@ -58,7 +113,10 @@ export class ChatServer {
             console.log(error);
         }
     }
-
+    /**
+     * this functions returns the position of a station by it's mac/name
+     * @param {string} mac this is the mac or name of the station
+     */
     getPositionForMac(mac) {
         try {
             var position= this.stations.get(mac);
@@ -71,8 +129,12 @@ export class ChatServer {
             return "";
         }
     }
-
-    addBeaconsToList(beacons, mac) {
+    /**
+     * this function adds the beacon read by the station by a key
+     * @param  beacons the read value by the station
+     * @param {*} name the key for beacon
+     */
+    addBeaconsToList(beacons, name) {
 
         beacons.forEach(element => {
             try {
@@ -80,11 +142,11 @@ export class ChatServer {
                 if (this.beacons.has(element.id)) {
                     let beacon = this.beacons.get(element.id);
                     
-                    beacon.set(mac, element.beacon.accuracy);
+                    beacon.set(name, Math.abs(element.rssi));
                     this.beacons.set(element.id, beacon);
                 } else {
                     var beacon = new Map();
-                    beacon.set(mac, element.beacon.accuracy);
+                    beacon.set(name, Math.abs(element.rssi));
                     this.beacons.set(element.id, beacon)
                 }
             } catch (error) {
@@ -94,6 +156,10 @@ export class ChatServer {
         });
     }
 
+    /**
+     * Converts a maparray to a json object, and sorts the stations by distance
+     * @param map a mapparray of beacons and stations for every beacon
+     */
     sortAndConvertMapToJson(map) {
 
         var scans = [];
@@ -103,7 +169,8 @@ export class ChatServer {
                 if(position!=""){
                     scans.push({
                         position: this.getPositionForMac(key),
-                        rssi: value
+                        rssi: value,
+                        name:key
                     });
                 }
             } catch (error) {
@@ -121,6 +188,9 @@ export class ChatServer {
         }
 
     }
+    /**
+     * converts maparray with beacons and keys to a json object
+     */
     convertBeaconsMapToJson() {
         var jsonBeacons = {};
 
@@ -137,7 +207,9 @@ export class ChatServer {
         console.log(jsonBeacons);
         return jsonBeacons;
     }
-
+    /**
+     * @ignore
+     */
     getTrillaterationObject(beacon) {
         try {
             var pos = beacon.position;
@@ -148,8 +220,10 @@ export class ChatServer {
             return "";
         }
     }
-
-    calculateAndSavePosition() {
+    /**
+     * validate position of resident and call save position function
+     */
+    saveResidentPosition() {
         try {
             if (!this.scanned) {
                 console.log("calc and save");
@@ -158,32 +232,10 @@ export class ChatServer {
                 
                 for (var beaconIndex in jsonBeacons) {
                     var beacon = (jsonBeacons[beaconIndex]);
-                    if (beacon.length >= 3) {
-                        console.log((beacon));
-                        var pos1 = this.getTrillaterationObject(beacon[0]);
-                        var pos2 = this.getTrillaterationObject(beacon[1]);
-                        var pos3 = this.getTrillaterationObject(beacon[2]);
-                        if (pos1 != "" && pos2 != "" && pos3 != "") {
-                            
-                            var location = getTrilateration(pos1, pos2, pos3);
-                            //12731
-                            var lastloaction = this.lastlocation.get(beaconIndex);
-                            if(lastloaction!=undefined){
-                                if(((new Date).getTime()-lastloaction.date.getTime())<20000){
-                                    let x = (lastloaction.location.x+(location.x))/2;
-                                    let y = (lastloaction.location.x+(location.y))/2;
-                                    this.lastlocation.set(beaconIndex,{location:location,date:new Date()});
-                                    location ={x: x,y:y};
-                                }else{
-                                    this.lastlocation.set(beaconIndex,{location:location,date:new Date()});
-                                }
-                            }else{
-                                this.lastlocation.set(beaconIndex,{location:location,date:new Date()});
-                            }
-                            console.log(`saving location x:${(location.x)},y:${(location.y)} of beacon:${beaconIndex}`);
-                            this.savePositionToDatabase(beaconIndex, location);
-                        }
-                    }
+                    var closestStation = beacon[0];
+                    console.log("saveClosestStation");
+                    this.savePositionToDatabase(beaconIndex, closestStation);
+       
                 }
             }
             console.log("calc and save done");
@@ -192,12 +244,17 @@ export class ChatServer {
             console.log("calculateAndSavePosition");
         }
     }
-
+    /**
+     * save the position of the resident to the database
+     * @param tag the scanned beacon id
+     * @param location  name of the location
+     */
     savePositionToDatabase(tag, location) {
         console.log("saveposition")
         try{
-            console.log(`${this.restUrl}/api/v1/location/${tag}/lastlocation/bytag`);
-            axios.post(`${this.restUrl}/api/v1/location/${tag}/lastlocation/bytag`,location).then(()=>{
+            let loc=location.position;
+            loc.name=location.name;
+            this.axios().put(`${this.restUrl}/api/v1/residents/bytag/${tag}/lastRecordedPosition`,loc).then(()=>{
                 console.log(`position saved for tag ${tag}`)
             }).catch(()=>{console.log(`no user found for tag${tag}`)});
             
@@ -211,6 +268,9 @@ export class ChatServer {
 
     }
 
+    /**
+     * add listeners to the socket server
+     */
     listen() {
         try {
             this.server.listen(this.port, () => {
@@ -236,11 +296,11 @@ export class ChatServer {
 
                     socket.on("scanned", (data) => {
                         try {
-                            this.addBeaconsToList(data.beacons, data.mac);
+                            this.addBeaconsToList(data.beacons, data.name);
                             setTimeout(() => {
                                 
-                                this.calculateAndSavePosition();
-                            }, 200);
+                                this.saveResidentPosition();
+                            }, 1000);
                         } catch (errorScanned) {
                             console.log("errorScanned")
                         }

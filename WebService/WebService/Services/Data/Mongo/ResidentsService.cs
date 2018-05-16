@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
@@ -30,14 +31,13 @@ namespace WebService.Services.Data.Mongo
 
         #region CREATE
 
-        public async Task AddMediaAsync(ObjectId residentId, string title, byte[] data, EMediaType mediaType,
+        public async Task AddMediaAsync(ObjectId residentId, string title, Stream data, EMediaType mediaType,
             string extension = null)
         {
             if (data == null)
                 throw new ArgumentNullException(nameof(data));
 
-            var mediaId = ObjectId.GenerateNewId();
-            await _mediaService.CreateAsync(new MediaData {Id = mediaId, Data = data, Extension = extension});
+            var mediaId = await _mediaService.CreateAsync(data, title);
 
             await AddMediaAsync(
                 residentId,
@@ -51,28 +51,6 @@ namespace WebService.Services.Data.Mongo
                 throw new ArgumentNullException(nameof(url));
 
             await AddMediaAsync(residentId, new MediaUrl {Id = ObjectId.GenerateNewId(), Url = url}, mediaType);
-        }
-
-        public async Task<IEnumerable<Resident>> GetAllInGroup(string group,
-            IEnumerable<Expression<Func<Resident, object>>> propertiesToInclude = null)
-        {
-            return group == null
-                ? null
-                : await MongoCollection
-                    .Find(x => x.Room.StartsWith(@group))
-                    .Select(propertiesToInclude)
-                    .ToListAsync();
-        }
-
-        public async Task<IEnumerable<Resident>> GetMany(IEnumerable<ObjectId> objectIds,
-            IEnumerable<Expression<Func<Resident, object>>> propertiesToInclude = null)
-        {
-            return objectIds == null
-                ? null
-                : await MongoCollection
-                    .Find(x => objectIds.Any(y => y == x.Id))
-                    .Select(propertiesToInclude)
-                    .ToListAsync();
         }
 
         private async Task AddMediaAsync(ObjectId residentId, MediaUrl mediaUrl, EMediaType mediaType)
@@ -112,8 +90,22 @@ namespace WebService.Services.Data.Mongo
 
         public async Task<Resident> GetOneAsync(int tag,
             IEnumerable<Expression<Func<Resident, object>>> propertiesToInclude = null)
-            => await GetByAsync(x => x.Tags != null && x.Tags.Contains(tag));
+            => await GetByAsync(x => x.Tags != null && x.Tags.Contains(tag), propertiesToInclude);
 
+        public async Task<IEnumerable<Resident>> GetMany(IEnumerable<ObjectId> objectIds,
+            IEnumerable<Expression<Func<Resident, object>>> propertiesToInclude = null)
+        {
+            var filter = Builders<Resident>.Filter.In(x => x.Id, objectIds);
+
+            return objectIds == null
+                ? null
+                : await MongoCollection
+                    .Find(filter)
+                    .Select(propertiesToInclude)
+                    .ToListAsync();
+        }
+
+        
         public virtual async Task<TValue> GetPropertyAsync<TValue>(int tag,
             Expression<Func<Resident, TValue>> propertyToSelect)
             => await GetPropertyByAsync(x => x.Tags.Contains(tag), propertyToSelect);
@@ -173,15 +165,15 @@ namespace WebService.Services.Data.Mongo
             switch (mediaType)
             {
                 case EMediaType.Audio:
-                    resident = await RemoveMediaAsync(residentId, x => x.Music, mediaId);
+                    resident = await RemoveMediaAsync(residentId, x => x.Music, mediaId, mediaType);
                     containsMedia = resident.Music.Any(x => x.Id == mediaId);
                     break;
                 case EMediaType.Video:
-                    resident = await RemoveMediaAsync(residentId, x => x.Videos, mediaId);
+                    resident = await RemoveMediaAsync(residentId, x => x.Videos, mediaId, mediaType);
                     containsMedia = resident.Videos.Any(x => x.Id == mediaId);
                     break;
                 case EMediaType.Image:
-                    resident = await RemoveMediaAsync(residentId, x => x.Images, mediaId);
+                    resident = await RemoveMediaAsync(residentId, x => x.Images, mediaId, mediaType);
                     containsMedia = resident.Images.Any(x => x.Id == mediaId);
                     break;
                 default:
@@ -193,9 +185,16 @@ namespace WebService.Services.Data.Mongo
         }
 
         private async Task<Resident> RemoveMediaAsync(ObjectId residentId,
-            Expression<Func<Resident, IEnumerable<MediaUrl>>> selector, ObjectId mediaId)
+            Expression<Func<Resident, IEnumerable<MediaUrl>>> selector, ObjectId mediaId, EMediaType mediaType)
         {
-            await _mediaService.RemoveAsync(mediaId);
+            try
+            {
+                await _mediaService.RemoveAsync(mediaId);
+            }
+            catch (NotFoundException)
+            {
+                // IGNORED
+            }
 
             var updater = Builders<Resident>.Update.PullFilter(selector, x => x.Id == mediaId);
             var resident = await MongoCollection.FindOneAndUpdateAsync(x => x.Id == residentId, updater);
@@ -206,20 +205,32 @@ namespace WebService.Services.Data.Mongo
             return resident;
         }
 
-        public async Task RemoveSubItemAsync(ObjectId residentId,
-            Expression<Func<Resident, IEnumerable<object>>> selector, object item)
+        public async Task RemoveColor(ObjectId residentId, Color color)
         {
-            var updater = Builders<Resident>.Update.PullFilter(selector, x => x == item);
+            var updater = Builders<Resident>.Update
+                .PullFilter(x => x.Colors, x => x.R == color.R && x.G == color.G && x.B == color.B);
             var resident = await MongoCollection.FindOneAndUpdateAsync(x => x.Id == residentId, updater);
 
             if (resident == null)
                 throw new NotFoundException<Resident>(nameof(IModelWithID.Id), residentId.ToString());
         }
 
-        public override Task RemoveAsync(ObjectId id)
+        public override async Task RemoveAsync(ObjectId id)
         {
-            _mediaService.RemoveByResident(id);
-            return base.RemoveAsync(id);
+            var resident = await GetOneAsync(
+                id,
+                new Expression<Func<Resident, object>>[] {x => x.Images, x => x.Videos, x => x.Music});
+
+            foreach (var img in resident.Images)
+                await _mediaService.RemoveAsync(img.Id);
+
+            foreach (var img in resident.Videos)
+                await _mediaService.RemoveAsync(img.Id);
+            
+            foreach (var img in resident.Music)
+                await _mediaService.RemoveAsync(img.Id);
+            
+            await base.RemoveAsync(id);
         }
 
         #endregion DELETE

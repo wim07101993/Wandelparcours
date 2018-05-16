@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Bson;
@@ -19,10 +19,11 @@ using WebService.Services.Logging;
 namespace WebService.Controllers
 {
     [Route(Routes.RestBase.ControllerRoute)]
-    public class MediaController : ARestControllerBase<MediaData>, IMediaController
+    public class MediaController : AControllerBase, IMediaController
     {
         #region FIELDS
 
+        private readonly IMediaService _mediaService;
         private readonly IResidentsService _residentsService;
 
         #endregion FIELDS
@@ -30,28 +31,15 @@ namespace WebService.Controllers
 
         #region COSNTRUCTROS
 
-        public MediaController(IMediaService dataService, IUsersService usersService, ILogger logger,
+        public MediaController(IMediaService mediaService, IUsersService usersService, ILogger logger,
             ITokensService tokensService, IResidentsService residentsService)
-            : base(dataService, logger, usersService)
+            : base(usersService)
         {
+            _mediaService = mediaService;
             _residentsService = residentsService;
         }
 
         #endregion CONSTRUCTORS
-
-
-        #region PROPERTIES
-
-        protected override IEnumerable<Expression<Func<MediaData, object>>> PropertiesToSendOnGetAll => null;
-
-        protected override IDictionary<string, Expression<Func<MediaData, object>>> PropertySelectors { get; } =
-            new Dictionary<string, Expression<Func<MediaData, object>>>
-            {
-                {nameof(MediaData.Id), x => x.Id},
-                {nameof(MediaData.Data), x => x.Data}
-            };
-
-        #endregion PROPERTIES
 
 
         #region METHODS
@@ -65,7 +53,7 @@ namespace WebService.Controllers
             var properties = new Expression<Func<User, object>>[] {x => x.Residents, x => x.UserType, x => x.Group};
             var user = await GetCurrentUser(properties);
 
-            var residentId = await ((IMediaService) DataService).GetPropertyAsync(objectId, x => x.OwnerId);
+            var residentId = await _mediaService.GetOwner(objectId);
 
             var isResponsible = false;
             switch (user.UserType)
@@ -75,9 +63,6 @@ namespace WebService.Controllers
                     isResponsible = true;
                     break;
                 case EUserType.Nurse:
-                    var residentRoom = await _residentsService.GetPropertyAsync(residentId, x => x.Room);
-                    isResponsible = new Regex($@"^{residentRoom}[0-9]*$").IsMatch(user.Group);
-                    break;
                 case EUserType.User:
                     isResponsible = user.Residents.Contains(residentId);
                     break;
@@ -97,35 +82,48 @@ namespace WebService.Controllers
 
         #region read
 
-        [Authorize(EUserType.Module, EUserType.SysAdmin, EUserType.User, EUserType.User)]
+        [Authorize(EUserType.Module, EUserType.Nurse, EUserType.User)]
         [HttpGet(Routes.Media.GetOneFileWithExtension)]
-        public async Task<FileContentResult> GetOneAsync(string id, string extension, [FromQuery] string token)
+        public async Task<FileStreamResult> GetOneAsync(string id, string extension, [FromQuery] string token)
         {
             if (string.IsNullOrWhiteSpace(extension))
                 throw new NotFoundException<MediaData>(nameof(MediaData.Extension), extension);
 
             var objectId = await CanGetMediaAsync(id);
 
-            var data = await ((IMediaService) DataService).GetOneAsync(objectId, extension);
-            if (data == null)
-                throw new NotFoundException<MediaData>(nameof(IModelWithID.Id), id);
-
+            var memoryStream = new MemoryStream();
+            try
+            {
+                await _mediaService.GetOneAsync(objectId, memoryStream);
+            }
+            catch (Exception e)
+            {
+                throw;
+            }
+            
+            memoryStream.Seek(0, 0);
             var mediaType = extension.GetEMediaTypeFromExtension();
-            return File(data, $"{mediaType.ToString().ToLower()}/{extension}");
+            return File(memoryStream, $"{mediaType.ToString().ToLower()}/{extension}");
         }
 
-        [Authorize(EUserType.Module, EUserType.SysAdmin, EUserType.User, EUserType.User)]
+        [Authorize(EUserType.Module, EUserType.Nurse, EUserType.User)]
         [HttpGet(Routes.Media.GetFile)]
-        public async Task<FileContentResult> GetFileAsync(string id, [FromQuery] string token)
+        public async Task<FileStreamResult> GetFileAsync(string id, [FromQuery] string token)
         {
             var objectId = await CanGetMediaAsync(id);
 
-            var media = await ((IMediaService) DataService)
-                .GetOneAsync(objectId, new Expression<Func<MediaData, object>>[] {x => x.Data});
+            var memoryStream = new MemoryStream();
+            try
+            {
+                await _mediaService.GetOneAsync(objectId, memoryStream);
+            }
+            catch (Exception e)
+            {
+                throw;
+            }
 
-            return Equals(media, default(MediaData))
-                ? throw new NotFoundException<MediaData>(nameof(IModelWithID.Id), id)
-                : File(media.Data, "image/jpg");
+            memoryStream.Seek(0, 0);
+            return File(memoryStream, "image/jpg");
         }
 
         #endregion read

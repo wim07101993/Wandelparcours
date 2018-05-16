@@ -1,4 +1,38 @@
 <app-senior pagina="audio"></app-senior>
-<iframe src="https://www.radio-remember.nl/" style="width:100%; height:700px"
-        sandbox="allow-same-origin allow-scripts allow-forms">
-</iframe>
+<ul class="collection with-header">
+    <li class="collection-header"><h4>Muziek</h4></li>
+    <li *ngFor="let link of fullLinks" class="collection-item">
+        <div>{{link.music.title}}
+            <i class="material-icons red-text pointer right" style="cursor: pointer" (click)="deleteModal(link)">delete</i>
+        </div>
+    </li>
+</ul>
+
+
+<!-- Modal popup asking/warning to delete musicfragment -->
+<div id="deleteModal" class="modal">
+    <div class="modal-content">
+        <div class="row valign-wrapper">
+            <div class="col s2 m2">
+                <i class="large material-icons red-text">warning</i>
+            </div>
+            <div>
+                <h5>
+                    U staat op het punt volgende audiofragment te verwijderen:
+                    {{deleteResidentMusic.music.title}} <br>
+                    Bent u zeker?
+                </h5>
+
+            </div>
+        </div>
+        <div class="row">
+            <div class="col s12 right-align">
+                <a (click)="CloseModal()" class="modal-close waves-effect waves-green btn-flat">Annuleren</a>
+                <a (click)="deleteResidentMediaByUniqueId(deleteResidentMusic.music.id)"
+                   class=" waves-effect waves-red btn-flat red-text">Verwijderen</a>
+            </div>
+        </div>
+
+    </div>
+</div>
+<app-upload (reload)="reload()" [type]="typeOfMedia"></app-upload>

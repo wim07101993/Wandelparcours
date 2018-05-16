@@ -1,12 +1,21 @@
-﻿using System.Threading.Tasks;
+﻿using System.IO;
+using System.Threading.Tasks;
 using MongoDB.Bson;
 using WebService.Models;
 
 namespace WebService.Services.Data
 {
-    public interface IMediaService : IDataService<MediaData>
+    /// <summary>
+    /// Interface that describes a class that provides basic CRUD operations for <see cref="MediaData"/> in the database.
+    /// </summary>
+    public interface IMediaService
     {
-        Task<byte[]> GetOneAsync(ObjectId id, string extension);
-        Task RemoveByResident(ObjectId residentId);
+        Task<ObjectId> CreateAsync(Stream mediaToAdd, string title);
+
+        Task GetOneAsync(ObjectId id, Stream outStream);
+        
+        Task RemoveAsync(ObjectId mediaId);
+
+        Task<ObjectId> GetOwner(ObjectId mediaId);
     }
 }

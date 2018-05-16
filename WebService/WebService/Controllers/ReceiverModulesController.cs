@@ -30,8 +30,6 @@ namespace WebService.Controllers
 
         #region PROPERTIES
 
-        protected override IEnumerable<Expression<Func<ReceiverModule, object>>> PropertiesToSendOnGetAll => null;
-
         protected override IDictionary<string, Expression<Func<ReceiverModule, object>>> PropertySelectors { get; } =
             new Dictionary<string, Expression<Func<ReceiverModule, object>>>
             {
@@ -39,12 +37,13 @@ namespace WebService.Controllers
                 {nameof(ReceiverModule.Id), x => x.Id},
                 {nameof(ReceiverModule.IsActive), x => x.IsActive},
                 {nameof(ReceiverModule.Position), x => x.Position},
+                {nameof(ReceiverModule.Name), x => x.Name}
             };
 
         #endregion PROPERTIES
 
 
-        #region METHODS
+        #region METHODS    
 
         #region post (create)
 
@@ -65,27 +64,27 @@ namespace WebService.Controllers
 
         #endregion post (create)
 
+        
         #region get (read)
 
-        [Authorize(EUserType.SysAdmin)]
+        [Authorize(EUserType.Module, EUserType.Nurse,EUserType.User)]
         [HttpGet(Routes.RestBase.GetAll)]
         public override Task<IEnumerable<ReceiverModule>> GetAllAsync(string[] propertiesToInclude)
             => base.GetAllAsync(propertiesToInclude);
 
         [Authorize(EUserType.SysAdmin)]
-        [HttpGet(Routes.ReceiverModules.GetOneByMac)]
-        [HttpGet(Routes.ReceiverModules.GetOneByMacOld)]
-        public async Task<ReceiverModule> GetOneByMacAsync(string mac, [FromQuery] string[] propertiesToInclude)
+        [HttpGet(Routes.ReceiverModules.GetOneByName)]
+        public async Task<ReceiverModule> GetOneByNameAsync(string name, [FromQuery] string[] propertiesToInclude)
         {
-            if (mac == null)
+            if (name == null)
                 throw new NotFoundException<ReceiverModule>(nameof(ReceiverModule.Mac), null);
 
             var selectors = !EnumerableExtensions.IsNullOrEmpty(propertiesToInclude)
                 ? ConvertStringsToSelectors(propertiesToInclude)
-                : new Expression<Func<ReceiverModule, object>>[0];
+                : null;
 
-            return await ((IReceiverModulesService) DataService).GetOneAsync(mac, selectors)
-                   ?? throw new NotFoundException<ReceiverModule>(nameof(ReceiverModule.Mac), mac);
+            return await ((IReceiverModulesService) DataService).GetOneAsync(name, selectors)
+                   ?? throw new NotFoundException<ReceiverModule>(nameof(ReceiverModule.Mac), name);
         }
 
         [Authorize(EUserType.SysAdmin)]
@@ -95,13 +94,25 @@ namespace WebService.Controllers
 
         #endregion get (read)
 
+        
+        #region update
+        
+        [Authorize(EUserType.SysAdmin)]
+        [HttpPut(Routes.RestBase.UpdateProperty)]
+        public override Task UpdatePropertyAsync(string id, string propertyName, [FromBody] string jsonValue)
+        {
+            return base.UpdatePropertyAsync(id, propertyName, jsonValue);
+        }
+
+        #endregion update
+        
+        
         #region delete
 
         [Authorize(EUserType.SysAdmin)]
-        [HttpDelete(Routes.ReceiverModules.DeleteByMacOld)]
-        [HttpDelete(Routes.ReceiverModules.DeleteByMac)]
-        public Task DeleteByMacAsync(string mac)
-            => ((IReceiverModulesService) DataService).RemoveAsync(mac);
+        [HttpDelete(Routes.ReceiverModules.DeleteByName)]
+        public Task DeleteByNameAsync(string name)
+            => ((IReceiverModulesService) DataService).RemoveAsync(name);
 
         [Authorize(EUserType.SysAdmin)]
         [HttpDelete(Routes.RestBase.Delete)]
@@ -109,13 +120,6 @@ namespace WebService.Controllers
             => base.DeleteAsync(id);
 
         #endregion delete
-
-        [Authorize(EUserType.SysAdmin)]
-        [HttpPut(Routes.RestBase.UpdateProperty)]
-        public override Task UpdatePropertyAsync(string id, string propertyName, [FromBody] string jsonValue)
-        {
-            return base.UpdatePropertyAsync(id, propertyName, jsonValue);
-        }
 
         #endregion METHODS
     }

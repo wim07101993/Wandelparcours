@@ -17,7 +17,6 @@ using WebService.Services.Logging;
 namespace WebService.Controllers
 {
     [Route(Routes.RestBase.ControllerRoute)]
-    [Route(Routes.Locations.RouteOld)] //TODO
     [SuppressMessage("ReSharper", "SpecifyACultureInStringConversionExplicitly")]
     public class LocationsController : ARestControllerBase<ResidentLocation>, ILocationController
     {
@@ -34,9 +33,6 @@ namespace WebService.Controllers
         }
 
 
-        protected override IEnumerable<Expression<Func<ResidentLocation, object>>> PropertiesToSendOnGetAll { get; } =
-            null;
-
         protected override IDictionary<string, Expression<Func<ResidentLocation, object>>> PropertySelectors { get; }
             = new Dictionary<string, Expression<Func<ResidentLocation, object>>>
             {
@@ -48,43 +44,8 @@ namespace WebService.Controllers
             };
 
 
-        [Authorize(EUserType.Module)]
-        [HttpPost]
-        public override async Task<string> CreateAsync([FromBody] ResidentLocation item)
-        {
-            item.TimeStamp = DateTime.Now;
-            return await base.CreateAsync(item);
-        }
-
-        [Authorize(EUserType.Nurse, EUserType.User)]
-        [HttpGet(Routes.Locations.GetLastLocationOneResident)]
-        [Obsolete] //TODO
-        public LocalRedirectResult GetLastLocationOneResident(string id)
-        {
-            return LocalRedirect($"~/api/v1/residents/{id}/LastRecordedPosition");
-//            var selectors = new Expression<Func<Resident, object>>[]
-//                {x => x.LastRecordedPosition, x => x.Id, x => x.LastName, x => x.FirstName};
-//            if (!ObjectId.TryParse(id, out var objectid))
-//                throw new NotFoundException<Resident>(nameof(IModelWithID.Id), id);
-//
-//            return await _residentService.GetOneAsync(objectid, selectors);
-        }
-
-        [Authorize(EUserType.Nurse, EUserType.User)]
-        [HttpGet(Routes.Locations.GetlastLocationOneResidentByTag)]
-        [Obsolete] //TODO
-        public LocalRedirectResult GetLastLocationOneResidentByTag(int tag)
-        {
-            return LocalRedirect($"~/api/v1/residents/{tag}/LastRecordedPosition");
-//            var selectors = new Expression<Func<Resident, object>>[]
-//                {x => x.LastRecordedPosition, x => x.Id, x => x.LastName, x => x.FirstName};
-//           
-//            return await _residentService.GetOneAsync(tag, selectors);
-        }
-
         [Authorize(EUserType.Nurse, EUserType.User)]
         [HttpGet(Routes.Locations.GetAllLastLocations)]
-        [HttpGet(Routes.Locations.GetAllLastLocationsOld)] //TODO
         public async Task<IEnumerable<Resident>> GetLastLocation()
         {
             var selectors = new Expression<Func<Resident, object>>[]
@@ -114,28 +75,6 @@ namespace WebService.Controllers
             return since == 0
                 ? await _locationsService.GetSinceAsync(default(DateTime), objectid)
                 : await _locationsService.GetSinceAsync(DateTime.Now - TimeSpan.FromMinutes(since), objectid);
-        }
-
-        [Authorize(EUserType.Nurse, EUserType.User)]
-        [HttpPost(Routes.Locations.SetLastLocation)]
-        [Obsolete] //TODO
-        public async Task SetLastLocation(string id, [FromBody] Point currentLocation)
-        {
-            currentLocation.TimeStamp = DateTime.Now;
-            if (!ObjectId.TryParse(id, out var objectid))
-                throw new NotFoundException<Resident>(nameof(IModelWithID.Id), id);
-
-            await _residentService.UpdatePropertyAsync(objectid, x => x.LastRecordedPosition, currentLocation);
-        }
-
-        [Authorize(EUserType.Nurse, EUserType.User)]
-        [HttpPost(Routes.Locations.SetlastLocationByTag)]
-        [Obsolete] //TODO
-        public async Task SetLastLocation(int tag, [FromBody] Point currentLocation)
-        {
-            currentLocation.TimeStamp = DateTime.Now;
-
-            await _residentService.UpdatePropertyAsync(tag, x => x.LastRecordedPosition, currentLocation);
         }
     }
 }

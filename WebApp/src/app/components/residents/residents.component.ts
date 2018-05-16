@@ -27,8 +27,8 @@ export class ResidentsComponent implements OnInit {
   reader: any;
   selectedFileImage: any = [];
   fd: any;
-  @ViewChild('myInput') myInputVariable: any;
-
+  @ViewChild('myInputAdd') myInputVariableAdd: any;
+  @ViewChild('myInputEdit') myInputVariableEdit: any;
   /**
    * Injects the service and router
    * @param service Restservice
@@ -36,25 +36,17 @@ export class ResidentsComponent implements OnInit {
    */
   constructor(private service: RestServiceService, private router: Router,private login:LoginService) {}
 
-    ngOnInit(): void {
-        this.showAllResidents();
-        this.residents = [];
-        this.profilePic = [];
+  ngOnInit(): void {
+    this.showAllResidents();
+    this.residents = [];
+    this.profilePic = [];
 
-        /*Creates empty modals to avoid collision with previous existing modals should they not be deleted*/
-        this.modalResident = <Resident>{
-            firstName: '',
-            lastName: '',
-            room: '',
-            id: '',
-            birthday: new Date(),
-            doctor: {name: '', phoneNumber: ''},
-            pictureUrl: ''
-        };
+    /*Creates empty modals to avoid collision with previous existing modals should they not be deleted*/
+      this.modalResident = <Resident>{
+        firstName: '', lastName: '', room: '', id: '', birthday: new Date(), doctor: {name: '', phoneNumber: ''}, pictureUrl: ''};
         this.updateResident = {
             firstName: '', lastName: '', room: '', id: '', birthday: '', doctor: {name: '', phoneNumber: ''}
         };
-
     }
 
   /**
@@ -90,7 +82,7 @@ export class ResidentsComponent implements OnInit {
   }
 
   /**
-   * Opens modal
+   * Opens modal with selected Resident
    * @param modalResident
    */
   openModal(modalResident: Resident) {
@@ -146,6 +138,7 @@ export class ResidentsComponent implements OnInit {
    */
   async deleteResident(uniqueIdentifier: string) {
     await this.service.deleteResidentByUniqueId(uniqueIdentifier);
+      Materialize.toast('Bewoner succesvol verwijderd!',5000);
     this.showAllResidents();
   }
 
@@ -212,8 +205,10 @@ export class ResidentsComponent implements OnInit {
     setTimeout(() => {
       $('#editModalResident').modal('close');
     }, 200);
+    Materialize.toast('Bewoner succesvol geüpdate!',5000);
     // get all residents again after updating
     await this.showAllResidents();
+    this.ngOnInit();
   }
 
   /**
@@ -268,6 +263,7 @@ export class ResidentsComponent implements OnInit {
     this.reset();
     // close modal/form and 'reload' page
     setTimeout(() => {
+      
       $('#add-resident-modal').modal('close');
     }, 200);
 
@@ -311,7 +307,10 @@ export class ResidentsComponent implements OnInit {
      * Does this function do anything usefull?
      */
   reset() {
-    this.myInputVariable.nativeElement.value = '';
+    this.myInputVariableEdit.nativeElement.value = '';
+    this.myInputVariableAdd.nativeElement.value = '';
+    this.selectedFile=[];
+    this.selectedFileImage=[];
     this.profilePic = '';
   }
 

@@ -32,9 +32,10 @@ export class RestServiceService {
       try {
           return  (await this.login.axios.get("/api/v1/residents")).data;
           }catch (e) {
-          this.customErrorHandler.updateMessage(e.toString());
+          console.log('Errormessage: ' + e.toString());
       }
   }
+
   /**
    * get one resident and only the needed properties
    * @param uniqueIdentifier unique id of resident
@@ -48,6 +49,7 @@ export class RestServiceService {
         console.log(e.toString());
     }
   }
+
   /**
    * delete resident from database based on id
    * @param uniqueIdentifier unique id of resident
@@ -60,6 +62,7 @@ export class RestServiceService {
         console.log(e.toString());
     }
   }
+
   /**
    * Edit resident in database based on Resident object with properties and only the properties that have been changed
    * @param dataToUpdate Object Resident with all properties
@@ -77,6 +80,7 @@ export class RestServiceService {
         console.log("Error Message: "+ e.toString())
     }
   }
+
   /**
    * Add resident to database
    * @param data Object resident with all saved properties
@@ -89,6 +93,7 @@ export class RestServiceService {
         console.log(e.toString());
     }
   }
+
   /**
      * Profilepicture will always be null when a resident is created
      * When a picture is selected null -> picture (param)
@@ -105,11 +110,11 @@ export class RestServiceService {
   ////////
 
   /**
-     * Add a beaconTag to a resident
-     * @param {string} uniqueIdentifier
-     * @param beaconMinorNumber
-     * @returns {Promise<any>}
-     */
+   * Add a beaconTag to a resident
+   * @param {string} uniqueIdentifier
+   * @param beaconMinorNumber
+   * @returns {Promise<any>}
+   */
   async addTagToResident(uniqueIdentifier: string, beaconMinorNumber: any){
     try {
         return (await this.login.axios.post('/api/v1/residents/' + uniqueIdentifier + '/tags', beaconMinorNumber, {
@@ -123,11 +128,11 @@ export class RestServiceService {
   }
 
   /**
-     * Delete a beaconTag from a resident
-     * @param {string} uniqueIdentifier
-     * @param {string} uniqueTagId
-     * @returns {Promise<any>}
-     */
+   * Delete a beaconTag from a resident
+   * @param {string} uniqueIdentifier
+   * @param {string} uniqueTagId
+   * @returns {Promise<any>}
+   */
   async deleteTagFromResident(uniqueIdentifier: string, uniqueTagId: string) {
     try {
         await this.login.axios.delete('/api/v1/residents/' + uniqueIdentifier + '/' + uniqueTagId);
@@ -148,11 +153,14 @@ export class RestServiceService {
    * Returns true or false or updates error message
    */
   async addCorrectMediaToDatabase(uniqueIdentifier: any, media: any, addMedia: string) {
+
     try {
         return (await this.login.axios.post('/api/v1/residents/' + uniqueIdentifier + addMedia, media)).data;
     }catch (e) {
         console.log('Errormessage: ' + e.toString());
+        return;
     }
+
   }
 
   /**
@@ -191,7 +199,7 @@ export class RestServiceService {
 
   async SaveStationToDatabase(station: Station) {
       try {
-          await this.login.axios.post('/api/v1/receivermodules',station);
+          await this.login.axios.post('/api/v1/receivermodules/',station);
       }catch (e) {
           console.log('Errormessage: ' + e.toString());
       }
@@ -199,7 +207,7 @@ export class RestServiceService {
 
   async DeleteStation(mac: string) {
       try {
-          this.login.axios.delete('/api/v1/receivermodules/bymac/' + mac)
+          this.login.axios.delete('/api/v1/receivermodules/byname/' + mac)
       }catch (e) {
           console.log('Errormessage: ' + e.toString())
       }
@@ -207,7 +215,7 @@ export class RestServiceService {
 
   async UpdateStation(id: string, newMac: string) {
       try {
-          const resp = await this.login.axios.put('/api/v1/receivermodules/'+ id + '/Mac', "'" + newMac + "'", {
+          const resp = await this.login.axios.put(`api/v1/receivermodules/${id}/name`,JSON.stringify(newMac), {
               headers: {
                   'Content-type' : 'application/json'
               }
@@ -225,7 +233,7 @@ export class RestServiceService {
       }
   }
 
-  async LoadStations(parent: StationmanagementComponent) {
+  async LoadStations(parent: any) {
       if (parent.stations != undefined) {
           parent.stations.clear();
       }
@@ -244,9 +252,11 @@ export class RestServiceService {
                       if (station == undefined) {
                           continue;
                       }
-                      parent.stationMacAdresses.push(station.mac);
-                      parent.stations.set(station.mac, station.position);
-                      parent.stationsIds.set(station.mac, station.id);
+
+                      //change name to mac for location based tracking
+                      parent.stationMacAdresses.push(station.name);
+                      parent.stations.set(station.name, station.position);
+                      parent.stationsIds.set(station.name, station.id);
                   }
               }
               return true;
@@ -254,30 +264,6 @@ export class RestServiceService {
       } catch (e) {
           console.log('Errormessage: ' + e.toString());
       }
-      /*return new Promise<boolean>(resolve => {
-        this.http.get(this.restUrl + 'api/v1/receivermodules').subscribe(response => {
-
-            const tryParse = <Array<any>>(response.json());
-
-            let station: any;
-            if (tryParse != undefined) {
-              for (station of tryParse) {
-                if (station == undefined) {
-                  continue;
-                }
-                parent.stationMacAdresses.push(station.mac);
-                parent.stations.set(station.mac, station.position);
-                parent.stationsIds.set(station.mac, station.id);
-              }
-            }
-            resolve(true);
-          },
-          error => {
-            console.log('can\'t load stations');
-            console.log(error);
-            resolve(false);
-          });
-      });*/
     }
 
     ///////////////////
@@ -286,8 +272,19 @@ export class RestServiceService {
 
     async getAllResidentsWithAKnownLastLocation(){
       try {
-          const resp = (await this.login.axios.get('/api/v1/location/residents/lastlocation')).data;
-          return resp;
+        let query="?propertiesToInclude=lastRecordedPosition&propertiesToInclude=firstName&propertiesToInclude=lastName";
+        const resp = (await this.login.axios.get(`/api/v1/residents/${query}`)).data;
+        let retValue=[];
+        var compareMinutesAgo = new Date( Date.now() - 15000 * 60 );
+        for(const r of resp){
+            if(r.lastRecordedPosition!=null){
+                let timestamp = new Date(r.lastRecordedPosition.timeStamp);
+                if(timestamp.getTime() > compareMinutesAgo.getTime()){
+                    retValue.push(r);
+                }
+            }
+        }
+        return retValue;
       }catch (e) {
           console.log('Errormessage: '+ e.toString());
       }
@@ -302,12 +299,100 @@ export class RestServiceService {
             console.log('Errormessage: ' + e.toString());
       }
     }
-    async createUser(userName,password,userType){
+
+
+    /////////
+    //Users//
+    /////////
+
+    /**
+     *  Create new User
+     * @param userName
+     * @param password
+     * @param userType -3 levels of usertype --> admin etc...
+     * @param email
+     * @returns {Promise<boolean>}
+     */
+    async createUser(userName,password,userType, email){
         try {
-            let login =await this.login.axios.post("/api/v1/users",{"userName":userName,"password":password,"userType":userType});
+            let login =await this.login.axios.post("/api/v1/users",{"userName":userName,"password":password,"userType":userType, "email": email});
             return true;
         } catch (error) {
             return false;
         }
+    }
+
+    /**
+     * Update user data
+     * @param dataToUpdate
+     * @param changedProperties
+     * @returns {Promise<any>}
+     */
+    async updateUser(dataToUpdate: any, changedProperties: any){
+        let url: string = '?properties=' + changedProperties[0];
+        for (let _i = 1; _i < changedProperties.length; _i++) {
+            url += '&properties=' + changedProperties[_i];
+        }
+        try {
+            return (await this.login.axios.put("/api/v1/users" + url, dataToUpdate));
+        }catch (e) {
+            console.log("Error Message: "+ e.toString())
+        }
+    }
+
+    /**
+     *  Delete user based on uniqueIdentifier
+     * @param {string} uniqueIdentifier
+     * @returns {Promise<void>}
+     */
+    async deleteUser(uniqueIdentifier: string){
+        try{
+            await this.login.axios.delete('/api/v1/users/' + uniqueIdentifier)
+        }catch (e) {
+            console.log(e.toString());
+        }
+    }
+
+    /**
+     *
+     * @returns {Promise<any>}
+     */
+    async getUsers(){
+      try{
+          const resp = (await this.login.axios.get('/api/v1/users')).data;
+          return resp;
+      }catch (e) {
+          console.log('Errormessage: ' + e.toString());
+      }
+    }
+
+    /**
+     * Links one or multiple residents to a specefic user
+     * @param userId
+     * @param residentId
+     * @returns {Promise<boolean>}
+     */
+    async linkResidentToUser(userId,residentId){
+        try{
+            const resp = (await this.login.axios.post(`/api/v1/users/${userId}/residents`,JSON.stringify(residentId))).data;
+            return true;
+        }catch(e){
+            return false;
+        }
+    }
+
+    /**
+     * Delete a resident or residents from a specefic user
+     * @param userId
+     * @returns {Promise<boolean>}
+     */
+    async clearResidentsFromUser(userId){
+        try{
+            const resp = (await this.login.axios.delete(`/api/v1/users/${userId}/residents/clear`)).data;
+            return true;
+        }catch(e){
+            return false;
+        }
+        
     }
 }

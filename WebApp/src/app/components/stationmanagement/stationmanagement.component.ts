@@ -1,4 +1,4 @@
-import {Component, OnInit, ElementRef} from '@angular/core';
+import {Component, OnInit, ElementRef,OnDestroy} from '@angular/core';
 import {Point} from "../../helpers/MouseEvents"
 import {Station} from "../../models/station"
 import {Sprites} from "../../helpers/Sprites"
@@ -8,7 +8,9 @@ import {getBaseUrl} from "../../app.module.browser";
 
 declare var $: any;
 declare var Materialize: any;
-
+/**
+ * @ignore
+ */
 @Component({
   selector: 'app-stationmanagement',
   templateUrl: './stationmanagement.component.html',
@@ -16,8 +18,10 @@ declare var Materialize: any;
 })
 
 
-/** Class representing stationmanagement page. */
-export class StationmanagementComponent extends ARenderComponent implements OnInit {
+/** 
+ * Class representing stationmanagement page. 
+ */
+export class StationmanagementComponent extends ARenderComponent implements OnInit , OnDestroy{
   position: Point;
   collidingElement: any;
   saveStation: Station = new Station();
@@ -38,6 +42,14 @@ export class StationmanagementComponent extends ARenderComponent implements OnIn
     this.hostElement = this.elRef
   }
 
+  ngOnDestroy(){
+    clearInterval(this.tickInterval);
+  }
+
+/**
+ * Get url for the image belonging to the marker 
+ * @returns string of url
+ */
   get markerUrl() {
     return getBaseUrl() + "assets/images/station.png";
   }
@@ -48,7 +60,9 @@ export class StationmanagementComponent extends ARenderComponent implements OnIn
       await this.service.LoadStations(this);
     }, 100);
   }
-
+/**
+ * Function that gets called every frame
+ */
   async Tick() {
     super.Tick();
     try {
@@ -58,6 +72,9 @@ export class StationmanagementComponent extends ARenderComponent implements OnIn
       console.log(ex);
     }
   }
+  /**
+   * Update station name
+   */
   async UpdateStation() {
     try {
       let id = this.stationsIds.get(this.collidingElement);
@@ -87,6 +104,7 @@ export class StationmanagementComponent extends ARenderComponent implements OnIn
   }
 
   /*
+  *   Function that's called when someone clicks on a sprite
   *   Opens modal to delete a station
   */
   async spriteClicked(id?: string) {
@@ -131,7 +149,7 @@ export class StationmanagementComponent extends ARenderComponent implements OnIn
     }
   }
 
-  /*
+  /** 
   *   This function opens a modal to create a station
   */
   async SaveStationToDatabaseModal(stationPosition: Point) {
@@ -142,7 +160,7 @@ export class StationmanagementComponent extends ARenderComponent implements OnIn
   }
 
 
-  /*
+  /**
   *  load marker;
   */
   public async LoadComponent() {
@@ -161,7 +179,7 @@ export class StationmanagementComponent extends ARenderComponent implements OnIn
   }
 
 
-  /*
+  /**
   * Recalculates location and size of all stations on the map
   */
   async RecalculateStations() {
@@ -174,7 +192,7 @@ export class StationmanagementComponent extends ARenderComponent implements OnIn
       let y = position.y - width;
       let station = this.renderBuffer.buffer.get(key);
       if (station == undefined) {
-        station = this.renderBuffer.AddSpriteToBufferById(key, Sprites.marker);
+        station = this.renderBuffer.AddTextById(key);
         refreshNeeded = true;
       }
       if (station != undefined) {
@@ -191,37 +209,38 @@ export class StationmanagementComponent extends ARenderComponent implements OnIn
   }
 
 
-  /*
+  /**
   *   This function will send request to the rest to delete station
   */
   async DeleteCurrentStation() {
+    
     await this.service.DeleteStation(this.collidingElement);
+    
     await this.service.LoadStations(this);
     setTimeout(()=>{
         $("#deleteModal").modal("close");
     }, 200);
   }
 
-  /*
+  /**
   *   This function will send request to the rest to save station
   */
   async SaveNewStation() {
     let mac = this.saveStation.mac;
     let length = mac.length;
-    if (length > 15 && length < 20 && mac.split(":").length == 6) {
-      await this.service.SaveStationToDatabase(this.saveStation);
-      await this.service.LoadStations(this);
-      this.saveStation = new Station();
-      $("#markerModel").modal("close");
-      this.adMarker = false;
-    } else {
-      Materialize.toast('Station adres verkeerd', 4000);
-    }
+    await this.service.SaveStationToDatabase(this.saveStation);
+    await this.service.LoadStations(this);
+    this.saveStation = new Station();
+    $("#markerModel").modal("close");
+    this.adMarker = false;
 
   }
 
+  /**
+   * Opens modal to edit mac adress
+   */
   ShowEditBox() {
     this.editmac = (' ' + this.collidingElement).slice(1);
-    this.editing = !this.editing
+    this.editing = !this.editing;
   }
 }
