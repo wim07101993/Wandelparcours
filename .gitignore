@@ -68,3 +68,6 @@ WebService/DatabaseImporter/bin/
 WebService/DatabaseImporter/obj/
 WebApp/.idea/
 WebService/WebService/appsettings.json
+
+SocketService/node_modules/
+
