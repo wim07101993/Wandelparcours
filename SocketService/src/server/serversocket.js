@@ -138,15 +138,19 @@ export class ChatServer {
 
         beacons.forEach(element => {
             try {
+                
+                console.log('beacon');
+                console.log(element);
+                
 
                 if (this.beacons.has(element.id)) {
                     let beacon = this.beacons.get(element.id);
                     
-                    beacon.set(name, Math.abs(element.rssi));
+                    beacon.set(name, element.beacon.accuracy);
                     this.beacons.set(element.id, beacon);
                 } else {
                     var beacon = new Map();
-                    beacon.set(name, Math.abs(element.rssi));
+                    beacon.set(name, element.beacon.accuracy);
                     this.beacons.set(element.id, beacon)
                 }
             } catch (error) {
