@@ -41,7 +41,7 @@
     <!-- resident's personal content on cardview -->
     <div id="content" class="card">
       <img onError="this.onerror=null;this.src='assets/images/residents.jpg';"
-           style="cursor:pointer"
+           style="cursor:pointer;background:white;"
            src="/api/v1/residents/{{resident.id}}/picture?token={{login.token}}"
            class="z-depth-2"
            (click)="navigateTo(resident)"/>

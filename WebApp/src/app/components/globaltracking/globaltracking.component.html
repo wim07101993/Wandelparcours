@@ -8,7 +8,7 @@
   <div   id="sideBar" *ngIf="menu && id==undefined" class="indigo lighten-4  z-depth-3">
     <div>
       <ul>
-        <li *ngFor="let zone of zones">
+        <li *ngFor="let zone of zones" style="height:auto;">
             <h4> Zone {{zone}}</h4>
             <ul>
               <li *ngFor="let resident of aResidents[zone]">{{resident.firstName}} {{resident.lastName}}</li>

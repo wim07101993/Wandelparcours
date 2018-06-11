@@ -213,13 +213,17 @@ export class StationmanagementComponent extends ARenderComponent implements OnIn
   *   This function will send request to the rest to delete station
   */
   async DeleteCurrentStation() {
-    
+    console.log("stations");
+    console.log(this.stations);
     await this.service.DeleteStation(this.collidingElement);
     
     await this.service.LoadStations(this);
     setTimeout(()=>{
-        $("#deleteModal").modal("close");
+      $("#deleteModal").modal("close");
     }, 200);
+    await this.RecalculateStations();
+    this.renderer.CleanAndUpdateRenderBuffer();
+    console.log(this.stations);
   }
 
   /**

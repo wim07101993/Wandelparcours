@@ -244,7 +244,7 @@ export class RestServiceService {
           parent.stationMacAdresses = [];
       }
       try {
-          this.login.axios.get('/api/v1/receivermodules').then(function (response) {
+          let response = await this.login.axios.get('/api/v1/receivermodules')
               const tryParse = <Array<any>>(response.data);
               let station: any;
               if (tryParse != undefined) {
@@ -260,7 +260,7 @@ export class RestServiceService {
                   }
               }
               return true;
-          })
+          
       } catch (e) {
           console.log('Errormessage: ' + e.toString());
       }
@@ -275,7 +275,7 @@ export class RestServiceService {
         let query="?propertiesToInclude=lastRecordedPosition&propertiesToInclude=firstName&propertiesToInclude=lastName";
         const resp = (await this.login.axios.get(`/api/v1/residents/${query}`)).data;
         let retValue=[];
-        var compareMinutesAgo = new Date( Date.now() - 15000 * 60 );
+        var compareMinutesAgo = new Date( Date.now() - 1500000 * 60 );
         for(const r of resp){
             if(r.lastRecordedPosition!=null){
                 let timestamp = new Date(r.lastRecordedPosition.timeStamp);
