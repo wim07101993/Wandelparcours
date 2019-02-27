@@ -19,7 +19,7 @@ namespace WebService.Controllers.Bases
         {
             _usersService = usersService;
             // disables auth
-//            UserId = _usersService
+//            CurrentUserId = _usersService
 //                         .GetAsync()
 //                         .Result
 //                         .FirstOrDefault(x => x.UserType == EUserType.SysAdmin)

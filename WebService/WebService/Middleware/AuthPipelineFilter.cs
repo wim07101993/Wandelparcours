@@ -30,6 +30,10 @@ namespace WebService.Middleware
 
         public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
         {
+            // uncomment to disable auth
+            //await next();
+            //return;
+
             if (!(context.ActionDescriptor is ControllerActionDescriptor controllerActionDescriptor))
                 throw new UnauthorizedException();
 

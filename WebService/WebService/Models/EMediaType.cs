@@ -3,6 +3,7 @@
     public enum EMediaType
     {
         Audio,
+        Tune,
         Video,
         Image
     }

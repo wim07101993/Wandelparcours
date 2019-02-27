@@ -183,6 +183,12 @@ namespace WebService.Controllers
             => AddMediaAsync(id, musicData, EMediaType.Audio, (int) 20e6);
 
         [Authorize(EUserType.Nurse, EUserType.User)]
+        [HttpPost(Routes.Residents.AddMusicData)]
+        [RequestSizeLimit(20_000_000)]
+        public Task<StatusCodeResult> AddTuneAsync(string id, [FromForm] MultiPartFile musicData)
+            => AddMediaAsync(id, musicData, EMediaType.Tune, (int)20e6);
+
+        [Authorize(EUserType.Nurse, EUserType.User)]
         [HttpPost(Routes.Residents.AddVideoData)]
         [RequestSizeLimit(1_000_000_000)]
         public Task<StatusCodeResult> AddVideoAsync(string id, [FromForm] MultiPartFile videoData)

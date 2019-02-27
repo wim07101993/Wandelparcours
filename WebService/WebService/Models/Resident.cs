@@ -32,6 +32,9 @@ namespace WebService.Models
         [BsonElement("music")]
         public List<MediaUrl> Music { get; set; } = new List<MediaUrl>();
 
+        [BsonElement("tunes")]
+        public List<MediaUrl> Tunes { get; set; } = new List<MediaUrl>();
+
         [BsonElement("videos")]
         public List<MediaUrl> Videos { get; set; } = new List<MediaUrl>();
 
